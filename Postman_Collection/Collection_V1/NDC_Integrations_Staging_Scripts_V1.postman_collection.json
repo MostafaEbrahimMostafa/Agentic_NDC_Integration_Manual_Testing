@@ -1,0 +1,1464 @@
+{
+  "info": {
+    "_postman_id": "8918f79f-e38f-4e12-a597-64c264fd16ee",
+    "name": "NDC_Integrations_Staging_Scripts_V1",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "39545075",
+    "_collection_link": "https://go.postman.co/collection/39545075-8918f79f-e38f-4e12-a597-64c264fd16ee?source=collection_link"
+  },
+  "item": [
+    {
+      "name": "CI_FlightSearchRequest",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "// Define responseJson variable\r",
+              "const responseJson = pm.response.json();\r",
+              "const selectedOffer = responseJson.offers[0]\r",
+              "pm.collectionVariables.set('searchResponseId', responseJson.responseId)\r",
+              "pm.collectionVariables.set('offerId', selectedOffer.offerId)\r",
+              "\r",
+              "// Get passenger counts from request body\r",
+              "let ADT_Count = pm.collectionVariables.get(\"ADT_Count\"); \r",
+              "let CHD_Count = pm.collectionVariables.get(\"CHD_Count\");\r",
+              "let INF_Count = pm.collectionVariables.get(\"INF_Count\"); \r",
+              "\r",
+              "let response;\r",
+              "try {\r",
+              "    response = pm.response.json();\r",
+              "} catch (e) {\r",
+              "    console.error(\"❌ Failed to parse JSON response:\", e);\r",
+              "    return;\r",
+              "}\r",
+              "\r",
+              "console.log(`🔍 Checking offer: ${selectedOffer.offerId}`);\r",
+              "pm.test(`🔍 Checking offer: ${selectedOffer.offerId}`, () => pm.expect(selectedOffer).to.exist);\r",
+              "\r",
+              "// Make sure we have fare breakdown data\r",
+              "if (!selectedOffer.passengerFareBreakdown || !Array.isArray(selectedOffer.passengerFareBreakdown)) {\r",
+              "    console.warn(`⚠️ No passengerFareBreakdown for offer ${selectedOffer.offerId}`);\r",
+              "    pm.test(\"⚠️ No passengerFareBreakdown\", () => pm.expect(false).to.be.true);\r",
+              "    return;\r",
+              "}\r",
+              "let totalPaxTaxes = 0;\r",
+              "let totalPassengerPrice = 0;\r",
+              "let totalBaseAmount = 0;\r",
+              "let totalTaxesAmount = 0;\r",
+              "\r",
+              "// Loop through passengers and compare individual taxes\r",
+              "selectedOffer.passengerFareBreakdown.forEach(passenger => {\r",
+              "    if (!passenger.taxesAndFees || !Array.isArray(passenger.taxesAndFees)) {\r",
+              "        console.warn(`⚠️ No taxesAndFees found for passenger ${passenger.passengerTypeCode}`);\r",
+              "        pm.test(\"⚠️No taxesAndFees found for passenger\", () => pm.expect(false).to.be.true);\r",
+              "        return;\r",
+              "    }\r",
+              "\r",
+              "     let totalTaxes = passenger.taxesAndFees.reduce((sum, fee) => sum + (fee.amount?.amount || 0), 0);\r",
+              "    totalTaxes = parseFloat(totalTaxes.toFixed(2));\r",
+              "\r",
+              "    pm.test(`✅ Taxes match for ${passenger.passengerTypeCode} (Calculated: ${totalTaxes}, Reported: ${passenger.paxTotalTaxAmount.amount})`, () => {\r",
+              "        pm.expect(totalTaxes).to.eql(passenger.paxTotalTaxAmount.amount);\r",
+              "    });\r",
+              "\r",
+              "    let paxCount = passenger.passengerTypeCode === \"ADT\" ? ADT_Count : passenger.passengerTypeCode === \"CHD\" ? CHD_Count : INF_Count;\r",
+              "    totalBaseAmount += (passenger.paxBaseAmount?.amount || 0) * paxCount;\r",
+              "    totalTaxesAmount += totalTaxes * paxCount;\r",
+              "\r",
+              "    let totalPaxPrice = ((totalTaxes + (passenger.paxBaseAmount?.amount || 0)) * paxCount).toFixed(2);\r",
+              "    totalPassengerPrice += parseFloat(totalPaxPrice);\r",
+              "\r",
+              "    pm.test(`💰 Total amount for ${passenger.passengerTypeCode} (Base: ${(passenger.paxBaseAmount?.amount || 0)}, Taxes: ${totalTaxes}, Count: ${paxCount}, Total: ${totalPaxPrice})`, () => {\r",
+              "        pm.expect(parseFloat(totalPaxPrice)).to.eql(parseFloat(totalPaxPrice));\r",
+              "    });\r",
+              "});\r",
+              "\r",
+              "let totalTaxAmount = parseFloat(selectedOffer.priceDetails.totalTaxAmount.amount.toFixed(2));\r",
+              "let totalBaseAmountResponse = parseFloat(selectedOffer.priceDetails.totalBaseAmount.amount.toFixed(2));\r",
+              "let totalAmountResponse = parseFloat(selectedOffer.priceDetails.totalAmount.amount.toFixed(2));\r",
+              "\r",
+              "pm.test(`💸 Base amounts match (Calculated: ${totalBaseAmount}, Reported: ${totalBaseAmountResponse})`, () => {\r",
+              "    pm.expect(totalBaseAmount).to.eql(totalBaseAmountResponse);\r",
+              "});\r",
+              "\r",
+              "pm.test(`💵 Taxes amounts match (Calculated: ${totalTaxesAmount.toFixed(2)}, Reported: ${totalTaxAmount.toFixed(2)})`, () => {\r",
+              "    pm.expect(totalTaxesAmount.toFixed(2)).to.eql(totalTaxAmount.toFixed(2));\r",
+              "});\r",
+              "\r",
+              "pm.test(`🧾 Grand total matches (Calculated: ${totalPassengerPrice.toFixed(2)}, Reported: ${totalAmountResponse.toFixed(2)})`, () => {\r",
+              "    pm.expect(totalPassengerPrice.toFixed(2)).to.eql(totalAmountResponse.toFixed(2));\r",
+              "});\r",
+              ""
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        },
+        {
+          "listen": "prerequest",
+          "script": {
+            "exec": [
+              "// const destinations = [\r",
+              "//   \"DBV\",\r",
+              "//   \"MLA\",\r",
+              "//   \"SPU\",\r",
+              "//   \"ATH\",\r",
+              "//   \"SKG\",\r",
+              "//   \"HER\",\r",
+              "//   \"RHO\",\r",
+              "//   \"JTR\",\r",
+              "//   \"JMK\",\r",
+              "//   \"CHQ\",\r",
+              "//   \"LHR\",\r",
+              "//   \"CDG\",\r",
+              "//   \"FCO\",\r",
+              "//   \"BER\",\r",
+              "//   \"MUC\",\r",
+              "//   \"BRU\",\r",
+              "//   \"AMS\",\r",
+              "//   \"VIE\",\r",
+              "//   \"ZRH\",\r",
+              "//   \"TLV\",\r",
+              "//   \"BEY\",\r",
+              "//   \"CAI\"\r",
+              "// ]; // Add actual destinations\r",
+              "// const origins = [\r",
+              "// //   \"JED\", \"ISB\", \"DMM\", \"SHJ\", \"BEY\", \"LTN\", \"DXB\", \"AMM\", \"HBE\", \"KTM\", \"LHE\",  \"BGW\", \"DEL\", \"DOH\", \"RUH\", \"KWI\", \"BOM\", \"MAA\", \"MCT\", \"BAH\", \"CAI\", \"IST\",  \"AUH\", \"DAM\", \"KHI\",\r",
+              "// //    \"KWI\", \"DXB\", \"AUH\", \"SHJ\", \"RUH\", \"JED\", \"DMM\", \"BAH\", \"MCT\", \"BEY\",\r",
+              "// //   \"DAM\", \"AMM\", \"CAI\", \"BGW\", \"BOM\", \"DEL\", \"MAA\", \"KHI\", \"LHE\", \"ISB\", \"KTM\",\"LTN\", \"HBE\",\"JFK\", \"LHR\", \"CDG\", \"DXB\", \"SIN\",\r",
+              "// //   //africa\r",
+              "// //   \"CPT\",\"LOS\", \"DAR\", \"KRT\",\"LAD\",\r",
+              "// //   //asia\r",
+              "// //   \"BKK\",\"KUL\",\"PEK\",\"SIN\",\"CGK\", \"HAN\",\"SGN\", \"HND\",\"DOH\",\"MNL\",\r",
+              "// //   //EUROPE\r",
+              "// //   \"IST\",\"ZRH\",\"VIE\",\"CPH\",\"OSL\",\"ARN\",\"ATH\",\"BRU\",\"DUB\",\"PRG\",\r",
+              "// //   //SOUTH AMERICA\r",
+              "// //   \"EZE\",\"BOG\",\"LIM\",\"SCL\",\"GIG\",\r",
+              "// //   //Oceania\r",
+              "// //   \"BNE\",\"PER\",\"NAN\",\"WLG\",\"CHC\",\"ATL\", \"PEK\", \"LAX\", \"DXB\", \"HND\", \"ORD\", \"LHR\", \"PVG\", \"CDG\", \"DFW\",\r",
+              "// //     \"CAN\", \"AMS\", \"DEL\", \"FRA\", \"IST\", \"JFK\", \"SIN\", \"ICN\", \"DEN\", \"BKK\",\r",
+              "// //     \"SFO\", \"KUL\", \"MAD\", \"LAS\", \"SEA\", \"CTU\", \"BCN\", \"MUC\", \"MEX\", \"YYZ\",\r",
+              "// //     \"FCO\", \"SYD\", \"MNL\", \"MIA\", \"GRU\", \"MEL\", \"NRT\", \"HKG\", \"BOM\", \"DOH\",\r",
+              "// //     \"ZRH\", \"OSL\", \"ARN\", \"VIE\", \"HEL\", \"DUB\", \"CPT\", \"GVA\", \"BRU\", \"LIS\",\r",
+              "// //     \"WAW\", \"PRG\", \"BUD\", \"ATH\", \"LED\", \"MOW\", \"TPE\", \"JNB\", \"DME\", \"GIG\",\r",
+              "// //     \"SVO\", \"BLR\", \"CCU\", \"HYD\", \"KIX\", \"HGH\", \"SHA\", \"XIY\", \"TYN\", \"CKG\",\r",
+              "// //     \"WUH\", \"CSX\", \"TNA\", \"NKG\", \"SZX\", \"XMN\", \"FOC\", \"KMG\", \"TSA\", \"OKA\",\r",
+              "// //     \"CTS\", \"FUK\", \"NGO\", \"AOJ\", \"HIJ\", \"KOJ\", \"ITM\", \"KMJ\", \"NGS\", \"SDJ\",\r",
+              "// //     \"TAK\", \"YGJ\", \"PEE\", \"SVX\", \"OVB\", \"KRR\", \"ROV\", \"UFA\", \"KZN\", \"VVO\",\r",
+              "// //     \"IKT\", \"KJA\", \"PKC\", \"HTA\", \"UUD\", \"BTK\", \"KHV\", \"AAQ\", \"AER\", \"KGD\",\r",
+              "// //     \"LED\", \"MMK\", \"NNM\", \"PKV\", \"PES\", \"GOJ\", \"MRV\", \"NAL\", \"OGZ\", \"STW\"\r",
+              "//   \"DBV\",\r",
+              "//   \"MLA\",\r",
+              "//   \"SPU\",\r",
+              "//   \"ATH\",\r",
+              "//   \"SKG\",\r",
+              "//   \"HER\",\r",
+              "//   \"RHO\",\r",
+              "//   \"JTR\",\r",
+              "//   \"JMK\",\r",
+              "//   \"CHQ\",\r",
+              "//   \"LHR\",\r",
+              "//   \"CDG\",\r",
+              "//   \"FCO\",\r",
+              "//   \"BER\",\r",
+              "//   \"MUC\",\r",
+              "//   \"BRU\",\r",
+              "//   \"AMS\",\r",
+              "//   \"VIE\",\r",
+              "//   \"ZRH\",\r",
+              "//   \"TLV\",\r",
+              "//   \"BEY\",\r",
+              "//   \"CAI\"];\r",
+              "const destinations = [\r",
+              "  \"GOI\",\r",
+              "  \"PAT\",\r",
+              "  \"BHO\",\r",
+              "  \"CCU\",\r",
+              "  \"IXC\",\r",
+              "  \"GAU\",\r",
+              "  \"JAI\",\r",
+              "  \"IXB\",\r",
+              "  \"ATQ\",\r",
+              "  \"AMD\",\r",
+              "  \"COK\",\r",
+              "  \"IXL\",\r",
+              "  \"BLR\",\r",
+              "  \"DEL\",\r",
+              "  \"PNQ\",\r",
+              "  \"IDR\",\r",
+              "  \"BOM\",\r",
+              "  \"MAA\",\r",
+              "  \"HYD\",\r",
+              "  \"IXR\",\r",
+              "  \"DXB\"\r",
+              "];\r",
+              "\r",
+              "const origins = [\r",
+              "  \"COK\",\r",
+              "  \"IXC\",\r",
+              "  \"BOM\",\r",
+              "  \"PNQ\",\r",
+              "  \"PAT\",\r",
+              "  \"JAI\",\r",
+              "  \"IDR\",\r",
+              "  \"IXB\",\r",
+              "  \"HYD\",\r",
+              "  \"AMD\",\r",
+              "  \"BHO\",\r",
+              "  \"DEL\",\r",
+              "  \"MAA\",\r",
+              "  \"ATQ\",\r",
+              "  \"IXL\",\r",
+              "  \"GAU\",\r",
+              "  \"IXR\",\r",
+              "  \"CCU\",\r",
+              "  \"GOI\",\r",
+              "  \"BLR\"\r",
+              "];\r",
+              "\r",
+              "\r",
+              "\r",
+              "// Get the current origin and destination indices\r",
+              "\r",
+              "let originIndex = parseInt(pm.collectionVariables.get(\"originIndex\") || \"0\", 10);\r",
+              "let destIndex = parseInt(pm.collectionVariables.get(\"destIndex\") || \"0\", 10);\r",
+              "\r",
+              "// Ensure destinations array is not empty\r",
+              "if (destinations.length === 0) {\r",
+              "    console.log(\"Error: Destinations array is empty. Add destinations.\");\r",
+              "    postman.setNextRequest(null);\r",
+              "} else if (originIndex < origins.length) {\r",
+              "    pm.collectionVariables.set(\"origin\", origins[originIndex]);\r",
+              "    pm.collectionVariables.set(\"destination\", destinations[destIndex]);\r",
+              "\r",
+              "    console.log(`Running iteration with origin: ${origins[originIndex]}, destination: ${destinations[destIndex]}`);\r",
+              "\r",
+              "    // Move to the next destination\r",
+              "    destIndex++;\r",
+              "    if (destIndex >= destinations.length) {\r",
+              "        destIndex = 0;\r",
+              "        originIndex++;\r",
+              "    }\r",
+              "\r",
+              "    pm.collectionVariables.set(\"originIndex\", originIndex);\r",
+              "    pm.collectionVariables.set(\"destIndex\", destIndex);\r",
+              "} else {\r",
+              "    console.log(\"All origin and destination pairs processed. Stopping iteration.\");\r",
+              "    postman.setNextRequest(null);\r",
+              "}"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "x-api-key",
+            "value": "ttdb2dc2-58c5-481c-84b5-95350a3a7978-f61360c2-f536-4b19-9a25-97b8f17ce4dc",
+            "type": "text"
+          },
+          {
+            "key": "Client-Id",
+            "value": "NDC-Core",
+            "type": "text"
+          },
+          {
+            "key": "CorrelationId",
+            "value": "97dd4460-0a34-4763-967f-e0a728f0f078",
+            "type": "text",
+            "disabled": true
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n    \"supplier\": \"{{Supplier_Name}}\",\r\n    \"credentialsSelector\": \"{{Credentials_Selector}}\",\r\n    \"isdebug\": true,\r\n    \"searchCriteria\": [\r\n        {\r\n            \"origin\": \"CAI\",\r\n            \"destination\": \"JED\",\r\n            \"date\": \"2026-06-20\"\r\n        }\r\n    ],\r\n    \"passengers\": [\r\n        {\r\n            \"passengerTypeCode\": \"ADT\",\r\n            \"count\": 1\r\n        },\r\n        {\r\n            \"passengerTypeCode\": \"CHD\",\r\n            \"count\": 1\r\n        },\r\n        {\r\n            \"passengerTypeCode\": \"INF\",\r\n            \"count\": 1\r\n        }\r\n    ],\r\n    \"searchModifiers\": {\r\n        \"filterationCriteria\": {\r\n            \"preferredAirlines\": [\r\n                \"WY\",\"GF\",\"PA\",\r\n                \"AA\",\"EK\"\r\n            ]\r\n        }\r\n    }\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}api/FlightSearch/Search",
+          "host": [
+            "{{baseUrl}}api"
+          ],
+          "path": [
+            "FlightSearch",
+            "Search"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "CI_FareConfirmRequest",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "const resp = pm.response.json()\r",
+              "\r",
+              "pm.collectionVariables.set('fareConfirmResponseId', resp.responseId)\r",
+              "pm.collectionVariables.set('selectedOfferId', resp.selectedOffer.offerId)\r",
+              "\r",
+              "\r",
+              "let ADT_Count = pm.collectionVariables.get(\"ADT_Count\"); \r",
+              "let CHD_Count = pm.collectionVariables.get(\"CHD_Count\");\r",
+              "let INF_Count = pm.collectionVariables.get(\"INF_Count\"); \r",
+              "\r",
+              "\r",
+              "let response;\r",
+              "try {\r",
+              "    response = pm.response.json();\r",
+              "} catch (e) {\r",
+              "    console.error(\"❌ Failed to parse JSON response:\", e);\r",
+              "    pm.test(\"Failed to parse JSON response\", () => pm.expect(false).to.be.true);\r",
+              "    return;\r",
+              "}\r",
+              "\r",
+              "let selectedOffer = response.selectedOffer;\r",
+              "\r",
+              "pm.test(`🔍 Checking offer: ${selectedOffer.offerId}`, () => pm.expect(selectedOffer).to.exist);\r",
+              "\r",
+              "if (!selectedOffer.passengerFareBreakdown || !Array.isArray(selectedOffer.passengerFareBreakdown)) {\r",
+              "    console.warn(`⚠️ No passengerFareBreakdown for offer ${selectedOffer.offerId}`);\r",
+              "    pm.test(\"⚠️ No passengerFareBreakdown\", () => pm.expect(false).to.be.true);\r",
+              "    return;\r",
+              "}\r",
+              "\r",
+              "let totalPassengerPrice = 0;\r",
+              "let totalBaseAmount = 0;\r",
+              "let totalTaxesAmount = 0;\r",
+              "\r",
+              "selectedOffer.passengerFareBreakdown.forEach(passenger => {\r",
+              "    if (!passenger.taxesAndFees || !Array.isArray(passenger.taxesAndFees)) {\r",
+              "        console.warn(`⚠️ No taxesAndFees for ${passenger.passengerTypeCode}`);\r",
+              "         pm.test(\"⚠️No taxesAndFees found for passenger\", () => pm.expect(false).to.be.true);\r",
+              "        return;\r",
+              "    }\r",
+              "\r",
+              "    let totalTaxes = passenger.taxesAndFees.reduce((sum, fee) => sum + (fee.amount?.amount || 0), 0);\r",
+              "    totalTaxes = parseFloat(totalTaxes.toFixed(2));\r",
+              "\r",
+              "    pm.test(`✅ Taxes match for ${passenger.passengerTypeCode} (Calculated: ${totalTaxes}, Reported: ${passenger.paxTotalTaxAmount.amount})`, () => {\r",
+              "        pm.expect(totalTaxes).to.eql(passenger.paxTotalTaxAmount.amount);\r",
+              "    });\r",
+              "\r",
+              "    let paxCount = passenger.passengerTypeCode === \"ADT\" ? ADT_Count : passenger.passengerTypeCode === \"CHD\" ? CHD_Count : INF_Count;\r",
+              "    totalBaseAmount += (passenger.paxBaseAmount?.amount || 0) * paxCount;\r",
+              "    totalTaxesAmount += totalTaxes * paxCount;\r",
+              "\r",
+              "    let totalPaxPrice = ((totalTaxes + (passenger.paxBaseAmount?.amount || 0)) * paxCount).toFixed(2);\r",
+              "    totalPassengerPrice += parseFloat(totalPaxPrice);\r",
+              "\r",
+              "    pm.test(`💰 Total amount for ${passenger.passengerTypeCode} (Base: ${(passenger.paxBaseAmount?.amount || 0)}, Taxes: ${totalTaxes}, Count: ${paxCount}, Total: ${totalPaxPrice})`, () => {\r",
+              "        pm.expect(parseFloat(totalPaxPrice)).to.eql(parseFloat(totalPaxPrice));\r",
+              "    });\r",
+              "});\r",
+              "\r",
+              "let totalTaxAmount = parseFloat(selectedOffer.priceDetails.totalTaxAmount.amount.toFixed(2));\r",
+              "let totalBaseAmountResponse = parseFloat(selectedOffer.priceDetails.totalBaseAmount.amount.toFixed(2));\r",
+              "let totalAmountResponse = parseFloat(selectedOffer.priceDetails.totalAmount.amount.toFixed(2));\r",
+              "\r",
+              "pm.test(`💸 Base amounts match (Calculated: ${totalBaseAmount}, Reported: ${totalBaseAmountResponse})`, () => {\r",
+              "    pm.expect(totalBaseAmount).to.eql(totalBaseAmountResponse);\r",
+              "});\r",
+              "\r",
+              "pm.test(`💵 Taxes amounts match (Calculated: ${totalTaxesAmount.toFixed(2)}, Reported: ${totalTaxAmount.toFixed(2)})`, () => {\r",
+              "    pm.expect(totalTaxesAmount.toFixed(2)).to.eql(totalTaxAmount.toFixed(2));\r",
+              "});\r",
+              "\r",
+              "pm.test(`🧾 Grand total matches (Calculated: ${totalPassengerPrice.toFixed(2)}, Reported: ${totalAmountResponse.toFixed(2)})`, () => {\r",
+              "    pm.expect(totalPassengerPrice.toFixed(2)).to.eql(totalAmountResponse.toFixed(2));\r",
+              "});\r",
+              ""
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "x-api-key",
+            "value": "ttdb2dc2-58c5-481c-84b5-95350a3a7978-f61360c2-f536-4b19-9a25-97b8f17ce4dc",
+            "type": "text"
+          },
+          {
+            "key": "client-id",
+            "value": "NDC-Core",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n    \"supplier\": \"{{Supplier_Name}}\",\r\n    \"credentialsSelector\": \"{{Credentials_Selector}}\",\r\n    \"searchResponseId\": \"{{searchResponseId}}\",\r\n    \"selectedOfferId\": \"{{offerId}}\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}api/FlightSearch/FareConfirm",
+          "host": [
+            "{{baseUrl}}api"
+          ],
+          "path": [
+            "FlightSearch",
+            "FareConfirm"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "CI_UpsellingRQ",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "const resp = pm.response.json()\r",
+              "\r",
+              "pm.collectionVariables.set('fareConfirmResponseId', resp.responseId)\r",
+              "pm.collectionVariables.set('selectedOfferId', resp.selectedOffer.offerId)\r",
+              "\r",
+              "\r",
+              "let ADT_Count = pm.collectionVariables.get(\"ADT_Count\"); \r",
+              "let CHD_Count = pm.collectionVariables.get(\"CHD_Count\");\r",
+              "let INF_Count = pm.collectionVariables.get(\"INF_Count\"); \r",
+              "\r",
+              "\r",
+              "let response;\r",
+              "try {\r",
+              "    response = pm.response.json();\r",
+              "} catch (e) {\r",
+              "    console.error(\"❌ Failed to parse JSON response:\", e);\r",
+              "    pm.test(\"Failed to parse JSON response\", () => pm.expect(false).to.be.true);\r",
+              "    return;\r",
+              "}\r",
+              "\r",
+              "let selectedOffer = response.selectedOffer;\r",
+              "\r",
+              "pm.test(`🔍 Checking offer: ${selectedOffer.offerId}`, () => pm.expect(selectedOffer).to.exist);\r",
+              "\r",
+              "if (!selectedOffer.passengerFareBreakdown || !Array.isArray(selectedOffer.passengerFareBreakdown)) {\r",
+              "    console.warn(`⚠️ No passengerFareBreakdown for offer ${selectedOffer.offerId}`);\r",
+              "    pm.test(\"⚠️ No passengerFareBreakdown\", () => pm.expect(false).to.be.true);\r",
+              "    return;\r",
+              "}\r",
+              "\r",
+              "let totalPassengerPrice = 0;\r",
+              "let totalBaseAmount = 0;\r",
+              "let totalTaxesAmount = 0;\r",
+              "\r",
+              "selectedOffer.passengerFareBreakdown.forEach(passenger => {\r",
+              "    if (!passenger.taxesAndFees || !Array.isArray(passenger.taxesAndFees)) {\r",
+              "        console.warn(`⚠️ No taxesAndFees for ${passenger.passengerTypeCode}`);\r",
+              "         pm.test(\"⚠️No taxesAndFees found for passenger\", () => pm.expect(false).to.be.true);\r",
+              "        return;\r",
+              "    }\r",
+              "\r",
+              "    let totalTaxes = passenger.taxesAndFees.reduce((sum, fee) => sum + (fee.amount?.amount || 0), 0);\r",
+              "    totalTaxes = parseFloat(totalTaxes.toFixed(2));\r",
+              "\r",
+              "    pm.test(`✅ Taxes match for ${passenger.passengerTypeCode} (Calculated: ${totalTaxes}, Reported: ${passenger.paxTotalTaxAmount.amount})`, () => {\r",
+              "        pm.expect(totalTaxes).to.eql(passenger.paxTotalTaxAmount.amount);\r",
+              "    });\r",
+              "\r",
+              "    let paxCount = passenger.passengerTypeCode === \"ADT\" ? ADT_Count : passenger.passengerTypeCode === \"CHD\" ? CHD_Count : INF_Count;\r",
+              "    totalBaseAmount += (passenger.paxBaseAmount?.amount || 0) * paxCount;\r",
+              "    totalTaxesAmount += totalTaxes * paxCount;\r",
+              "\r",
+              "    let totalPaxPrice = ((totalTaxes + (passenger.paxBaseAmount?.amount || 0)) * paxCount).toFixed(2);\r",
+              "    totalPassengerPrice += parseFloat(totalPaxPrice);\r",
+              "\r",
+              "    pm.test(`💰 Total amount for ${passenger.passengerTypeCode} (Base: ${(passenger.paxBaseAmount?.amount || 0)}, Taxes: ${totalTaxes}, Count: ${paxCount}, Total: ${totalPaxPrice})`, () => {\r",
+              "        pm.expect(parseFloat(totalPaxPrice)).to.eql(parseFloat(totalPaxPrice));\r",
+              "    });\r",
+              "});\r",
+              "\r",
+              "let totalTaxAmount = parseFloat(selectedOffer.priceDetails.totalTaxAmount.amount.toFixed(2));\r",
+              "let totalBaseAmountResponse = parseFloat(selectedOffer.priceDetails.totalBaseAmount.amount.toFixed(2));\r",
+              "let totalAmountResponse = parseFloat(selectedOffer.priceDetails.totalAmount.amount.toFixed(2));\r",
+              "\r",
+              "pm.test(`💸 Base amounts match (Calculated: ${totalBaseAmount}, Reported: ${totalBaseAmountResponse})`, () => {\r",
+              "    pm.expect(totalBaseAmount).to.eql(totalBaseAmountResponse);\r",
+              "});\r",
+              "\r",
+              "pm.test(`💵 Taxes amounts match (Calculated: ${totalTaxesAmount.toFixed(2)}, Reported: ${totalTaxAmount.toFixed(2)})`, () => {\r",
+              "    pm.expect(totalTaxesAmount.toFixed(2)).to.eql(totalTaxAmount.toFixed(2));\r",
+              "});\r",
+              "\r",
+              "pm.test(`🧾 Grand total matches (Calculated: ${totalPassengerPrice.toFixed(2)}, Reported: ${totalAmountResponse.toFixed(2)})`, () => {\r",
+              "    pm.expect(totalPassengerPrice.toFixed(2)).to.eql(totalAmountResponse.toFixed(2));\r",
+              "});\r",
+              ""
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "x-api-key",
+            "value": "ttdb2dc2-58c5-481c-84b5-95350a3a7978-f61360c2-f536-4b19-9a25-97b8f17ce4dc",
+            "type": "text"
+          },
+          {
+            "key": "client-id",
+            "value": "NDC-Core",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n    \"supplier\": \"{{Supplier_Name}}\",\r\n    \"credentialsSelector\": \"{{Credentials_Selector}}\",\r\n    \"searchResponseId\": \"{{searchResponseId}}\",\r\n    \"selectedOfferId\": \"{{offerId}}\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{requestUrl}}api/FlightSearch/UpSelling",
+          "host": [
+            "{{requestUrl}}api"
+          ],
+          "path": [
+            "FlightSearch",
+            "UpSelling"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "GetOfferBundles",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "const resp = pm.response.json()\r",
+              "var JourneyKey1 = resp.offerJourneys.key;\r",
+              "pm.collectionVariables.set(\"JourneyKey1\",JourneyKey1);"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "x-api-key",
+            "value": "ttdb2dc2-58c5-481c-84b5-95350a3a7978-f61360c2-f536-4b19-9a25-97b8f17ce4dc",
+            "type": "text"
+          },
+          {
+            "key": "client-id",
+            "value": "NDC-Core",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n    \"supplier\": \"{{Supplier_Name}}\",\r\n    \"credentialsSelector\": \"{{Credentials_Selector}}\",\r\n    \"fareConfirmResponseId\": \"{{fareConfirmResponseId}}\",\r\n    \"selectedOfferId\": \"{{selectedOfferId}}\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}api/bundles/GetOfferBundles",
+          "host": [
+            "{{baseUrl}}api"
+          ],
+          "path": [
+            "bundles",
+            "GetOfferBundles"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "CI_FlightBookRequest",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "const resp = pm.response.json()\r",
+              "pm.collectionVariables.set('pnr', resp.pnr)\r",
+              "pm.collectionVariables.set('bookingToken', resp.bookingToken)\r",
+              "pm.collectionVariables.set('gdsPNR', resp.gdsPNR)\r",
+              "\r",
+              "\r",
+              "let ADT_Count = pm.collectionVariables.get(\"ADT_Count\"); \r",
+              "let CHD_Count = pm.collectionVariables.get(\"CHD_Count\");\r",
+              "let INF_Count = pm.collectionVariables.get(\"INF_Count\"); \r",
+              "\r",
+              "let response;\r",
+              "try {\r",
+              "    response = pm.response.json();\r",
+              "} catch (e) {\r",
+              "    console.error(\"❌ Failed to parse JSON response:\", e);\r",
+              "    pm.test(\"Failed to parse JSON response\", () => pm.expect(false).to.be.true);\r",
+              "    return;\r",
+              "}\r",
+              "\r",
+              "let selectedOffer = response.selectedOffer;\r",
+              "\r",
+              "pm.test(`🔍 Checking offer: ${selectedOffer.offerId}`, () => pm.expect(selectedOffer).to.exist);\r",
+              "\r",
+              "if (!selectedOffer.passengerFareBreakdown || !Array.isArray(selectedOffer.passengerFareBreakdown)) {\r",
+              "    console.warn(`⚠️ No passengerFareBreakdown for offer ${selectedOffer.offerId}`);\r",
+              "    pm.test(\"No passengerFareBreakdown\", () => pm.expect(false).to.be.true);\r",
+              "    return;\r",
+              "}\r",
+              "\r",
+              "let totalPassengerPrice = 0;\r",
+              "let totalBaseAmount = 0;\r",
+              "let totalTaxesAmount = 0;\r",
+              "\r",
+              "selectedOffer.passengerFareBreakdown.forEach(passenger => {\r",
+              "    if (!passenger.taxesAndFees || !Array.isArray(passenger.taxesAndFees)) {\r",
+              "        console.warn(`⚠️ No taxesAndFees for ${passenger.passengerTypeCode}`);\r",
+              "        return;\r",
+              "    }\r",
+              "\r",
+              "    let totalTaxes = passenger.taxesAndFees.reduce((sum, fee) => sum + (fee.amount?.amount || 0), 0);\r",
+              "    totalTaxes = parseFloat(totalTaxes.toFixed(2));\r",
+              "\r",
+              "    pm.test(`✅ Taxes match for ${passenger.passengerTypeCode} (Calculated: ${totalTaxes}, Reported: ${passenger.paxTotalTaxAmount.amount})`, () => {\r",
+              "        pm.expect(totalTaxes).to.eql(passenger.paxTotalTaxAmount.amount);\r",
+              "    });\r",
+              "\r",
+              "    let paxCount = passenger.passengerTypeCode === \"ADT\" ? ADT_Count : passenger.passengerTypeCode === \"CHD\" ? CHD_Count : INF_Count;\r",
+              "    totalBaseAmount += (passenger.paxBaseAmount?.amount || 0) * paxCount;\r",
+              "    totalTaxesAmount += totalTaxes * paxCount;\r",
+              "\r",
+              "    let totalPaxPrice = ((totalTaxes + (passenger.paxBaseAmount?.amount || 0)) * paxCount).toFixed(2);\r",
+              "    totalPassengerPrice += parseFloat(totalPaxPrice);\r",
+              "\r",
+              "    pm.test(`💰 Total amount for ${passenger.passengerTypeCode} (Base: ${(passenger.paxBaseAmount?.amount || 0)}, Taxes: ${totalTaxes}, Count: ${paxCount}, Total: ${totalPaxPrice})`, () => {\r",
+              "        pm.expect(parseFloat(totalPaxPrice)).to.eql(parseFloat(totalPaxPrice));\r",
+              "    });\r",
+              "});\r",
+              "\r",
+              "let totalTaxAmount = parseFloat(selectedOffer.priceDetails.totalTaxAmount.amount.toFixed(2));\r",
+              "let totalBaseAmountResponse = parseFloat(selectedOffer.priceDetails.totalBaseAmount.amount.toFixed(2));\r",
+              "let totalAmountResponse = parseFloat(selectedOffer.priceDetails.totalAmount.amount.toFixed(2));\r",
+              "\r",
+              "pm.test(`💸 Base amounts match (Calculated: ${totalBaseAmount}, Reported: ${totalBaseAmountResponse})`, () => {\r",
+              "    pm.expect(totalBaseAmount).to.eql(totalBaseAmountResponse);\r",
+              "});\r",
+              "\r",
+              "pm.test(`💵 Taxes amounts match (Calculated: ${totalTaxesAmount.toFixed(2)}, Reported: ${totalTaxAmount.toFixed(2)})`, () => {\r",
+              "    pm.expect(totalTaxesAmount.toFixed(2)).to.eql(totalTaxAmount.toFixed(2));\r",
+              "});\r",
+              "\r",
+              "pm.test(`🧾 Grand total matches (Calculated: ${totalPassengerPrice.toFixed(2)}, Reported: ${totalAmountResponse.toFixed(2)})`, () => {\r",
+              "    pm.expect(totalPassengerPrice.toFixed(2)).to.eql(totalAmountResponse.toFixed(2));\r",
+              "});\r",
+              ""
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "x-api-key",
+            "value": "ttdb2dc2-58c5-481c-84b5-95350a3a7978-f61360c2-f536-4b19-9a25-97b8f17ce4dc",
+            "type": "text"
+          },
+          {
+            "key": "client-id",
+            "value": "NDC-Core",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n    \"Supplier\": \"{{Supplier_Name}}\",\r\n    \"credentialsSelector\": \"{{Credentials_Selector}}\",\r\n    \"fareConfirmResponseId\": \"{{fareConfirmResponseId}}\",\r\n    \"selectedOfferId\": \"{{selectedOfferId}}\",\r\n    \"passengersList\": {\r\n        \"Pax1\": {\r\n            \"title\": \"Mr\",\r\n            \"name\": {\r\n                \"first\": \"Mostafa\",\r\n                \"middle\": \"\",\r\n                \"last\": \"Ibrahim\"\r\n            },\r\n            \"nationality\": \"EG\",\r\n            \"residentCountry\": \"EG\",\r\n            \"birthDate\": \"2000-02-15T00:00:00.000Z\",\r\n            \"gender\": \"male\",\r\n            \"passengerTypeCode\": \"ADT\",\r\n            \"contactRefId\": \"0\",\r\n            \"travelDocument\": {\r\n                \"name\": {\r\n                    \"first\": \"Mostafa\",\r\n                    \"middle\": \"\",\r\n                    \"last\": \"Ibrahim\"\r\n                },\r\n                \"nationality\": \"EG\",\r\n                \"expirationDate\": \"2029-10-01T00:00:00.000Z\",\r\n                \"issuanceDate\": \"2023-10-01T00:00:00.000Z\",\r\n                \"documentNumber\": \"A1234561\",\r\n                \"documentType\": \"PASSPORT\",\r\n                \"gender\": \"male\",\r\n                \"birthCountry\": \"EG\",\r\n                \"birthDate\": \"2000-02-15T00:00:00.000Z\",\r\n                \"issuanceCountryCode\": \"EG\"\r\n            }\r\n        },\r\n        // \"Pax2\": {\r\n        //     \"title\": \"Mr\",\r\n        //     \"name\": {\r\n        //         \"first\": \"Ahmed\",\r\n        //         \"middle\": \"\",\r\n        //         \"last\": \"Hassan\"\r\n        //     },\r\n        //     \"nationality\": \"EG\",\r\n        //     \"residentCountry\": \"EG\",\r\n        //     \"birthDate\": \"1985-07-20T00:00:00.000Z\",\r\n        //     \"gender\": \"male\",\r\n        //     \"passengerTypeCode\": \"ADT\",\r\n        //     \"contactRefId\": \"0\",\r\n        //     \"travelDocument\": {\r\n        //         \"name\": {\r\n        //             \"first\": \"Ahmed\",\r\n        //             \"middle\": \"\",\r\n        //             \"last\": \"Hassan\"\r\n        //         },\r\n        //         \"nationality\": \"EG\",\r\n        //         \"expirationDate\": \"2031-06-15T00:00:00.000Z\",\r\n        //         \"issuanceDate\": \"2021-06-15T00:00:00.000Z\",\r\n        //         \"documentNumber\": \"B9876543\",\r\n        //         \"documentType\": \"PASSPORT\",\r\n        //         \"gender\": \"male\",\r\n        //         \"birthCountry\": \"EG\",\r\n        //         \"birthDate\": \"1985-07-20T00:00:00.000Z\",\r\n        //         \"issuanceCountryCode\": \"EG\"\r\n        //     }\r\n        // },\r\n        // \"Pax3\": {\r\n        //     \"title\": \"Mrs\",\r\n        //     \"name\": {\r\n        //         \"first\": \"Sara\",\r\n        //         \"middle\": \"\",\r\n        //         \"last\": \"Nour\"\r\n        //     },\r\n        //     \"nationality\": \"EG\",\r\n        //     \"residentCountry\": \"EG\",\r\n        //     \"birthDate\": \"1990-05-12T00:00:00.000Z\",\r\n        //     \"gender\": \"female\",\r\n        //     \"passengerTypeCode\": \"ADT\",\r\n        //     \"contactRefId\": \"0\",\r\n        //     \"travelDocument\": {\r\n        //         \"name\": {\r\n        //             \"first\": \"Sara\",\r\n        //             \"middle\": \"\",\r\n        //             \"last\": \"Nour\"\r\n        //         },\r\n        //         \"nationality\": \"EG\",\r\n        //         \"expirationDate\": \"2030-08-01T00:00:00.000Z\",\r\n        //         \"issuanceDate\": \"2020-08-01T00:00:00.000Z\",\r\n        //         \"documentNumber\": \"C4567891\",\r\n        //         \"documentType\": \"PASSPORT\",\r\n        //         \"gender\": \"female\",\r\n        //         \"birthCountry\": \"EG\",\r\n        //         \"birthDate\": \"1990-05-12T00:00:00.000Z\",\r\n        //         \"issuanceCountryCode\": \"EG\"\r\n        //     }\r\n        // },\r\n        // \"Pax4\": {\r\n        //     \"title\": \"Mr\",\r\n        //     \"name\": {\r\n        //         \"first\": \"Omar\",\r\n        //         \"middle\": \"Fathy\",\r\n        //         \"last\": \"Adel\"\r\n        //     },\r\n        //     \"nationality\": \"EG\",\r\n        //     \"residentCountry\": \"EG\",\r\n        //     \"birthDate\": \"1982-09-03T00:00:00.000Z\",\r\n        //     \"gender\": \"male\",\r\n        //     \"passengerTypeCode\": \"ADT\",\r\n        //     \"contactRefId\": \"0\",\r\n        //     \"travelDocument\": {\r\n        //         \"name\": {\r\n        //             \"first\": \"Omar\",\r\n        //             \"middle\": \"Fathy\",\r\n        //             \"last\": \"Adel\"\r\n        //         },\r\n        //         \"nationality\": \"EG\",\r\n        //         \"expirationDate\": \"2032-02-10T00:00:00.000Z\",\r\n        //         \"issuanceDate\": \"2022-02-10T00:00:00.000Z\",\r\n        //         \"documentNumber\": \"D1122334\",\r\n        //         \"documentType\": \"PASSPORT\",\r\n        //         \"gender\": \"male\",\r\n        //         \"birthCountry\": \"EG\",\r\n        //         \"birthDate\": \"1982-09-03T00:00:00.000Z\",\r\n        //         \"issuanceCountryCode\": \"EG\"\r\n        //     }\r\n        // },\r\n        // \"Pax5\": {\r\n        //     \"title\": \"Mrs\",\r\n        //     \"name\": {\r\n        //         \"first\": \"Mona\",\r\n        //         \"middle\": \"Hassan\",\r\n        //         \"last\": \"Saleh\"\r\n        //     },\r\n        //     \"nationality\": \"EG\",\r\n        //     \"residentCountry\": \"EG\",\r\n        //     \"birthDate\": \"1988-11-22T00:00:00.000Z\",\r\n        //     \"gender\": \"female\",\r\n        //     \"passengerTypeCode\": \"ADT\",\r\n        //     \"contactRefId\": \"0\",\r\n        //     \"travelDocument\": {\r\n        //         \"name\": {\r\n        //             \"first\": \"Mona\",\r\n        //             \"middle\": \"Hassan\",\r\n        //             \"last\": \"Saleh\"\r\n        //         },\r\n        //         \"nationality\": \"EG\",\r\n        //         \"expirationDate\": \"2031-11-22T00:00:00.000Z\",\r\n        //         \"issuanceDate\": \"2021-11-22T00:00:00.000Z\",\r\n        //         \"documentNumber\": \"E9988776\",\r\n        //         \"documentType\": \"PASSPORT\",\r\n        //         \"gender\": \"female\",\r\n        //         \"birthCountry\": \"EG\",\r\n        //         \"birthDate\": \"1988-11-22T00:00:00.000Z\",\r\n        //         \"issuanceCountryCode\": \"EG\"\r\n        //     }\r\n        // },\r\n        \"Pax6\": {\r\n            \"title\": \"Miss\",\r\n            \"name\": {\r\n                \"first\": \"Laila\",\r\n                \"middle\": \"Omar\",\r\n                \"last\": \"Ibrahim\"\r\n            },\r\n            \"nationality\": \"EG\",\r\n            \"residentCountry\": \"EG\",\r\n            \"birthDate\": \"2016-03-10T00:00:00.000Z\",\r\n            \"gender\": \"female\",\r\n            \"passengerTypeCode\": \"CHD\",\r\n            \"contactRefId\": \"0\",\r\n            \"travelDocument\": {\r\n                \"name\": {\r\n                    \"first\": \"Laila\",\r\n                    \"middle\": \"Omar\",\r\n                    \"last\": \"Ibrahim\"\r\n                },\r\n                \"nationality\": \"EG\",\r\n                \"expirationDate\": \"2029-01-22T00:00:00.000Z\",\r\n                \"issuanceDate\": \"2021-03-10T00:00:00.000Z\",\r\n                \"documentNumber\": \"F2233445\",\r\n                \"documentType\": \"PASSPORT\",\r\n                \"gender\": \"female\",\r\n                \"birthCountry\": \"EG\",\r\n                \"birthDate\": \"2016-03-10T00:00:00.000Z\",\r\n                \"issuanceCountryCode\": \"EG\"\r\n            }\r\n        },\r\n        // \"Pax7\": {\r\n        //     \"title\": \"MSTR\",\r\n        //     \"name\": {\r\n        //         \"first\": \"Youssef\",\r\n        //         \"middle\": \"Ahmed\",\r\n        //         \"last\": \"Hassan\"\r\n        //     },\r\n        //     \"nationality\": \"EG\",\r\n        //     \"residentCountry\": \"EG\",\r\n        //     \"birthDate\": \"2017-08-15T00:00:00.000Z\",\r\n        //     \"gender\": \"male\",\r\n        //     \"passengerTypeCode\": \"CHD\",\r\n        //     \"contactRefId\": \"0\",\r\n        //     \"travelDocument\": {\r\n        //         \"name\": {\r\n        //             \"first\": \"Youssef\",\r\n        //             \"middle\": \"Ahmed\",\r\n        //             \"last\": \"Hassan\"\r\n        //         },\r\n        //         \"nationality\": \"EG\",\r\n        //         \"expirationDate\": \"2032-08-15T00:00:00.000Z\",\r\n        //         \"issuanceDate\": \"2022-08-15T00:00:00.000Z\",\r\n        //         \"documentNumber\": \"G3344556\",\r\n        //         \"documentType\": \"PASSPORT\",\r\n        //         \"gender\": \"male\",\r\n        //         \"birthCountry\": \"EG\",\r\n        //         \"birthDate\": \"2017-08-15T00:00:00.000Z\",\r\n        //         \"issuanceCountryCode\": \"EG\"\r\n        //     }\r\n        // },\r\n        // \"Pax8\": {\r\n        //     \"title\": \"Miss\",\r\n        //     \"name\": {\r\n        //         \"first\": \"Hana\",\r\n        //         \"middle\": \"Sara\",\r\n        //         \"last\": \"Nour\"\r\n        //     },\r\n        //     \"nationality\": \"EG\",\r\n        //     \"residentCountry\": \"EG\",\r\n        //     \"birthDate\": \"2015-12-01T00:00:00.000Z\",\r\n        //     \"gender\": \"female\",\r\n        //     \"passengerTypeCode\": \"CHD\",\r\n        //     \"contactRefId\": \"0\",\r\n        //     \"travelDocument\": {\r\n        //         \"name\": {\r\n        //             \"first\": \"Hana\",\r\n        //             \"middle\": \"Sara\",\r\n        //             \"last\": \"Nour\"\r\n        //         },\r\n        //         \"nationality\": \"EG\",\r\n        //         \"expirationDate\": \"2030-12-01T00:00:00.000Z\",\r\n        //         \"issuanceDate\": \"2020-12-01T00:00:00.000Z\",\r\n        //         \"documentNumber\": \"H4455667\",\r\n        //         \"documentType\": \"PASSPORT\",\r\n        //         \"gender\": \"female\",\r\n        //         \"birthCountry\": \"EG\",\r\n        //         \"birthDate\": \"2015-12-01T00:00:00.000Z\",\r\n        //         \"issuanceCountryCode\": \"EG\"\r\n        //     }\r\n        // },\r\n        // \"Pax9\": {\r\n        //     \"title\": \"MR\",\r\n        //     \"name\": {\r\n        //         \"first\": \"Adam\",\r\n        //         \"middle\": \"Omar\",\r\n        //         \"last\": \"Adel\"\r\n        //     },\r\n        //     \"nationality\": \"EG\",\r\n        //     \"residentCountry\": \"EG\",\r\n        //     \"birthDate\": \"2018-04-18T00:00:00.000Z\",\r\n        //     \"gender\": \"male\",\r\n        //     \"passengerTypeCode\": \"CHD\",\r\n        //     \"contactRefId\": \"0\",\r\n        //     \"travelDocument\": {\r\n        //         \"name\": {\r\n        //             \"first\": \"Adam\",\r\n        //             \"middle\": \"Omar\",\r\n        //             \"last\": \"Adel\"\r\n        //         },\r\n        //         \"nationality\": \"EG\",\r\n        //         \"expirationDate\": \"2033-04-18T00:00:00.000Z\",\r\n        //         \"issuanceDate\": \"2023-04-18T00:00:00.000Z\",\r\n        //         \"documentNumber\": \"I5566778\",\r\n        //         \"documentType\": \"PASSPORT\",\r\n        //         \"gender\": \"male\",\r\n        //         \"birthCountry\": \"EG\",\r\n        //         \"birthDate\": \"2018-04-18T00:00:00.000Z\",\r\n        //         \"issuanceCountryCode\": \"EG\"\r\n        //     }\r\n        // },\r\n        \"Pax10\": {\r\n            \"title\": \"MS\",\r\n            \"name\": {\r\n                \"first\": \"Lina\",\r\n                \"middle\": \"KADY\",\r\n                \"last\": \"Ibrahim\"\r\n            },\r\n            \"nationality\": \"EG\",\r\n            \"residentCountry\": \"EG\",\r\n            \"birthDate\": \"2025-01-05T00:00:00.000Z\",\r\n            \"gender\": \"female\",\r\n            \"passengerTypeCode\": \"INF\",\r\n            \"ParentPaxRefId\": \"Pax1\",\r\n            \"contactRefId\": \"0\",\r\n            \"travelDocument\": {\r\n                \"name\": {\r\n                    \"first\": \"Lina\",\r\n                    \"middle\": \"KADY\",\r\n                    \"last\": \"Ibrahim\"\r\n                },\r\n                \"nationality\": \"EG\",\r\n                \"expirationDate\": \"2029-01-04T00:00:00.000Z\",\r\n                \"issuanceDate\": \"2025-01-10T00:00:00.000Z\",\r\n                \"documentNumber\": \"INF1234501\",\r\n                \"documentType\": \"PASSPORT\",\r\n                \"gender\": \"female\",\r\n                \"birthCountry\": \"EG\",\r\n                \"birthDate\": \"2025-01-05T00:00:00.000Z\",\r\n                \"issuanceCountryCode\": \"EG\"\r\n            }\r\n        }\r\n        // \"Pax11\": {\r\n        //     \"title\": \"MR\",\r\n        //     \"name\": {\r\n        //         \"first\": \"Karim\",\r\n        //         \"middle\": \"\",\r\n        //         \"last\": \"Hassan\"\r\n        //     },\r\n        //     \"nationality\": \"EG\",\r\n        //     \"residentCountry\": \"EG\",\r\n        //     \"birthDate\": \"2025-03-10T00:00:00.000Z\",\r\n        //     \"gender\": \"male\",\r\n        //     \"passengerTypeCode\": \"INF\",\r\n        //     \"ParentPaxRefId\": \"Pax2\",\r\n        //     \"contactRefId\": \"0\",\r\n        //     \"travelDocument\": {\r\n        //         \"name\": {\r\n        //             \"first\": \"Karim\",\r\n        //             \"middle\": \"\",\r\n        //             \"last\": \"Hassan\"\r\n        //         },\r\n        //         \"nationality\": \"EG\",\r\n        //         \"expirationDate\": \"2029-03-09T00:00:00.000Z\",\r\n        //         \"issuanceDate\": \"2024-03-15T00:00:00.000Z\",\r\n        //         \"documentNumber\": \"INF1234502\",\r\n        //         \"documentType\": \"PASSPORT\",\r\n        //         \"gender\": \"male\",\r\n        //         \"birthCountry\": \"EG\",\r\n        //         \"birthDate\": \"2025-03-10T00:00:00.000Z\",\r\n        //         \"issuanceCountryCode\": \"EG\"\r\n        //     }\r\n        // },\r\n        // \"Pax12\": {\r\n        //     \"title\": \"MS\",\r\n        //     \"name\": {\r\n        //         \"first\": \"Mariam\",\r\n        //         \"middle\": \"\",\r\n        //         \"last\": \"Nour\"\r\n        //     },\r\n        //     \"nationality\": \"EG\",\r\n        //     \"residentCountry\": \"EG\",\r\n        //     \"birthDate\": \"2025-12-20T00:00:00.000Z\",\r\n        //     \"gender\": \"female\",\r\n        //     \"passengerTypeCode\": \"INF\",\r\n        //     \"ParentPaxRefId\": \"Pax3\",\r\n        //     \"contactRefId\": \"0\",\r\n        //     \"travelDocument\": {\r\n        //         \"name\": {\r\n        //             \"first\": \"Mariam\",\r\n        //             \"middle\": \"\",\r\n        //             \"last\": \"Nour\"\r\n        //         },\r\n        //         \"nationality\": \"EG\",\r\n        //         \"expirationDate\": \"2028-12-19T00:00:00.000Z\",\r\n        //         \"issuanceDate\": \"2025-12-25T00:00:00.000Z\",\r\n        //         \"documentNumber\": \"INF1234503\",\r\n        //         \"documentType\": \"PASSPORT\",\r\n        //         \"gender\": \"female\",\r\n        //         \"birthCountry\": \"EG\",\r\n        //         \"birthDate\": \"2025-12-20T00:00:00.000Z\",\r\n        //         \"issuanceCountryCode\": \"EG\"\r\n        //     }\r\n        // },\r\n        // \"Pax13\": {\r\n        //     \"title\": \"MR\",\r\n        //     \"name\": {\r\n        //         \"first\": \"Yazan\",\r\n        //         \"middle\": \"Omar\",\r\n        //         \"last\": \"Adel\"\r\n        //     },\r\n        //     \"nationality\": \"EG\",\r\n        //     \"residentCountry\": \"EG\",\r\n        //     \"birthDate\": \"2025-05-02T00:00:00.000Z\",\r\n        //     \"gender\": \"male\",\r\n        //     \"passengerTypeCode\": \"INF\",\r\n        //     \"ParentPaxRefId\": \"Pax4\",\r\n        //     \"contactRefId\": \"0\",\r\n        //     \"travelDocument\": {\r\n        //         \"name\": {\r\n        //             \"first\": \"Yazan\",\r\n        //             \"middle\": \"Omar\",\r\n        //             \"last\": \"Adel\"\r\n        //         },\r\n        //         \"nationality\": \"EG\",\r\n        //         \"expirationDate\": \"2029-05-01T00:00:00.000Z\",\r\n        //         \"issuanceDate\": \"2024-05-10T00:00:00.000Z\",\r\n        //         \"documentNumber\": \"INF1234504\",\r\n        //         \"documentType\": \"PASSPORT\",\r\n        //         \"gender\": \"male\",\r\n        //         \"birthCountry\": \"EG\",\r\n        //         \"birthDate\": \"2025-05-02T00:00:00.000Z\",\r\n        //         \"issuanceCountryCode\": \"EG\"\r\n        //     }\r\n        // },\r\n        // \"Pax14\": {\r\n        //     \"title\": \"MR\",\r\n        //     \"name\": {\r\n        //         \"first\": \"Zain\",\r\n        //         \"middle\": \"Mahmoud\",\r\n        //         \"last\": \"Saleh\"\r\n        //     },\r\n        //     \"nationality\": \"EG\",\r\n        //     \"residentCountry\": \"EG\",\r\n        //     \"birthDate\": \"2025-08-12T00:00:00.000Z\",\r\n        //     \"gender\": \"male\",\r\n        //     \"passengerTypeCode\": \"INF\",\r\n        //     \"ParentPaxRefId\": \"Pax5\",\r\n        //     \"contactRefId\": \"0\",\r\n        //     \"travelDocument\": {\r\n        //         \"name\": {\r\n        //             \"first\": \"Zain\",\r\n        //             \"middle\": \"Mahmoud\",\r\n        //             \"last\": \"Saleh\"\r\n        //         },\r\n        //         \"nationality\": \"EG\",\r\n        //         \"expirationDate\": \"2029-08-11T00:00:00.000Z\",\r\n        //         \"issuanceDate\": \"2024-08-20T00:00:00.000Z\",\r\n        //         \"documentNumber\": \"INF9876540\",\r\n        //         \"documentType\": \"PASSPORT\",\r\n        //         \"gender\": \"male\",\r\n        //         \"birthCountry\": \"EG\",\r\n        //         \"birthDate\": \"2025-08-12T00:00:00.000Z\",\r\n        //         \"issuanceCountryCode\": \"EG\"\r\n        //     }\r\n        // }\r\n    },\r\n    \"contactsList\": {\r\n        \"0\": {\r\n            \"Email\": \"moontravel626@gmail.com\",\r\n            \"phone\": {\r\n                \"type\": \"Mobile\",\r\n                \"countryDialingCode\": \"+20\",\r\n                \"phoneNumber\": \"01005747258\"\r\n            },\r\n            \"Address\": {\r\n                \"Line1\": \"FZ HQ\",\r\n                \"Line2\": \"FZ HQ\",\r\n                \"City\": \"DUBAI\",\r\n                \"CountryCode\": \"EG\"\r\n            }\r\n        }\r\n    },\r\n    \"selectedBundles\": []\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}api/FlightBooking/Book",
+          "host": [
+            "{{baseUrl}}api"
+          ],
+          "path": [
+            "FlightBooking",
+            "Book"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "CI_FlightHoldRequest",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "const resp = pm.response.json()\r",
+              "pm.collectionVariables.set('pnr', resp.pnr)\r",
+              "pm.collectionVariables.set('gdsPNR', resp.gdsPNR)\r",
+              "pm.collectionVariables.set('bookingToken', resp.bookingToken)\r",
+              "\r",
+              "let ADT_Count = pm.collectionVariables.get(\"ADT_Count\"); \r",
+              "let CHD_Count = pm.collectionVariables.get(\"CHD_Count\");\r",
+              "let INF_Count = pm.collectionVariables.get(\"INF_Count\"); \r",
+              "\r",
+              "\r",
+              "let response;\r",
+              "try {\r",
+              "    response = pm.response.json();\r",
+              "} catch (e) {\r",
+              "    console.error(\"❌ Failed to parse JSON response:\", e);\r",
+              "    pm.test(\"Failed to parse JSON response\", () => pm.expect(false).to.be.true);\r",
+              "    return;\r",
+              "}\r",
+              "\r",
+              "let selectedOffer = response.selectedOffer;\r",
+              "\r",
+              "pm.test(`🔍 Checking offer: ${selectedOffer.offerId}`, () => pm.expect(selectedOffer).to.exist);\r",
+              "\r",
+              "if (!selectedOffer.passengerFareBreakdown || !Array.isArray(selectedOffer.passengerFareBreakdown)) {\r",
+              "    console.warn(`⚠️ No passengerFareBreakdown for offer ${selectedOffer.offerId}`);\r",
+              "    pm.test(\"No passengerFareBreakdown\", () => pm.expect(false).to.be.true);\r",
+              "    return;\r",
+              "}\r",
+              "\r",
+              "let totalPassengerPrice = 0;\r",
+              "let totalBaseAmount = 0;\r",
+              "let totalTaxesAmount = 0;\r",
+              "\r",
+              "selectedOffer.passengerFareBreakdown.forEach(passenger => {\r",
+              "    if (!passenger.taxesAndFees || !Array.isArray(passenger.taxesAndFees)) {\r",
+              "        console.warn(`⚠️ No taxesAndFees for ${passenger.passengerTypeCode}`);\r",
+              "        return;\r",
+              "    }\r",
+              "\r",
+              "    let totalTaxes = passenger.taxesAndFees.reduce((sum, fee) => sum + (fee.amount?.amount || 0), 0);\r",
+              "    totalTaxes = parseFloat(totalTaxes.toFixed(2));\r",
+              "\r",
+              "    pm.test(`✅ Taxes match for ${passenger.passengerTypeCode} (Calculated: ${totalTaxes}, Reported: ${passenger.paxTotalTaxAmount.amount})`, () => {\r",
+              "        pm.expect(totalTaxes).to.eql(passenger.paxTotalTaxAmount.amount);\r",
+              "    });\r",
+              "\r",
+              "    let paxCount = passenger.passengerTypeCode === \"ADT\" ? ADT_Count : passenger.passengerTypeCode === \"CHD\" ? CHD_Count : INF_Count;\r",
+              "    totalBaseAmount += (passenger.paxBaseAmount?.amount || 0) * paxCount;\r",
+              "    totalTaxesAmount += totalTaxes * paxCount;\r",
+              "\r",
+              "    let totalPaxPrice = ((totalTaxes + (passenger.paxBaseAmount?.amount || 0)) * paxCount).toFixed(2);\r",
+              "    totalPassengerPrice += parseFloat(totalPaxPrice);\r",
+              "\r",
+              "    pm.test(`💰 Total amount for ${passenger.passengerTypeCode} (Base: ${(passenger.paxBaseAmount?.amount || 0)}, Taxes: ${totalTaxes}, Count: ${paxCount}, Total: ${totalPaxPrice})`, () => {\r",
+              "        pm.expect(parseFloat(totalPaxPrice)).to.eql(parseFloat(totalPaxPrice));\r",
+              "    });\r",
+              "});\r",
+              "\r",
+              "let totalTaxAmount = parseFloat(selectedOffer.priceDetails.totalTaxAmount.amount.toFixed(2));\r",
+              "let totalBaseAmountResponse = parseFloat(selectedOffer.priceDetails.totalBaseAmount.amount.toFixed(2));\r",
+              "let totalAmountResponse = parseFloat(selectedOffer.priceDetails.totalAmount.amount.toFixed(2));\r",
+              "\r",
+              "pm.test(`💸 Base amounts match (Calculated: ${totalBaseAmount}, Reported: ${totalBaseAmountResponse})`, () => {\r",
+              "    pm.expect(totalBaseAmount).to.eql(totalBaseAmountResponse);\r",
+              "});\r",
+              "\r",
+              "pm.test(`💵 Taxes amounts match (Calculated: ${totalTaxesAmount.toFixed(2)}, Reported: ${totalTaxAmount.toFixed(2)})`, () => {\r",
+              "    pm.expect(totalTaxesAmount.toFixed(2)).to.eql(totalTaxAmount.toFixed(2));\r",
+              "});\r",
+              "\r",
+              "pm.test(`🧾 Grand total matches (Calculated: ${totalPassengerPrice.toFixed(2)}, Reported: ${totalAmountResponse.toFixed(2)})`, () => {\r",
+              "    pm.expect(totalPassengerPrice.toFixed(2)).to.eql(totalAmountResponse.toFixed(2));\r",
+              "});\r",
+              ""
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "x-api-key",
+            "value": "ttdb2dc2-58c5-481c-84b5-95350a3a7978-f61360c2-f536-4b19-9a25-97b8f17ce4dc",
+            "type": "text"
+          },
+          {
+            "key": "client-id",
+            "value": "NDC-Core",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n    \"supplier\": \"{{Supplier_Name}}\",\r\n    \"credentialsSelector\": \"{{Credentials_Selector}}\",\r\n    \"fareConfirmResponseId\": \"{{fareConfirmResponseId}}\",\r\n    \"selectedOfferId\": \"{{selectedOfferId}}\",\r\n    \"passengersList\": {\r\n        \"Pax1\": {\r\n            \"title\": \"Mr\",\r\n            \"name\": {\r\n                \"first\": \"Mostafa\",\r\n                \"middle\": \"\",\r\n                \"last\": \"Ibrahim\"\r\n            },\r\n            \"nationality\": \"EG\",\r\n            \"residentCountry\": \"EG\",\r\n            \"birthDate\": \"2000-02-15T00:00:00.000Z\",\r\n            \"gender\": \"male\",\r\n            \"passengerTypeCode\": \"ADT\",\r\n            \"contactRefId\": \"0\",\r\n            \"travelDocument\": {\r\n                \"name\": {\r\n                    \"first\": \"Mostafa\",\r\n                    \"middle\": \"\",\r\n                    \"last\": \"Ibrahim\"\r\n                },\r\n                \"nationality\": \"EG\",\r\n                \"expirationDate\": \"2029-10-01T00:00:00.000Z\",\r\n                \"issuanceDate\": \"2023-10-01T00:00:00.000Z\",\r\n                \"documentNumber\": \"A1234561\",\r\n                \"documentType\": \"PASSPORT\",\r\n                \"gender\": \"male\",\r\n                \"birthCountry\": \"EG\",\r\n                \"birthDate\": \"2000-02-15T00:00:00.000Z\",\r\n                \"issuanceCountryCode\": \"EG\"\r\n            }\r\n        },\r\n        \"Pax2\": {\r\n            \"title\": \"Mr\",\r\n            \"name\": {\r\n                \"first\": \"Ahmed\",\r\n                \"middle\": \"\",\r\n                \"last\": \"Hassan\"\r\n            },\r\n            \"nationality\": \"EG\",\r\n            \"residentCountry\": \"EG\",\r\n            \"birthDate\": \"1985-07-20T00:00:00.000Z\",\r\n            \"gender\": \"male\",\r\n            \"passengerTypeCode\": \"ADT\",\r\n            \"contactRefId\": \"0\",\r\n            \"travelDocument\": {\r\n                \"name\": {\r\n                    \"first\": \"Ahmed\",\r\n                    \"middle\": \"\",\r\n                    \"last\": \"Hassan\"\r\n                },\r\n                \"nationality\": \"EG\",\r\n                \"expirationDate\": \"2031-06-15T00:00:00.000Z\",\r\n                \"issuanceDate\": \"2021-06-15T00:00:00.000Z\",\r\n                \"documentNumber\": \"B9876543\",\r\n                \"documentType\": \"PASSPORT\",\r\n                \"gender\": \"male\",\r\n                \"birthCountry\": \"EG\",\r\n                \"birthDate\": \"1985-07-20T00:00:00.000Z\",\r\n                \"issuanceCountryCode\": \"EG\"\r\n            }\r\n        },\r\n        // \"Pax3\": {\r\n        //     \"title\": \"Mrs\",\r\n        //     \"name\": {\r\n        //         \"first\": \"Sara\",\r\n        //         \"middle\": \"\",\r\n        //         \"last\": \"Nour\"\r\n        //     },\r\n        //     \"nationality\": \"EG\",\r\n        //     \"residentCountry\": \"EG\",\r\n        //     \"birthDate\": \"1990-05-12T00:00:00.000Z\",\r\n        //     \"gender\": \"female\",\r\n        //     \"passengerTypeCode\": \"ADT\",\r\n        //     \"contactRefId\": \"0\",\r\n        //     \"travelDocument\": {\r\n        //         \"name\": {\r\n        //             \"first\": \"Sara\",\r\n        //             \"middle\": \"\",\r\n        //             \"last\": \"Nour\"\r\n        //         },\r\n        //         \"nationality\": \"EG\",\r\n        //         \"expirationDate\": \"2030-08-01T00:00:00.000Z\",\r\n        //         \"issuanceDate\": \"2020-08-01T00:00:00.000Z\",\r\n        //         \"documentNumber\": \"C4567891\",\r\n        //         \"documentType\": \"PASSPORT\",\r\n        //         \"gender\": \"female\",\r\n        //         \"birthCountry\": \"EG\",\r\n        //         \"birthDate\": \"1990-05-12T00:00:00.000Z\",\r\n        //         \"issuanceCountryCode\": \"EG\"\r\n        //     }\r\n        // },\r\n        // \"Pax4\": {\r\n        //     \"title\": \"Mr\",\r\n        //     \"name\": {\r\n        //         \"first\": \"Omar\",\r\n        //         \"middle\": \"Fathy\",\r\n        //         \"last\": \"Adel\"\r\n        //     },\r\n        //     \"nationality\": \"EG\",\r\n        //     \"residentCountry\": \"EG\",\r\n        //     \"birthDate\": \"1982-09-03T00:00:00.000Z\",\r\n        //     \"gender\": \"male\",\r\n        //     \"passengerTypeCode\": \"ADT\",\r\n        //     \"contactRefId\": \"0\",\r\n        //     \"travelDocument\": {\r\n        //         \"name\": {\r\n        //             \"first\": \"Omar\",\r\n        //             \"middle\": \"Fathy\",\r\n        //             \"last\": \"Adel\"\r\n        //         },\r\n        //         \"nationality\": \"EG\",\r\n        //         \"expirationDate\": \"2032-02-10T00:00:00.000Z\",\r\n        //         \"issuanceDate\": \"2022-02-10T00:00:00.000Z\",\r\n        //         \"documentNumber\": \"D1122334\",\r\n        //         \"documentType\": \"PASSPORT\",\r\n        //         \"gender\": \"male\",\r\n        //         \"birthCountry\": \"EG\",\r\n        //         \"birthDate\": \"1982-09-03T00:00:00.000Z\",\r\n        //         \"issuanceCountryCode\": \"EG\"\r\n        //     }\r\n        // },\r\n        // \"Pax5\": {\r\n        //     \"title\": \"Mrs\",\r\n        //     \"name\": {\r\n        //         \"first\": \"Mona\",\r\n        //         \"middle\": \"Hassan\",\r\n        //         \"last\": \"Saleh\"\r\n        //     },\r\n        //     \"nationality\": \"EG\",\r\n        //     \"residentCountry\": \"EG\",\r\n        //     \"birthDate\": \"1988-11-22T00:00:00.000Z\",\r\n        //     \"gender\": \"female\",\r\n        //     \"passengerTypeCode\": \"ADT\",\r\n        //     \"contactRefId\": \"0\",\r\n        //     \"travelDocument\": {\r\n        //         \"name\": {\r\n        //             \"first\": \"Mona\",\r\n        //             \"middle\": \"Hassan\",\r\n        //             \"last\": \"Saleh\"\r\n        //         },\r\n        //         \"nationality\": \"EG\",\r\n        //         \"expirationDate\": \"2031-11-22T00:00:00.000Z\",\r\n        //         \"issuanceDate\": \"2021-11-22T00:00:00.000Z\",\r\n        //         \"documentNumber\": \"E9988776\",\r\n        //         \"documentType\": \"PASSPORT\",\r\n        //         \"gender\": \"female\",\r\n        //         \"birthCountry\": \"EG\",\r\n        //         \"birthDate\": \"1988-11-22T00:00:00.000Z\",\r\n        //         \"issuanceCountryCode\": \"EG\"\r\n        //     }\r\n        // },\r\n        \"Pax6\": {\r\n            \"title\": \"Miss\",\r\n            \"name\": {\r\n                \"first\": \"Laila\",\r\n                \"middle\": \"Omar\",\r\n                \"last\": \"Ibrahim\"\r\n            },\r\n            \"nationality\": \"EG\",\r\n            \"residentCountry\": \"EG\",\r\n            \"birthDate\": \"2016-03-10T00:00:00.000Z\",\r\n            \"gender\": \"female\",\r\n            \"passengerTypeCode\": \"CHD\",\r\n            \"contactRefId\": \"0\",\r\n            \"travelDocument\": {\r\n                \"name\": {\r\n                    \"first\": \"Laila\",\r\n                    \"middle\": \"Omar\",\r\n                    \"last\": \"Ibrahim\"\r\n                },\r\n                \"nationality\": \"EG\",\r\n                \"expirationDate\": \"2029-01-22T00:00:00.000Z\",\r\n                \"issuanceDate\": \"2021-03-10T00:00:00.000Z\",\r\n                \"documentNumber\": \"F2233445\",\r\n                \"documentType\": \"PASSPORT\",\r\n                \"gender\": \"female\",\r\n                \"birthCountry\": \"EG\",\r\n                \"birthDate\": \"2016-03-10T00:00:00.000Z\",\r\n                \"issuanceCountryCode\": \"EG\"\r\n            }\r\n        },\r\n        \"Pax7\": {\r\n            \"title\": \"MSTR\",\r\n            \"name\": {\r\n                \"first\": \"Youssef\",\r\n                \"middle\": \"Ahmed\",\r\n                \"last\": \"Hassan\"\r\n            },\r\n            \"nationality\": \"EG\",\r\n            \"residentCountry\": \"EG\",\r\n            \"birthDate\": \"2017-08-15T00:00:00.000Z\",\r\n            \"gender\": \"male\",\r\n            \"passengerTypeCode\": \"CHD\",\r\n            \"contactRefId\": \"0\",\r\n            \"travelDocument\": {\r\n                \"name\": {\r\n                    \"first\": \"Youssef\",\r\n                    \"middle\": \"Ahmed\",\r\n                    \"last\": \"Hassan\"\r\n                },\r\n                \"nationality\": \"EG\",\r\n                \"expirationDate\": \"2032-08-15T00:00:00.000Z\",\r\n                \"issuanceDate\": \"2022-08-15T00:00:00.000Z\",\r\n                \"documentNumber\": \"G3344556\",\r\n                \"documentType\": \"PASSPORT\",\r\n                \"gender\": \"male\",\r\n                \"birthCountry\": \"EG\",\r\n                \"birthDate\": \"2017-08-15T00:00:00.000Z\",\r\n                \"issuanceCountryCode\": \"EG\"\r\n            }\r\n        },\r\n        // \"Pax8\": {\r\n        //     \"title\": \"Miss\",\r\n        //     \"name\": {\r\n        //         \"first\": \"Hana\",\r\n        //         \"middle\": \"Sara\",\r\n        //         \"last\": \"Nour\"\r\n        //     },\r\n        //     \"nationality\": \"EG\",\r\n        //     \"residentCountry\": \"EG\",\r\n        //     \"birthDate\": \"2015-12-01T00:00:00.000Z\",\r\n        //     \"gender\": \"female\",\r\n        //     \"passengerTypeCode\": \"CHD\",\r\n        //     \"contactRefId\": \"0\",\r\n        //     \"travelDocument\": {\r\n        //         \"name\": {\r\n        //             \"first\": \"Hana\",\r\n        //             \"middle\": \"Sara\",\r\n        //             \"last\": \"Nour\"\r\n        //         },\r\n        //         \"nationality\": \"EG\",\r\n        //         \"expirationDate\": \"2030-12-01T00:00:00.000Z\",\r\n        //         \"issuanceDate\": \"2020-12-01T00:00:00.000Z\",\r\n        //         \"documentNumber\": \"H4455667\",\r\n        //         \"documentType\": \"PASSPORT\",\r\n        //         \"gender\": \"female\",\r\n        //         \"birthCountry\": \"EG\",\r\n        //         \"birthDate\": \"2015-12-01T00:00:00.000Z\",\r\n        //         \"issuanceCountryCode\": \"EG\"\r\n        //     }\r\n        // },\r\n        // \"Pax9\": {\r\n        //     \"title\": \"MR\",\r\n        //     \"name\": {\r\n        //         \"first\": \"Adam\",\r\n        //         \"middle\": \"Omar\",\r\n        //         \"last\": \"Adel\"\r\n        //     },\r\n        //     \"nationality\": \"EG\",\r\n        //     \"residentCountry\": \"EG\",\r\n        //     \"birthDate\": \"2018-04-18T00:00:00.000Z\",\r\n        //     \"gender\": \"male\",\r\n        //     \"passengerTypeCode\": \"CHD\",\r\n        //     \"contactRefId\": \"0\",\r\n        //     \"travelDocument\": {\r\n        //         \"name\": {\r\n        //             \"first\": \"Adam\",\r\n        //             \"middle\": \"Omar\",\r\n        //             \"last\": \"Adel\"\r\n        //         },\r\n        //         \"nationality\": \"EG\",\r\n        //         \"expirationDate\": \"2033-04-18T00:00:00.000Z\",\r\n        //         \"issuanceDate\": \"2023-04-18T00:00:00.000Z\",\r\n        //         \"documentNumber\": \"I5566778\",\r\n        //         \"documentType\": \"PASSPORT\",\r\n        //         \"gender\": \"male\",\r\n        //         \"birthCountry\": \"EG\",\r\n        //         \"birthDate\": \"2018-04-18T00:00:00.000Z\",\r\n        //         \"issuanceCountryCode\": \"EG\"\r\n        //     }\r\n        // },\r\n        \"Pax10\": {\r\n            \"title\": \"MS\",\r\n            \"name\": {\r\n                \"first\": \"Lina\",\r\n                \"middle\": \"KADY\",\r\n                \"last\": \"Ibrahim\"\r\n            },\r\n            \"nationality\": \"EG\",\r\n            \"residentCountry\": \"EG\",\r\n            \"birthDate\": \"2025-01-05T00:00:00.000Z\",\r\n            \"gender\": \"female\",\r\n            \"passengerTypeCode\": \"INF\",\r\n            \"ParentPaxRefId\": \"Pax1\",\r\n            \"contactRefId\": \"0\",\r\n            \"travelDocument\": {\r\n                \"name\": {\r\n                    \"first\": \"Lina\",\r\n                    \"middle\": \"KADY\",\r\n                    \"last\": \"Ibrahim\"\r\n                },\r\n                \"nationality\": \"EG\",\r\n                \"expirationDate\": \"2029-01-04T00:00:00.000Z\",\r\n                \"issuanceDate\": \"2025-01-10T00:00:00.000Z\",\r\n                \"documentNumber\": \"INF1234501\",\r\n                \"documentType\": \"PASSPORT\",\r\n                \"gender\": \"female\",\r\n                \"birthCountry\": \"EG\",\r\n                \"birthDate\": \"2025-01-05T00:00:00.000Z\",\r\n                \"issuanceCountryCode\": \"EG\"\r\n            }\r\n        },\r\n        \"Pax11\": {\r\n            \"title\": \"MR\",\r\n            \"name\": {\r\n                \"first\": \"Karim\",\r\n                \"middle\": \"\",\r\n                \"last\": \"Hassan\"\r\n            },\r\n            \"nationality\": \"EG\",\r\n            \"residentCountry\": \"EG\",\r\n            \"birthDate\": \"2025-03-10T00:00:00.000Z\",\r\n            \"gender\": \"male\",\r\n            \"passengerTypeCode\": \"INF\",\r\n            \"ParentPaxRefId\": \"Pax2\",\r\n            \"contactRefId\": \"0\",\r\n            \"travelDocument\": {\r\n                \"name\": {\r\n                    \"first\": \"Karim\",\r\n                    \"middle\": \"\",\r\n                    \"last\": \"Hassan\"\r\n                },\r\n                \"nationality\": \"EG\",\r\n                \"expirationDate\": \"2029-03-09T00:00:00.000Z\",\r\n                \"issuanceDate\": \"2024-03-15T00:00:00.000Z\",\r\n                \"documentNumber\": \"INF1234502\",\r\n                \"documentType\": \"PASSPORT\",\r\n                \"gender\": \"male\",\r\n                \"birthCountry\": \"EG\",\r\n                \"birthDate\": \"2025-03-10T00:00:00.000Z\",\r\n                \"issuanceCountryCode\": \"EG\"\r\n            }\r\n        }\r\n        // \"Pax12\": {\r\n        //     \"title\": \"MS\",\r\n        //     \"name\": {\r\n        //         \"first\": \"Mariam\",\r\n        //         \"middle\": \"\",\r\n        //         \"last\": \"Nour\"\r\n        //     },\r\n        //     \"nationality\": \"EG\",\r\n        //     \"residentCountry\": \"EG\",\r\n        //     \"birthDate\": \"2025-12-20T00:00:00.000Z\",\r\n        //     \"gender\": \"female\",\r\n        //     \"passengerTypeCode\": \"INF\",\r\n        //     \"ParentPaxRefId\": \"Pax3\",\r\n        //     \"contactRefId\": \"0\",\r\n        //     \"travelDocument\": {\r\n        //         \"name\": {\r\n        //             \"first\": \"Mariam\",\r\n        //             \"middle\": \"\",\r\n        //             \"last\": \"Nour\"\r\n        //         },\r\n        //         \"nationality\": \"EG\",\r\n        //         \"expirationDate\": \"2028-12-19T00:00:00.000Z\",\r\n        //         \"issuanceDate\": \"2025-12-25T00:00:00.000Z\",\r\n        //         \"documentNumber\": \"INF1234503\",\r\n        //         \"documentType\": \"PASSPORT\",\r\n        //         \"gender\": \"female\",\r\n        //         \"birthCountry\": \"EG\",\r\n        //         \"birthDate\": \"2025-12-20T00:00:00.000Z\",\r\n        //         \"issuanceCountryCode\": \"EG\"\r\n        //     }\r\n        // }\r\n        // \"Pax13\": {\r\n        //     \"title\": \"MR\",\r\n        //     \"name\": {\r\n        //         \"first\": \"Yazan\",\r\n        //         \"middle\": \"Omar\",\r\n        //         \"last\": \"Adel\"\r\n        //     },\r\n        //     \"nationality\": \"EG\",\r\n        //     \"residentCountry\": \"EG\",\r\n        //     \"birthDate\": \"2025-05-02T00:00:00.000Z\",\r\n        //     \"gender\": \"male\",\r\n        //     \"passengerTypeCode\": \"INF\",\r\n        //     \"ParentPaxRefId\": \"Pax4\",\r\n        //     \"contactRefId\": \"0\",\r\n        //     \"travelDocument\": {\r\n        //         \"name\": {\r\n        //             \"first\": \"Yazan\",\r\n        //             \"middle\": \"Omar\",\r\n        //             \"last\": \"Adel\"\r\n        //         },\r\n        //         \"nationality\": \"EG\",\r\n        //         \"expirationDate\": \"2029-05-01T00:00:00.000Z\",\r\n        //         \"issuanceDate\": \"2024-05-10T00:00:00.000Z\",\r\n        //         \"documentNumber\": \"INF1234504\",\r\n        //         \"documentType\": \"PASSPORT\",\r\n        //         \"gender\": \"male\",\r\n        //         \"birthCountry\": \"EG\",\r\n        //         \"birthDate\": \"2025-05-02T00:00:00.000Z\",\r\n        //         \"issuanceCountryCode\": \"EG\"\r\n        //     }\r\n        // },\r\n        // \"Pax14\": {\r\n        //     \"title\": \"MR\",\r\n        //     \"name\": {\r\n        //         \"first\": \"Zain\",\r\n        //         \"middle\": \"Mahmoud\",\r\n        //         \"last\": \"Saleh\"\r\n        //     },\r\n        //     \"nationality\": \"EG\",\r\n        //     \"residentCountry\": \"EG\",\r\n        //     \"birthDate\": \"2025-08-12T00:00:00.000Z\",\r\n        //     \"gender\": \"male\",\r\n        //     \"passengerTypeCode\": \"INF\",\r\n        //     \"ParentPaxRefId\": \"Pax5\",\r\n        //     \"contactRefId\": \"0\",\r\n        //     \"travelDocument\": {\r\n        //         \"name\": {\r\n        //             \"first\": \"Zain\",\r\n        //             \"middle\": \"Mahmoud\",\r\n        //             \"last\": \"Saleh\"\r\n        //         },\r\n        //         \"nationality\": \"EG\",\r\n        //         \"expirationDate\": \"2029-08-11T00:00:00.000Z\",\r\n        //         \"issuanceDate\": \"2024-08-20T00:00:00.000Z\",\r\n        //         \"documentNumber\": \"INF9876540\",\r\n        //         \"documentType\": \"PASSPORT\",\r\n        //         \"gender\": \"male\",\r\n        //         \"birthCountry\": \"EG\",\r\n        //         \"birthDate\": \"2025-08-12T00:00:00.000Z\",\r\n        //         \"issuanceCountryCode\": \"EG\"\r\n        //     }\r\n        // }\r\n    },\r\n    \"contactsList\": {\r\n        \"0\": {\r\n            \"Email\": \"moontravel626@gmail.com\",\r\n            \"phone\": {\r\n                \"type\": \"Fax\",\r\n                \"countryDialingCode\": \"+20\",\r\n                \"phoneNumber\": \"01005747258\"\r\n            },\r\n            \"Address\": {\r\n                \"Line1\": \"FZ HQ\",\r\n                \"Line2\": \"FZ HQ\",\r\n                \"City\": \"DUBAI\",\r\n                \"CountryCode\": \"EG\"\r\n            }\r\n        }\r\n    },\r\n    \"selectedBundles\": []\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}api/FlightBooking/Hold",
+          "host": [
+            "{{baseUrl}}api"
+          ],
+          "path": [
+            "FlightBooking",
+            "Hold"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "CI_RetreiveBooking",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "let ADT_Count = pm.collectionVariables.get(\"ADT_Count\"); \r",
+              "let CHD_Count = pm.collectionVariables.get(\"CHD_Count\");\r",
+              "let INF_Count = pm.collectionVariables.get(\"INF_Count\"); \r",
+              "\r",
+              "\r",
+              "let response;\r",
+              "try {\r",
+              "    response = pm.response.json();\r",
+              "} catch (e) {\r",
+              "    console.error(\"❌ Failed to parse JSON response:\", e);\r",
+              "    pm.test(\"Failed to parse JSON response\", () => pm.expect(false).to.be.true);\r",
+              "    return;\r",
+              "}\r",
+              "\r",
+              "let selectedOffer = response.selectedOffer;\r",
+              "\r",
+              "pm.test(`🔍 Checking offer: ${selectedOffer.offerId}`, () => pm.expect(selectedOffer).to.exist);\r",
+              "\r",
+              "if (!selectedOffer.passengerFareBreakdown || !Array.isArray(selectedOffer.passengerFareBreakdown)) {\r",
+              "    console.warn(`⚠️ No passengerFareBreakdown for offer ${selectedOffer.offerId}`);\r",
+              "    pm.test(\"No passengerFareBreakdown\", () => pm.expect(false).to.be.true);\r",
+              "    return;\r",
+              "}\r",
+              "\r",
+              "let totalPassengerPrice = 0;\r",
+              "let totalBaseAmount = 0;\r",
+              "let totalTaxesAmount = 0;\r",
+              "\r",
+              "selectedOffer.passengerFareBreakdown.forEach(passenger => {\r",
+              "    if (!passenger.taxesAndFees || !Array.isArray(passenger.taxesAndFees)) {\r",
+              "        console.warn(`⚠️ No taxesAndFees for ${passenger.passengerTypeCode}`);\r",
+              "        return;\r",
+              "    }\r",
+              "\r",
+              "    let totalTaxes = passenger.taxesAndFees.reduce((sum, fee) => sum + (fee.amount?.amount || 0), 0);\r",
+              "    totalTaxes = parseFloat(totalTaxes.toFixed(2));\r",
+              "\r",
+              "    pm.test(`✅ Taxes match for ${passenger.passengerTypeCode} (Calculated: ${totalTaxes}, Reported: ${passenger.paxTotalTaxAmount.amount})`, () => {\r",
+              "        pm.expect(totalTaxes).to.eql(passenger.paxTotalTaxAmount.amount);\r",
+              "    });\r",
+              "\r",
+              "    let paxCount = passenger.passengerTypeCode === \"ADT\" ? ADT_Count : passenger.passengerTypeCode === \"CHD\" ? CHD_Count : INF_Count;\r",
+              "    totalBaseAmount += (passenger.paxBaseAmount?.amount || 0) * paxCount;\r",
+              "    totalTaxesAmount += totalTaxes * paxCount;\r",
+              "\r",
+              "    let totalPaxPrice = ((totalTaxes + (passenger.paxBaseAmount?.amount || 0)) * paxCount).toFixed(2);\r",
+              "    totalPassengerPrice += parseFloat(totalPaxPrice);\r",
+              "\r",
+              "    pm.test(`💰 Total amount for ${passenger.passengerTypeCode} (Base: ${(passenger.paxBaseAmount?.amount || 0)}, Taxes: ${totalTaxes}, Count: ${paxCount}, Total: ${totalPaxPrice})`, () => {\r",
+              "        pm.expect(parseFloat(totalPaxPrice)).to.eql(parseFloat(totalPaxPrice));\r",
+              "    });\r",
+              "});\r",
+              "\r",
+              "let totalTaxAmount = parseFloat(selectedOffer.priceDetails.totalTaxAmount.amount.toFixed(2));\r",
+              "let totalBaseAmountResponse = parseFloat(selectedOffer.priceDetails.totalBaseAmount.amount.toFixed(2));\r",
+              "let totalAmountResponse = parseFloat(selectedOffer.priceDetails.totalAmount.amount.toFixed(2));\r",
+              "\r",
+              "pm.test(`💸 Base amounts match (Calculated: ${totalBaseAmount}, Reported: ${totalBaseAmountResponse})`, () => {\r",
+              "    pm.expect(totalBaseAmount).to.eql(totalBaseAmountResponse);\r",
+              "});\r",
+              "\r",
+              "pm.test(`💵 Taxes amounts match (Calculated: ${totalTaxesAmount.toFixed(2)}, Reported: ${totalTaxAmount.toFixed(2)})`, () => {\r",
+              "    pm.expect(totalTaxesAmount.toFixed(2)).to.eql(totalTaxAmount.toFixed(2));\r",
+              "});\r",
+              "\r",
+              "pm.test(`🧾 Grand total matches (Calculated: ${totalPassengerPrice.toFixed(2)}, Reported: ${totalAmountResponse.toFixed(2)})`, () => {\r",
+              "    pm.expect(totalPassengerPrice.toFixed(2)).to.eql(totalAmountResponse.toFixed(2));\r",
+              "});\r",
+              ""
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "x-api-key",
+            "value": "ttdb2dc2-58c5-481c-84b5-95350a3a7978-f61360c2-f536-4b19-9a25-97b8f17ce4dc",
+            "type": "text"
+          },
+          {
+            "key": "client-id",
+            "value": "NDC-Core",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n    \"supplier\": \"{{Supplier_Name}}\",\r\n    \"credentialsSelector\": \"{{Credentials_Selector}}\",\r\n    \"pnr\": \"{{pnr}}\",\r\n    \"gdsPnr\": \"{{gdsPNR}}\",\r\n    \"bookingToken\": \"{{bookingToken}}\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}api/FlightBooking/RetrieveBooking",
+          "host": [
+            "{{baseUrl}}api"
+          ],
+          "path": [
+            "FlightBooking",
+            "RetrieveBooking"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "CI_BookAfterHold",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "let ADT_Count = pm.collectionVariables.get(\"ADT_Count\"); \r",
+              "let CHD_Count = pm.collectionVariables.get(\"CHD_Count\");\r",
+              "let INF_Count = pm.collectionVariables.get(\"INF_Count\"); \r",
+              "\r",
+              "\r",
+              "let response;\r",
+              "try {\r",
+              "    response = pm.response.json();\r",
+              "} catch (e) {\r",
+              "    console.error(\"❌ Failed to parse JSON response:\", e);\r",
+              "    pm.test(\"Failed to parse JSON response\", () => pm.expect(false).to.be.true);\r",
+              "    return;\r",
+              "}\r",
+              "\r",
+              "let selectedOffer = response.selectedOffer;\r",
+              "\r",
+              "pm.test(`🔍 Checking offer: ${selectedOffer.offerId}`, () => pm.expect(selectedOffer).to.exist);\r",
+              "\r",
+              "if (!selectedOffer.passengerFareBreakdown || !Array.isArray(selectedOffer.passengerFareBreakdown)) {\r",
+              "    console.warn(`⚠️ No passengerFareBreakdown for offer ${selectedOffer.offerId}`);\r",
+              "    pm.test(\"No passengerFareBreakdown\", () => pm.expect(false).to.be.true);\r",
+              "    return;\r",
+              "}\r",
+              "\r",
+              "let totalPassengerPrice = 0;\r",
+              "let totalBaseAmount = 0;\r",
+              "let totalTaxesAmount = 0;\r",
+              "\r",
+              "selectedOffer.passengerFareBreakdown.forEach(passenger => {\r",
+              "    if (!passenger.taxesAndFees || !Array.isArray(passenger.taxesAndFees)) {\r",
+              "        console.warn(`⚠️ No taxesAndFees for ${passenger.passengerTypeCode}`);\r",
+              "        return;\r",
+              "    }\r",
+              "\r",
+              "    let totalTaxes = passenger.taxesAndFees.reduce((sum, fee) => sum + (fee.amount?.amount || 0), 0);\r",
+              "    totalTaxes = parseFloat(totalTaxes.toFixed(2));\r",
+              "\r",
+              "    pm.test(`✅ Taxes match for ${passenger.passengerTypeCode} (Calculated: ${totalTaxes}, Reported: ${passenger.paxTotalTaxAmount.amount})`, () => {\r",
+              "        pm.expect(totalTaxes).to.eql(passenger.paxTotalTaxAmount.amount);\r",
+              "    });\r",
+              "\r",
+              "    let paxCount = passenger.passengerTypeCode === \"ADT\" ? ADT_Count : passenger.passengerTypeCode === \"CHD\" ? CHD_Count : INF_Count;\r",
+              "    totalBaseAmount += (passenger.paxBaseAmount?.amount || 0) * paxCount;\r",
+              "    totalTaxesAmount += totalTaxes * paxCount;\r",
+              "\r",
+              "    let totalPaxPrice = ((totalTaxes + (passenger.paxBaseAmount?.amount || 0)) * paxCount).toFixed(2);\r",
+              "    totalPassengerPrice += parseFloat(totalPaxPrice);\r",
+              "\r",
+              "    pm.test(`💰 Total amount for ${passenger.passengerTypeCode} (Base: ${(passenger.paxBaseAmount?.amount || 0)}, Taxes: ${totalTaxes}, Count: ${paxCount}, Total: ${totalPaxPrice})`, () => {\r",
+              "        pm.expect(parseFloat(totalPaxPrice)).to.eql(parseFloat(totalPaxPrice));\r",
+              "    });\r",
+              "});\r",
+              "\r",
+              "let totalTaxAmount = parseFloat(selectedOffer.priceDetails.totalTaxAmount.amount.toFixed(2));\r",
+              "let totalBaseAmountResponse = parseFloat(selectedOffer.priceDetails.totalBaseAmount.amount.toFixed(2));\r",
+              "let totalAmountResponse = parseFloat(selectedOffer.priceDetails.totalAmount.amount.toFixed(2));\r",
+              "\r",
+              "pm.test(`💸 Base amounts match (Calculated: ${totalBaseAmount}, Reported: ${totalBaseAmountResponse})`, () => {\r",
+              "    pm.expect(totalBaseAmount).to.eql(totalBaseAmountResponse);\r",
+              "});\r",
+              "\r",
+              "pm.test(`💵 Taxes amounts match (Calculated: ${totalTaxesAmount.toFixed(2)}, Reported: ${totalTaxAmount.toFixed(2)})`, () => {\r",
+              "    pm.expect(totalTaxesAmount.toFixed(2)).to.eql(totalTaxAmount.toFixed(2));\r",
+              "});\r",
+              "\r",
+              "pm.test(`🧾 Grand total matches (Calculated: ${totalPassengerPrice.toFixed(2)}, Reported: ${totalAmountResponse.toFixed(2)})`, () => {\r",
+              "    pm.expect(totalPassengerPrice.toFixed(2)).to.eql(totalAmountResponse.toFixed(2));\r",
+              "});\r",
+              ""
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "x-api-key",
+            "value": "ttdb2dc2-58c5-481c-84b5-95350a3a7978-f61360c2-f536-4b19-9a25-97b8f17ce4dc",
+            "type": "text"
+          },
+          {
+            "key": "client-id",
+            "value": "NDC-Core",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n    \"supplier\": \"{{Supplier_Name}}\",\r\n    \"credentialsSelector\": \"{{Credentials_Selector}}\",\r\n    \"pnr\": \"{{pnr}}\",\r\n    \"gdsPnr\": \"{{gdsPNR}}\",\r\n    \"bookingToken\": \"{{bookingToken}}\"\r\n    \r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}api/FlightBooking/BookAfterHold",
+          "host": [
+            "{{baseUrl}}api"
+          ],
+          "path": [
+            "FlightBooking",
+            "BookAfterHold"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "CI_FareConfirmAfterHold",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "let ADT_Count = pm.collectionVariables.get(\"ADT_Count\"); \r",
+              "let CHD_Count = pm.collectionVariables.get(\"CHD_Count\");\r",
+              "let INF_Count = pm.collectionVariables.get(\"INF_Count\"); \r",
+              "\r",
+              "\r",
+              "let response;\r",
+              "try {\r",
+              "    response = pm.response.json();\r",
+              "} catch (e) {\r",
+              "    console.error(\"❌ Failed to parse JSON response:\", e);\r",
+              "    pm.test(\"Failed to parse JSON response\", () => pm.expect(false).to.be.true);\r",
+              "    return;\r",
+              "}\r",
+              "\r",
+              "let selectedOffer = response.selectedOffer;\r",
+              "\r",
+              "pm.test(`🔍 Checking offer: ${selectedOffer.offerId}`, () => pm.expect(selectedOffer).to.exist);\r",
+              "\r",
+              "if (!selectedOffer.passengerFareBreakdown || !Array.isArray(selectedOffer.passengerFareBreakdown)) {\r",
+              "    console.warn(`⚠️ No passengerFareBreakdown for offer ${selectedOffer.offerId}`);\r",
+              "    pm.test(\"No passengerFareBreakdown\", () => pm.expect(false).to.be.true);\r",
+              "    return;\r",
+              "}\r",
+              "\r",
+              "let totalPassengerPrice = 0;\r",
+              "let totalBaseAmount = 0;\r",
+              "let totalTaxesAmount = 0;\r",
+              "\r",
+              "selectedOffer.passengerFareBreakdown.forEach(passenger => {\r",
+              "    if (!passenger.taxesAndFees || !Array.isArray(passenger.taxesAndFees)) {\r",
+              "        console.warn(`⚠️ No taxesAndFees for ${passenger.passengerTypeCode}`);\r",
+              "        return;\r",
+              "    }\r",
+              "\r",
+              "    let totalTaxes = passenger.taxesAndFees.reduce((sum, fee) => sum + (fee.amount?.amount || 0), 0);\r",
+              "    totalTaxes = parseFloat(totalTaxes.toFixed(2));\r",
+              "\r",
+              "    pm.test(`✅ Taxes match for ${passenger.passengerTypeCode} (Calculated: ${totalTaxes}, Reported: ${passenger.paxTotalTaxAmount.amount})`, () => {\r",
+              "        pm.expect(totalTaxes).to.eql(passenger.paxTotalTaxAmount.amount);\r",
+              "    });\r",
+              "\r",
+              "    let paxCount = passenger.passengerTypeCode === \"ADT\" ? ADT_Count : passenger.passengerTypeCode === \"CHD\" ? CHD_Count : INF_Count;\r",
+              "    totalBaseAmount += (passenger.paxBaseAmount?.amount || 0) * paxCount;\r",
+              "    totalTaxesAmount += totalTaxes * paxCount;\r",
+              "\r",
+              "    let totalPaxPrice = ((totalTaxes + (passenger.paxBaseAmount?.amount || 0)) * paxCount).toFixed(2);\r",
+              "    totalPassengerPrice += parseFloat(totalPaxPrice);\r",
+              "\r",
+              "    pm.test(`💰 Total amount for ${passenger.passengerTypeCode} (Base: ${(passenger.paxBaseAmount?.amount || 0)}, Taxes: ${totalTaxes}, Count: ${paxCount}, Total: ${totalPaxPrice})`, () => {\r",
+              "        pm.expect(parseFloat(totalPaxPrice)).to.eql(parseFloat(totalPaxPrice));\r",
+              "    });\r",
+              "});\r",
+              "\r",
+              "let totalTaxAmount = parseFloat(selectedOffer.priceDetails.totalTaxAmount.amount.toFixed(2));\r",
+              "let totalBaseAmountResponse = parseFloat(selectedOffer.priceDetails.totalBaseAmount.amount.toFixed(2));\r",
+              "let totalAmountResponse = parseFloat(selectedOffer.priceDetails.totalAmount.amount.toFixed(2));\r",
+              "\r",
+              "pm.test(`💸 Base amounts match (Calculated: ${totalBaseAmount}, Reported: ${totalBaseAmountResponse})`, () => {\r",
+              "    pm.expect(totalBaseAmount).to.eql(totalBaseAmountResponse);\r",
+              "});\r",
+              "\r",
+              "pm.test(`💵 Taxes amounts match (Calculated: ${totalTaxesAmount.toFixed(2)}, Reported: ${totalTaxAmount.toFixed(2)})`, () => {\r",
+              "    pm.expect(totalTaxesAmount.toFixed(2)).to.eql(totalTaxAmount.toFixed(2));\r",
+              "});\r",
+              "\r",
+              "pm.test(`🧾 Grand total matches (Calculated: ${totalPassengerPrice.toFixed(2)}, Reported: ${totalAmountResponse.toFixed(2)})`, () => {\r",
+              "    pm.expect(totalPassengerPrice.toFixed(2)).to.eql(totalAmountResponse.toFixed(2));\r",
+              "});\r",
+              ""
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "x-api-key",
+            "value": "ttdb2dc2-58c5-481c-84b5-95350a3a7978-f61360c2-f536-4b19-9a25-97b8f17ce4dc",
+            "type": "text"
+          },
+          {
+            "key": "client-id",
+            "value": "NDC-Core",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n    \"supplier\": \"{{Supplier_Name}}\",\r\n    \"credentialsSelector\": \"{{Credentials_Selector}}\",\r\n    \"pnr\": \"{{pnr}}\",\r\n    \"gdsPNR\": \"{{gdsPNR}}\",\r\n    \"bookingToken\": \"{{bookingToken}}\",\r\n    \"surName\": \"\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}api/FlightBooking/PnrReprice",
+          "host": [
+            "{{baseUrl}}api"
+          ],
+          "path": [
+            "FlightBooking",
+            "PnrReprice"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "CI_CancelHold",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "x-api-key",
+            "value": "ttdb2dc2-58c5-481c-84b5-95350a3a7978-f61360c2-f536-4b19-9a25-97b8f17ce4dc",
+            "type": "text"
+          },
+          {
+            "key": "client-id",
+            "value": "NDC-Core",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"supplier\": \"{{Supplier_Name}}\",\r\n  \"credentialsSelector\": \"{{Credentials_Selector}}\",\r\n  \"pnr\": \"{{pnr}}\",\r\n  \"gdsPNR\": \"{{gdsPNR}}\",\r\n  \"bookingToken\": \"{{bookingToken}}\"\r\n\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}api/FlightBooking/CancelAfterHold",
+          "host": [
+            "{{baseUrl}}api"
+          ],
+          "path": [
+            "FlightBooking",
+            "CancelAfterHold"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "CI_Void",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "x-api-key",
+            "value": "ttdb2dc2-58c5-481c-84b5-95350a3a7978-f61360c2-f536-4b19-9a25-97b8f17ce4dc",
+            "type": "text"
+          },
+          {
+            "key": "client-id",
+            "value": "NDC-Core",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n    \"supplier\": \"{{Supplier_Name}}\",\r\n    \"credentialsSelector\": \"{{Credentials_Selector}}\",\r\n    \"pnr\": \"{{pnr}}\",\r\n    \"gdsPNR\": \"{{gdsPNR}}\",\r\n    \"bookingToken\": \"{{bookingToken}}\",\r\n    \"surName\": \"Tallat\",\r\n    \"voidTickets\": []\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}api/FlightBooking/Void",
+          "host": [
+            "{{baseUrl}}api"
+          ],
+          "path": [
+            "FlightBooking",
+            "Void"
+          ]
+        }
+      },
+      "response": []
+    }
+  ],
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "requests": {},
+        "exec": [
+          "//Initialize environment variable\r",
+          "let environment = \"0\";\r",
+          "\r",
+          "// Define endpoint URLs\r",
+          "const urls = {\r",
+          "    // local: \"https://localhost:7194/\",\r",
+          "    // base: \"https://ndc-supplier-integration.azurewebsites.net/\",\r",
+          "    // release: \"https://ndc-supplier-integration-staging.azurewebsites.net/\"\r",
+          "    \r",
+          "    Bacis_STG: \"https://ndc-supplier-integration-staging.azurewebsites.net/\",\r",
+          "    STG_4: \"https://ndc-integration-stg-ne-4.azurewebsites.net/\",\r",
+          "    STG_5: \"https://ndc-integration-stg-ne-5.azurewebsites.net/\",\r",
+          "    STG_6: \"https://ndc-integration-stg-ne-6.azurewebsites.net/\",\r",
+          "    STG_7: \"https://ndc-integration-stg-ne-7.azurewebsites.net/\"\r",
+          "}\r",
+          "// Determine the request URL based on the environment\r",
+          "let requestUrl;\r",
+          "\r",
+          "switch (environment) {\r",
+          "    case \"0\":\r",
+          "        requestUrl = urls.Bacis_STG;\r",
+          "        break;\r",
+          "    case \"1\":\r",
+          "        requestUrl = urls.STG_4;\r",
+          "        break;\r",
+          "    case \"2\":\r",
+          "        requestUrl = urls.STG_5;\r",
+          "        break;\r",
+          "    case \"3\":\r",
+          "        requestUrl = urls.STG_6;\r",
+          "        break;\r",
+          "    case \"4\":\r",
+          "        requestUrl = urls.STG_7;\r",
+          "        break;\r",
+          "}\r",
+          "// Set the request URL in Postman collection variables\r",
+          "pm.collectionVariables.set(\"requestUrl\", requestUrl);\r",
+          ""
+        ]
+      }
+    },
+    {
+      "listen": "test",
+      "script": {
+        "type": "text/javascript",
+        "requests": {},
+        "exec": [
+          ""
+        ]
+      }
+    }
+  ],
+  "variable": [
+    {
+      "key": "responseId",
+      "value": ""
+    },
+    {
+      "key": "offerId",
+      "value": ""
+    },
+    {
+      "key": "pnr",
+      "value": ""
+    },
+    {
+      "key": "bookingToken",
+      "value": ""
+    },
+    {
+      "key": "baseUrl",
+      "value": "https://ndc-supplier-integration.azurewebsites.net/"
+    },
+    {
+      "key": "fareConfirmResponseId",
+      "value": ""
+    },
+    {
+      "key": "searchResponseId",
+      "value": ""
+    },
+    {
+      "key": "Supplier_Name",
+      "value": ""
+    },
+    {
+      "key": "gdsPNR",
+      "value": ""
+    },
+    {
+      "key": "origin",
+      "value": ""
+    },
+    {
+      "key": "destination",
+      "value": ""
+    },
+    {
+      "key": "originIndex",
+      "value": ""
+    },
+    {
+      "key": "destIndex",
+      "value": ""
+    },
+    {
+      "key": "selectedOfferId",
+      "value": ""
+    },
+    {
+      "key": "ADT_Count",
+      "value": "2"
+    },
+    {
+      "key": "CHD_Count",
+      "value": "2"
+    },
+    {
+      "key": "INF_Count",
+      "value": "2"
+    },
+    {
+      "key": "Credentials_Selector",
+      "value": ""
+    },
+    {
+      "key": "FlyDubai_Default_Case",
+      "value": ""
+    },
+    {
+      "key": "ElJazeera_Default_Case",
+      "value": ""
+    },
+    {
+      "key": "3ADT_3CHD_3INF",
+      "value": "   \"1\": {\n            \"title\": \"MR\",\n            \"name\": {\n                \"first\": \"ADTONE\",\n                \"middle\": \"Montaser\",\n                \"last\": \"Hassan\"\n            },\n            \"nationality\": \"EG\",\n            \"residentCountry\": \"EG\",\n            \"birthDate\": \"1999-01-28T00:46:42.560Z\",\n            \"gender\": \"male\",\n            \"passengerTypeCode\": \"ADT\",\n            \"contactRefId\": \"1\",\n            \"travelDocument\": {\n                \"name\": {\n                    \"first\": \"ADTONE\",\n                    \"middle\": \"Montaser\",\n                    \"last\": \"Hassan\"\n                },\n                \"nationality\": \"EG\",\n                \"expirationDate\": \"2025-05-28T00:46:42.560Z\",\n                \"issuanceDate\": \"2024-01-28T00:46:42.560Z\",\n                \"documentNumber\": \"G1547890\",\n                \"documentType\": \"passport\",\n                \"gender\": \"male\",\n                \"birthCountry\": \"EG\",\n                \"birthDate\": \"1999-01-28T00:46:42.560Z\",\n                \"issuanceCountryCode\": \"EG\"\n            }\n        },\n        \"2\": {\n            \"title\": \"MR\",\n            \"name\": {\n                \"first\": \"ADTTWO\",\n                \"middle\": \"Montaser\",\n                \"last\": \"Hassan\"\n            },\n            \"nationality\": \"EG\",\n            \"residentCountry\": \"EG\",\n            \"birthDate\": \"1999-03-24T00:46:42.560Z\",\n            \"gender\": \"male\",\n            \"passengerTypeCode\": \"ADT\",\n            \"contactRefId\": \"1\",\n            \"travelDocument\": {\n                \"name\": {\n                    \"first\": \"ADTTWO\",\n                    \"middle\": \"Montaser\",\n                    \"last\": \"Hassan\"\n                },\n                \"nationality\": \"EG\",\n                \"expirationDate\": \"2025-08-28T00:46:42.560Z\",\n                \"issuanceDate\": \"2024-01-28T00:46:42.560Z\",\n                \"documentNumber\": \"G1567891\",\n                \"documentType\": \"passport\",\n                \"gender\": \"male\",\n                \"birthCountry\": \"EG\",\n                \"birthDate\": \"1999-03-24T00:46:42.560Z\",\n                \"issuanceCountryCode\": \"EG\"\n            }\n        },\n        \"3\": {\n            \"title\": \"MR\",\n            // \"parentPaxRefId\": \"1\",\n            \"name\": {\n                \"first\": \"ADTTHREE\",\n                \"middle\": \"Montaser\",\n                \"last\": \"Hassan\"\n            },\n            \"nationality\": \"EG\",\n            \"residentCountry\": \"EG\",\n            \"birthDate\": \"1999-01-28T00:46:42.560Z\",\n            \"gender\": \"male\",\n            \"passengerTypeCode\": \"ADT\",\n            \"contactRefId\": \"1\",\n            \"travelDocument\": {\n                \"name\": {\n                    \"first\": \"ADTTHREE\",\n                    \"middle\": \"Montaser\",\n                    \"last\": \"Hassan\"\n                },\n                \"nationality\": \"EG\",\n                \"expirationDate\": \"2025-06-28T00:46:42.560Z\",\n                \"issuanceDate\": \"2024-01-28T00:46:42.560Z\",\n                \"documentNumber\": \"G1577896\",\n                \"documentType\": \"passport\",\n                \"gender\": \"male\",\n                \"birthCountry\": \"EG\",\n                \"birthDate\": \"1999-01-28T00:46:42.560Z\",\n                \"issuanceCountryCode\": \"EG\"\n            }\n        },\n        \"4\": {\n            \"title\": \"MR\",\n            \"parentPaxRefId\": \"1\",\n            \"name\": {\n                \"first\": \"INFONE\",\n                \"middle\": \"Montaser\",\n                \"last\": \"Hassan\"\n            },\n            \"nationality\": \"EG\",\n            \"residentCountry\": \"EG\",\n            \"birthDate\": \"2024-04-14T00:46:42.560Z\",\n            \"gender\": \"male\",\n            \"passengerTypeCode\": \"INF\",\n            \"contactRefId\": \"1\",\n            \"travelDocument\": {\n                \"name\": {\n                    \"first\": \"INFONE\",\n                    \"middle\": \"Montaser\",\n                    \"last\": \"Hassan\"\n                },\n                \"nationality\": \"EG\",\n                \"expirationDate\": \"2025-06-28T00:46:42.560Z\",\n                \"issuanceDate\": \"2024-01-28T00:46:42.560Z\",\n                \"documentNumber\": \"G1577897\",\n                \"documentType\": \"passport\",\n                \"gender\": \"male\",\n                \"birthCountry\": \"EG\",\n                \"birthDate\": \"2024-04-14T00:46:42.560Z\",\n                \"issuanceCountryCode\": \"EG\"\n            }\n        },\n        \"5\": {\n            \"title\": \"MR\",\n            \"parentPaxRefId\": \"2\",\n            \"name\": {\n                \"first\": \"INFTWO\",\n                \"middle\": \"Montaser\",\n                \"last\": \"Hassan\"\n            },\n            \"nationality\": \"EG\",\n            \"residentCountry\": \"EG\",\n            \"birthDate\": \"2024-04-14T00:46:42.560Z\",\n            \"gender\": \"male\",\n            \"passengerTypeCode\": \"INF\",\n            \"contactRefId\": \"1\",\n            \"travelDocument\": {\n                \"name\": {\n                    \"first\": \"INFTWO\",\n                    \"middle\": \"Montaser\",\n                    \"last\": \"Hassan\"\n                },\n                \"nationality\": \"EG\",\n                \"expirationDate\": \"2025-06-28T00:46:42.560Z\",\n                \"issuanceDate\": \"2024-01-28T00:46:42.560Z\",\n                \"documentNumber\": \"G1577898\",\n                \"documentType\": \"passport\",\n                \"gender\": \"male\",\n                \"birthCountry\": \"EG\",\n                \"birthDate\": \"2024-04-14T00:46:42.560Z\",\n                \"issuanceCountryCode\": \"EG\"\n            }\n        },\n        \"6\": {\n            \"title\": \"MR\",\n            \"parentPaxRefId\": \"3\",\n            \"name\": {\n                \"first\": \"INFTHREE\",\n                \"middle\": \"Montaser\",\n                \"last\": \"Hassan\"\n            },\n            \"nationality\": \"EG\",\n            \"residentCountry\": \"EG\",\n            \"birthDate\": \"2024-04-14T00:46:42.560Z\",\n            \"gender\": \"male\",\n            \"passengerTypeCode\": \"INF\",\n            \"contactRefId\": \"1\",\n            \"travelDocument\": {\n                \"name\": {\n                    \"first\": \"INFTHREE\",\n                    \"middle\": \"Montaser\",\n                    \"last\": \"Hassan\"\n                },\n                \"nationality\": \"EG\",\n                \"expirationDate\": \"2025-06-28T00:46:42.560Z\",\n                \"issuanceDate\": \"2024-01-28T00:46:42.560Z\",\n                \"documentNumber\": \"G1577892\",\n                \"documentType\": \"passport\",\n                \"gender\": \"male\",\n                \"birthCountry\": \"EG\",\n                \"birthDate\": \"2024-04-14T00:46:42.560Z\",\n                \"issuanceCountryCode\": \"EG\"\n            }\n        },\n        \"7\": {\n            \"title\": \"MR\",\n            \"name\": {\n                \"first\": \"CHDONE\",\n                \"middle\": \"Montaser\",\n                \"last\": \"Hassan\"\n            },\n            \"nationality\": \"EG\",\n            \"residentCountry\": \"EG\",\n            \"birthDate\": \"2020-01-28T00:46:42.560Z\",\n            \"gender\": \"male\",\n            \"passengerTypeCode\": \"CHD\",\n            \"contactRefId\": \"1\",\n            \"travelDocument\": {\n                \"name\": {\n                    \"first\": \"CHDONE\",\n                    \"middle\": \"Montaser\",\n                    \"last\": \"Hassan\"\n                },\n                \"nationality\": \"EG\",\n                \"expirationDate\": \"2025-05-28T00:46:42.560Z\",\n                \"issuanceDate\": \"2024-01-28T00:46:42.560Z\",\n                \"documentNumber\": \"G1547893\",\n                \"documentType\": \"passport\",\n                \"gender\": \"male\",\n                \"birthCountry\": \"EG\",\n                \"birthDate\": \"2020-01-28T00:46:42.560Z\",\n                \"issuanceCountryCode\": \"EG\"\n            }\n        },\n        \"8\": {\n            \"title\": \"MR\",\n            \"name\": {\n                \"first\": \"CHDTWO\",\n                \"middle\": \"Montaser\",\n                \"last\": \"Hassan\"\n            },\n            \"nationality\": \"EG\",\n            \"residentCountry\": \"EG\",\n            \"birthDate\": \"2019-03-24T00:46:42.560Z\",\n            \"gender\": \"male\",\n            \"passengerTypeCode\": \"CHD\",\n            \"contactRefId\": \"1\",\n            \"travelDocument\": {\n                \"name\": {\n                    \"first\": \"CHDTWO\",\n                    \"middle\": \"Montaser\",\n                    \"last\": \"Hassan\"\n                },\n                \"nationality\": \"EG\",\n                \"expirationDate\": \"2025-08-28T00:46:42.560Z\",\n                \"issuanceDate\": \"2024-01-28T00:46:42.560Z\",\n                \"documentNumber\": \"G1567894\",\n                \"documentType\": \"passport\",\n                \"gender\": \"male\",\n                \"birthCountry\": \"EG\",\n                \"birthDate\": \"2019-03-24T00:46:42.560Z\",\n                \"issuanceCountryCode\": \"EG\"\n            }\n        },\n        \"9\": {\n            \"title\": \"MR\",\n            // \"parentPaxRefId\": \"1\",\n            \"name\": {\n                \"first\": \"CHDTHREE\",\n                \"middle\": \"Montaser\",\n                \"last\": \"Hassan\"\n            },\n            \"nationality\": \"EG\",\n            \"residentCountry\": \"EG\",\n            \"birthDate\": \"2019-01-28T00:46:42.560Z\",\n            \"gender\": \"male\",\n            \"passengerTypeCode\": \"CHD\",\n            \"contactRefId\": \"1\",\n            \"travelDocument\": {\n                \"name\": {\n                    \"first\": \"CHDTHREE\",\n                    \"middle\": \"Montaser\",\n                    \"last\": \"Hassan\"\n                },\n                \"nationality\": \"EG\",\n                \"expirationDate\": \"2025-06-28T00:46:42.560Z\",\n                \"issuanceDate\": \"2024-01-28T00:46:42.560Z\",\n                \"documentNumber\": \"G1577895\",\n                \"documentType\": \"passport\",\n                \"gender\": \"male\",\n                \"birthCountry\": \"EG\",\n                \"birthDate\": \"2019-01-28T00:46:42.560Z\",\n                \"issuanceCountryCode\": \"EG\"\n            }\n        }"
+    },
+    {
+      "key": "1ADT_CHD_INF",
+      "value": ""
+    },
+    {
+      "key": "1ADT",
+      "value": ""
+    },
+    {
+      "key": "1ADT_CHD",
+      "value": ""
+    },
+    {
+      "key": "JourneyKey1",
+      "value": ""
+    },
+    {
+      "key": "requestUrl",
+      "value": ""
+    },
+    {
+      "key": "LocalUrl",
+      "value": ""
+    },
+    {
+      "key": "2ADT_2CHD_2INF",
+      "value": "        \"Pax1\": {\n            \"title\": \"1\",\n            \"name\": {\n                \"first\": \"ADTone\",\n                \"middle\": \"Gamal\",\n                \"last\": \"Tallat\"\n            },\n            \"nationality\": \"EG\",\n            \"residentCountry\": \"EG\",\n            \"birthDate\": \"1999-02-16T00:46:42.560Z\",\n            \"gender\": \"1\",\n            \"passengerTypeCode\": \"ADT\",\n            \"contactRefId\": \"1\",\n            \"travelDocument\": {\n                \"name\": {\n                    \"first\": \"ADTone\",\n                    \"middle\": \"Gamal\",\n                    \"last\": \"Tallat\"\n                },\n                \"nationality\": \"EG\",\n                \"expirationDate\": \"2025-11-28T00:46:42.560Z\",\n                \"issuanceDate\": \"2025-01-01T00:00:00.000Z\",\n                \"documentNumber\": \"G1547890\",\n                \"documentType\": \"passport\",\n                \"gender\": \"1\",\n                \"birthCountry\": \"EG\",\n                \"birthDate\": \"1999-02-16T00:46:42.560Z\",\n                \"issuanceCountryCode\": \"EG\"\n            }\n        },\n        \"Pax2\": {\n            \"title\": \"1\",\n            \"name\": {\n                \"first\": \"ADTTWO\",\n                \"middle\": \"Gamal\",\n                \"last\": \"Tallat\"\n            },\n            \"nationality\": \"EG\",\n            \"residentCountry\": \"EG\",\n            \"birthDate\": \"1999-02-16T00:46:42.560Z\",\n            \"gender\": \"1\",\n            \"passengerTypeCode\": \"ADT\",\n            \"contactRefId\": \"1\",\n            \"travelDocument\": {\n                \"name\": {\n                    \"first\": \"ADTTWO\",\n                    \"middle\": \"Gamal\",\n                    \"last\": \"Tallat\"\n                },\n                \"nationality\": \"EG\",\n                \"expirationDate\": \"2025-11-28T00:46:42.560Z\",\n                \"issuanceDate\": \"2025-01-01T00:00:00.000Z\",\n                \"documentNumber\": \"G1547891\",\n                \"documentType\": \"passport\",\n                \"gender\": \"1\",\n                \"birthCountry\": \"EG\",\n                \"birthDate\": \"1999-02-16T00:46:42.560Z\",\n                \"issuanceCountryCode\": \"EG\"\n            }\n        },\n        \"Pax3\": {\n            \"title\": \"2\",\n            \"name\": {\n                \"first\": \"CHDone\",\n                \"middle\": \"Gamal\",\n                \"last\": \"Tallat\"\n            },\n            \"nationality\": \"EG\",\n            \"residentCountry\": \"EG\",\n            \"birthDate\": \"2017-02-22T00:46:42.560Z\",\n            \"gender\": \"2\",\n            \"passengerTypeCode\": \"CHD\",\n            \"contactRefId\": \"1\",\n            \"travelDocument\": {\n                \"name\": {\n                    \"first\": \"CHDone\",\n                    \"middle\": \"Gamal\",\n                    \"last\": \"Tallat\"\n                },\n                \"nationality\": \"EG\",\n                \"expirationDate\": \"2025-11-28T00:46:42.560Z\",\n                \"issuanceDate\": \"2020-01-28T00:46:42.560Z\",\n                \"documentNumber\": \"G1547892\",\n                \"documentType\": \"passport\",\n                \"gender\": \"2\",\n                \"birthCountry\": \"EG\",\n                \"birthDate\": \"2017-02-22T00:46:42.560Z\",\n                \"issuanceCountryCode\": \"EG\"\n            }\n        },\n        \"Pax4\": {\n            \"title\": \"2\",\n            \"name\": {\n                \"first\": \"CHDTWo\",\n                \"middle\": \"Gamal\",\n                \"last\": \"Tallat\"\n            },\n            \"nationality\": \"EG\",\n            \"residentCountry\": \"EG\",\n            \"birthDate\": \"2016-02-22T00:46:42.560Z\",\n            \"gender\": \"2\",\n            \"passengerTypeCode\": \"CHD\",\n            \"contactRefId\": \"1\",\n            \"travelDocument\": {\n                \"name\": {\n                    \"first\": \"CHDTWo\",\n                    \"middle\": \"Gamal\",\n                    \"last\": \"Tallat\"\n                },\n                \"nationality\": \"EG\",\n                \"expirationDate\": \"2025-11-28T00:46:42.560Z\",\n                \"issuanceDate\": \"2020-01-28T00:46:42.560Z\",\n                \"documentNumber\": \"G1547893\",\n                \"documentType\": \"passport\",\n                \"gender\": \"2\",\n                \"birthCountry\": \"EG\",\n                \"birthDate\": \"2016-02-22T00:46:42.560Z\",\n                \"issuanceCountryCode\": \"EG\"\n            }\n        },\n        \"Pax5\": {\n            \"title\": \"2\",\n            \"name\": {\n                \"first\": \"INFONe\",\n                \"middle\": \"Gamal\",\n                \"last\": \"Tallat\"\n            },\n            \"nationality\": \"EG\",\n            \"residentCountry\": \"EG\",\n            \"birthDate\": \"2024-05-22T00:46:42.560Z\",\n            \"gender\": \"2\",\n            \"passengerTypeCode\": \"INF\",\n            \"ParentPaxRefId\": \"Pax1\",\n            \"contactRefId\": \"1\",\n            \"travelDocument\": {\n                \"name\": {\n                    \"first\": \"INFONe\",\n                    \"middle\": \"Gamal\",\n                    \"last\": \"Tallat\"\n                },\n                \"nationality\": \"EG\",\n                \"expirationDate\": \"2025-11-28T00:46:42.560Z\",\n                \"issuanceDate\": \"2025-01-28T00:46:42.560Z\",\n                \"documentNumber\": \"G1547894\",\n                \"documentType\": \"passport\",\n                \"gender\": \"2\",\n                \"birthCountry\": \"EG\",\n                \"birthDate\": \"2024-05-22T00:46:42.560Z\",\n                \"issuanceCountryCode\": \"EG\"\n            }\n        },\n        \"Pax6\": {\n            \"title\": \"2\",\n            \"name\": {\n                \"first\": \"INFTWo\",\n                \"middle\": \"Gamal\",\n                \"last\": \"Tallat\"\n            },\n            \"nationality\": \"EG\",\n            \"residentCountry\": \"EG\",\n            \"birthDate\": \"2024-02-22T00:46:42.560Z\",\n            \"gender\": \"2\",\n            \"passengerTypeCode\": \"INF\",\n            \"contactRefId\": \"1\",\n            \"ParentPaxRefId\": \"Pax2\",\n            \"travelDocument\": {\n                \"name\": {\n                    \"first\": \"INFTWo\",\n                    \"middle\": \"Gamal\",\n                    \"last\": \"Tallat\"\n                },\n                \"nationality\": \"EG\",\n                \"expirationDate\": \"2026-11-28T00:46:42.560Z\",\n                \"issuanceDate\": \"2025-04-28T00:46:42.560Z\",\n                \"documentNumber\": \"G1547895\",\n                \"documentType\": \"passport\",\n                \"gender\": \"2\",\n                \"birthCountry\": \"EG\",\n                \"birthDate\": \"2024-02-22T00:46:42.560Z\",\n                \"issuanceCountryCode\": \"EG\"\n            }\n        }"
+    },
+    {
+      "key": "1ADT_1INF",
+      "value": "\"Pax1\": {\n    \"title\": \"1\",\n    \"name\": {\n        \"first\": \"ADTone\",\n        \"middle\": \"Gamal\",\n        \"last\": \"Tallat\"\n    },\n    \"nationality\": \"EG\",\n    \"residentCountry\": \"EG\",\n    \"birthDate\": \"1999-02-16T00:46:42.560Z\",\n    \"gender\": \"1\",\n    \"passengerTypeCode\": \"ADT\",\n    \"contactRefId\": \"1\",\n    \"travelDocument\": {\n        \"name\": {\n            \"first\": \"ADTone\",\n            \"middle\": \"Gamal\",\n            \"last\": \"Tallat\"\n        },\n        \"nationality\": \"EG\",\n        \"expirationDate\": \"2025-11-28T00:46:42.560Z\",\n        \"issuanceDate\": \"2025-01-01T00:00:00.000Z\",\n        \"documentNumber\": \"G1547890\",\n        \"documentType\": \"passport\",\n        \"gender\": \"1\",\n        \"birthCountry\": \"EG\",\n        \"birthDate\": \"1999-02-16T00:46:42.560Z\",\n        \"issuanceCountryCode\": \"EG\"\n    }\n},\n\"Pax5\": {\n    \"title\": \"2\",\n    \"name\": {\n        \"first\": \"INFONe\",\n        \"middle\": \"\",\n        \"last\": \"Tallat\"\n    },\n    \"nationality\": \"EG\",\n    \"residentCountry\": \"EG\",\n    \"birthDate\": \"2024-05-22T00:46:42.560Z\",\n    \"gender\": \"2\",\n    \"passengerTypeCode\": \"INF\",\n    \"ParentPaxRefId\": \"Pax1\",\n    \"contactRefId\": \"1\",\n    \"travelDocument\": {\n        \"name\": {\n            \"first\": \"INFONe\",\n            \"middle\": \"\",\n            \"last\": \"Tallat\"\n        },\n        \"nationality\": \"EG\",\n        \"expirationDate\": \"2025-11-28T00:46:42.560Z\",\n        \"issuanceDate\": \"2024-07-28T00:46:42.560Z\",\n        \"documentNumber\": \"G1547898\",\n        \"documentType\": \"passport\",\n        \"gender\": \"2\",\n        \"birthCountry\": \"EG\",\n        \"birthDate\": \"2024-05-22T00:46:42.560Z\",\n        \"issuanceCountryCode\": \"EG\"\n    }\n}"
+    }
+  ]
+}
