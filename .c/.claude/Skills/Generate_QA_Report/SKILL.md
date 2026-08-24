@@ -157,39 +157,87 @@ finished `.md`/`.jsonl` into `NDC_Integration/Artifacts/Logs/<slug>.html` using
 [references/report-template.html](references/report-template.html) as the base. This happens exactly
 once per run — it is not re-rendered on every event the way the `.md` is.
 
+**Base template, superseding the earlier "keep it simple" guidance below**: as of 2026-08-23, the
+actual base template for every future execution's HTML output is
+`NDC_Integration/Artifacts/Logs/20260805-140642_TestCases_V1.html` — copy its full CSS, category/
+toolbar/expand-collapse interactivity, hop "View req & response" toggle, and the Findings/Proposed-
+SPEC-updates count-badge treatment verbatim, then populate it with this run's data. This supersedes
+the previous instruction to avoid `TestCases_Report.html`'s filter bars/JS interactivity/dense layout —
+that restriction no longer applies; the rich, interactive dashboard *is* now the standard for every
+run's report, including single-flow ad hoc runs (wrap the run's scope in one `tc-category`, e.g.
+`data-cat="flow-v1-01"`, so the same toolbar/filter/expand-collapse apparatus still applies even to a
+one-test-case run). [references/report-template.html](references/report-template.html) has been
+updated to mirror this structure with `<!-- DATA -->` placeholders — treat it as the copy-from
+skeleton, and treat the 20260805 file as the canonical worked example when a placeholder's exact
+shape is unclear.
+
 The HTML carries the same design tokens (paper/surface/ink/accent/good/warning/serious/critical,
 light+dark via `prefers-color-scheme` and a `data-theme` override) as
 `NDC_Integration/TestCases/TestCases_Report.html`, so every QA artifact in this project reads as one
-visual system — but keep it to the simple, single-page structure `report-template.html` already
-uses. Do not pull in `TestCases_Report.html`'s filter bars, JS interactivity, or dense multi-view
-dashboard layout — this report only needs to be scannable, not a full coverage-matrix tool. Populate
-the template, don't redesign it:
+visual system. Populate the template, don't redesign it:
 
-- **Header**: scope, environment/`baseUrl`, **supplier** (`run_start.supplier`), start time, and a
-  status pill — since the HTML is only built once `run_end` exists, this is always `COMPLETE` (good)
-  or `INTERRUPTED` (critical, with `after <TC-ID> (N/M)`), never `RUNNING` (that state only ever
-  shows in the live `.md`).
-- **Summary stat tiles**: total test cases logged, passed (good), failed (critical), blocked
-  (serious), unknown-confirmed (warning) — computed once from every `test_case` line in the final
-  JSONL, and never inflated by counting internal hops.
-- **A single proportion chart** (stacked bar, not a pie/donut with more than 4 slices) of
-  pass/fail/blocked over total test cases — one hue per verdict from the status palette,
-  direct-labeled, no legend needed since the stat tiles already name each segment.
-- **Test case results list**, in log order, one card per `test_case` line, showing exactly these six
-  fields **in this order**: **Endpoint Name** (`endpoint_or_flow`), **Request** (`request_summary`,
-  already redacted), **Response** (`response_summary`, already redacted), **Expected** (`expected`),
-  **Actual** (`actual`), and a **Status** badge (`verdict` — color + text label, never color alone),
-  plus `evidence`. This is the bulk of the report — keep it scannable, not paragraph-dense. If that
-  line has a `hops` array (a flow-level test case), nest the per-hop breakdown inside that same card
-  as an expandable sub-list, repeating the same six fields per hop — a hop is diagnostic detail for
-  its parent test case, never its own card in this list.
+- **Header**: `<h1>QA Execution Report</h1>` plus a `meta-card` field block (Scope, Coverage,
+  Description, Supplier, Credentials Selector, Environment, Started, Ended, Status) — Status is always
+  `COMPLETE` or `INTERRUPTED — after <TC-ID> (N/M)` here, never `RUNNING` (that state only ever shows
+  in the live `.md`).
+- **Executive Summary**: the donut + stat-card layout (`.donut`/`.donut-hole`/`.donut-legend` plus
+  `.scard-total`/`.summary-cards` for Passed/Failed/Blocked) — computed once from every `test_case`
+  line in the final JSONL, never inflated by counting internal hops. A 1-test-case run still gets a
+  donut (it'll just be 100% one color) — don't special-case it away.
+- **Expand all / Collapse all** buttons (`.tc-actions`) above the "Test case results" section, plus a
+  **second pair inside every category** (`.tc-cat-actions`, via the `.tc-cat-expand`/`.tc-cat-collapse`
+  classes) that only expands/collapses that one category's cards.
+- **Toolbar**: search box + status filter + **category filter** + **Reset** button + live count
+  (`N / M shown`), and a red no-results message (`.tc-no-results`) that appears when a search/filter
+  combination matches zero cards. Wire all of it through the same `applyFilter()` pattern (see the
+  script block) — text search, status, and category all combine, and Reset clears all three.
+- **Test case results**, grouped into **categories** (`details.tc-category[data-cat=...]`, each with an
+  icon, name, pass/fail/blocked counts, and a chevron) — even a single ad hoc flow run gets wrapped in
+  one category (e.g. `data-cat="flow-v1-01"`) rather than skipping the grouping. Inside each category,
+  split into Positive/Negative `tc-subhead` groups when that distinction applies. Each test case card
+  shows exactly these six fields **in this order**: **Endpoint Name**, **Request**, **Response**,
+  **Expected**, **Actual**, **Status** badge — written in **plain, neutral, non-technical language** in
+  these six visible rows (per this project's established convention — see the 20260805 file's cards
+  for the calibration: translate HTTP codes/field names/jargon into plain wording, drop spec-section
+  citations from the Expected label, keep concrete facts like dates/routes/passenger counts/amounts).
+  Nest a flow's hop-by-hop detail as an expandable `details.hops` sub-list — hops keep **technical**
+  wording (unlike the six visible rows), matching how `execute-test-cases` reports them. Add a "View
+  req & response" underlined toggle per hop (see the script block's generic `.hop` pass — this is
+  automatic, not something you hand-write per hop) so the Request/Response lines start collapsed and
+  Expected/Actual/Evidence stay visible by default.
+
+  **When the full raw request/response payload was actually captured** for a hop (not just a
+  summarized line — e.g. `execute-test-cases` saved the real JSON body/response to disk during the
+  run), render that hop's toggle content as a `.hop-reqres-panel` instead of the plain two-line
+  summary: a "Request" block (`POST to <full URL>`, a HEADERS box listing the literal headers sent —
+  `x-api-key` always shown as `••••••••(redacted)`, never the real value — then a BODY box with the
+  full pretty-printed request JSON) followed by a "Response" block (`Status code <N>`, then a BODY box
+  with the full pretty-printed response JSON). See
+  [20260823-164037_FLOW-V1-01.html](../../../../NDC_Integration/Artifacts/Logs/20260823-164037_FLOW-V1-01.html)
+  for the worked example and exact CSS classes (`.rr-title`/`.rr-line`/`.rr-label`/`.rr-box`/
+  `.rr-headers-box`/`.rr-body-box`/`.rr-redacted`/`.rr-note`). Redact exactly like everywhere else in
+  this skill — never print a raw `OriginalSupplierResponse`/`supplierRequest`/`supplierResponse`
+  field; replace it with a one-line `[REDACTED — ... per SPEC.md §7.14]` placeholder inside the
+  otherwise-full JSON body, not by omitting the whole body. If response headers weren't actually
+  captured during execution, say so in an `.rr-note` rather than fabricating plausible-looking header
+  values — never invent evidence. The generic script (`hop-reqres-panel` check before the two-`.hd`
+  fallback) already handles both cases with no per-run JS changes needed — just choose which markup
+  shape to emit per hop based on whether you actually have the full payload.
+
+  Also render the `evidence` field as a collapsible
+  `details.evidence`, and a closing `details.view-tc` "View Test Case" block (Preconditions/Steps/
+  Expected Result/Actual Result) per card, matching the 20260805 file's pattern.
 - **Findings section**: defects and `UNKNOWN`-resolutions in visually distinct blocks (serious vs.
-  accent) — never conflate them, per execute-test-cases's own rule that these mean different things.
+  accent), with a `section-summary-flex` header showing count badges per kind (`section-count-badges`,
+  one `scb-val.serious` badge for Defects and one `scb-val.accent` badge for Unknown-resolution) —
+  never conflate the two kinds, per execute-test-cases's own rule that these mean different things.
 - **Proposed SPEC.md updates**: one block per `spec_update_proposed` line, showing old→new text and
-  its status (pending/applied/declined).
+  its status (pending/applied/declined), with a `section-summary-flex` header showing a single
+  `section-count-badge` total.
 - **Cleanup / follow-up**: PNR list from `cleanup` lines, kept visually prominent (warning-colored
-  callout, not buried at the bottom in body text) since these are live bookings someone still needs to
-  act on.
+  `.cleanup` callout, not buried at the bottom in body text) since these are live bookings someone
+  still needs to act on. Include the count in the callout's own lead line (e.g. "Live artifacts left
+  behind this run (N):"), matching the 20260805 file's phrasing, rather than a header badge.
 - Keep the file **fully self-contained** — inline CSS only, no CDN/external font/script references —
   since it's a local file meant to be opened directly in a browser, possibly by someone without
   network access to this project's tooling.

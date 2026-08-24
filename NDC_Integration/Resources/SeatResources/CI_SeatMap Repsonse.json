@@ -1,0 +1,1277 @@
+{
+  "supplier": "AirArabia",
+  "flightSegments": {
+    "SEG1": {
+      "origin": "DXB",
+      "destination": "LHR",
+      "departureDateTime": "2026-09-02T02:40:00",
+      "arrivalDateTime": "2026-09-02T07:15:00",
+      "departureTerminal": "3",
+      "arrivalTerminal": "4",
+      "flightTime": 455,
+      "operatingCarrierCode": "G9",
+      "operatingFlightNumber": "8009",
+      "marketingCarrierCode": "G9",
+      "marketingFlightNumber": "8009",
+      "equipment": "388"
+    }
+  },
+  "passengersDetails": {
+    "PAX1": {
+      "passengerTypeCode": "ADT",
+      "name": {
+        "first": "Ahmed",
+        "middle": null,
+        "last": "Al Sayed"
+      },
+      "birthDate": "1988-03-12T00:00:00",
+      "documentNumber": "A1234567"
+    },
+    "PAX2": {
+      "passengerTypeCode": "ADT",
+      "name": {
+        "first": "Sara",
+        "middle": null,
+        "last": "Al Sayed"
+      },
+      "birthDate": "1990-07-22T00:00:00",
+      "documentNumber": "A2345678"
+    },
+    "PAX3": {
+      "passengerTypeCode": "CHD",
+      "name": {
+        "first": "Layla",
+        "middle": null,
+        "last": "Al Sayed"
+      },
+      "birthDate": "2017-05-02T00:00:00",
+      "documentNumber": "A7654321"
+    },
+    "PAX4": {
+      "passengerTypeCode": "INF",
+      "name": {
+        "first": "Zayd",
+        "middle": null,
+        "last": "Al Sayed"
+      },
+      "birthDate": "2025-11-14T00:00:00",
+      "documentNumber": "A9988776"
+    }
+  },
+  "seatMapDetails": { // Key : Segment Ref
+    "SEG1": {
+      "cabinLayoutsByDeck": { // Key : Enum with 3 values : Main, Upper, Lower
+        "Upper": {
+          "columns": [
+            "A",
+            "B",
+            null,
+            "D",
+            "E"
+          ]
+        }, 
+        "Main": {
+          "columns": [
+            "A",
+            "B",
+            "C",
+            null,
+            "D",
+            "E",
+            "F",
+            "G",
+            null,
+            "H",
+            "J",
+            "K"
+          ]
+        },
+        "Lower":{
+
+        }
+      },
+      // RowNumber: 1
+      // Deck: Upper
+
+      // RowNumber: 1
+      // Deck: Lower
+
+      // RowNumber: 1
+      // Deck: Main
+      "rows": [
+        {
+          "rowNumber": 1,
+          "deck": "Upper",
+          "cells": [
+            {
+              "cellCategory": "Seat", // Enum, Seat, Aisle, Lavatory
+              "column": "A",
+              "cellDetails": {
+                "cellID": "SEG1-U1A", // Meta Data String1, string 2
+                "cellCode": "1A", // Distinct
+                "cellAvailability": "AvailablePaid", // Blocked, Occupied, AvailableFree, AvailablePaid, AvailableAferReservation
+                "name": "1A",
+                "description": "Window seat, Leg space seat",
+                "seatPriceDetails": {
+                  "totalPrice": {
+                    "amount": 150.00,
+                    "currency": "AED"
+                  },
+                  "basePrice": {
+                    "amount": 130.00,
+                    "currency": "AED"
+                  },
+                  "taxesPrice": {
+                    "amount": 20.00,
+                    "currency": "AED"
+                  }
+                },
+                "seatPriceDetailsByPassenger": { // Key: Passenger Ref
+                  "PAX1": {
+                    "totalPrice": {
+                      "amount": 150.00,
+                      "currency": "AED"
+                    },
+                    "basePrice": {
+                      "amount": 130.00,
+                      "currency": "AED"
+                    },
+                    "taxesPrice": {
+                      "amount": 20.00,
+                      "currency": "AED"
+                    }
+                  },
+                  "PAX2": {
+                    "totalPrice": {
+                      "amount": 150.00,
+                      "currency": "AED"
+                    },
+                    "basePrice": {
+                      "amount": 130.00,
+                      "currency": "AED"
+                    },
+                    "taxesPrice": {
+                      "amount": 20.00,
+                      "currency": "AED"
+                    }
+                  }
+                },
+                "cellCharacteristics": [
+                  {
+                    "padisCode": "W",
+                    "description": "Window seat"
+                  },
+                  {
+                    "padisCode": "L",
+                    "description": "Leg space seat"
+                  }
+                ]
+              }
+            },
+            {
+              "cellCategory": "Seat",
+              "column": "B",
+              "cellDetails": {
+                "cellID": "SEG1-U1B",
+                "cellCode": "1B",
+                "cellAvailability": "AvailablePaid",
+                "name": "1B",
+                "description": "Aisle seat, Leg space seat",
+                "seatPriceDetails": {
+                  "totalPrice": {
+                    "amount": 150.00,
+                    "currency": "AED"
+                  },
+                  "basePrice": {
+                    "amount": 130.00,
+                    "currency": "AED"
+                  },
+                  "taxesPrice": {
+                    "amount": 20.00,
+                    "currency": "AED"
+                  }
+                },
+                "seatPriceDetailsByPassenger": {
+                  "PAX2": {
+                    "totalPrice": {
+                      "amount": 150.00,
+                      "currency": "AED"
+                    },
+                    "basePrice": {
+                      "amount": 130.00,
+                      "currency": "AED"
+                    },
+                    "taxesPrice": {
+                      "amount": 20.00,
+                      "currency": "AED"
+                    }
+                  }
+                },
+                "cellCharacteristics": [
+                  {
+                    "padisCode": "A",
+                    "description": "Aisle seat"
+                  },
+                  {
+                    "padisCode": "L",
+                    "description": "Leg space seat"
+                  }
+                ]
+              }
+            },
+            {
+              "cellCategory": "Aisle",
+              "column": null,
+              "cellDetails": null
+            },
+            {
+              "cellCategory": "Seat",
+              "column": "D",
+              "cellDetails": {
+                "cellID": "SEG1-U1D",
+                "cellCode": "1D",
+                "cellAvailability": "AvailableFree",
+                "name": "1D",
+                "description": "Aisle seat, Leg space seat",
+                "seatPriceDetails": null,
+                "seatPriceDetailsByPassenger": null,
+                "cellCharacteristics": [
+                  {
+                    "padisCode": "A",
+                    "description": "Aisle seat"
+                  },
+                  {
+                    "padisCode": "L",
+                    "description": "Leg space seat"
+                  }
+                ]
+              }
+            },
+            {
+              "cellCategory": "Seat",
+              "column": "E",
+              "cellDetails": {
+                "cellID": "SEG1-U1E",
+                "cellCode": "1E",
+                "cellAvailability": "Occupied",
+                "name": "1E",
+                "description": "Window seat, Leg space seat",
+                "seatPriceDetails": null,
+                "seatPriceDetailsByPassenger": null,
+                "cellCharacteristics": [
+                  {
+                    "padisCode": "W",
+                    "description": "Window seat"
+                  },
+                  {
+                    "padisCode": "L",
+                    "description": "Leg space seat"
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "rowNumber": 2,
+          "deck": "Upper",
+          "cells": [
+            {
+              "cellCategory": "Seat",
+              "column": "A",
+              "cellDetails": {
+                "cellID": "SEG1-U2A",
+                "cellCode": "2A",
+                "cellAvailability": "AvailableFree",
+                "name": "2A",
+                "description": "Window seat",
+                "seatPriceDetails": null,
+                "seatPriceDetailsByPassenger": null,
+                "cellCharacteristics": [
+                  {
+                    "padisCode": "W",
+                    "description": "Window seat"
+                  }
+                ]
+              }
+            },
+            {
+              "cellCategory": "Seat",
+              "column": "B",
+              "cellDetails": {
+                "cellID": "SEG1-U2B",
+                "cellCode": "2B",
+                "cellAvailability": "AvailableFree",
+                "name": "2B",
+                "description": "Aisle seat",
+                "seatPriceDetails": null,
+                "seatPriceDetailsByPassenger": null,
+                "cellCharacteristics": [
+                  {
+                    "padisCode": "A",
+                    "description": "Aisle seat"
+                  }
+                ]
+              }
+            },
+            {
+              "cellCategory": "Aisle",
+              "column": null,
+              "cellDetails": null
+            },
+            {
+              "cellCategory": "Seat",
+              "column": "D",
+              "cellDetails": {
+                "cellID": "SEG1-U2D",
+                "cellCode": "2D",
+                "cellAvailability": "AvailableFree",
+                "name": "2D",
+                "description": "Aisle seat",
+                "seatPriceDetails": null,
+                "seatPriceDetailsByPassenger": null,
+                "cellCharacteristics": [
+                  {
+                    "padisCode": "A",
+                    "description": "Aisle seat"
+                  }
+                ]
+              }
+            },
+            {
+              "cellCategory": "Seat",
+              "column": "E",
+              "cellDetails": {
+                "cellID": "SEG1-U2E",
+                "cellCode": "2E",
+                "cellAvailability": "AvailableFree",
+                "name": "2E",
+                "description": "Window seat",
+                "seatPriceDetails": null,
+                "seatPriceDetailsByPassenger": null,
+                "cellCharacteristics": [
+                  {
+                    "padisCode": "W",
+                    "description": "Window seat"
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "rowNumber": 40,
+          "deck": "Main",
+          "cells": [
+            {
+              "cellCategory": "Seat",
+              "column": "A",
+              "cellDetails": {
+                "cellID": "SEG1-M40A",
+                "cellCode": "40A",
+                "cellAvailability": "AvailableFree",
+                "name": "40A",
+                "description": "Window seat",
+                "seatPriceDetails": null,
+                "seatPriceDetailsByPassenger": null,
+                "cellCharacteristics": [
+                  {
+                    "padisCode": "W",
+                    "description": "Window seat"
+                  }
+                ]
+              }
+            },
+            {
+              "cellCategory": "Seat",
+              "column": "B",
+              "cellDetails": {
+                "cellID": "SEG1-M40B",
+                "cellCode": "40B",
+                "cellAvailability": "AvailableFree",
+                "name": "40B",
+                "description": "Middle seat",
+                "seatPriceDetails": null,
+                "seatPriceDetailsByPassenger": null,
+                "cellCharacteristics": [
+                  {
+                    "padisCode": "MS",
+                    "description": "Middle seat"
+                  }
+                ]
+              }
+            },
+            {
+              "cellCategory": "Seat",
+              "column": "C",
+              "cellDetails": {
+                "cellID": "SEG1-M40C",
+                "cellCode": "40C",
+                "cellAvailability": "Occupied",
+                "name": "40C",
+                "description": "Aisle seat",
+                "seatPriceDetails": null,
+                "seatPriceDetailsByPassenger": null,
+                "cellCharacteristics": [
+                  {
+                    "padisCode": "A",
+                    "description": "Aisle seat"
+                  }
+                ]
+              }
+            },
+            {
+              "cellCategory": "Aisle",
+              "column": null,
+              "cellDetails": null
+            },
+            {
+              "cellCategory": "Seat",
+              "column": "D",
+              "cellDetails": {
+                "cellID": "SEG1-M40D",
+                "cellCode": "40D",
+                "cellAvailability": "AvailableFree",
+                "name": "40D",
+                "description": "Aisle seat",
+                "seatPriceDetails": null,
+                "seatPriceDetailsByPassenger": null,
+                "cellCharacteristics": [
+                  {
+                    "padisCode": "A",
+                    "description": "Aisle seat"
+                  }
+                ]
+              }
+            },
+            {
+              "cellCategory": "Seat",
+              "column": "E",
+              "cellDetails": {
+                "cellID": "SEG1-M40E",
+                "cellCode": "40E",
+                "cellAvailability": "AvailableFree",
+                "name": "40E",
+                "description": "Middle seat",
+                "seatPriceDetails": null,
+                "seatPriceDetailsByPassenger": null,
+                "cellCharacteristics": [
+                  {
+                    "padisCode": "MS",
+                    "description": "Middle seat"
+                  }
+                ]
+              }
+            },
+            {
+              "cellCategory": "Seat",
+              "column": "F",
+              "cellDetails": {
+                "cellID": "SEG1-M40F",
+                "cellCode": "40F",
+                "cellAvailability": "AvailableFree",
+                "name": "40F",
+                "description": "Middle seat",
+                "seatPriceDetails": null,
+                "seatPriceDetailsByPassenger": null,
+                "cellCharacteristics": [
+                  {
+                    "padisCode": "MS",
+                    "description": "Middle seat"
+                  }
+                ]
+              }
+            },
+            {
+              "cellCategory": "Seat",
+              "column": "G",
+              "cellDetails": {
+                "cellID": "SEG1-M40G",
+                "cellCode": "40G",
+                "cellAvailability": "AvailableFree",
+                "name": "40G",
+                "description": "Aisle seat",
+                "seatPriceDetails": null,
+                "seatPriceDetailsByPassenger": null,
+                "cellCharacteristics": [
+                  {
+                    "padisCode": "A",
+                    "description": "Aisle seat"
+                  }
+                ]
+              }
+            },
+            {
+              "cellCategory": "Aisle",
+              "column": null,
+              "cellDetails": null
+            },
+            {
+              "cellCategory": "Seat",
+              "column": "H",
+              "cellDetails": {
+                "cellID": "SEG1-M40H",
+                "cellCode": "40H",
+                "cellAvailability": "AvailableFree",
+                "name": "40H",
+                "description": "Aisle seat",
+                "seatPriceDetails": null,
+                "seatPriceDetailsByPassenger": null,
+                "cellCharacteristics": [
+                  {
+                    "padisCode": "A",
+                    "description": "Aisle seat"
+                  }
+                ]
+              }
+            },
+            {
+              "cellCategory": "Seat",
+              "column": "J",
+              "cellDetails": {
+                "cellID": "SEG1-M40J",
+                "cellCode": "40J",
+                "cellAvailability": "AvailableFree",
+                "name": "40J",
+                "description": "Middle seat",
+                "seatPriceDetails": null,
+                "seatPriceDetailsByPassenger": null,
+                "cellCharacteristics": [
+                  {
+                    "padisCode": "MS",
+                    "description": "Middle seat"
+                  }
+                ]
+              }
+            },
+            {
+              "cellCategory": "Seat",
+              "column": "K",
+              "cellDetails": {
+                "cellID": "SEG1-M40K",
+                "cellCode": "40K",
+                "cellAvailability": "AvailablePaid",
+                "name": "40K",
+                "description": "Window seat",
+                "seatPriceDetails": {
+                  "totalPrice": {
+                    "amount": 20.00,
+                    "currency": "AED"
+                  },
+                  "basePrice": {
+                    "amount": 15.00,
+                    "currency": "AED"
+                  },
+                  "taxesPrice": {
+                    "amount": 5.00,
+                    "currency": "AED"
+                  }
+                },
+                "seatPriceDetailsByPassenger": {
+                  "PAX3": {
+                    "totalPrice": {
+                      "amount": 20.00,
+                      "currency": "AED"
+                    },
+                    "basePrice": {
+                      "amount": 15.00,
+                      "currency": "AED"
+                    },
+                    "taxesPrice": {
+                      "amount": 5.00,
+                      "currency": "AED"
+                    }
+                  }
+                },
+                "cellCharacteristics": [
+                  {
+                    "padisCode": "W",
+                    "description": "Window seat"
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "rowNumber": 41,
+          "deck": "Main",
+          "cells": [
+            {
+              "cellCategory": "Seat",
+              "column": "A",
+              "cellDetails": {
+                "cellID": "SEG1-M41A",
+                "cellCode": "41A",
+                "cellAvailability": "AvailablePaid",
+                "name": "41A",
+                "description": "Window seat, Exit and emergency exit",
+                "seatPriceDetails": {
+                  "totalPrice": {
+                    "amount": 30.00,
+                    "currency": "AED"
+                  },
+                  "basePrice": {
+                    "amount": 25.00,
+                    "currency": "AED"
+                  },
+                  "taxesPrice": {
+                    "amount": 5.00,
+                    "currency": "AED"
+                  }
+                },
+                "seatPriceDetailsByPassenger": null,
+                "cellCharacteristics": [
+                  {
+                    "padisCode": "W",
+                    "description": "Window seat"
+                  },
+                  {
+                    "padisCode": "E",
+                    "description": "Exit and emergency exit"
+                  }
+                ]
+              }
+            },
+            {
+              "cellCategory": "Seat",
+              "column": "B",
+              "cellDetails": {
+                "cellID": "SEG1-M41B",
+                "cellCode": "41B",
+                "cellAvailability": "AvailablePaid",
+                "name": "41B",
+                "description": "Middle seat, Exit and emergency exit",
+                "seatPriceDetails": {
+                  "totalPrice": {
+                    "amount": 30.00,
+                    "currency": "AED"
+                  },
+                  "basePrice": {
+                    "amount": 25.00,
+                    "currency": "AED"
+                  },
+                  "taxesPrice": {
+                    "amount": 5.00,
+                    "currency": "AED"
+                  }
+                },
+                "seatPriceDetailsByPassenger": null,
+                "cellCharacteristics": [
+                  {
+                    "padisCode": "MS",
+                    "description": "Middle seat"
+                  },
+                  {
+                    "padisCode": "E",
+                    "description": "Exit and emergency exit"
+                  }
+                ]
+              }
+            },
+            {
+              "cellCategory": "Seat",
+              "column": "C",
+              "cellDetails": {
+                "cellID": "SEG1-M41C",
+                "cellCode": "41C",
+                "cellAvailability": "AvailablePaid",
+                "name": "41C",
+                "description": "Aisle seat, Exit and emergency exit",
+                "seatPriceDetails": {
+                  "totalPrice": {
+                    "amount": 30.00,
+                    "currency": "AED"
+                  },
+                  "basePrice": {
+                    "amount": 25.00,
+                    "currency": "AED"
+                  },
+                  "taxesPrice": {
+                    "amount": 5.00,
+                    "currency": "AED"
+                  }
+                },
+                "seatPriceDetailsByPassenger": null,
+                "cellCharacteristics": [
+                  {
+                    "padisCode": "A",
+                    "description": "Aisle seat"
+                  },
+                  {
+                    "padisCode": "E",
+                    "description": "Exit and emergency exit"
+                  }
+                ]
+              }
+            },
+            {
+              "cellCategory": "Aisle",
+              "column": null,
+              "cellDetails": null
+            },
+            {
+              "cellCategory": "Seat",
+              "column": "D",
+              "cellDetails": {
+                "cellID": "SEG1-M41D",
+                "cellCode": "41D",
+                "cellAvailability": "AvailablePaid",
+                "name": "41D",
+                "description": "Aisle seat, Exit and emergency exit",
+                "seatPriceDetails": {
+                  "totalPrice": {
+                    "amount": 30.00,
+                    "currency": "AED"
+                  },
+                  "basePrice": {
+                    "amount": 25.00,
+                    "currency": "AED"
+                  },
+                  "taxesPrice": {
+                    "amount": 5.00,
+                    "currency": "AED"
+                  }
+                },
+                "seatPriceDetailsByPassenger": null,
+                "cellCharacteristics": [
+                  {
+                    "padisCode": "A",
+                    "description": "Aisle seat"
+                  },
+                  {
+                    "padisCode": "E",
+                    "description": "Exit and emergency exit"
+                  }
+                ]
+              }
+            },
+            {
+              "cellCategory": "Seat",
+              "column": "E",
+              "cellDetails": {
+                "cellID": "SEG1-M41E",
+                "cellCode": "41E",
+                "cellAvailability": "Blocked",
+                "name": "41E",
+                "description": "Middle seat, Exit and emergency exit",
+                "seatPriceDetails": null,
+                "seatPriceDetailsByPassenger": null,
+                "cellCharacteristics": [
+                  {
+                    "padisCode": "MS",
+                    "description": "Middle seat"
+                  },
+                  {
+                    "padisCode": "E",
+                    "description": "Exit and emergency exit"
+                  },
+                  {
+                    "padisCode": "IE",
+                    "description": "Seat not suitable for child"
+                  }
+                ]
+              }
+            },
+            {
+              "cellCategory": "Seat",
+              "column": "F",
+              "cellDetails": {
+                "cellID": "SEG1-M41F",
+                "cellCode": "41F",
+                "cellAvailability": "AvailablePaid",
+                "name": "41F",
+                "description": "Middle seat, Exit and emergency exit",
+                "seatPriceDetails": {
+                  "totalPrice": {
+                    "amount": 30.00,
+                    "currency": "AED"
+                  },
+                  "basePrice": {
+                    "amount": 25.00,
+                    "currency": "AED"
+                  },
+                  "taxesPrice": {
+                    "amount": 5.00,
+                    "currency": "AED"
+                  }
+                },
+                "seatPriceDetailsByPassenger": null,
+                "cellCharacteristics": [
+                  {
+                    "padisCode": "MS",
+                    "description": "Middle seat"
+                  },
+                  {
+                    "padisCode": "E",
+                    "description": "Exit and emergency exit"
+                  }
+                ]
+              }
+            },
+            {
+              "cellCategory": "Seat",
+              "column": "G",
+              "cellDetails": {
+                "cellID": "SEG1-M41G",
+                "cellCode": "41G",
+                "cellAvailability": "AvailablePaid",
+                "name": "41G",
+                "description": "Aisle seat, Exit and emergency exit",
+                "seatPriceDetails": {
+                  "totalPrice": {
+                    "amount": 30.00,
+                    "currency": "AED"
+                  },
+                  "basePrice": {
+                    "amount": 25.00,
+                    "currency": "AED"
+                  },
+                  "taxesPrice": {
+                    "amount": 5.00,
+                    "currency": "AED"
+                  }
+                },
+                "seatPriceDetailsByPassenger": null,
+                "cellCharacteristics": [
+                  {
+                    "padisCode": "A",
+                    "description": "Aisle seat"
+                  },
+                  {
+                    "padisCode": "E",
+                    "description": "Exit and emergency exit"
+                  }
+                ]
+              }
+            },
+            {
+              "cellCategory": "Aisle",
+              "column": null,
+              "cellDetails": null
+            },
+            {
+              "cellCategory": "Seat",
+              "column": "H",
+              "cellDetails": {
+                "cellID": "SEG1-M41H",
+                "cellCode": "41H",
+                "cellAvailability": "AvailablePaid",
+                "name": "41H",
+                "description": "Aisle seat, Exit and emergency exit",
+                "seatPriceDetails": {
+                  "totalPrice": {
+                    "amount": 30.00,
+                    "currency": "AED"
+                  },
+                  "basePrice": {
+                    "amount": 25.00,
+                    "currency": "AED"
+                  },
+                  "taxesPrice": {
+                    "amount": 5.00,
+                    "currency": "AED"
+                  }
+                },
+                "seatPriceDetailsByPassenger": null,
+                "cellCharacteristics": [
+                  {
+                    "padisCode": "A",
+                    "description": "Aisle seat"
+                  },
+                  {
+                    "padisCode": "E",
+                    "description": "Exit and emergency exit"
+                  }
+                ]
+              }
+            },
+            {
+              "cellCategory": "Seat",
+              "column": "J",
+              "cellDetails": {
+                "cellID": "SEG1-M41J",
+                "cellCode": "41J",
+                "cellAvailability": "AvailablePaid",
+                "name": "41J",
+                "description": "Middle seat, Exit and emergency exit",
+                "seatPriceDetails": {
+                  "totalPrice": {
+                    "amount": 30.00,
+                    "currency": "AED"
+                  },
+                  "basePrice": {
+                    "amount": 25.00,
+                    "currency": "AED"
+                  },
+                  "taxesPrice": {
+                    "amount": 5.00,
+                    "currency": "AED"
+                  }
+                },
+                "seatPriceDetailsByPassenger": null,
+                "cellCharacteristics": [
+                  {
+                    "padisCode": "MS",
+                    "description": "Middle seat"
+                  },
+                  {
+                    "padisCode": "E",
+                    "description": "Exit and emergency exit"
+                  }
+                ]
+              }
+            },
+            {
+              "cellCategory": "Seat",
+              "column": "K",
+              "cellDetails": {
+                "cellID": "SEG1-M41K",
+                "cellCode": "41K",
+                "cellAvailability": "AvailablePaid",
+                "name": "41K",
+                "description": "Window seat, Exit and emergency exit",
+                "seatPriceDetails": {
+                  "totalPrice": {
+                    "amount": 30.00,
+                    "currency": "AED"
+                  },
+                  "basePrice": {
+                    "amount": 25.00,
+                    "currency": "AED"
+                  },
+                  "taxesPrice": {
+                    "amount": 5.00,
+                    "currency": "AED"
+                  }
+                },
+                "seatPriceDetailsByPassenger": null,
+                "cellCharacteristics": [
+                  {
+                    "padisCode": "W",
+                    "description": "Window seat"
+                  },
+                  {
+                    "padisCode": "E",
+                    "description": "Exit and emergency exit"
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "rowNumber": 42,
+          "deck": "Main",
+          "cells": [
+            {
+              "cellCategory": "Seat",
+              "column": "A",
+              "cellDetails": {
+                "cellID": "SEG1-M42A",
+                "cellCode": "42A",
+                "cellAvailability": "AvailableFree",
+                "name": "42A",
+                "description": "Window seat",
+                "seatPriceDetails": null,
+                "seatPriceDetailsByPassenger": null,
+                "cellCharacteristics": [
+                  {
+                    "padisCode": "W",
+                    "description": "Window seat"
+                  }
+                ]
+              }
+            },
+            {
+              "cellCategory": "Seat",
+              "column": "B",
+              "cellDetails": {
+                "cellID": "SEG1-M42B",
+                "cellCode": "42B",
+                "cellAvailability": "AvailableFree",
+                "name": "42B",
+                "description": "Middle seat",
+                "seatPriceDetails": null,
+                "seatPriceDetailsByPassenger": null,
+                "cellCharacteristics": [
+                  {
+                    "padisCode": "MS",
+                    "description": "Middle seat"
+                  }
+                ]
+              }
+            },
+            {
+              "cellCategory": "Seat",
+              "column": "C",
+              "cellDetails": {
+                "cellID": "SEG1-M42C",
+                "cellCode": "42C",
+                "cellAvailability": "AvailableFree",
+                "name": "42C",
+                "description": "Aisle seat",
+                "seatPriceDetails": null,
+                "seatPriceDetailsByPassenger": null,
+                "cellCharacteristics": [
+                  {
+                    "padisCode": "A",
+                    "description": "Aisle seat"
+                  }
+                ]
+              }
+            },
+            {
+              "cellCategory": "Aisle",
+              "column": null,
+              "cellDetails": null
+            },
+            {
+              "cellCategory": "Seat",
+              "column": "D",
+              "cellDetails": {
+                "cellID": "SEG1-M42D",
+                "cellCode": "42D",
+                "cellAvailability": "AvailableFree",
+                "name": "42D",
+                "description": "Aisle seat",
+                "seatPriceDetails": null,
+                "seatPriceDetailsByPassenger": null,
+                "cellCharacteristics": [
+                  {
+                    "padisCode": "A",
+                    "description": "Aisle seat"
+                  }
+                ]
+              }
+            },
+            {
+              "cellCategory": "Seat",
+              "column": "E",
+              "cellDetails": {
+                "cellID": "SEG1-M42E",
+                "cellCode": "42E",
+                "cellAvailability": "AvailableFree",
+                "name": "42E",
+                "description": "Middle seat",
+                "seatPriceDetails": null,
+                "seatPriceDetailsByPassenger": null,
+                "cellCharacteristics": [
+                  {
+                    "padisCode": "MS",
+                    "description": "Middle seat"
+                  }
+                ]
+              }
+            },
+            {
+              "cellCategory": "Seat",
+              "column": "F",
+              "cellDetails": {
+                "cellID": "SEG1-M42F",
+                "cellCode": "42F",
+                "cellAvailability": "AvailableFree",
+                "name": "42F",
+                "description": "Middle seat",
+                "seatPriceDetails": null,
+                "seatPriceDetailsByPassenger": null,
+                "cellCharacteristics": [
+                  {
+                    "padisCode": "MS",
+                    "description": "Middle seat"
+                  }
+                ]
+              }
+            },
+            {
+              "cellCategory": "Seat",
+              "column": "G",
+              "cellDetails": {
+                "cellID": "SEG1-M42G",
+                "cellCode": "42G",
+                "cellAvailability": "AvailableFree",
+                "name": "42G",
+                "description": "Aisle seat",
+                "seatPriceDetails": null,
+                "seatPriceDetailsByPassenger": null,
+                "cellCharacteristics": [
+                  {
+                    "padisCode": "A",
+                    "description": "Aisle seat"
+                  }
+                ]
+              }
+            },
+            {
+              "cellCategory": "Aisle",
+              "column": null,
+              "cellDetails": null
+            },
+            {
+              "cellCategory": "Seat",
+              "column": "H",
+              "cellDetails": {
+                "cellID": "SEG1-M42H",
+                "cellCode": "42H",
+                "cellAvailability": "Occupied",
+                "name": "42H",
+                "description": "Aisle seat",
+                "seatPriceDetails": null,
+                "seatPriceDetailsByPassenger": null,
+                "cellCharacteristics": [
+                  {
+                    "padisCode": "A",
+                    "description": "Aisle seat"
+                  }
+                ]
+              }
+            },
+            {
+              "cellCategory": "Seat",
+              "column": "J",
+              "cellDetails": {
+                "cellID": "SEG1-M42J",
+                "cellCode": "42J",
+                "cellAvailability": "AvailableFree",
+                "name": "42J",
+                "description": "Middle seat",
+                "seatPriceDetails": null,
+                "seatPriceDetailsByPassenger": null,
+                "cellCharacteristics": [
+                  {
+                    "padisCode": "MS",
+                    "description": "Middle seat"
+                  }
+                ]
+              }
+            },
+            {
+              "cellCategory": "Seat",
+              "column": "K",
+              "cellDetails": {
+                "cellID": "SEG1-M42K",
+                "cellCode": "42K",
+                "cellAvailability": "AvailableFree",
+                "name": "42K",
+                "description": "Window seat",
+                "seatPriceDetails": null,
+                "seatPriceDetailsByPassenger": null,
+                "cellCharacteristics": [
+                  {
+                    "padisCode": "W",
+                    "description": "Window seat"
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "passengersSeatMapAvailability": { // Key : Passenger Ref, Dic
+    "PAX1": {
+      "SEG1": [  // Key : Segment Ref, List<string>
+        "1A", // List<string> CellCode
+        "1B",
+        "1D",
+        "2A",
+        "2B",
+        "2D",
+        "2E",
+        "40A",
+        "40B",
+        "40D",
+        "40E",
+        "40F",
+        "40G",
+        "40H",
+        "40J",
+        "40K",
+        "41A",
+        "41B",
+        "41C",
+        "41D",
+        "41F",
+        "41G",
+        "41H",
+        "41J",
+        "41K",
+        "42A",
+        "42B",
+        "42C",
+        "42D",
+        "42E",
+        "42F",
+        "42G",
+        "42J",
+        "42K"
+      ],
+      "SEG2":[],
+      "Seg3":[]
+    },
+    "PAX2": {
+      "SEG1": [
+        "1A",
+        "1B",
+        "1D",
+        "2A",
+        "2B",
+        "2D",
+        "2E",
+        "40A",
+        "40B",
+        "40D",
+        "40E",
+        "40F",
+        "40G",
+        "40H",
+        "40J",
+        "40K",
+        "41A",
+        "41B",
+        "41C",
+        "41D",
+        "41F",
+        "41G",
+        "41H",
+        "41J",
+        "41K",
+        "42A",
+        "42B",
+        "42C",
+        "42D",
+        "42E",
+        "42F",
+        "42G",
+        "42J",
+        "42K"
+      ]
+    },
+    "PAX3": {
+      "SEG1": [
+        "40A",
+        "40B",
+        "40D",
+        "40E",
+        "40F",
+        "40G",
+        "40H",
+        "40J",
+        "40K",
+        "42A",
+        "42B",
+        "42C",
+        "42D",
+        "42E",
+        "42F",
+        "42G",
+        "42J",
+        "42K"
+      ]
+    },
+    "PAX4": {
+      "SEG1": []
+    }
+  }
+}

@@ -1,0 +1,7 @@
+{
+  "permissions": {
+    "allow": [
+      "PowerShell($f = \"g:\\\\Software Testing\\\\Sheen Company\\\\AI Agent\\\\NDC Manual Testing\\\\NDC_Integration\\\\SPEC.md\"; \"Lines: $\\(\\(Get-Content $f | Measure-Object -Line\\).Lines\\)\"; \"Chars: $\\(\\(Get-Content -Raw $f\\).Length\\)\")"
+    ]
+  }
+}

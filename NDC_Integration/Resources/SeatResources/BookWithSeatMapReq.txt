@@ -1,0 +1,183 @@
+{
+    "ResponseId": "{{getSeatMapResponceID}}",
+    "selectedOfferId": "{{getSeatMapOfferId}}",
+    "supplier": "{{Supplier_Name}}",
+    "credentialsSelector": "{{Credentials_Selector}}",
+    // "selectedBundles": [
+    //     {
+    //         "journeyKey": "string",
+    //         "selectedBundleCode": "string"
+    //     }
+    // ],
+    // "bspCommissionType": {
+    //     "commissionType": "BaseFare",
+    //     "actionType": "Percentage",
+    //     "tourCode": "string",
+    //     "commissionValue": {
+    //         "percentage": 100,
+    //         "bspAmount": {
+    //             "amount": 0,
+    //             "currency": "string"
+    //         }
+    //     },
+    //     "isBspAdultApplied": true,
+    //     "isBspChildApplied": true,
+    //     "isBspInfantApplied": true
+    // },
+    // "passengersSelectedAncillaries": {
+    //     "additionalProp1": {
+    //         "setSegmentsAncillaries": {
+    //             "additionalProp1": [
+    //                 {
+    //                     "additionalServiceCategory": "None",
+    //                     "ancillaryCode": "string",
+    //                     "quantity": "string"
+    //                 }
+    //             ],
+    //             "additionalProp2": [
+    //                 {
+    //                     "additionalServiceCategory": "None",
+    //                     "ancillaryCode": "string",
+    //                     "quantity": "string"
+    //                 }
+    //             ],
+    //             "additionalProp3": [
+    //                 {
+    //                     "additionalServiceCategory": "None",
+    //                     "ancillaryCode": "string",
+    //                     "quantity": "string"
+    //                 }
+    //             ]
+    //         },
+    //         "setJourneysAncillaries": {
+    //             "additionalProp1": [
+    //                 {
+    //                     "additionalServiceCategory": "None",
+    //                     "ancillaryCode": "string",
+    //                     "quantity": "string"
+    //                 }
+    //             ],
+    //             "additionalProp2": [
+    //                 {
+    //                     "additionalServiceCategory": "None",
+    //                     "ancillaryCode": "string",
+    //                     "quantity": "string"
+    //                 }
+    //             ],
+    //             "additionalProp3": [
+    //                 {
+    //                     "additionalServiceCategory": "None",
+    //                     "ancillaryCode": "string",
+    //                     "quantity": "string"
+    //                 }
+    //             ]
+    //         }
+    //     },
+    //     "additionalProp2": {
+    //         "setSegmentsAncillaries": {
+    //             "additionalProp1": [
+    //                 {
+    //                     "additionalServiceCategory": "None",
+    //                     "ancillaryCode": "string",
+    //                     "quantity": "string"
+    //                 }
+    //             ],
+    //             "additionalProp2": [
+    //                 {
+    //                     "additionalServiceCategory": "None",
+    //                     "ancillaryCode": "string",
+    //                     "quantity": "string"
+    //                 }
+    //             ],
+    //             "additionalProp3": [
+    //                 {
+    //                     "additionalServiceCategory": "None",
+    //                     "ancillaryCode": "string",
+    //                     "quantity": "string"
+    //                 }
+    //             ]
+    //         },
+    //         "setJourneysAncillaries": {
+    //             "additionalProp1": [
+    //                 {
+    //                     "additionalServiceCategory": "None",
+    //                     "ancillaryCode": "string",
+    //                     "quantity": "string"
+    //                 }
+    //             ],
+    //             "additionalProp2": [
+    //                 {
+    //                     "additionalServiceCategory": "None",
+    //                     "ancillaryCode": "string",
+    //                     "quantity": "string"
+    //                 }
+    //             ],
+    //             "additionalProp3": [
+    //                 {
+    //                     "additionalServiceCategory": "None",
+    //                     "ancillaryCode": "string",
+    //                     "quantity": "string"
+    //                 }
+    //             ]
+    //         }
+    //     },
+    //     "additionalProp3": {
+    //         "setSegmentsAncillaries": {
+    //             "additionalProp1": [
+    //                 {
+    //                     "additionalServiceCategory": "None",
+    //                     "ancillaryCode": "string",
+    //                     "quantity": "string"
+    //                 }
+    //             ],
+    //             "additionalProp2": [
+    //                 {
+    //                     "additionalServiceCategory": "None",
+    //                     "ancillaryCode": "string",
+    //                     "quantity": "string"
+    //                 }
+    //             ],
+    //             "additionalProp3": [
+    //                 {
+    //                     "additionalServiceCategory": "None",
+    //                     "ancillaryCode": "string",
+    //                     "quantity": "string"
+    //                 }
+    //             ]
+    //         },
+    //         "setJourneysAncillaries": {
+    //             "additionalProp1": [
+    //                 {
+    //                     "additionalServiceCategory": "None",
+    //                     "ancillaryCode": "string",
+    //                     "quantity": "string"
+    //                 }
+    //             ],
+    //             "additionalProp2": [
+    //                 {
+    //                     "additionalServiceCategory": "None",
+    //                     "ancillaryCode": "string",
+    //                     "quantity": "string"
+    //                 }
+    //             ],
+    //             "additionalProp3": [
+    //                 {
+    //                     "additionalServiceCategory": "None",
+    //                     "ancillaryCode": "string",
+    //                     "quantity": "string"
+    //                 }
+    //             ]
+    //         }
+    //     }
+    // },
+    "passengersSelectedSeats": {
+        "T1": { // Passenger Ref
+            "setSegmentsSeats": {
+                "S1": { // Segment Ref
+                    "cellCode": "12E",
+                    "cellId": "eyJPd25lckNvZGUiOiJXWSIsIlJlc3BvbnNlSWQiOiJXNjVCNzVENkUtRTM5Ni00OTYyLTgxMjQiLCJPZmZlcklkIjoiVzY1Qjc1RDZFLUUzOTYtNDk2Mi04MTI0LTEiLCJQYXNzZW5nZXJzSWRzIjp7IlQxIjoiVzY1Qjc1RDZFLUUzOTYtNDk2Mi04MTI0LTEtOCJ9fQ==" // Include Meta Data
+                }
+            }
+        }
+    }
+}
