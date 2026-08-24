@@ -38,6 +38,13 @@ category (§7.1–§7.14), or an explicit "full matrix" request. If the user's a
 me some test cases for the API"), ask which scope before generating — don't default silently to
 "everything," since the full matrix is large (89 flows × up to 8 categories each).
 
+If the request instead points at a User Story md file (e.g. something under
+`NDC_Integration/Resources/*_UserStory.md`) rather than naming a scope directly, run the
+`analyze-user-story` skill first — it turns the story's Acceptance Criteria into exactly this kind of
+bounded scope (plus the open questions that need answers before precise cases can be written) via its
+own "Testable Scope" output. Generating straight from an unanalyzed user story risks encoding an
+unresolved ambiguity as a guessed expected value.
+
 ## Process
 
 1. **Identify the target(s)** from the request: endpoint name(s) → SPEC.md §2.*n*; flow number(s) →

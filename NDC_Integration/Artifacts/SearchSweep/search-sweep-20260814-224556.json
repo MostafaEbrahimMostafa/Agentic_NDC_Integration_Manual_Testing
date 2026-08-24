@@ -1,0 +1,1464 @@
+﻿[
+    {
+        "file":  "AncillaryBookMulti.json",
+        "supplier":  "AirCairo",
+        "selector":  "EGY",
+        "passengers":  "ADTx2,CHDx2,INFx2",
+        "originalRoute":  "DUS-CAI@+25d | CAI-SSH@+28d",
+        "finalRoute":  "DUS-CAI@+25d | CAI-SSH@+28d",
+        "pass1":  true,
+        "repaired":  false,
+        "finalPass":  true,
+        "status":  200,
+        "offers":  200,
+        "supplierMessage":  "",
+        "attempts":  [
+
+                     ]
+    },
+    {
+        "file":  "AncillaryBookMulti1.json",
+        "supplier":  "AirCairo",
+        "selector":  "EGY",
+        "passengers":  "ADTx3,CHDx3,INFx3",
+        "originalRoute":  "SSH-CAI@+40d | CAI-FRA@+49d",
+        "finalRoute":  "SSH-CAI@+40d | CAI-FRA@+49d",
+        "pass1":  true,
+        "repaired":  false,
+        "finalPass":  true,
+        "status":  200,
+        "offers":  200,
+        "supplierMessage":  "",
+        "attempts":  [
+
+                     ]
+    },
+    {
+        "file":  "AncillaryBookMulti2.json",
+        "supplier":  "AirCairo",
+        "selector":  "EGY",
+        "passengers":  "ADTx4,CHDx2,INFx2",
+        "originalRoute":  "CGN-CAI@+27d | CAI-JED@+30d",
+        "finalRoute":  "CGN-CAI@+27d | CAI-JED@+30d",
+        "pass1":  true,
+        "repaired":  false,
+        "finalPass":  true,
+        "status":  200,
+        "offers":  200,
+        "supplierMessage":  "",
+        "attempts":  [
+
+                     ]
+    },
+    {
+        "file":  "AncillaryBookMulti3.json",
+        "supplier":  "AirCairo",
+        "selector":  "EGY",
+        "passengers":  "ADTx4,CHDx1,INFx4",
+        "originalRoute":  "STR-CAI@+28d | CAI-KWI@+31d",
+        "finalRoute":  "STR-CAI@+28d | CAI-KWI@+31d",
+        "pass1":  true,
+        "repaired":  false,
+        "finalPass":  true,
+        "status":  200,
+        "offers":  56,
+        "supplierMessage":  "",
+        "attempts":  [
+
+                     ]
+    },
+    {
+        "file":  "AncillaryBookMulti4.json",
+        "supplier":  "AirCairo",
+        "selector":  "EGY",
+        "passengers":  "ADTx2,CHDx2,INFx2",
+        "originalRoute":  "FRA-CAI@+42d | CAI-HAJ@+45d",
+        "finalRoute":  "FRA-CAI@+42d | CAI-HAJ@+45d",
+        "pass1":  true,
+        "repaired":  false,
+        "finalPass":  true,
+        "status":  200,
+        "offers":  200,
+        "supplierMessage":  "",
+        "attempts":  [
+
+                     ]
+    },
+    {
+        "file":  "AncillaryBookMulti5.json",
+        "supplier":  "AirCairo",
+        "selector":  "EGY",
+        "passengers":  "ADTx3,CHDx3,INFx3",
+        "originalRoute":  "KWI-CAI@+43d | CAI-CGN@+46d",
+        "finalRoute":  "KWI-CAI@+43d | CAI-CGN@+46d",
+        "pass1":  true,
+        "repaired":  false,
+        "finalPass":  true,
+        "status":  200,
+        "offers":  200,
+        "supplierMessage":  "",
+        "attempts":  [
+
+                     ]
+    },
+    {
+        "file":  "AncillaryBookMulti6.json",
+        "supplier":  "AirCairo",
+        "selector":  "EGY",
+        "passengers":  "ADTx4,CHDx2,INFx2",
+        "originalRoute":  "JED-CAI@+44d | CAI-STR@+47d",
+        "finalRoute":  "JED-CAI@+44d | CAI-STR@+47d",
+        "pass1":  true,
+        "repaired":  false,
+        "finalPass":  true,
+        "status":  200,
+        "offers":  200,
+        "supplierMessage":  "",
+        "attempts":  [
+
+                     ]
+    },
+    {
+        "file":  "AncillaryBookMulti7.json",
+        "supplier":  "AirCairo",
+        "selector":  "EGY",
+        "passengers":  "ADTx4,CHDx1,INFx4",
+        "originalRoute":  "SSH-CAI@+46d | CAI-FRA@+49d",
+        "finalRoute":  "SSH-CAI@+46d | CAI-FRA@+49d",
+        "pass1":  true,
+        "repaired":  false,
+        "finalPass":  true,
+        "status":  200,
+        "offers":  200,
+        "supplierMessage":  "",
+        "attempts":  [
+
+                     ]
+    },
+    {
+        "file":  "AncillaryBookOne.json",
+        "supplier":  "AirCairo",
+        "selector":  "EGY",
+        "passengers":  "ADTx2,CHDx2,INFx2",
+        "originalRoute":  "CAI-DUS@+20d",
+        "finalRoute":  "CAI-DUS@+20d",
+        "pass1":  true,
+        "repaired":  false,
+        "finalPass":  true,
+        "status":  200,
+        "offers":  21,
+        "supplierMessage":  "",
+        "attempts":  [
+
+                     ]
+    },
+    {
+        "file":  "AncillaryBookOne1.json",
+        "supplier":  "AirCairo",
+        "selector":  "EGY",
+        "passengers":  "ADTx3,CHDx3,INFx3",
+        "originalRoute":  "CAI-HAJ@+21d",
+        "finalRoute":  "CAI-HAJ@+21d",
+        "pass1":  true,
+        "repaired":  false,
+        "finalPass":  true,
+        "status":  200,
+        "offers":  28,
+        "supplierMessage":  "",
+        "attempts":  [
+
+                     ]
+    },
+    {
+        "file":  "AncillaryBookOne2.json",
+        "supplier":  "AirCairo",
+        "selector":  "EGY",
+        "passengers":  "ADTx4,CHDx2,INFx2",
+        "originalRoute":  "CAI-LXR@+22d",
+        "finalRoute":  "CAI-LXR@+22d",
+        "pass1":  true,
+        "repaired":  false,
+        "finalPass":  true,
+        "status":  200,
+        "offers":  10,
+        "supplierMessage":  "",
+        "attempts":  [
+
+                     ]
+    },
+    {
+        "file":  "AncillaryBookOne3.json",
+        "supplier":  "AirCairo",
+        "selector":  "EGY",
+        "passengers":  "ADTx5,CHDx2,INFx2",
+        "originalRoute":  "CAI-CGN@+23d",
+        "finalRoute":  "CAI-CGN@+23d",
+        "pass1":  true,
+        "repaired":  false,
+        "finalPass":  true,
+        "status":  200,
+        "offers":  30,
+        "supplierMessage":  "",
+        "attempts":  [
+
+                     ]
+    },
+    {
+        "file":  "AncillaryBookOne4.json",
+        "supplier":  "AirCairo",
+        "selector":  "EGY",
+        "passengers":  "ADTx4,CHDx1,INFx4",
+        "originalRoute":  "CAI-YNB@+24d",
+        "finalRoute":  "CAI-YNB@+24d",
+        "pass1":  true,
+        "repaired":  false,
+        "finalPass":  true,
+        "status":  200,
+        "offers":  4,
+        "supplierMessage":  "",
+        "attempts":  [
+
+                     ]
+    },
+    {
+        "file":  "AncillaryBookOne5.json",
+        "supplier":  "AirCairo",
+        "selector":  "EGY",
+        "passengers":  "ADTx4,CHDx3,INFx2",
+        "originalRoute":  "CAI-STR@+25d",
+        "finalRoute":  "CAI-STR@+25d",
+        "pass1":  true,
+        "repaired":  false,
+        "finalPass":  true,
+        "status":  200,
+        "offers":  18,
+        "supplierMessage":  "",
+        "attempts":  [
+
+                     ]
+    },
+    {
+        "file":  "AncillaryBookRound.json",
+        "supplier":  "AirCairo",
+        "selector":  "EGY",
+        "passengers":  "ADTx2,CHDx2,INFx2",
+        "originalRoute":  "CAI-DUS@+44d | DUS-CAI@+51d",
+        "finalRoute":  "CAI-DUS@+44d | DUS-CAI@+51d",
+        "pass1":  true,
+        "repaired":  false,
+        "finalPass":  true,
+        "status":  200,
+        "offers":  200,
+        "supplierMessage":  "",
+        "attempts":  [
+
+                     ]
+    },
+    {
+        "file":  "AncillaryBookRound1.json",
+        "supplier":  "AirCairo",
+        "selector":  "EGY",
+        "passengers":  "ADTx5,CHDx2,INFx2",
+        "originalRoute":  "CAI-CGN@+47d | CGN-CAI@+54d",
+        "finalRoute":  "CAI-CGN@+47d | CGN-CAI@+54d",
+        "pass1":  true,
+        "repaired":  false,
+        "finalPass":  true,
+        "status":  200,
+        "offers":  200,
+        "supplierMessage":  "",
+        "attempts":  [
+
+                     ]
+    },
+    {
+        "file":  "AncillaryBookRound2.json",
+        "supplier":  "AirCairo",
+        "selector":  "EGY",
+        "passengers":  "ADTx3,CHDx3,INFx3",
+        "originalRoute":  "CAI-LXR@+46d | LXR-CAI@+53d",
+        "finalRoute":  "CAI-LXR@+46d | LXR-CAI@+53d",
+        "pass1":  true,
+        "repaired":  false,
+        "finalPass":  true,
+        "status":  200,
+        "offers":  150,
+        "supplierMessage":  "",
+        "attempts":  [
+
+                     ]
+    },
+    {
+        "file":  "AncillaryBookRound3.json",
+        "supplier":  "AirCairo",
+        "selector":  "EGY",
+        "passengers":  "ADTx5,CHDx2,INFx2",
+        "originalRoute":  "CAI-LXR@+46d | LXR-CAI@+53d",
+        "finalRoute":  "CAI-LXR@+46d | LXR-CAI@+53d",
+        "pass1":  true,
+        "repaired":  false,
+        "finalPass":  true,
+        "status":  200,
+        "offers":  150,
+        "supplierMessage":  "",
+        "attempts":  [
+
+                     ]
+    },
+    {
+        "file":  "AncillaryBookRound5.json",
+        "supplier":  "AirCairo",
+        "selector":  "EGY",
+        "passengers":  "ADTx3,CHDx3,INFx3",
+        "originalRoute":  "YNB-CAI@+24d | CAI-YNB@+31d",
+        "finalRoute":  "YNB-CAI@+24d | CAI-YNB@+31d",
+        "pass1":  true,
+        "repaired":  false,
+        "finalPass":  true,
+        "status":  200,
+        "offers":  16,
+        "supplierMessage":  "",
+        "attempts":  [
+
+                     ]
+    },
+    {
+        "file":  "AncillaryBookRound6.json",
+        "supplier":  "AirCairo",
+        "selector":  "EGY",
+        "passengers":  "ADTx5,CHDx2,INFx2",
+        "originalRoute":  "STR-CAI@+25d | CAI-STR@+32d",
+        "finalRoute":  "STR-CAI@+25d | CAI-STR@+32d",
+        "pass1":  true,
+        "repaired":  false,
+        "finalPass":  true,
+        "status":  200,
+        "offers":  200,
+        "supplierMessage":  "",
+        "attempts":  [
+
+                     ]
+    },
+    {
+        "file":  "AncillaryHoldMulti.json",
+        "supplier":  "AirCairo",
+        "selector":  "EGY",
+        "passengers":  "ADTx2,CHDx2,INFx2",
+        "originalRoute":  "BER-CAI@+29d | CAI-YNB@+32d",
+        "finalRoute":  "BER-CAI@+29d | CAI-YNB@+32d",
+        "pass1":  true,
+        "repaired":  false,
+        "finalPass":  true,
+        "status":  200,
+        "offers":  84,
+        "supplierMessage":  "",
+        "attempts":  [
+
+                     ]
+    },
+    {
+        "file":  "AncillaryHoldMulti1.json",
+        "supplier":  "AirCairo",
+        "selector":  "EGY",
+        "passengers":  "ADTx3,CHDx3,INFx3",
+        "originalRoute":  "YNB-CAI@+41d | CAI-BER@+48d",
+        "finalRoute":  "YNB-CAI@+41d | CAI-BER@+48d",
+        "pass1":  true,
+        "repaired":  false,
+        "finalPass":  true,
+        "status":  200,
+        "offers":  56,
+        "supplierMessage":  "",
+        "attempts":  [
+
+                     ]
+    },
+    {
+        "file":  "AncillaryHoldMulti2.json",
+        "supplier":  "AirCairo",
+        "selector":  "EGY",
+        "passengers":  "ADTx4,CHDx2,INFx2",
+        "originalRoute":  "KWI-CAI@+31d | CAI-DUS@+34d",
+        "finalRoute":  "KWI-CAI@+31d | CAI-DUS@+34d",
+        "pass1":  true,
+        "repaired":  false,
+        "finalPass":  true,
+        "status":  200,
+        "offers":  72,
+        "supplierMessage":  "",
+        "attempts":  [
+
+                     ]
+    },
+    {
+        "file":  "AncillaryHoldMulti3.json",
+        "supplier":  "AirCairo",
+        "selector":  "EGY",
+        "passengers":  "ADTx4,CHDx4,INFx1",
+        "originalRoute":  "YNB-CAI@+41d | CAI-BER@+44d",
+        "finalRoute":  "YNB-CAI@+41d | CAI-BER@+44d",
+        "pass1":  true,
+        "repaired":  false,
+        "finalPass":  true,
+        "status":  200,
+        "offers":  56,
+        "supplierMessage":  "",
+        "attempts":  [
+
+                     ]
+    },
+    {
+        "file":  "AncillaryHoldMulti4.json",
+        "supplier":  "AirCairo",
+        "selector":  "EGY",
+        "passengers":  "ADTx2,CHDx2,INFx2",
+        "originalRoute":  "YNB-CAI@+45d | CAI-BER@+48d",
+        "finalRoute":  "YNB-CAI@+45d | CAI-BER@+48d",
+        "pass1":  true,
+        "repaired":  false,
+        "finalPass":  true,
+        "status":  200,
+        "offers":  69,
+        "supplierMessage":  "",
+        "attempts":  [
+
+                     ]
+    },
+    {
+        "file":  "AncillaryHoldMulti5.json",
+        "supplier":  "AirCairo",
+        "selector":  "EGY",
+        "passengers":  "ADTx3,CHDx3,INFx3",
+        "originalRoute":  "SSH-CAI@+46d | CAI-FRA@+49d",
+        "finalRoute":  "SSH-CAI@+46d | CAI-FRA@+49d",
+        "pass1":  true,
+        "repaired":  false,
+        "finalPass":  true,
+        "status":  200,
+        "offers":  200,
+        "supplierMessage":  "",
+        "attempts":  [
+
+                     ]
+    },
+    {
+        "file":  "AncillaryHoldMulti6.json",
+        "supplier":  "AirCairo",
+        "selector":  "EGY",
+        "passengers":  "ADTx4,CHDx2,INFx2",
+        "originalRoute":  "LXR-CAI@+47d | CAI-KWI@+50d",
+        "finalRoute":  "LXR-CAI@+47d | CAI-KWI@+50d",
+        "pass1":  true,
+        "repaired":  false,
+        "finalPass":  true,
+        "status":  200,
+        "offers":  17,
+        "supplierMessage":  "",
+        "attempts":  [
+
+                     ]
+    },
+    {
+        "file":  "AncillaryHoldMulti7.json",
+        "supplier":  "AirCairo",
+        "selector":  "EGY",
+        "passengers":  "ADTx4,CHDx4,INFx1",
+        "originalRoute":  "YNB-CAI@+44d | CAI-BER@+48d",
+        "finalRoute":  "YNB-CAI@+44d | CAI-BER@+48d",
+        "pass1":  true,
+        "repaired":  false,
+        "finalPass":  true,
+        "status":  200,
+        "offers":  56,
+        "supplierMessage":  "",
+        "attempts":  [
+
+                     ]
+    },
+    {
+        "file":  "AncillaryHoldOne.json",
+        "supplier":  "AirCairo",
+        "selector":  "EGY",
+        "passengers":  "ADTx2,CHDx2,INFx2",
+        "originalRoute":  "CAI-BER@+26d",
+        "finalRoute":  "CAI-BER@+26d",
+        "pass1":  true,
+        "repaired":  false,
+        "finalPass":  true,
+        "status":  200,
+        "offers":  17,
+        "supplierMessage":  "",
+        "attempts":  [
+
+                     ]
+    },
+    {
+        "file":  "AncillaryHoldOne1.json",
+        "supplier":  "AirCairo",
+        "selector":  "EGY",
+        "passengers":  "ADTx3,CHDx3,INFx3",
+        "originalRoute":  "CAI-SSH@+27d",
+        "finalRoute":  "CAI-SSH@+27d",
+        "pass1":  true,
+        "repaired":  false,
+        "finalPass":  true,
+        "status":  200,
+        "offers":  30,
+        "supplierMessage":  "",
+        "attempts":  [
+
+                     ]
+    },
+    {
+        "file":  "AncillaryHoldOne2.json",
+        "supplier":  "AirCairo",
+        "selector":  "EGY",
+        "passengers":  "ADTx4,CHDx2,INFx2",
+        "originalRoute":  "CAI-HBE@+28d",
+        "finalRoute":  "CAI-HBE@+28d",
+        "pass1":  true,
+        "repaired":  false,
+        "finalPass":  true,
+        "status":  200,
+        "offers":  4,
+        "supplierMessage":  "",
+        "attempts":  [
+
+                     ]
+    },
+    {
+        "file":  "AncillaryHoldOne3.json",
+        "supplier":  "AirCairo",
+        "selector":  "EGY",
+        "passengers":  "ADTx3,CHDx3,INFx3",
+        "originalRoute":  "CAI-KWI@+29d",
+        "finalRoute":  "CAI-KWI@+29d",
+        "pass1":  true,
+        "repaired":  false,
+        "finalPass":  true,
+        "status":  200,
+        "offers":  4,
+        "supplierMessage":  "",
+        "attempts":  [
+
+                     ]
+    },
+    {
+        "file":  "AncillaryHoldRound.json",
+        "supplier":  "AirCairo",
+        "selector":  "EGY",
+        "passengers":  "ADTx2,CHDx2,INFx2",
+        "originalRoute":  "CAI-YNB@+48d | YNB-CAI@+55d",
+        "finalRoute":  "CAI-YNB@+48d | YNB-CAI@+55d",
+        "pass1":  true,
+        "repaired":  false,
+        "finalPass":  true,
+        "status":  200,
+        "offers":  16,
+        "supplierMessage":  "",
+        "attempts":  [
+
+                     ]
+    },
+    {
+        "file":  "AncillaryHoldRound1.json",
+        "supplier":  "AirCairo",
+        "selector":  "EGY",
+        "passengers":  "ADTx5,CHDx2,INFx2",
+        "originalRoute":  "CAI-STR@+49d | STR-CAI@+56d",
+        "finalRoute":  "CAI-STR@+49d | STR-CAI@+56d",
+        "pass1":  true,
+        "repaired":  false,
+        "finalPass":  true,
+        "status":  200,
+        "offers":  64,
+        "supplierMessage":  "",
+        "attempts":  [
+
+                     ]
+    },
+    {
+        "file":  "AncillaryHoldRound2.json",
+        "supplier":  "AirCairo",
+        "selector":  "EGY",
+        "passengers":  "ADTx4,CHDx2,INFx2",
+        "originalRoute":  "CAI-BER@+50d | BER-CAI@+57d",
+        "finalRoute":  "CAI-BER@+50d | BER-CAI@+57d",
+        "pass1":  true,
+        "repaired":  false,
+        "finalPass":  true,
+        "status":  200,
+        "offers":  200,
+        "supplierMessage":  "",
+        "attempts":  [
+
+                     ]
+    },
+    {
+        "file":  "AncillaryHoldRound3.json",
+        "supplier":  "AirCairo",
+        "selector":  "EGY",
+        "passengers":  "ADTx3,CHDx3,INFx3",
+        "originalRoute":  "CAI-SSH@+20d | SSH-CAI@+27d",
+        "finalRoute":  "CAI-SSH@+20d | SSH-CAI@+27d",
+        "pass1":  true,
+        "repaired":  false,
+        "finalPass":  true,
+        "status":  200,
+        "offers":  200,
+        "supplierMessage":  "",
+        "attempts":  [
+
+                     ]
+    },
+    {
+        "file":  "AncillaryHoldRound5.json",
+        "supplier":  "AirCairo",
+        "selector":  "EGY",
+        "passengers":  "ADTx4,CHDx2,INFx2",
+        "originalRoute":  "BER-CAI@+26d | CAI-BER@+33d",
+        "finalRoute":  "BER-CAI@+26d | CAI-BER@+33d",
+        "pass1":  true,
+        "repaired":  false,
+        "finalPass":  true,
+        "status":  200,
+        "offers":  200,
+        "supplierMessage":  "",
+        "attempts":  [
+
+                     ]
+    },
+    {
+        "file":  "AncillaryHoldRound6.json",
+        "supplier":  "AirCairo",
+        "selector":  "EGY",
+        "passengers":  "ADTx3,CHDx3,INFx3",
+        "originalRoute":  "SSH-CAI@+27d | CAI-SSH@+34d",
+        "finalRoute":  "SSH-CAI@+27d | CAI-SSH@+34d",
+        "pass1":  true,
+        "repaired":  false,
+        "finalPass":  true,
+        "status":  200,
+        "offers":  200,
+        "supplierMessage":  "",
+        "attempts":  [
+
+                     ]
+    },
+    {
+        "file":  "BookMulti.json",
+        "supplier":  "AirCairo",
+        "selector":  "EGY",
+        "passengers":  "ADTx2,CHDx2,INFx2",
+        "originalRoute":  "SSH-CAI@+34d | CAI-STR@+37d",
+        "finalRoute":  "SSH-CAI@+34d | CAI-STR@+37d",
+        "pass1":  true,
+        "repaired":  false,
+        "finalPass":  true,
+        "status":  200,
+        "offers":  200,
+        "supplierMessage":  "",
+        "attempts":  [
+
+                     ]
+    },
+    {
+        "file":  "BookMulti1.json",
+        "supplier":  "AirCairo",
+        "selector":  "EGY",
+        "passengers":  "ADTx3,CHDx3,INFx3",
+        "originalRoute":  "JED-CAI@+32d | CAI-FRA@+35d",
+        "finalRoute":  "JED-CAI@+32d | CAI-FRA@+35d",
+        "pass1":  true,
+        "repaired":  false,
+        "finalPass":  true,
+        "status":  200,
+        "offers":  168,
+        "supplierMessage":  "",
+        "attempts":  [
+
+                     ]
+    },
+    {
+        "file":  "BookMulti2.json",
+        "supplier":  "AirCairo",
+        "selector":  "EGY",
+        "passengers":  "ADTx4,CHDx2,INFx2",
+        "originalRoute":  "JED-CAI@+20d | CAI-FRA@+25d",
+        "finalRoute":  "JED-CAI@+20d | CAI-FRA@+25d",
+        "pass1":  true,
+        "repaired":  false,
+        "finalPass":  true,
+        "status":  200,
+        "offers":  107,
+        "supplierMessage":  "",
+        "attempts":  [
+
+                     ]
+    },
+    {
+        "file":  "BookMulti3.json",
+        "supplier":  "AirCairo",
+        "selector":  "EGY",
+        "passengers":  "ADTx4,CHDx1,INFx4",
+        "originalRoute":  "JED-CAI@+5d | CAI-FRA@+15d",
+        "finalRoute":  "JED-CAI@+5d | CAI-FRA@+15d",
+        "pass1":  true,
+        "repaired":  false,
+        "finalPass":  true,
+        "status":  200,
+        "offers":  112,
+        "supplierMessage":  "",
+        "attempts":  [
+
+                     ]
+    },
+    {
+        "file":  "BookMulti4.json",
+        "supplier":  "AirCairo",
+        "selector":  "EGY",
+        "passengers":  "ADTx2,CHDx2,INFx2",
+        "originalRoute":  "DUS-CAI@+21d | CAI-SSH@+24d",
+        "finalRoute":  "DUS-CAI@+21d | CAI-SSH@+24d",
+        "pass1":  true,
+        "repaired":  false,
+        "finalPass":  true,
+        "status":  200,
+        "offers":  200,
+        "supplierMessage":  "",
+        "attempts":  [
+
+                     ]
+    },
+    {
+        "file":  "BookMulti5.json",
+        "supplier":  "AirCairo",
+        "selector":  "EGY",
+        "passengers":  "ADTx3,CHDx3,INFx3",
+        "originalRoute":  "HAJ-CAI@+22d | CAI-LXR@+25d",
+        "finalRoute":  "HAJ-CAI@+22d | CAI-LXR@+25d",
+        "pass1":  true,
+        "repaired":  false,
+        "finalPass":  true,
+        "status":  200,
+        "offers":  200,
+        "supplierMessage":  "",
+        "attempts":  [
+
+                     ]
+    },
+    {
+        "file":  "BookMulti6.json",
+        "supplier":  "AirCairo",
+        "selector":  "EGY",
+        "passengers":  "ADTx4,CHDx2,INFx2",
+        "originalRoute":  "CGN-CAI@+23d | CAI-HBE@+26d",
+        "finalRoute":  "CGN-CAI@+23d | CAI-HBE@+26d",
+        "pass1":  true,
+        "repaired":  false,
+        "finalPass":  true,
+        "status":  200,
+        "offers":  156,
+        "supplierMessage":  "",
+        "attempts":  [
+
+                     ]
+    },
+    {
+        "file":  "BookMulti7.json",
+        "supplier":  "AirCairo",
+        "selector":  "EGY",
+        "passengers":  "ADTx4,CHDx1,INFx4",
+        "originalRoute":  "STR-CAI@+24d | CAI-JED@+27d",
+        "finalRoute":  "STR-CAI@+24d | CAI-JED@+27d",
+        "pass1":  true,
+        "repaired":  false,
+        "finalPass":  true,
+        "status":  200,
+        "offers":  108,
+        "supplierMessage":  "",
+        "attempts":  [
+
+                     ]
+    },
+    {
+        "file":  "BookOne.json",
+        "supplier":  "AirCairo",
+        "selector":  "EGY",
+        "passengers":  "ADTx2,CHDx2,INFx2",
+        "originalRoute":  "CAI-JED@+30d",
+        "finalRoute":  "CAI-JED@+30d",
+        "pass1":  true,
+        "repaired":  false,
+        "finalPass":  true,
+        "status":  200,
+        "offers":  12,
+        "supplierMessage":  "",
+        "attempts":  [
+
+                     ]
+    },
+    {
+        "file":  "BookOne1.json",
+        "supplier":  "AirCairo",
+        "selector":  "EGY",
+        "passengers":  "ADTx3,CHDx3,INFx3",
+        "originalRoute":  "CAI-FRA@+31d",
+        "finalRoute":  "CAI-FRA@+31d",
+        "pass1":  true,
+        "repaired":  false,
+        "finalPass":  true,
+        "status":  200,
+        "offers":  12,
+        "supplierMessage":  "",
+        "attempts":  [
+
+                     ]
+    },
+    {
+        "file":  "BookOne2.json",
+        "supplier":  "AirCairo",
+        "selector":  "EGY",
+        "passengers":  "ADTx4,CHDx2,INFx2",
+        "originalRoute":  "DUS-CAI@+32d",
+        "finalRoute":  "DUS-CAI@+32d",
+        "pass1":  true,
+        "repaired":  false,
+        "finalPass":  true,
+        "status":  200,
+        "offers":  13,
+        "supplierMessage":  "",
+        "attempts":  [
+
+                     ]
+    },
+    {
+        "file":  "BookOne3.json",
+        "supplier":  "AirCairo",
+        "selector":  "EGY",
+        "passengers":  "ADTx5,CHDx2,INFx2",
+        "originalRoute":  "HAJ-CAI@+33d",
+        "finalRoute":  "HAJ-CAI@+33d",
+        "pass1":  true,
+        "repaired":  false,
+        "finalPass":  true,
+        "status":  200,
+        "offers":  19,
+        "supplierMessage":  "",
+        "attempts":  [
+
+                     ]
+    },
+    {
+        "file":  "BookOne4.json",
+        "supplier":  "AirCairo",
+        "selector":  "EGY",
+        "passengers":  "ADTx4,CHDx1,INFx4",
+        "originalRoute":  "LXR-CAI@+34d",
+        "finalRoute":  "LXR-CAI@+34d",
+        "pass1":  true,
+        "repaired":  false,
+        "finalPass":  true,
+        "status":  200,
+        "offers":  5,
+        "supplierMessage":  "",
+        "attempts":  [
+
+                     ]
+    },
+    {
+        "file":  "BookOne5.json",
+        "supplier":  "AirCairo",
+        "selector":  "EGY",
+        "passengers":  "ADTx4,CHDx3,INFx2",
+        "originalRoute":  "CGN-CAI@+35d",
+        "finalRoute":  "CGN-CAI@+35d",
+        "pass1":  true,
+        "repaired":  false,
+        "finalPass":  true,
+        "status":  200,
+        "offers":  14,
+        "supplierMessage":  "",
+        "attempts":  [
+
+                     ]
+    },
+    {
+        "file":  "BookOne6.json",
+        "supplier":  "AirCairo",
+        "selector":  "EGY",
+        "passengers":  "ADTx5,CHDx1,INFx2",
+        "originalRoute":  "CGN-CAI@+35d",
+        "finalRoute":  "CGN-CAI@+35d",
+        "pass1":  true,
+        "repaired":  false,
+        "finalPass":  true,
+        "status":  200,
+        "offers":  14,
+        "supplierMessage":  "",
+        "attempts":  [
+
+                     ]
+    },
+    {
+        "file":  "BookOne7.json",
+        "supplier":  "AirCairo",
+        "selector":  "EGY",
+        "passengers":  "ADTx3,CHDx2,INFx3",
+        "originalRoute":  "STR-CAI@+37d",
+        "finalRoute":  "STR-CAI@+37d",
+        "pass1":  true,
+        "repaired":  false,
+        "finalPass":  true,
+        "status":  200,
+        "offers":  9,
+        "supplierMessage":  "",
+        "attempts":  [
+
+                     ]
+    },
+    {
+        "file":  "BookOne8.json",
+        "supplier":  "AirCairo",
+        "selector":  "EGY",
+        "passengers":  "ADTx6,CHDx1,INFx2",
+        "originalRoute":  "BER-CAI@+38d",
+        "finalRoute":  "BER-CAI@+38d",
+        "pass1":  true,
+        "repaired":  false,
+        "finalPass":  true,
+        "status":  200,
+        "offers":  18,
+        "supplierMessage":  "",
+        "attempts":  [
+
+                     ]
+    },
+    {
+        "file":  "BookRound.json",
+        "supplier":  "AirCairo",
+        "selector":  "EGY",
+        "passengers":  "ADTx2,CHDx2,INFx2",
+        "originalRoute":  "CAI-JED@+21d | JED-CAI@+28d",
+        "finalRoute":  "CAI-JED@+21d | JED-CAI@+28d",
+        "pass1":  true,
+        "repaired":  false,
+        "finalPass":  true,
+        "status":  200,
+        "offers":  192,
+        "supplierMessage":  "",
+        "attempts":  [
+
+                     ]
+    },
+    {
+        "file":  "BookRound1.json",
+        "supplier":  "AirCairo",
+        "selector":  "EGY",
+        "passengers":  "ADTx5,CHDx2,INFx2",
+        "originalRoute":  "CAI-KWI@+22d | KWI-CAI@+29d",
+        "finalRoute":  "CAI-KWI@+22d | KWI-CAI@+29d",
+        "pass1":  true,
+        "repaired":  false,
+        "finalPass":  true,
+        "status":  200,
+        "offers":  39,
+        "supplierMessage":  "",
+        "attempts":  [
+
+                     ]
+    },
+    {
+        "file":  "BookRound2.json",
+        "supplier":  "AirCairo",
+        "selector":  "EGY",
+        "passengers":  "ADTx3,CHDx3,INFx3",
+        "originalRoute":  "CAI-JED@+23d | JED-CAI@+30d",
+        "finalRoute":  "CAI-JED@+23d | JED-CAI@+30d",
+        "pass1":  true,
+        "repaired":  false,
+        "finalPass":  true,
+        "status":  200,
+        "offers":  156,
+        "supplierMessage":  "",
+        "attempts":  [
+
+                     ]
+    },
+    {
+        "file":  "BookRound3.json",
+        "supplier":  "AirCairo",
+        "selector":  "EGY",
+        "passengers":  "ADTx5,CHDx2,INFx2",
+        "originalRoute":  "CAI-FRA@+24d | FRA-CAI@+31d",
+        "finalRoute":  "CAI-FRA@+24d | FRA-CAI@+31d",
+        "pass1":  true,
+        "repaired":  false,
+        "finalPass":  true,
+        "status":  200,
+        "offers":  160,
+        "supplierMessage":  "",
+        "attempts":  [
+
+                     ]
+    },
+    {
+        "file":  "BookRound4.json",
+        "supplier":  "AirCairo",
+        "selector":  "EGY",
+        "passengers":  "ADTx5,CHDx2,INFx2",
+        "originalRoute":  "CAI-JED@+23d | JED-CAI@+30d",
+        "finalRoute":  "CAI-JED@+23d | JED-CAI@+30d",
+        "pass1":  true,
+        "repaired":  false,
+        "finalPass":  true,
+        "status":  200,
+        "offers":  156,
+        "supplierMessage":  "",
+        "attempts":  [
+
+                     ]
+    },
+    {
+        "file":  "BookRound5.json",
+        "supplier":  "AirCairo",
+        "selector":  "EGY",
+        "passengers":  "ADTx3,CHDx3,INFx3",
+        "originalRoute":  "KWI-CAI@+29d | CAI-KWI@+36d",
+        "finalRoute":  "KWI-CAI@+29d | CAI-KWI@+36d",
+        "pass1":  true,
+        "repaired":  false,
+        "finalPass":  true,
+        "status":  200,
+        "offers":  182,
+        "supplierMessage":  "",
+        "attempts":  [
+
+                     ]
+    },
+    {
+        "file":  "CancelMulti.json",
+        "supplier":  "AirCairo",
+        "selector":  "EGY",
+        "passengers":  "ADTx2,CHDx2,INFx2",
+        "originalRoute":  "HBE-CAI@+36d | CAI-CGN@+39d",
+        "finalRoute":  "HBE-CAI@+36d | CAI-CGN@+39d",
+        "pass1":  true,
+        "repaired":  false,
+        "finalPass":  true,
+        "status":  200,
+        "offers":  116,
+        "supplierMessage":  "",
+        "attempts":  [
+
+                     ]
+    },
+    {
+        "file":  "CancelMulti2.json",
+        "supplier":  "AirCairo",
+        "selector":  "EGY",
+        "passengers":  "ADTx2,CHDx2,INFx2",
+        "originalRoute":  "HAJ-CAI@+29d | CAI-KWI@+41d",
+        "finalRoute":  "HAJ-CAI@+29d | CAI-KWI@+41d",
+        "pass1":  true,
+        "repaired":  false,
+        "finalPass":  true,
+        "status":  200,
+        "offers":  128,
+        "supplierMessage":  "",
+        "attempts":  [
+
+                     ]
+    },
+    {
+        "file":  "CancelOne.json",
+        "supplier":  "AirCairo",
+        "selector":  "EGY",
+        "passengers":  "ADTx2,CHDx2,INFx2",
+        "originalRoute":  "SSH-CAI@+39d",
+        "finalRoute":  "SSH-CAI@+39d",
+        "pass1":  true,
+        "repaired":  false,
+        "finalPass":  true,
+        "status":  200,
+        "offers":  25,
+        "supplierMessage":  "",
+        "attempts":  [
+
+                     ]
+    },
+    {
+        "file":  "CancelRound.json",
+        "supplier":  "AirCairo",
+        "selector":  "EGY",
+        "passengers":  "ADTx2,CHDx2,INFx2",
+        "originalRoute":  "DUS-CAI@+20d | CAI-DUS@+27d",
+        "finalRoute":  "DUS-CAI@+20d | CAI-DUS@+27d",
+        "pass1":  true,
+        "repaired":  false,
+        "finalPass":  true,
+        "status":  200,
+        "offers":  200,
+        "supplierMessage":  "",
+        "attempts":  [
+
+                     ]
+    },
+    {
+        "file":  "HoldMulti.json",
+        "supplier":  "AirCairo",
+        "selector":  "EGY",
+        "passengers":  "ADTx2,CHDx2,INFx2",
+        "originalRoute":  "DUS-CAI@+37d | CAI-JED@+40d",
+        "finalRoute":  "DUS-CAI@+37d | CAI-JED@+40d",
+        "pass1":  true,
+        "repaired":  false,
+        "finalPass":  true,
+        "status":  200,
+        "offers":  104,
+        "supplierMessage":  "",
+        "attempts":  [
+
+                     ]
+    },
+    {
+        "file":  "HoldMulti1.json",
+        "supplier":  "AirCairo",
+        "selector":  "EGY",
+        "passengers":  "ADTx3,CHDx3,INFx3",
+        "originalRoute":  "HAJ-CAI@+38d | CAI-KWI@+41d",
+        "finalRoute":  "HAJ-CAI@+38d | CAI-KWI@+41d",
+        "pass1":  true,
+        "repaired":  false,
+        "finalPass":  true,
+        "status":  200,
+        "offers":  76,
+        "supplierMessage":  "",
+        "attempts":  [
+
+                     ]
+    },
+    {
+        "file":  "HoldMulti2.json",
+        "supplier":  "AirCairo",
+        "selector":  "EGY",
+        "passengers":  "ADTx4,CHDx2,INFx2",
+        "originalRoute":  "CGN-CAI@+39d | CAI-YNB@+42d",
+        "finalRoute":  "CGN-CAI@+39d | CAI-YNB@+42d",
+        "pass1":  true,
+        "repaired":  false,
+        "finalPass":  true,
+        "status":  200,
+        "offers":  60,
+        "supplierMessage":  "",
+        "attempts":  [
+
+                     ]
+    },
+    {
+        "file":  "HoldMulti3.json",
+        "supplier":  "AirCairo",
+        "selector":  "EGY",
+        "passengers":  "ADTx4,CHDx4,INFx1",
+        "originalRoute":  "STR-CAI@+40d | CAI-FRA@+43d",
+        "finalRoute":  "STR-CAI@+40d | CAI-FRA@+43d",
+        "pass1":  true,
+        "repaired":  false,
+        "finalPass":  true,
+        "status":  200,
+        "offers":  190,
+        "supplierMessage":  "",
+        "attempts":  [
+
+                     ]
+    },
+    {
+        "file":  "HoldMulti4.json",
+        "supplier":  "AirCairo",
+        "selector":  "EGY",
+        "passengers":  "ADTx2,CHDx2,INFx2",
+        "originalRoute":  "HAJ-CAI@+30d | CAI-KWI@+41d",
+        "finalRoute":  "HAJ-CAI@+30d | CAI-KWI@+41d",
+        "pass1":  true,
+        "repaired":  false,
+        "finalPass":  true,
+        "status":  200,
+        "offers":  136,
+        "supplierMessage":  "",
+        "attempts":  [
+
+                     ]
+    },
+    {
+        "file":  "HoldMulti5.json",
+        "supplier":  "AirCairo",
+        "selector":  "EGY",
+        "passengers":  "ADTx3,CHDx3,INFx3",
+        "originalRoute":  "CAI-CGN@+27d | STR-CAI@+32d",
+        "finalRoute":  "CAI-CGN@+27d | STR-CAI@+32d",
+        "pass1":  true,
+        "repaired":  false,
+        "finalPass":  true,
+        "status":  200,
+        "offers":  200,
+        "supplierMessage":  "",
+        "attempts":  [
+
+                     ]
+    },
+    {
+        "file":  "HoldMulti6.json",
+        "supplier":  "AirCairo",
+        "selector":  "EGY",
+        "passengers":  "ADTx4,CHDx2,INFx2",
+        "originalRoute":  "CAI-SSH@+29d | LXR-CAI@+34d",
+        "finalRoute":  "CAI-SSH@+29d | LXR-CAI@+34d",
+        "pass1":  true,
+        "repaired":  false,
+        "finalPass":  true,
+        "status":  200,
+        "offers":  65,
+        "supplierMessage":  "",
+        "attempts":  [
+
+                     ]
+    },
+    {
+        "file":  "HoldOne.json",
+        "supplier":  "AirCairo",
+        "selector":  "EGY",
+        "passengers":  "ADTx2,CHDx2,INFx2",
+        "originalRoute":  "HBE-CAI@+43d",
+        "finalRoute":  "HBE-CAI@+43d",
+        "pass1":  true,
+        "repaired":  false,
+        "finalPass":  true,
+        "status":  200,
+        "offers":  4,
+        "supplierMessage":  "",
+        "attempts":  [
+
+                     ]
+    },
+    {
+        "file":  "HoldOne1.json",
+        "supplier":  "AirCairo",
+        "selector":  "EGY",
+        "passengers":  "ADTx3,CHDx3,INFx3",
+        "originalRoute":  "JED-CAI@+42d",
+        "finalRoute":  "JED-CAI@+42d",
+        "pass1":  true,
+        "repaired":  false,
+        "finalPass":  true,
+        "status":  200,
+        "offers":  16,
+        "supplierMessage":  "",
+        "attempts":  [
+
+                     ]
+    },
+    {
+        "file":  "HoldOne2.json",
+        "supplier":  "AirCairo",
+        "selector":  "EGY",
+        "passengers":  "ADTx4,CHDx2,INFx2",
+        "originalRoute":  "FRA-CAI@+43d",
+        "finalRoute":  "FRA-CAI@+43d",
+        "pass1":  true,
+        "repaired":  false,
+        "finalPass":  true,
+        "status":  200,
+        "offers":  17,
+        "supplierMessage":  "",
+        "attempts":  [
+
+                     ]
+    },
+    {
+        "file":  "HoldOne3.json",
+        "supplier":  "AirCairo",
+        "selector":  "EGY",
+        "passengers":  "ADTx3,CHDx3,INFx3",
+        "originalRoute":  "CAI-FRA@+31d",
+        "finalRoute":  "CAI-FRA@+31d",
+        "pass1":  true,
+        "repaired":  false,
+        "finalPass":  true,
+        "status":  200,
+        "offers":  12,
+        "supplierMessage":  "",
+        "attempts":  [
+
+                     ]
+    },
+    {
+        "file":  "HoldRound.json",
+        "supplier":  "AirCairo",
+        "selector":  "EGY",
+        "passengers":  "ADTx2,CHDx2,INFx2",
+        "originalRoute":  "YNB-CAI@+24d | CAI-YNB@+31d",
+        "finalRoute":  "YNB-CAI@+24d | CAI-YNB@+31d",
+        "pass1":  true,
+        "repaired":  false,
+        "finalPass":  true,
+        "status":  200,
+        "offers":  16,
+        "supplierMessage":  "",
+        "attempts":  [
+
+                     ]
+    },
+    {
+        "file":  "HoldRound1.json",
+        "supplier":  "AirCairo",
+        "selector":  "EGY",
+        "passengers":  "ADTx5,CHDx2,INFx2",
+        "originalRoute":  "LXR-CAI@+22d | CAI-LXR@+29d",
+        "finalRoute":  "LXR-CAI@+22d | CAI-LXR@+29d",
+        "pass1":  true,
+        "repaired":  false,
+        "finalPass":  true,
+        "status":  200,
+        "offers":  100,
+        "supplierMessage":  "",
+        "attempts":  [
+
+                     ]
+    },
+    {
+        "file":  "HoldRound2.json",
+        "supplier":  "AirCairo",
+        "selector":  "EGY",
+        "passengers":  "ADTx4,CHDx2,INFx2",
+        "originalRoute":  "CGN-CAI@+23d | CAI-CGN@+30d",
+        "finalRoute":  "CGN-CAI@+23d | CAI-CGN@+30d",
+        "pass1":  true,
+        "repaired":  false,
+        "finalPass":  true,
+        "status":  200,
+        "offers":  200,
+        "supplierMessage":  "",
+        "attempts":  [
+
+                     ]
+    },
+    {
+        "file":  "HoldRound3.json",
+        "supplier":  "AirCairo",
+        "selector":  "EGY",
+        "passengers":  "ADTx3,CHDx3,INFx3",
+        "originalRoute":  "CAI-MUC@+35d | MUC-CAI@+42d",
+        "finalRoute":  "CAI-MUC@+35d | MUC-CAI@+42d",
+        "pass1":  true,
+        "repaired":  false,
+        "finalPass":  true,
+        "status":  200,
+        "offers":  200,
+        "supplierMessage":  "",
+        "attempts":  [
+
+                     ]
+    },
+    {
+        "file":  "HoldRound5.json",
+        "supplier":  "AirCairo",
+        "selector":  "EGY",
+        "passengers":  "ADTx2,CHDx2,INFx2",
+        "originalRoute":  "JED-CAI@+30d | CAI-JED@+37d",
+        "finalRoute":  "JED-CAI@+30d | CAI-JED@+37d",
+        "pass1":  true,
+        "repaired":  false,
+        "finalPass":  true,
+        "status":  200,
+        "offers":  156,
+        "supplierMessage":  "",
+        "attempts":  [
+
+                     ]
+    },
+    {
+        "file":  "HoldRound6.json",
+        "supplier":  "AirCairo",
+        "selector":  "EGY",
+        "passengers":  "ADTx5,CHDx2,INFx2",
+        "originalRoute":  "FRA-CAI@+31d | CAI-FRA@+38d",
+        "finalRoute":  "FRA-CAI@+31d | CAI-FRA@+38d",
+        "pass1":  true,
+        "repaired":  false,
+        "finalPass":  true,
+        "status":  200,
+        "offers":  200,
+        "supplierMessage":  "",
+        "attempts":  [
+
+                     ]
+    },
+    {
+        "file":  "VoidMulti.json",
+        "supplier":  "AirCairo",
+        "selector":  "EGY",
+        "passengers":  "ADTx2,CHDx2,INFx2",
+        "originalRoute":  "CAI-JED@+41d | CAI-DUS@+44d",
+        "finalRoute":  "CAI-JED@+41d | CAI-DUS@+44d",
+        "pass1":  true,
+        "repaired":  false,
+        "finalPass":  true,
+        "status":  200,
+        "offers":  200,
+        "supplierMessage":  "",
+        "attempts":  [
+
+                     ]
+    },
+    {
+        "file":  "VoidMulti2.json",
+        "supplier":  "AirCairo",
+        "selector":  "EGY",
+        "passengers":  "ADTx2,CHDx2,INFx2",
+        "originalRoute":  "CAI-KWI@+30d | JED-CAI@+35d",
+        "finalRoute":  "CAI-KWI@+30d | JED-CAI@+35d",
+        "pass1":  true,
+        "repaired":  false,
+        "finalPass":  true,
+        "status":  200,
+        "offers":  64,
+        "supplierMessage":  "",
+        "attempts":  [
+
+                     ]
+    },
+    {
+        "file":  "VoidOne.json",
+        "supplier":  "AirCairo",
+        "selector":  "EGY",
+        "passengers":  "ADTx2,CHDx2,INFx2",
+        "originalRoute":  "CGN-CAI@+35d",
+        "finalRoute":  "CGN-CAI@+35d",
+        "pass1":  true,
+        "repaired":  false,
+        "finalPass":  true,
+        "status":  200,
+        "offers":  14,
+        "supplierMessage":  "",
+        "attempts":  [
+
+                     ]
+    },
+    {
+        "file":  "VoidRound.json",
+        "supplier":  "AirCairo",
+        "selector":  "EGY",
+        "passengers":  "ADTx4,CHDx2,INFx3",
+        "originalRoute":  "YNB-CAI@+24d | CAI-YNB@+31d",
+        "finalRoute":  "YNB-CAI@+24d | CAI-YNB@+31d",
+        "pass1":  true,
+        "repaired":  false,
+        "finalPass":  true,
+        "status":  200,
+        "offers":  16,
+        "supplierMessage":  "",
+        "attempts":  [
+
+                     ]
+    }
+]
