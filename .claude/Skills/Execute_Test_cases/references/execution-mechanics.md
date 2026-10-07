@@ -4,6 +4,27 @@ Reference material for the `execute-test-cases` skill. Source of truth for every
 below is `NDC_Integration/SPEC.md` §1–§3 — if this file and SPEC.md ever disagree, SPEC.md wins;
 update this file to match.
 
+## Timing capture (for the Execution Time Breakdown page)
+
+One standardized, cheap timestamp command — use it everywhere a `started_at`/`ended_at`/`at` is called
+for in log-schema.md, so formats never drift between runs:
+
+```powershell
+(Get-Date).ToUniversalTime().ToString("o")
+```
+
+```bash
+date -u +%Y-%m-%dT%H:%M:%S.%3NZ
+```
+
+This is a single fast local call, not a network request — capturing it before/after a step adds
+negligible overhead. Only capture it at the points log-schema.md actually defines a timing field for
+(a test case's first request, its verdict, a `phase`/`ai_operation`/`wait` boundary) — don't add extra
+timestamp calls beyond what's needed to fill those fields.
+
+A hop's own span is left as one number (its `started_at`/`ended_at`) — don't break it into finer
+sub-steps; that's exactly the "extra timestamp calls beyond what's needed" this rule warns against.
+
 ## Headers (every request, both versions)
 
 ```

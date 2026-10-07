@@ -17,7 +17,7 @@
     The script only collects and forwards these inputs. Everything else — which endpoints / flows /
     rows inside the chosen TestCases file(s) to run, and the actual
     request/response/validation/reporting logic against NDC_Integration\SPEC.md — is owned by the
-    skill itself (.c\.claude\skills\Execute_Test_cases\SKILL.md), including its Hard Safety Rules
+    skill itself (.claude\Skills\Execute_Test_cases\SKILL.md), including its Hard Safety Rules
     (no Book/BookAfterHold/Void/CancelAfterHold against a non-staging BaseUrl without explicit
     authorization, redaction of isdebug supplier credentials, dangling-Hold tracking).
 
@@ -43,8 +43,8 @@ param(
 
 $ErrorActionPreference = "Stop"
 
-# .c\.claude\chell -> up three levels -> repo root (parent of Postman_Collection and NDC_Integration)
-$repoRoot = Split-Path -Parent (Split-Path -Parent (Split-Path -Parent $PSScriptRoot))
+# .claude\chell -> up two levels -> repo root (parent of Postman_Collection and NDC_Integration)
+$repoRoot = Split-Path -Parent (Split-Path -Parent $PSScriptRoot)
 $envFile  = Join-Path $repoRoot "Postman_Collection\Environment\STAG_ENV.postman_environment.json"
 
 if (-not (Get-Command claude -ErrorAction SilentlyContinue)) {

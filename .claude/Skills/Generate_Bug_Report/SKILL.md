@@ -88,6 +88,12 @@ never be conflated).
 7. **Emit one file per defect** (see "Where output goes" below) using
    [references/bug-report-template.md](references/bug-report-template.md) verbatim in structure —
    the section headings, their emojis, and their order are fixed; populate them, don't redesign them.
+   When this run has a `.jsonl` (not an ad hoc defect with no run), append a `reporting_op` line to it
+   (`operation:"Bug Report Generation"`, `started_at`/`ended_at` bracketing this whole batch of defect
+   files, per log-schema.md, plus `related_tc_ids` = the TC-IDs of the defects reported, so the time is
+   attributed to those test cases' Reporting cells) — this is Reporting time for the run's Execution Time Breakdown, not a
+   separate Claude/AI operation, so it must not also be logged as an `ai_operation` line (that would
+   double-count it).
 
 ## Where output goes
 

@@ -62,12 +62,23 @@ The only things allowed to end a run before the full scope is covered are: a har
    skill to create `NDC_Integration/Artifacts/Logs/<slug>.jsonl`/`.md` for this run (scope,
    environment, start time) — this is the durable, real-time mirror of everything this skill reports
    in-conversation, and it must exist before step 1 sends anything, not be assembled after the fact.
-   The companion `.html` doesn't get built until the run finishes or stops (see that skill).
+   The companion `.html` doesn't get built until the run finishes or stops (see that skill). Emit a
+   `phase` start line (log-schema.md) — `"Initialization"` ends / `"Test Execution"` starts — right
+   here, using the standardized timestamp command in
+   [references/execution-mechanics.md](references/execution-mechanics.md#timing-capture-for-the-execution-time-breakdown-page).
+   If this run also did user-story analysis or test-case generation earlier in the same conversation,
+   that's a separate phase/`ai_operation` already outside this skill's own scope — don't re-timestamp it
+   here.
 1. **Resolve the request.** For each step, build the exact request per SPEC.md §2.*n* (URL — mind
    the V1/`v2`/`V2` path-casing differences in §1.2 — headers per §1.5, required/optional body
    fields). See [references/execution-mechanics.md](references/execution-mechanics.md) for
-   ready-to-run PowerShell/curl templates and the full ID-chaining cheatsheet.
-2. **Send it**, capture the raw status code, headers, and body verbatim.
+   ready-to-run PowerShell/curl templates and the full ID-chaining cheatsheet. **Capture `started_at`**
+   (the timing command above) right before building this test case's (or this hop's) first request —
+   this is the moment work on it begins, and becomes that test case's/hop's `started_at` in the JSONL.
+2. **Send it**, capture the raw status code, headers, and body verbatim. If a retry, backoff, or
+   polling wait genuinely happens here (not the normal case), capture its own start/end timestamps too
+   — this becomes a `waiting_ms` value (or a top-level `wait` line, per log-schema.md) for this test
+   case, never a guessed value when nothing was actually captured.
 3. **Extract IDs** the response is documented to produce (SPEC.md §2.*n* "IDs Generated" / §6.2
    propagation table) and carry them into the next step exactly as SPEC.md's chaining rules specify
    — including the version-specific field-name differences (`searchResponseId` vs `ResponseId`,
@@ -86,12 +97,21 @@ The only things allowed to end a run before the full scope is covered are: a har
    finding than "flow #43 failed," and it must surface the moment it's known. Reporting only at the
    very end is misleading if execution gets interrupted partway through — the user would otherwise
    see nothing at all, or a report that silently drops the steps that never ran, instead of the
-   accurate partial picture of what actually executed.
+   accurate partial picture of what actually executed. **Capture the end timestamp** the moment the
+   verdict is reached — for a single-endpoint case this becomes its `timestamp`; for a flow hop it
+   becomes that hop's `ended_at`, and the last hop's `ended_at` becomes the parent test case's
+   `timestamp`. If execution is interrupted before a verdict is reached, still hand this test case's
+   partial timing to `generate-qa-report` (`timing:"partial"`, per log-schema.md) rather than omitting
+   it or writing `0` — per this skill's own error-handling expectations.
 6. **When a result confirms something SPEC.md marks `UNKNOWN`** (an error response shape, an
    enum value, an ID TTL, a capability conflict from §4.4, a flow-anomaly resolution from §5.5),
    don't just note it in the report — propose the exact SPEC.md edit (section, old text, new text)
    to the user, per SPEC.md's own Appendix policy that confirmed facts should be folded back
-   promptly. Apply the edit only if the user confirms.
+   promptly. Apply the edit only if the user confirms. When this involves real, separate analysis
+   beyond the one test case that triggered it (e.g. the §4.7 capability-confirmation procedure, or
+   reasoning across several results to propose one spec change), bracket that analysis with its own
+   `ai_operation` start/end timestamps (log-schema.md) — this is Claude/AI Processing time distinct
+   from any one test case's own execution span.
 7. **When a result contradicts SPEC.md** (not an `UNKNOWN` being resolved, but an actual mismatch
    with a stated fact), report it as a defect/finding distinctly from an `UNKNOWN`-confirmation —
    these have different implications (one is new information, the other is a regression or a wrong
@@ -116,11 +136,14 @@ and dump a single report only after everything has finished executing.
 - Once the full scope has executed (or the run has ended early), close out the one-time-only sections
   — Findings, "SPEC.md updates proposed", and Cleanup/follow-up — summarizing across everything
   already reported live, even if the user doesn't ask for it explicitly. This is how the spec stays
-  trustworthy over time, and how partial runs stay honest about what did and didn't get covered.
+  trustworthy over time, and how partial runs stay honest about what did and didn't get covered. Emit
+  the `phase` end line for `"Test Execution"` (log-schema.md) here — the moment the scope is done or
+  the run stops, not deferred to whenever reporting happens to finish.
 - Once the report is closed out, apply the `generate-bug-report` skill to every `defect` finding from
   this run (not `unknown_resolution` findings — those aren't bugs) to produce one submittable bug
   report per defect. This is a separate pass after `generate-qa-report`'s report is done, not
-  something to interleave mid-run.
+  something to interleave mid-run. Bracket this pass with its own `"Bug Reporting"` `phase` start/end
+  (see `generate-bug-report`'s SKILL.md for the per-defect `reporting_op` lines within it).
 - **In parallel, apply `generate-qa-report`** to write each test case's result (with its internal
   hops nested inside, per that skill's schema) plus every finding/proposed-update/cleanup item to
   this run's `NDC_Integration/Artifacts/Logs/` artifacts the same moment it's reported here — see
