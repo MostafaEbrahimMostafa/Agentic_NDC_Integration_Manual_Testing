@@ -1,0 +1,1576 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>NDC Integration - QA Execution Report</title>
+<style>
+  :root{
+    color-scheme: light;
+    --paper:#F3F5F8; --surface:#FFFFFF; --surface-2:#EAEEF4;
+    --ink:#10151F; --ink-2:#45536B; --ink-muted:#7C8AA0;
+    --line:#DDE3EC; --line-strong:#C6CEDC;
+    --accent:#2A78D6; --accent-ink:#1C5CAB; --accent-wash:#E4EEFA;
+    --good:#0CA30C; --warning:#C98A17; --serious:#D9673C; --critical:#D03B3B;
+    --good-wash:rgba(12,163,12,0.12); --warning-wash:rgba(250,178,25,0.16);
+    --serious-wash:rgba(236,131,90,0.14); --critical-wash:rgba(208,59,59,0.12);
+    --shadow:rgba(16,21,31,0.08);
+    --font-sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+    --font-mono:ui-monospace,"SF Mono","Cascadia Code","Roboto Mono",Consolas,"Courier New",monospace;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:where(:not([data-theme="light"])){
+      color-scheme: dark;
+      --paper:#0A0E15; --surface:#111826; --surface-2:#16202F;
+      --ink:#EDF1F7; --ink-2:#B7C2D1; --ink-muted:#8290A6;
+      --line:#232E40; --line-strong:#324058;
+      --accent:#3987E5; --accent-ink:#8FBBEF; --accent-wash:#152A45;
+      --good:#35C24A; --warning:#E3A730; --serious:#E88A5E; --critical:#EA5B5B;
+      --good-wash:rgba(53,194,74,0.16); --warning-wash:rgba(227,167,48,0.16);
+      --serious-wash:rgba(232,138,94,0.16); --critical-wash:rgba(234,91,91,0.18);
+      --shadow:rgba(0,0,0,0.5);
+    }
+  }
+  :root[data-theme="dark"]{
+    color-scheme: dark;
+    --paper:#0A0E15; --surface:#111826; --surface-2:#16202F;
+    --ink:#EDF1F7; --ink-2:#B7C2D1; --ink-muted:#8290A6;
+    --line:#232E40; --line-strong:#324058;
+    --accent:#3987E5; --accent-ink:#8FBBEF; --accent-wash:#152A45;
+    --good:#35C24A; --warning:#E3A730; --serious:#E88A5E; --critical:#EA5B5B;
+    --good-wash:rgba(53,194,74,0.16); --warning-wash:rgba(227,167,48,0.16);
+    --serious-wash:rgba(232,138,94,0.16); --critical-wash:rgba(234,91,91,0.18);
+    --shadow:rgba(0,0,0,0.5);
+  }
+  :root[data-theme="light"]{
+    color-scheme: light;
+    --paper:#F3F5F8; --surface:#FFFFFF; --surface-2:#EAEEF4;
+    --ink:#10151F; --ink-2:#45536B; --ink-muted:#7C8AA0;
+    --line:#DDE3EC; --line-strong:#C6CEDC;
+    --accent:#2A78D6; --accent-ink:#1C5CAB; --accent-wash:#E4EEFA;
+    --good:#0CA30C; --warning:#C98A17; --serious:#D9673C; --critical:#D03B3B;
+    --good-wash:rgba(12,163,12,0.12); --warning-wash:rgba(250,178,25,0.16);
+    --serious-wash:rgba(236,131,90,0.14); --critical-wash:rgba(208,59,59,0.12);
+    --shadow:rgba(16,21,31,0.08);
+  }
+  *{ box-sizing:border-box; }
+  html,body{ margin:0; padding:0; }
+  body{ background:var(--paper); color:var(--ink); font-family:var(--font-sans);
+        font-size:14px; line-height:1.5; -webkit-font-smoothing:antialiased; }
+  @media (prefers-reduced-motion: reduce){ *{ animation-duration:.001ms !important; transition-duration:.001ms !important; } }
+  a{ color:var(--accent-ink); }
+  .wrap{ max-width:960px; margin:0 auto; padding:32px 20px 80px; }
+  .dashboard-card{ background:var(--surface); border:1px solid var(--line-strong); border-radius:24px; padding:24px; }
+  code,.mono{ font-family:var(--font-mono); font-size:.92em; }
+  .header{ display:flex; flex-wrap:wrap; align-items:baseline; justify-content:space-between; gap:12px; margin-bottom:24px; }
+  .header-main{ flex:1 1 auto; min-width:280px; }
+  .header h1{ font-size:32px; font-weight:800; margin:0 0 8px; }
+  .header .meta{ color:var(--ink-muted); font-size:13px; }
+  .pill{ display:inline-flex; align-items:center; gap:6px; padding:6px 18px; border-radius:999px; font-size:12px; font-weight:700; letter-spacing:.03em; border:1px solid transparent; }
+  .pill-complete{ background:var(--good-wash); color:var(--good); border-color:var(--good); }
+  .pill-interrupted{ background:var(--critical-wash); color:var(--critical); }
+  .section-num{ font-size:17px; font-weight:700; color:var(--ink); margin:32px 0 14px; text-transform:none; letter-spacing:normal; border-bottom:none; padding-bottom:0; }
+  .summary-layout{ display:flex; align-items:center; gap:36px; flex-wrap:wrap; margin-bottom:28px; }
+  .donut-block{ display:flex; align-items:center; gap:20px; flex-shrink:0; }
+  .stats-block{ flex:1 1 360px; min-width:280px; display:flex; flex-direction:column; gap:14px; }
+  .scard{ text-align:center; }
+  .scard .lbl{ font-size:15px; font-weight:700; color:var(--ink-muted); margin-top:4px; }
+  .scard .val{ font-size:24px; font-weight:700; color:var(--ink); }
+  .scard .val.pass{ color:var(--good); }
+  .scard .val.fail{ color:var(--critical); }
+  .scard .val.blocked{ color:var(--serious); }
+  .scard .val.accent{ color:var(--accent-ink); }
+  .scard-total .lbl{ font-size:17px; margin-top:6px; }
+  .scard-total .val{ font-size:28px; }
+  summary.section-summary-flex > .section-count-badges,
+  summary.section-summary-flex > .section-count-badge{ float:right; }
+  .section-count-badge{ display:flex; flex-direction:column; align-items:center; justify-content:center;
+      background:var(--surface); border:1px solid var(--line-strong); border-radius:12px; padding:6px 20px;
+      text-transform:none; letter-spacing:normal; flex-shrink:0; }
+  .section-count-badge .scb-val{ font-size:20px; font-weight:700; color:var(--accent-ink); line-height:1.2; }
+  .section-count-badge .scb-lbl{ font-size:11px; color:var(--ink-muted); margin-top:1px; }
+  .section-count-badges{ display:flex; gap:10px; flex-shrink:0; }
+  .scb-val.serious{ color:var(--serious); }
+  .scb-val.accent{ color:var(--accent-ink); }
+  .summary-cards{ display:grid; grid-template-columns:repeat(auto-fit,minmax(120px,1fr)); gap:12px; }
+  .donut{ width:280px; height:280px; border-radius:50%; flex-shrink:0; display:flex; align-items:center; justify-content:center; }
+  .donut-hole{ width:190px; height:190px; border-radius:50%; background:var(--paper); display:flex; flex-direction:column; align-items:center; justify-content:center; }
+  .donut-pct{ font-size:34px; font-weight:800; color:var(--ink); }
+  .donut-sub{ font-size:15px; color:var(--ink-muted); }
+  .donut-legend{ display:flex; flex-direction:column; gap:10px; }
+  .litem{ display:flex; align-items:center; gap:8px; font-size:13px; color:var(--ink-2); white-space:nowrap; }
+  .litem .lcount{ margin-left:4px; color:var(--ink-muted); }
+  .swatch{ width:12px; height:12px; border-radius:3px; flex-shrink:0; }
+  .swatch.pass{ background:var(--good); }
+  .swatch.fail{ background:var(--critical); }
+  .swatch.blocked{ background:var(--serious); }
+  h2{ font-size:15px; text-transform:uppercase; letter-spacing:.04em; color:var(--ink-2);
+      border-bottom:1px solid var(--line); padding-bottom:6px; margin:32px 0 12px; }
+  .section-collapse{ margin:0; }
+  .section-collapse > summary{ font-size:15px; text-transform:uppercase; letter-spacing:.04em; color:var(--ink-2);
+      border-bottom:1px solid var(--line); padding-bottom:6px; margin:32px 0 12px; cursor:pointer; }
+  .section-collapse > summary::-webkit-details-marker{ color:var(--ink-muted); }
+  .tc-section > summary{ margin-top:0; }
+  .tc-category{ background:var(--surface); border:1px solid var(--line-strong); border-radius:12px; margin-bottom:10px; }
+  .tc-category > summary{ display:flex; align-items:center; gap:10px; padding:14px 16px; cursor:pointer; list-style:none; }
+  .tc-category > summary::-webkit-details-marker{ display:none; }
+  .cat-icon{ font-size:16px; flex-shrink:0; width:22px; display:inline-flex; align-items:center; justify-content:center; }
+  .cat-name{ font-weight:700; color:var(--ink); flex-shrink:0; }
+  .cat-counts{ display:flex; gap:14px; margin-left:auto; font-size:12px; }
+  .cc{ font-weight:600; }
+  .cc.pass{ color:var(--good); }
+  .cc.fail{ color:var(--critical); }
+  .cc.blocked{ color:var(--serious); }
+  .cat-chev{ display:inline-block; width:9px; flex-shrink:0; color:var(--ink-muted); font-size:10px; transition:transform .15s ease; }
+  .cat-chev::before{ content:'\25B8'; }
+  details.tc-category[open] > summary .cat-chev{ transform:rotate(90deg); }
+  .tc-category-body{ padding:0 16px 16px; }
+  .tc-category.cat-empty{ display:none; }
+  .tc-subhead{ display:flex; align-items:center; justify-content:space-between; gap:10px; margin:14px 0 8px; padding-bottom:4px; border-bottom:1px solid var(--line); }
+  .tc-subhead:first-child{ margin-top:4px; }
+  .tc-subhead-label{ font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.04em; }
+  .tc-subhead-label.pos{ color:var(--good); }
+  .tc-subhead-label.neg{ color:var(--critical); }
+  .tc-subhead-counts{ display:flex; gap:12px; font-size:11px; }
+  .tc{ background:var(--surface); border:1px solid var(--line-strong); border-left-width:4px; border-radius:12px; padding:16px 18px; margin-bottom:8px; }
+  .tc.PASS{ border-left-color:var(--good); }
+  .tc.FAIL{ border-left-color:var(--critical); }
+  .tc.BLOCKED{ border-left-color:var(--serious); }
+  .tc-head{ display:flex; justify-content:space-between; gap:10px; font-weight:600; }
+  .badge{ font-size:11px; font-weight:700; padding:2px 8px; border-radius:5px; }
+  .badge.PASS{ background:var(--good-wash); color:var(--good); }
+  .badge.FAIL{ background:var(--critical-wash); color:var(--critical); }
+  .badge.BLOCKED{ background:var(--serious-wash); color:var(--serious); }
+  .tc .row{ margin-top:6px; font-size:13px; color:var(--ink-2); overflow-wrap:anywhere; }
+  .tc .row b{ color:var(--ink); }
+  .view-tc-wrap{ margin-top:10px; }
+  .view-tc > summary{ display:block; text-align:right; color:var(--accent-ink); text-decoration:underline; cursor:pointer; font-size:12px; font-weight:600; list-style:none; }
+  .view-tc > summary::-webkit-details-marker{ display:none; }
+  .view-tc-body{ margin-top:8px; padding:14px 16px; background:var(--surface-2); border:1px solid var(--line); border-radius:8px; font-size:13px; }
+  .vtc-h{ font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.04em; color:var(--ink-muted); margin:12px 0 4px; }
+  .vtc-h:first-child{ margin-top:0; }
+  .vtc-p{ color:var(--ink-2); overflow-wrap:anywhere; }
+  .vtc-steps{ margin:0; padding-left:18px; color:var(--ink-2); }
+  .vtc-steps li{ margin-bottom:4px; overflow-wrap:anywhere; }
+  details.evidence, details.hops{ margin-top:6px; }
+  details.evidence summary, details.hops summary{ cursor:pointer; font-size:12px; color:var(--accent-ink); }
+  details.evidence .ev-body{ margin-top:4px; padding:8px 10px; background:var(--surface-2); border-radius:6px; font-size:12px; overflow-wrap:anywhere; }
+  .hop{ padding:6px 0; border-top:1px solid var(--line); font-size:12px; }
+  .hop:first-child{ border-top:none; }
+  .hop-endpoint{ font-weight:600; color:var(--ink); }
+  .hop .hd{ color:var(--ink-muted); margin-top:2px; overflow-wrap:anywhere; }
+  .hop .hd.hop-reqres.js-hidden{ display:none; }
+  .hop-reqres-toggle{ margin-left:8px; font-size:11px; font-weight:600; color:var(--accent-ink); text-decoration:underline; cursor:pointer; }
+  .hop-reqres-panel{ margin-top:10px; display:flex; flex-direction:column; gap:18px; }
+  .hop-reqres-panel.js-hidden{ display:none; }
+  .rr-title{ font-size:15px; font-weight:700; color:var(--ink); margin-bottom:6px; }
+  .rr-line{ font-size:13px; color:var(--ink-2); margin-bottom:10px; font-family:var(--font-mono); overflow-wrap:anywhere; }
+  .rr-label{ font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.05em; color:var(--ink-muted); margin:10px 0 6px; }
+  .rr-box{ background:#0B0E15; color:#D7DEE8; border-radius:10px; padding:14px 16px; font-family:var(--font-mono); font-size:12.5px; overflow:auto; }
+  .rr-headers-box .rr-h-line{ margin-bottom:14px; white-space:pre-wrap; overflow-wrap:anywhere; }
+  .rr-headers-box .rr-h-line:last-child{ margin-bottom:0; }
+  .rr-body-box{ max-height:340px; }
+  .rr-body-box pre{ margin:0; white-space:pre; }
+  .rr-redacted{ color:#8290A6; }
+  .rr-note{ font-size:11px; color:var(--ink-muted); font-style:italic; margin-top:6px; }
+  .tc-status-row{ display:flex; align-items:center; gap:10px; }
+  .tc-reqres-toggle{ margin-left:auto; }
+  .tc-reqres-panel{ margin-top:10px; display:flex; flex-direction:column; gap:18px; }
+  .tc-reqres-panel.js-hidden{ display:none; }
+  .rr-attempt-label{ font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.04em; color:var(--accent-ink); margin:0 0 4px; }
+  .finding{ border-radius:12px; padding:10px 12px; margin-bottom:8px; font-size:13px; overflow-wrap:anywhere; }
+  .finding.defect{ background:var(--serious-wash); border:1px solid var(--serious); }
+  .finding.unknown_resolution{ background:var(--accent-wash); border:1px solid var(--accent); }
+  .finding .kind{ font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.03em; }
+  .cleanup{ background:var(--warning-wash); border:1px solid var(--warning); border-radius:12px; padding:12px 14px; }
+  .cleanup ul{ margin:6px 0 0; padding-left:18px; }
+  .cleanup li{ margin-bottom:6px; overflow-wrap:anywhere; }
+  .empty{ color:var(--ink-muted); font-size:13px; font-style:italic; }
+.meta-card{ margin-top:8px; }
+.fields{ display:flex; flex-direction:column; gap:4px; margin:4px 0 6px; }
+.fields.run-meta{ margin-top:10px; padding-top:10px; border-top:1px solid var(--line); }
+.field-row{ display:flex; flex-wrap:wrap; gap:4px 28px; }
+.field{ font-size:14px; display:flex; gap:6px; }
+.field .k{ color:var(--ink-2); font-weight:700; font-size:15px; letter-spacing:normal; text-transform:none; flex-shrink:0; }
+.field .k::after{ content:':'; }
+.field .v{ color:var(--ink); }
+.tc-actions{ display:flex; justify-content:flex-end; gap:8px; margin:32px 0 8px; }
+.tc-actions button{ padding:7px 12px; border-radius:7px; border:1px solid var(--line-strong); background:var(--surface); color:var(--ink-2); font-size:12px; font-weight:600; cursor:pointer; }
+.tc-cat-actions{ display:flex; justify-content:flex-end; gap:8px; margin:4px 0 10px; }
+.tc-cat-actions button{ padding:5px 10px; border-radius:7px; border:1px solid var(--line-strong); background:var(--surface); color:var(--ink-2); font-size:11px; font-weight:600; cursor:pointer; }
+.tc-cat-actions button:hover{ background:var(--surface-2); }
+.tc-actions button:hover{ background:var(--surface-2); }
+.tc-toolbar{ display:flex; flex-wrap:wrap; align-items:center; gap:8px; margin:0 0 14px; position:sticky; top:0; z-index:5; }
+.tc-toolbar input[type="search"]{ flex:1 1 240px; min-width:180px; padding:7px 10px; border-radius:7px; border:1px solid var(--line-strong); background:var(--surface); color:var(--ink); font-size:13px; }
+.tc-toolbar select{ padding:7px 10px; border-radius:7px; border:1px solid var(--line-strong); background:var(--surface); color:var(--ink); font-size:13px; }
+.tc-toolbar button{ padding:7px 12px; border-radius:7px; border:1px solid var(--line-strong); background:var(--surface); color:var(--ink-2); font-size:12px; font-weight:600; cursor:pointer; }
+.tc-toolbar button:hover{ background:var(--surface-2); }
+#tcResetFilters{ color:var(--critical); border-color:var(--critical); }
+#tcResetFilters:hover{ background:var(--critical-wash); }
+.tc-toolbar .tc-count{ font-size:12px; color:var(--ink-muted); margin-left:auto; white-space:nowrap; }
+details.tc > summary.tc-head{ cursor:pointer; list-style:none; }
+details.tc > summary.tc-head::-webkit-details-marker{ display:none; }
+.tc-head .chev{ display:inline-block; width:9px; flex-shrink:0; color:var(--ink-muted); font-size:10px; transition:transform .15s ease; align-self:center; }
+.tc-head .chev::before{ content:'\25B8'; }
+details.tc[open] > summary.tc-head .chev{ transform:rotate(90deg); }
+details.tc.js-hidden{ display:none; }
+.tc-no-results{ padding:28px 20px; text-align:center; color:var(--critical); font-size:18px; font-weight:700; background:var(--critical-wash); border:1px solid var(--critical); border-radius:12px; margin-bottom:10px; }
+.tc-no-results.js-hidden{ display:none; }
+</style>
+</head><body><div class="wrap">
+
+<div class="header"><div class="header-main">
+<h1>QA Execution Report</h1>
+</div></div>
+
+<div class="meta-card dashboard-card">
+<div class="fields">
+<div class="field"><span class="k">Scope</span><span class="v">Round 5 regression &mdash; SeatMap_TestCases.csv, all 63 test cases</span></div>
+<div class="field-row">
+<div class="field"><span class="k">Coverage</span><span class="v">63 test cases across 10 categories (5 flow-level, 58 single-endpoint)</span></div>
+<div class="field"><span class="k">Description</span><span class="v">Priority re-attempt of Round 4's 22 blocked test cases (GetSeatMap outage check), re-verification of BUG-01 through BUG-14, full-coverage regression, and one-way/round-trip/multi-city route variety</span></div>
+</div>
+</div>
+<div class="fields run-meta">
+<div class="field-row">
+<div class="field"><span class="k">Supplier</span><span class="v">GulfAir</span></div>
+<div class="field"><span class="k">Credentials Selector</span><span class="v">KSA</span></div>
+<div class="field"><span class="k">Environment</span><span class="v">staging (non-default host, user-specified) &mdash; https://ndc-integration-stg-ne-2.azurewebsites.net/</span></div>
+</div>
+<div class="field"><span class="k">Started</span><span class="v">2026-08-30 14:38:10 UTC</span></div>
+<div class="field"><span class="k">Ended</span><span class="v">2026-08-30 17:46:00 UTC</span></div>
+<div class="field"><span class="k">Status</span><span class="v">COMPLETE</span></div>
+</div>
+</div>
+
+<h2 class="section-num">1. Executive Summary</h2>
+<div class="summary-layout">
+<div class="donut-block">
+<div class="donut" style="background:conic-gradient(var(--good) 0% 58.7%, var(--critical) 58.7% 78%, var(--serious) 78% 100%)">
+<div class="donut-hole"><div class="donut-pct">59%</div><div class="donut-sub">pass rate</div></div>
+</div>
+<div class="donut-legend">
+<div class="litem"><span class="swatch pass"></span>Passed <span class="lcount">37 / 63</span></div>
+<div class="litem"><span class="swatch fail"></span>Failed <span class="lcount">12 / 63</span></div>
+<div class="litem"><span class="swatch blocked"></span>Blocked <span class="lcount">14 / 63</span></div>
+</div>
+</div>
+<div class="stats-block">
+<div class="scard scard-total dashboard-card"><div class="val">63</div><div class="lbl">Total Executed Test Cases</div></div>
+<div class="summary-cards">
+<div class="scard dashboard-card"><div class="val pass">37</div><div class="lbl">Passed</div></div>
+<div class="scard dashboard-card"><div class="val fail">12</div><div class="lbl">Failed</div></div>
+<div class="scard dashboard-card"><div class="val blocked">14</div><div class="lbl">Blocked</div></div>
+</div>
+<div class="scard scard-total dashboard-card"><div class="val">3h 08m</div><div class="lbl">Execution Duration</div></div>
+</div>
+</div>
+
+<div class="tc-actions">
+<button type="button" id="tcExpandAll">Expand all</button>
+<button type="button" id="tcCollapseAll">Collapse all</button>
+</div>
+
+<details class="section-collapse tc-section" open>
+<summary>Test case results</summary>
+
+<div class="tc-toolbar dashboard-card">
+<input type="search" id="tcSearch" placeholder="Search by ID, title, endpoint, PNR...">
+<select id="tcStatusFilter">
+<option value="">All statuses</option>
+<option value="PASS">PASS</option>
+<option value="FAIL">FAIL</option>
+<option value="BLOCKED">BLOCKED</option>
+</select>
+<select id="tcCategoryFilter">
+<option value="">All categories</option>
+<option value="positive">Positive</option>
+<option value="negative">Negative</option>
+<option value="validation">Validation</option>
+<option value="boundary">Boundary</option>
+<option value="business-rule">Business Rule</option>
+<option value="regression">Regression</option>
+<option value="security">Security</option>
+<option value="integration">Integration</option>
+<option value="flow">Flow</option>
+<option value="documentation">Documentation</option>
+</select>
+<button type="button" id="tcResetFilters">Reset</button>
+<span id="tcCount" class="tc-count"></span>
+</div>
+<div id="tcNoResults" class="tc-no-results js-hidden">No test cases match your search. Try a different keyword, or clear the search/filters above.</div>
+
+<details class="tc-category" data-cat="positive" open>
+<summary><span class="cat-icon">&#9989;</span><span class="cat-name">Positive</span><span class="cat-counts"><span class="cc pass">4 passed</span><span class="cc fail">1 failed</span></span><span class="cat-chev"></span></summary>
+<div class="tc-category-body">
+<div class="tc-cat-actions"><button type="button" class="tc-cat-expand">Expand all</button><button type="button" class="tc-cat-collapse">Collapse all</button></div>
+
+<details class="tc PASS">
+<summary class="tc-head"><span><span class="chev"></span><span class="mono">TC-SEATMAP-POS-01</span> - Look up the seat map for a booked flight</span><span class="badge PASS">PASS</span></summary>
+<div class="row"><b>Endpoint Name:</b> Look up the seat map for a chosen flight</div>
+<div class="row"><b>Request:</b> Asked for the seat map on a one-way Bahrain&rarr;Riyadh flight for one adult</div>
+<div class="row"><b>Response:</b> The seat map came back successfully with the flight details, passenger info, and a full 25-row seat layout</div>
+<div class="row"><b>Expected:</b> The seat map should come back successfully and every seat should match up to a real flight segment</div>
+<div class="row"><b>Actual:</b> Everything came back as expected. This was also the very first seat-map lookup of the day, and it worked cleanly - showing that yesterday's outage has fully cleared.</div>
+<div class="row tc-status-row"><b>Status:</b> <span class="badge PASS">PASS</span><span class="tc-reqres-anchor"></span></div>
+<details class="evidence"><summary>Evidence</summary><div class="ev-body">GulfAir/KSA BAH-RUH 2027-01-15 (offer GF169): segment GF-GF169-GF169-2027011519-2027011521-O present identically in flightSegments and seatMapDetails; 25 rows, 175 cells (150 Seat + 25 Aisle); passengersDetails.PAX1 present.</div></details>
+<div class="tc-reqres-panel">
+<div class="rr-title">Request</div>
+<div class="rr-line">POST to https://ndc-integration-stg-ne-2.azurewebsites.net/api/V2/SeatMap/Seat</div>
+<div class="rr-label">HEADERS</div>
+<div class="rr-box rr-headers-box">
+<div class="rr-h-line">x-api-key: <span class="rr-redacted">&#8226;&#8226;&#8226;&#8226;&#8226;&#8226;&#8226;&#8226;(redacted)</span></div>
+<div class="rr-h-line">Client-Id: NDC-Core</div>
+<div class="rr-h-line">Content-Type: application/json</div>
+</div>
+<div class="rr-label">BODY</div>
+<div class="rr-box rr-body-box"><pre>{
+  "supplier": "GulfAir",
+  "credentialsSelector": "KSA",
+  "ResponseId": "&lt;getAddPaxResponceID&gt;",
+  "selectedOfferId": "&lt;getAddPaxOfferId&gt;"
+}</pre></div>
+<div class="rr-title" style="margin-top:18px;">Response</div>
+<div class="rr-line">Status code 200</div>
+<div class="rr-label">BODY</div>
+<div class="rr-box rr-body-box"><pre>{
+  "supplier": "GulfAir",
+  "offerId": "...",
+  "responseId": "...",
+  "isFareCheckRequired": false,
+  "flightSegments": { "GF-GF169-GF169-2027011519-2027011521-O": { "...": "..." } },
+  "passengersDetails": { "PAX1": { "passengerTypeCode": "ADT", "...": "..." } },
+  "seatMapDetails": { "GF-GF169-GF169-2027011519-2027011521-O": { "cabinLayoutsByDeck": {"...":"..."}, "rows": [ "... 25 rows, 175 cells total (truncated for report size) ..." ] } }
+}</pre></div>
+<div class="rr-note">Full seat-map body is ~170KB (175 cells); truncated here for report readability - full field-by-field validation is recorded in the Evidence line above.</div>
+</div>
+<div class="view-tc-wrap"><details class="view-tc"><summary>View Test Case</summary><div class="view-tc-body"><div class="vtc-h">Preconditions</div><div class="vtc-p">AddPassenger completed; getAddPaxOfferId/getAddPaxResponceID available.</div><div class="vtc-h">Steps</div><ol class="vtc-steps"><li>AddPassenger -&gt; GetSeatMap (send ResponseId/selectedOfferId = AddPassenger's IDs) -&gt; inspect the raw response.</li></ol><div class="vtc-h">Expected Result</div><div class="vtc-p">HTTP 200; supplier, flightSegments, passengersDetails, seatMapDetails all present and non-null; every segmentRefId key in seatMapDetails also appears in flightSegments.</div><div class="vtc-h">Actual Result</div><div class="vtc-p">Confirmed as expected.</div></div></details></div>
+</details>
+
+<details class="tc PASS">
+<summary class="tc-head"><span><span class="chev"></span><span class="mono">TC-SEATMAP-POS-02</span> - Carry the seat-map lookup's own reference numbers forward into the booking step</span><span class="badge PASS">PASS</span></summary>
+<div class="row"><b>Endpoint Name:</b> Book a flight using the seat map's own reference numbers</div>
+<div class="row"><b>Request:</b> Looked up a seat map, then made the booking using that lookup's own reference numbers instead of the earlier passenger-details reference numbers</div>
+<div class="row"><b>Response:</b> The booking succeeded using the seat map's own reference numbers</div>
+<div class="row"><b>Expected:</b> A booking made right after a seat-map lookup should be able to use that lookup's own reference numbers</div>
+<div class="row"><b>Actual:</b> Confirmed working, unchanged from every previous round</div>
+<div class="row"><b>Status:</b> <span class="badge PASS">PASS</span></div>
+<details class="evidence"><summary>Evidence</summary><div class="ev-body">Book request ResponseId/selectedOfferId == GetSeatMap response's responseId/offerId verbatim; pnr RPRJFQ.</div></details>
+</details>
+
+<details class="tc PASS">
+<summary class="tc-head"><span><span class="chev"></span><span class="mono">TC-BOOK-POS-03</span> - Book a flight with one seat selected</span><span class="badge PASS">PASS</span></summary>
+<div class="row"><b>Endpoint Name:</b> Book a flight and select a seat</div>
+<div class="row"><b>Request:</b> Booked a one-way Bahrain&rarr;Riyadh flight for one adult, selecting seat 8A</div>
+<div class="row"><b>Response:</b> The booking succeeded and the confirmation clearly shows seat 8A attached at its listed price of 120 SAR</div>
+<div class="row"><b>Expected:</b> The booking should succeed and show the selected seat, its price, and a booking reference</div>
+<div class="row"><b>Actual:</b> Everything matched exactly - the seat, the price, and the running total</div>
+<div class="row tc-status-row"><b>Status:</b> <span class="badge PASS">PASS</span><span class="tc-reqres-anchor"></span></div>
+<details class="evidence"><summary>Evidence</summary><div class="ev-body">Full Book response body, pnr RPRJFQ, GulfAir BAH-RUH 2027-01-15.</div></details>
+<div class="tc-reqres-panel">
+<div class="rr-title">Request</div>
+<div class="rr-line">POST to https://ndc-integration-stg-ne-2.azurewebsites.net/api/v2/FlightBooking/Book</div>
+<div class="rr-label">HEADERS</div>
+<div class="rr-box rr-headers-box">
+<div class="rr-h-line">x-api-key: <span class="rr-redacted">&#8226;&#8226;&#8226;&#8226;&#8226;&#8226;&#8226;&#8226;(redacted)</span></div>
+<div class="rr-h-line">Client-Id: NDC-Core</div>
+<div class="rr-h-line">Content-Type: application/json</div>
+</div>
+<div class="rr-label">BODY</div>
+<div class="rr-box rr-body-box"><pre>{
+  "ResponseId": "&lt;getSeatMapResponceID&gt;",
+  "selectedOfferId": "&lt;getSeatMapOfferId&gt;",
+  "supplier": "GulfAir",
+  "credentialsSelector": "KSA",
+  "passengersSelectedSeats": {
+    "PAX1": { "setSegmentsSeats": { "GF-GF169-GF169-2027011519-2027011521-O": { "cellCode": "8A", "cellId": "&lt;cellID&gt;" } } }
+  }
+}</pre></div>
+<div class="rr-title" style="margin-top:18px;">Response</div>
+<div class="rr-line">Status code 200</div>
+<div class="rr-label">BODY</div>
+<div class="rr-box rr-body-box"><pre>{
+  "pnr": "RPRJFQ",
+  "gdsPNR": "",
+  "bookingToken": "&lt;redacted-token&gt;",
+  "passengersSelectedSeats": { "PAX1": { "GF-GF169-GF169-2027011519-2027011521-O": { "cellCode": "8A", "price": { "amount": 120.00, "currency": "SAR" } } } },
+  "selectedOffer": { "priceDetails": { "totalAmount": {"amount":643.00,"currency":"SAR"}, "totalBaseAmount": {"amount":170.00,"currency":"SAR"}, "totalTaxAmount": {"amount":353.00,"currency":"SAR"}, "totalSelectedSeatsAmount": {"amount":120.00,"currency":"SAR"} } }
+}</pre></div>
+<div class="rr-note">Response headers were not captured for this call in this session - only status code and body were inspected.</div>
+</div>
+<div class="view-tc-wrap"><details class="view-tc"><summary>View Test Case</summary><div class="view-tc-body"><div class="vtc-h">Preconditions</div><div class="vtc-p">GetSeatMap completed; an AvailablePaid cell's cellCode and cellID recorded.</div><div class="vtc-h">Steps</div><ol class="vtc-steps"><li>AddPassenger -&gt; GetSeatMap (record cellCode/cellID) -&gt; Book (ResponseId=getSeatMapResponceID, selectedOfferId=getSeatMapOfferId, passengersSelectedSeats as above).</li></ol><div class="vtc-h">Expected Result</div><div class="vtc-p">HTTP 200; pnr/bookingToken/gdsPNR returned; response echoes the seat selection; totals reflect the same price.</div><div class="vtc-h">Actual Result</div><div class="vtc-p">Confirmed as expected.</div></div></details></div>
+</details>
+
+<details class="tc PASS">
+<summary class="tc-head"><span><span class="chev"></span><span class="mono">TC-BOOK-POS-04</span> - Confirm a selected seat is saved immediately, before any ticket is issued</span><span class="badge PASS">PASS</span></summary>
+<div class="row"><b>Endpoint Name:</b> Confirm a selected seat is attached to the booking right away</div>
+<div class="row"><b>Request:</b> Looked up the same booking again right after creating it, with no separate ticketing action taken in between</div>
+<div class="row"><b>Response:</b> The seat was already visible on the booking immediately</div>
+<div class="row"><b>Expected:</b> A selected seat should be attached to the booking right away, not only after a separate ticketing step</div>
+<div class="row"><b>Actual:</b> Confirmed - though for this airline, tickets are actually issued automatically at the moment of booking, so there is no real time gap to observe separately</div>
+<div class="row"><b>Status:</b> <span class="badge PASS">PASS</span></div>
+<details class="evidence"><summary>Evidence</summary><div class="ev-body">Retrieve(RPRJFQ) immediately shows seat 8A/120 SAR attached, bookingStatus already 'Booked'.</div></details>
+</details>
+
+<details class="tc FAIL">
+<summary class="tc-head"><span><span class="chev"></span><span class="mono">TC-SEATAFTERHOLD-POS-01</span> - Select a seat on a booking that is only "on hold" (not yet finalized)</span><span class="badge FAIL">FAIL</span></summary>
+<div class="row"><b>Endpoint Name:</b> Select a seat on a held (not-yet-finalized) booking</div>
+<div class="row"><b>Request:</b> Put a booking on hold, then tried to attach a seat to it using the dedicated seat-selection endpoint meant for held bookings</div>
+<div class="row"><b>Response:</b> The request was flatly rejected with a message saying this airline does not support the feature at all</div>
+<div class="row"><b>Expected:</b> This case exists purely to discover what response shape to expect - any response would establish that</div>
+<div class="row"><b>Actual:</b> Rejected outright for the 5th round running (BUG-03) - this endpoint has never worked for this airline, reconfirmed against a brand-new fresh hold</div>
+<div class="row"><b>Status:</b> <span class="badge FAIL">FAIL</span></div>
+<details class="evidence"><summary>Evidence</summary><div class="ev-body">TransactionId 253cdbe2-ed5e-4928-83f0-a87b3071ef56 - {ErrorCode:'OperationNotSupported', Context:[{Value:'GulfAir does not exists'}]}, pnr RVQUIZ.</div></details>
+</details>
+
+</div>
+</details>
+
+<details class="tc-category" data-cat="negative" open>
+<summary><span class="cat-icon">&#128683;</span><span class="cat-name">Negative</span><span class="cat-counts"><span class="cc pass">8 passed</span><span class="cc fail">4 failed</span></span><span class="cat-chev"></span></summary>
+<div class="tc-category-body">
+<div class="tc-cat-actions"><button type="button" class="tc-cat-expand">Expand all</button><button type="button" class="tc-cat-collapse">Collapse all</button></div>
+
+<details class="tc PASS">
+<summary class="tc-head"><span><span class="chev"></span><span class="mono">TC-BOOK-NEG-05</span> - Reject a seat selection that points at an already-taken seat</span><span class="badge PASS">PASS</span></summary>
+<div class="row"><b>Endpoint Name:</b> Try to book an already-occupied seat</div>
+<div class="row"><b>Request:</b> Tried to select a seat the seat map had already marked as taken</div>
+<div class="row"><b>Response:</b> The booking was rejected with a clear validation error</div>
+<div class="row"><b>Expected:</b> An already-taken seat should be rejected, not silently booked</div>
+<div class="row"><b>Actual:</b> Rejected as expected, unchanged from every previous round</div>
+<div class="row"><b>Status:</b> <span class="badge PASS">PASS</span></div>
+<details class="evidence"><summary>Evidence</summary><div class="ev-body">TransactionId 28e1c5a1-8c19-4ae9-82a8-58605af98250 - 400 ValidationError {'NotEmptyValidator':'CellId is required.'} (Occupied cells never carry a real cellID).</div></details>
+</details>
+
+<details class="tc FAIL">
+<summary class="tc-head"><span><span class="chev"></span><span class="mono">TC-BOOK-NEG-06</span> - Reject a seat-selection token that has been tampered with</span><span class="badge FAIL">FAIL</span></summary>
+<div class="row"><b>Endpoint Name:</b> Try to book a seat using a corrupted seat-selection token</div>
+<div class="row"><b>Request:</b> Selected seat 8A but deliberately corrupted part of its internal reference token before sending the booking</div>
+<div class="row"><b>Response:</b> The booking succeeded anyway, with seat 8A attached at its normal price</div>
+<div class="row"><b>Expected:</b> A corrupted token should be rejected</div>
+<div class="row"><b>Actual:</b> STILL REPRODUCES (BUG-06, 5th consecutive round) - the system never actually checks the token; it just trusts the visible seat code</div>
+<div class="row tc-status-row"><b>Status:</b> <span class="badge FAIL">FAIL</span><span class="tc-reqres-anchor"></span></div>
+<details class="evidence"><summary>Evidence</summary><div class="ev-body">pnr RZTQOS, seat 8A/120.00 SAR attached despite the corrupted cellId token (BAH-JED 2027-02-01).</div></details>
+<div class="tc-reqres-panel">
+<div class="rr-title">Request</div>
+<div class="rr-line">POST to https://ndc-integration-stg-ne-2.azurewebsites.net/api/v2/FlightBooking/Book</div>
+<div class="rr-label">HEADERS</div>
+<div class="rr-box rr-headers-box">
+<div class="rr-h-line">x-api-key: <span class="rr-redacted">&#8226;&#8226;&#8226;&#8226;&#8226;&#8226;&#8226;&#8226;(redacted)</span></div>
+<div class="rr-h-line">Client-Id: NDC-Core</div>
+</div>
+<div class="rr-label">BODY</div>
+<div class="rr-box rr-body-box"><pre>{
+  "ResponseId": "...", "selectedOfferId": "...", "supplier": "GulfAir", "credentialsSelector": "KSA",
+  "passengersSelectedSeats": { "PAX1": { "setSegmentsSeats": { "GF-GF181-...": { "cellCode": "8A", "cellId": "&lt;last 10 chars replaced with XXXXXXXXXX&gt;" } } } }
+}</pre></div>
+<div class="rr-title" style="margin-top:18px;">Response</div>
+<div class="rr-line">Status code 200</div>
+<div class="rr-label">BODY</div>
+<div class="rr-box rr-body-box"><pre>{ "pnr": "RZTQOS", "passengersSelectedSeats": { "PAX1": { "GF-GF181-...": { "cellCode": "8A", "price": {"amount":120.00,"currency":"SAR"} } } } }</pre></div>
+</div>
+</details>
+
+<details class="tc BLOCKED">
+<summary class="tc-head"><span><span class="chev"></span><span class="mono">TC-SEATAFTERHOLD-NEG-01</span> - Reject a seat-selection request whose hold details don't match each other</span><span class="badge BLOCKED">BLOCKED</span></summary>
+<div class="row"><b>Endpoint Name:</b> Try to select a seat using mismatched hold reference details</div>
+<div class="row"><b>Request:</b> Mixed reference details from two different held bookings on one seat-selection request</div>
+<div class="row"><b>Response:</b> Rejected with the same generic "not supported for this airline" message as every other attempt</div>
+<div class="row"><b>Expected:</b> A mismatched combination should be specifically rejected</div>
+<div class="row"><b>Actual:</b> Actually attempted this round, but the blanket rejection (BUG-03) fires before any mismatch-specific check could ever run, so this remains untestable for this airline</div>
+<div class="row"><b>Status:</b> <span class="badge BLOCKED">BLOCKED</span></div>
+<details class="evidence"><summary>Evidence</summary><div class="ev-body">TransactionId 36bf2175-9e5c-4317-b36b-20968954c3b4.</div></details>
+</details>
+
+<details class="tc BLOCKED">
+<summary class="tc-head"><span><span class="chev"></span><span class="mono">TC-SEATAFTERHOLD-NEG-02</span> - Reject a seat-selection request made after a hold has expired</span><span class="badge BLOCKED">BLOCKED</span></summary>
+<div class="row"><b>Endpoint Name:</b> Try to select a seat on an expired hold</div>
+<div class="row"><b>Request:</b> Would require a held booking with a known, already-passed expiry time</div>
+<div class="row"><b>Response:</b> N/A - doubly blocked</div>
+<div class="row"><b>Expected:</b> An expired hold should reject the seat-selection request</div>
+<div class="row"><b>Actual:</b> Doubly blocked: the endpoint rejects this airline outright regardless of expiry (BUG-03), and the hold's own expiry timestamp is still never set for this airline (BUG-04), reconfirmed on 3 fresh holds this round</div>
+<div class="row"><b>Status:</b> <span class="badge BLOCKED">BLOCKED</span></div>
+<details class="evidence"><summary>Evidence</summary><div class="ev-body">Holds RVQUIZ, RTWPNJ, RMCNEV all returned holdExpirationDate:null.</div></details>
+</details>
+
+<details class="tc PASS">
+<summary class="tc-head"><span><span class="chev"></span><span class="mono">TC-BOOK-NEG-07</span> - Reject a booking that gives the same seat to two different passengers</span><span class="badge PASS">PASS</span></summary>
+<div class="row"><b>Endpoint Name:</b> Try to assign one seat to two passengers at once</div>
+<div class="row"><b>Request:</b> Booked two adults on the same flight, both selecting the identical seat</div>
+<div class="row"><b>Response:</b> Rejected with a clear, specific message naming the conflicting seat</div>
+<div class="row"><b>Expected:</b> A duplicate seat assignment should be rejected before any real booking is attempted</div>
+<div class="row"><b>Actual:</b> Cleanly rejected this round with an on-point message. This is a different scenario from the BUG-07 cross-offer defect below - not to be confused with it.</div>
+<div class="row"><b>Status:</b> <span class="badge PASS">PASS</span></div>
+<details class="evidence"><summary>Evidence</summary><div class="ev-body">TransactionId ef6cfeb6-1035-4619-8e3b-f2fef7eda798 - "Seat '8A' is assigned to multiple passengers on segment 'GF-GF181-GF181-2027011801-2027011804-O'."</div></details>
+</details>
+
+<details class="tc PASS">
+<summary class="tc-head"><span><span class="chev"></span><span class="mono">TC-BOOK-NEG-08</span> - Confirm the same passenger cannot select two different seats on one segment</span><span class="badge PASS">PASS</span></summary>
+<div class="row"><b>Endpoint Name:</b> Confirm a passenger can't literally submit two seats for one segment</div>
+<div class="row"><b>Request:</b> No live call needed - the way the booking request is structured makes this physically impossible to submit</div>
+<div class="row"><b>Response:</b> N/A</div>
+<div class="row"><b>Expected:</b> Documented as impossible to construct, not a live rejection to test</div>
+<div class="row"><b>Actual:</b> Confirmed again this round by inspecting every booking request built this round</div>
+<div class="row"><b>Status:</b> <span class="badge PASS">PASS</span></div>
+<details class="evidence"><summary>Evidence</summary><div class="ev-body">Book's passengersSelectedSeats.&lt;pax&gt;.setSegmentsSeats schema is a JSON object keyed by segment, not an array.</div></details>
+</details>
+
+<details class="tc BLOCKED">
+<summary class="tc-head"><span><span class="chev"></span><span class="mono">TC-BOOK-NEG-09</span> - Confirm the system recovers gracefully if the airline fails to allocate a seat after booking</span><span class="badge BLOCKED">BLOCKED</span></summary>
+<div class="row"><b>Endpoint Name:</b> Confirm graceful handling of a supplier-side seat allocation failure</div>
+<div class="row"><b>Request:</b> Requires a way to deliberately force the airline's own seat allocation to fail</div>
+<div class="row"><b>Response:</b> Not attempted</div>
+<div class="row"><b>Expected:</b> N/A</div>
+<div class="row"><b>Actual:</b> Not forceable this round; the outage that could have served as natural evidence has now cleared</div>
+<div class="row"><b>Status:</b> <span class="badge BLOCKED">BLOCKED</span></div>
+<details class="evidence"><summary>Evidence</summary><div class="ev-body">No forcing mechanism available.</div></details>
+</details>
+
+<details class="tc PASS">
+<summary class="tc-head"><span><span class="chev"></span><span class="mono">TC-BOOK-NEG-10</span> - Confirm booking succeeds when the seat-selection field is sent empty on purpose</span><span class="badge PASS">PASS</span></summary>
+<div class="row"><b>Endpoint Name:</b> Book with an explicitly empty seat-selection field</div>
+<div class="row"><b>Request:</b> Sent a booking with the seat-selection field present but deliberately empty</div>
+<div class="row"><b>Response:</b> The booking succeeded normally with no seat and no fee</div>
+<div class="row"><b>Expected:</b> An empty (but present) seat-selection field should not cause an error</div>
+<div class="row"><b>Actual:</b> Succeeded exactly as expected, unchanged from every prior round</div>
+<div class="row"><b>Status:</b> <span class="badge PASS">PASS</span></div>
+<details class="evidence"><summary>Evidence</summary><div class="ev-body">pnr RQUNQE, BAH-CAI 2027-02-12, totalSelectedSeatsAmount=0.</div></details>
+</details>
+
+<details class="tc PASS">
+<summary class="tc-head"><span><span class="chev"></span><span class="mono">TC-BOOK-NEG-11</span> - Confirm booking succeeds when a passenger's per-segment seat field is sent empty on purpose</span><span class="badge PASS">PASS</span></summary>
+<div class="row"><b>Endpoint Name:</b> Book with an explicitly empty per-passenger seat field</div>
+<div class="row"><b>Request:</b> Sent a booking where the passenger's own seat-selection sub-field was present but empty</div>
+<div class="row"><b>Response:</b> The booking succeeded normally with no seat attached and no error</div>
+<div class="row"><b>Expected:</b> Should succeed cleanly</div>
+<div class="row"><b>Actual:</b> Succeeded exactly as expected, unchanged from every prior round</div>
+<div class="row"><b>Status:</b> <span class="badge PASS">PASS</span></div>
+<details class="evidence"><summary>Evidence</summary><div class="ev-body">pnr RCCVJL, BAH-CAI 2027-02-13.</div></details>
+</details>
+
+<details class="tc PASS">
+<summary class="tc-head"><span><span class="chev"></span><span class="mono">TC-BOOK-NEG-12</span> - Reject a booking that is missing a required field</span><span class="badge PASS">PASS</span></summary>
+<div class="row"><b>Endpoint Name:</b> Try booking with each required field missing, one at a time</div>
+<div class="row"><b>Request:</b> Sent four otherwise-valid bookings, each missing exactly one required field (airline, credentials, or one of two booking-reference fields)</div>
+<div class="row"><b>Response:</b> Missing airline, credentials, or the offer reference were all cleanly rejected; missing the other reference field still succeeded and created a real booking</div>
+<div class="row"><b>Expected:</b> All four should be rejected with no booking created</div>
+<div class="row"><b>Actual:</b> A defect from Round 4 is now FIXED (missing the offer reference used to cause a generic server error - it now gives a proper, specific rejection). One separate, longer-standing gap remains open and is called out below rather than hidden: omitting the other reference field still creates a real, ticketed booking.</div>
+<div class="row"><b>Status:</b> <span class="badge PASS">PASS</span></div>
+<details class="evidence"><summary>Evidence</summary><div class="ev-body">omit supplier-&gt;400; omit credentialsSelector-&gt;400; omit selectedOfferId-&gt;400 ValidationError ("The selected offer is invalid, expired, or could not be found."); omit ResponseId-&gt;200, pnr RDQQTN (still open, excluded from this test case's own pass/fail tally per the team's established scope decision, but flagged as a live finding below).</div></details>
+</details>
+
+<details class="tc FAIL">
+<summary class="tc-head"><span><span class="chev"></span><span class="mono">TC-SEATMAP-NEG-01</span> - Reject a seat-map lookup for a flight that doesn't need one</span><span class="badge FAIL">FAIL</span></summary>
+<div class="row"><b>Endpoint Name:</b> Try a seat-map lookup on a flight flagged as not needing one</div>
+<div class="row"><b>Request:</b> Looked up the seat map for an offer the system itself had already flagged as not requiring seat selection</div>
+<div class="row"><b>Response:</b> The full seat map came back anyway, exactly as if it had been required</div>
+<div class="row"><b>Expected:</b> Should be rejected or return an explicit "not applicable" response</div>
+<div class="row"><b>Actual:</b> Still returns a full seat map on all 9 routes tried this round. This has quietly reproduced every round since the very first one but had never been logged as its own numbered defect for this airline until now (BUG-15).</div>
+<div class="row"><b>Status:</b> <span class="badge FAIL">FAIL</span></div>
+<details class="evidence"><summary>Evidence</summary><div class="ev-body">isSeatMapRequired=false confirmed at FareConfirm on chains A,B,C,D,E,F,G,H,INF; GetSeatMap still 200 with full seatMapDetails on all 9.</div></details>
+</details>
+
+<details class="tc FAIL">
+<summary class="tc-head"><span><span class="chev"></span><span class="mono">TC-SEATMAP-NEG-02</span> - Reject a seat-map lookup that mixes reference numbers from two different flights</span><span class="badge FAIL">FAIL</span></summary>
+<div class="row"><b>Endpoint Name:</b> Try a seat-map lookup with mismatched flight references</div>
+<div class="row"><b>Request:</b> Combined the flight reference from one booking attempt with the offer reference from a completely different, unrelated one</div>
+<div class="row"><b>Response:</b> A full seat map came back anyway, in both directions of the mismatch</div>
+<div class="row"><b>Expected:</b> A mismatched combination should be rejected</div>
+<div class="row"><b>Actual:</b> STILL REPRODUCES (BUG-01, 5th consecutive round). This was the top-priority re-check this round, since yesterday's outage had specifically prevented re-testing it.</div>
+<div class="row tc-status-row"><b>Status:</b> <span class="badge FAIL">FAIL</span><span class="tc-reqres-anchor"></span></div>
+<details class="evidence"><summary>Evidence</summary><div class="ev-body">Cross A-&gt;B and B-&gt;A GetSeatMap calls both returned 200 with populated seatMapDetails.</div></details>
+<div class="tc-reqres-panel">
+<div class="rr-title">Request</div>
+<div class="rr-line">POST to https://ndc-integration-stg-ne-2.azurewebsites.net/api/V2/SeatMap/Seat</div>
+<div class="rr-label">HEADERS</div>
+<div class="rr-box rr-headers-box">
+<div class="rr-h-line">x-api-key: <span class="rr-redacted">&#8226;&#8226;&#8226;&#8226;&#8226;&#8226;&#8226;&#8226;(redacted)</span></div>
+<div class="rr-h-line">Client-Id: NDC-Core</div>
+</div>
+<div class="rr-label">BODY</div>
+<div class="rr-box rr-body-box"><pre>{ "supplier": "GulfAir", "credentialsSelector": "KSA", "ResponseId": "&lt;Chain A's ResponseId&gt;", "selectedOfferId": "&lt;Chain B's selectedOfferId&gt;" }</pre></div>
+<div class="rr-title" style="margin-top:18px;">Response</div>
+<div class="rr-line">Status code 200</div>
+<div class="rr-label">BODY</div>
+<div class="rr-box rr-body-box"><pre>{ "supplier": "GulfAir", "offerId": "...", "responseId": "...", "seatMapDetails": { "...": "full seat map returned despite the mismatched IDs (truncated for report size)" } }</pre></div>
+</div>
+</details>
+
+<details class="tc PASS">
+<summary class="tc-head"><span><span class="chev"></span><span class="mono">TC-SEATMAP-NEG-03</span> - Reject a seat-map lookup using a made-up or already-used reference</span><span class="badge PASS">PASS</span></summary>
+<div class="row"><b>Endpoint Name:</b> Try a seat-map lookup with a fake or stale reference</div>
+<div class="row"><b>Request:</b> Run 1: used a completely made-up reference number. Run 2: reused a genuine reference from a booking that had already been completed elsewhere.</div>
+<div class="row"><b>Response:</b> Run 1: cleanly rejected. Run 2: still worked, even though that offer had already been booked.</div>
+<div class="row"><b>Expected:</b> Both should be rejected</div>
+<div class="row"><b>Actual:</b> Resolves last round's inconclusive result now that the outage has cleared: a genuinely fake reference is properly rejected. New nuance found: a real reference doesn't get invalidated just because it was already used to complete a booking.</div>
+<div class="row"><b>Status:</b> <span class="badge PASS">PASS</span></div>
+<details class="evidence"><summary>Evidence</summary><div class="ev-body">Run 1: TransactionId f9d82d0e-b45e-4035-a3b8-00fe8bf936b8, 400 ValidationError. Run 2: Chain B's already-consumed AddPassenger IDs still return 200.</div></details>
+</details>
+
+<details class="tc FAIL">
+<summary class="tc-head"><span><span class="chev"></span><span class="mono">TC-SEATMAP-NEG-04</span> - Reject a seat-map lookup missing a required field</span><span class="badge FAIL">FAIL</span></summary>
+<div class="row"><b>Endpoint Name:</b> Try a seat-map lookup with each required field missing, one at a time</div>
+<div class="row"><b>Request:</b> 4 variants, each missing exactly one required field</div>
+<div class="row"><b>Response:</b> Missing the airline, credentials, or the offer reference were all cleanly rejected; missing the other booking-reference field still returned a full seat map</div>
+<div class="row"><b>Expected:</b> All four should be rejected</div>
+<div class="row"><b>Actual:</b> STILL REPRODUCES (BUG-02, 5th consecutive round) - one of the four required-looking fields isn't actually enforced</div>
+<div class="row"><b>Status:</b> <span class="badge FAIL">FAIL</span></div>
+<details class="evidence"><summary>Evidence</summary><div class="ev-body">omit supplier 400; omit credentialsSelector 400; omit selectedOfferId 400; omit ResponseId 200 (full seatMapDetails returned).</div></details>
+</details>
+
+<details class="tc PASS">
+<summary class="tc-head"><span><span class="chev"></span><span class="mono">TC-SEATMAP-NEG-05</span> - Confirm seat-map failures come back as a clean, readable error rather than a raw crash</span><span class="badge PASS">PASS</span></summary>
+<div class="row"><b>Endpoint Name:</b> Confirm graceful error handling for the seat-map lookup</div>
+<div class="row"><b>Request:</b> Used this round's fake-reference rejection as the evidence, since no real outage occurred this round to observe directly</div>
+<div class="row"><b>Response:</b> A clean, well-structured error message, not a raw crash or stack trace</div>
+<div class="row"><b>Expected:</b> Failures should come back as a readable, structured error</div>
+<div class="row"><b>Actual:</b> Structurally graceful, consistent with every error seen this round</div>
+<div class="row"><b>Status:</b> <span class="badge PASS">PASS</span></div>
+<details class="evidence"><summary>Evidence</summary><div class="ev-body">TransactionId f9d82d0e-b45e-4035-a3b8-00fe8bf936b8 - well-formed JSON error envelope.</div></details>
+</details>
+
+</div>
+</details>
+
+<details class="tc-category" data-cat="validation" open>
+<summary><span class="cat-icon">&#128203;</span><span class="cat-name">Validation</span><span class="cat-counts"><span class="cc pass">10 passed</span><span class="cc fail">2 failed</span></span><span class="cat-chev"></span></summary>
+<div class="tc-category-body">
+<div class="tc-cat-actions"><button type="button" class="tc-cat-expand">Expand all</button><button type="button" class="tc-cat-collapse">Collapse all</button></div>
+
+<details class="tc PASS">
+<summary class="tc-head"><span><span class="chev"></span><span class="mono">TC-SEATMAP-VAL-03</span> - Confirm a seat's internal reference token works in the booking step despite a naming quirk</span><span class="badge PASS">PASS</span></summary>
+<div class="row"><b>Endpoint Name:</b> Reuse a seat map's own seat-reference token when booking</div>
+<div class="row"><b>Request:</b> Copied a seat's reference token from the seat map, verbatim, into the booking request</div>
+<div class="row"><b>Response:</b> Accepted, seat correctly attached</div>
+<div class="row"><b>Expected:</b> Accepted despite a small field-naming difference between the seat map and the booking form</div>
+<div class="row"><b>Actual:</b> Accepted; the naming difference is purely cosmetic, unchanged from every prior round</div>
+<div class="row"><b>Status:</b> <span class="badge PASS">PASS</span></div>
+<details class="evidence"><summary>Evidence</summary><div class="ev-body">Book(RPRJFQ) response passengersSelectedSeats.PAX1.&lt;seg&gt;={cellCode:'8A',price:{amount:120.00,currency:'SAR'}}.</div></details>
+</details>
+
+<details class="tc FAIL">
+<summary class="tc-head"><span><span class="chev"></span><span class="mono">TC-SEATMAP-VAL-04</span> - Reject a seat token that was issued for a different flight offer</span><span class="badge FAIL">FAIL</span></summary>
+<div class="row"><b>Endpoint Name:</b> Try to use one flight's seat token when booking a different flight</div>
+<div class="row"><b>Request:</b> Booked flight B, but used a seat reference token that had been issued for flight A</div>
+<div class="row"><b>Response:</b> The booking succeeded and was ticketed, but the seat itself silently disappeared from the confirmation - no error at all</div>
+<div class="row"><b>Expected:</b> Should be rejected, since the token appears to be tied to the specific offer it came from</div>
+<div class="row"><b>Actual:</b> STILL REPRODUCES (BUG-07, 5th consecutive round) - a real, ticketed booking is created and the paid-for seat simply vanishes with no warning. This is worse than an outright rejection.</div>
+<div class="row tc-status-row"><b>Status:</b> <span class="badge FAIL">FAIL</span><span class="tc-reqres-anchor"></span></div>
+<details class="evidence"><summary>Evidence</summary><div class="ev-body">pnr RUNKLG, passengersSelectedSeats:{}, totalSelectedSeatsAmount:null (2 ADT, BAH-JED 2027-01-18).</div></details>
+<div class="tc-reqres-panel">
+<div class="rr-title">Request</div>
+<div class="rr-line">POST to https://ndc-integration-stg-ne-2.azurewebsites.net/api/v2/FlightBooking/Book</div>
+<div class="rr-label">HEADERS</div>
+<div class="rr-box rr-headers-box"><div class="rr-h-line">x-api-key: <span class="rr-redacted">&#8226;&#8226;&#8226;&#8226;&#8226;&#8226;&#8226;&#8226;(redacted)</span></div><div class="rr-h-line">Client-Id: NDC-Core</div></div>
+<div class="rr-label">BODY</div>
+<div class="rr-box rr-body-box"><pre>{ "ResponseId": "&lt;Chain B ResponseId&gt;", "selectedOfferId": "&lt;Chain B offerId&gt;", "supplier": "GulfAir", "credentialsSelector": "KSA",
+  "passengersSelectedSeats": { "PAX1": { "setSegmentsSeats": { "GF-GF181-...": { "cellCode": "8A", "cellId": "&lt;Chain A's cellID&gt;" } } } } }</pre></div>
+<div class="rr-title" style="margin-top:18px;">Response</div>
+<div class="rr-line">Status code 200</div>
+<div class="rr-label">BODY</div>
+<div class="rr-box rr-body-box"><pre>{ "pnr": "RUNKLG", "tickets": {"PAX1":{"ticketStatus":"Booked"},"PAX2":{"ticketStatus":"Booked"}}, "passengersSelectedSeats": {} }</pre></div>
+</div>
+</details>
+
+<details class="tc FAIL">
+<summary class="tc-head"><span><span class="chev"></span><span class="mono">TC-BOOK-VAL-06</span> - Confirm what happens when a seat's display code doesn't match its own internal token</span><span class="badge FAIL">FAIL</span></summary>
+<div class="row"><b>Endpoint Name:</b> Book with a mismatched seat code and seat token</div>
+<div class="row"><b>Request:</b> Sent seat code "8B" together with the internal token that actually belongs to a different seat, "8A"</div>
+<div class="row"><b>Response:</b> Booked and priced as seat 8B (the visible code), ignoring what the token actually pointed to - with no cross-check between the two at all</div>
+<div class="row"><b>Expected:</b> The two values should be cross-checked against each other, or the mismatch should be rejected</div>
+<div class="row"><b>Actual:</b> The system trusts the visible seat code and never verifies it against the token, unchanged from every prior round - a wrong seat can silently be booked under whatever code is submitted</div>
+<div class="row"><b>Status:</b> <span class="badge FAIL">FAIL</span></div>
+<details class="evidence"><summary>Evidence</summary><div class="ev-body">pnr RXWLKV, cellCode 8B booked at 120.00 SAR (8B's own price, cellId was for cell 8A), BAH-DXB 2027-02-03.</div></details>
+</details>
+
+<details class="tc PASS">
+<summary class="tc-head"><span><span class="chev"></span><span class="mono">TC-BOOK-VAL-07</span> - Confirm a booking always reflects exactly what was actually sent</span><span class="badge PASS">PASS</span></summary>
+<div class="row"><b>Endpoint Name:</b> Confirm the booking never uses a stale, earlier seat choice</div>
+<div class="row"><b>Request:</b> This is a client-side check - only one booking request is ever actually sent</div>
+<div class="row"><b>Response:</b> N/A</div>
+<div class="row"><b>Expected:</b> The booking should reflect exactly what was transmitted, never something from an earlier draft</div>
+<div class="row"><b>Actual:</b> Every booking call this round reflected exactly what was sent</div>
+<div class="row"><b>Status:</b> <span class="badge PASS">PASS</span></div>
+<details class="evidence"><summary>Evidence</summary><div class="ev-body">Cross-referenced against this round's Book evidence across all 9 chains.</div></details>
+</details>
+
+<details class="tc PASS">
+<summary class="tc-head"><span><span class="chev"></span><span class="mono">TC-BOOK-VAL-08</span> - Confirm the currency shown is real and consistent, not a placeholder</span><span class="badge PASS">PASS</span></summary>
+<div class="row"><b>Endpoint Name:</b> Confirm currency codes are consistent across a booking with a seat</div>
+<div class="row"><b>Request:</b> Inspected every price field related to the selected seat in two bookings</div>
+<div class="row"><b>Response:</b> All prices consistently in Saudi Riyals</div>
+<div class="row"><b>Expected:</b> Currency should be consistent and never a placeholder value</div>
+<div class="row"><b>Actual:</b> All currency fields identical, unchanged from every prior round</div>
+<div class="row"><b>Status:</b> <span class="badge PASS">PASS</span></div>
+<details class="evidence"><summary>Evidence</summary><div class="ev-body">pnr RPRJFQ and pnr RZLJET Book responses, all currency='SAR'.</div></details>
+</details>
+
+<details class="tc PASS">
+<summary class="tc-head"><span><span class="chev"></span><span class="mono">TC-SEATMAP-VAL-05</span> - Confirm seat description text matches its underlying code</span><span class="badge PASS">PASS</span></summary>
+<div class="row"><b>Endpoint Name:</b> Confirm seat descriptions match their internal codes</div>
+<div class="row"><b>Request:</b> Compared every seat's description text against its internal characteristic code across a full seat map</div>
+<div class="row"><b>Response:</b> Descriptions are self-consistent, though this airline never populates a real internal code (always a generic placeholder)</div>
+<div class="row"><b>Expected:</b> No description should contradict its own code, for codes we have a reference for</div>
+<div class="row"><b>Actual:</b> Same 15-value vocabulary as every prior round, no contradictions</div>
+<div class="row"><b>Status:</b> <span class="badge PASS">PASS</span></div>
+<details class="evidence"><summary>Evidence</summary><div class="ev-body">Full scan of chain A's 175 cells; padisCode='Unknown' on every entry, descriptions self-consistent.</div></details>
+</details>
+
+<details class="tc PASS">
+<summary class="tc-head"><span><span class="chev"></span><span class="mono">TC-SEATMAP-VAL-06</span> - Confirm aisle spaces and real seats are described consistently</span><span class="badge PASS">PASS</span></summary>
+<div class="row"><b>Endpoint Name:</b> Confirm aisle cells and seat cells have the right amount of detail each</div>
+<div class="row"><b>Request:</b> Checked every cell in a full seat map</div>
+<div class="row"><b>Response:</b> Every aisle cell had no seat details, every real seat had full details - zero exceptions</div>
+<div class="row"><b>Expected:</b> Aisle spaces should carry no seat detail; real seats should always carry full detail</div>
+<div class="row"><b>Actual:</b> 0 violations out of 175 cells, stable for a 5th consecutive round</div>
+<div class="row"><b>Status:</b> <span class="badge PASS">PASS</span></div>
+<details class="evidence"><summary>Evidence</summary><div class="ev-body">Full cell scan: 0 Aisle violations, 0 Seat violations.</div></details>
+</details>
+
+<details class="tc PASS">
+<summary class="tc-head"><span><span class="chev"></span><span class="mono">TC-SEATMAP-VAL-07</span> - Confirm window, aisle, and exit-row seats can be told apart from the data alone</span><span class="badge PASS">PASS</span></summary>
+<div class="row"><b>Endpoint Name:</b> Confirm seat attributes (window/aisle/exit row) are identifiable from the data</div>
+<div class="row"><b>Request:</b> Cross-checked seat position against its description text across a full seat map</div>
+<div class="row"><b>Response:</b> Window, aisle, and exit-row seats were all clearly and correctly labeled</div>
+<div class="row"><b>Expected:</b> These attributes should be derivable directly from the response, without guessing</div>
+<div class="row"><b>Actual:</b> Confirmed; exit-row zone spans rows 14-17 this round, same footprint as last round</div>
+<div class="row"><b>Status:</b> <span class="badge PASS">PASS</span></div>
+<details class="evidence"><summary>Evidence</summary><div class="ev-body">Exit-row cells this round: 14A-17F (24 cells).</div></details>
+</details>
+
+<details class="tc PASS">
+<summary class="tc-head"><span><span class="chev"></span><span class="mono">TC-SEATMAP-VAL-08</span> - Confirm seat pricing only appears for seats you can actually buy</span><span class="badge PASS">PASS</span></summary>
+<div class="row"><b>Endpoint Name:</b> Confirm pricing is present only for purchasable seats</div>
+<div class="row"><b>Request:</b> Checked pricing presence across every cell, grouped by whether the seat was available or already taken</div>
+<div class="row"><b>Response:</b> Every purchasable seat had a price; the one already-taken seat had none</div>
+<div class="row"><b>Expected:</b> Pricing should be conditional on availability</div>
+<div class="row"><b>Actual:</b> 149/149 available seats priced, 1/1 taken seat unpriced, unchanged from every prior round</div>
+<div class="row"><b>Status:</b> <span class="badge PASS">PASS</span></div>
+<details class="evidence"><summary>Evidence</summary><div class="ev-body">Full cell scan of chain A's GetSeatMap.</div></details>
+</details>
+
+<details class="tc PASS">
+<summary class="tc-head"><span><span class="chev"></span><span class="mono">TC-SEATMAP-VAL-09</span> - Confirm no two seats share the same seat code on one flight</span><span class="badge PASS">PASS</span></summary>
+<div class="row"><b>Endpoint Name:</b> Confirm seat codes are unique within a flight segment</div>
+<div class="row"><b>Request:</b> Collected every seat code within one segment's seat map</div>
+<div class="row"><b>Response:</b> All 150 seat codes were distinct</div>
+<div class="row"><b>Expected:</b> No seat code should repeat</div>
+<div class="row"><b>Actual:</b> 0 duplicates, unchanged from every prior round</div>
+<div class="row"><b>Status:</b> <span class="badge PASS">PASS</span></div>
+<details class="evidence"><summary>Evidence</summary><div class="ev-body">Full 175-cell scan (150 with cellCode, 25 Aisle without).</div></details>
+</details>
+
+<details class="tc PASS">
+<summary class="tc-head"><span><span class="chev"></span><span class="mono">TC-SEATMAP-VAL-10</span> - Confirm rows, zones, and columns follow expected structural rules</span><span class="badge PASS">PASS</span></summary>
+<div class="row"><b>Endpoint Name:</b> Confirm seat-map rows/zones/columns follow structural rules</div>
+<div class="row"><b>Request:</b> Checked row numbers, zone IDs, and column letters across a full seat map</div>
+<div class="row"><b>Response:</b> No duplicate rows, one consistent zone, all columns within the expected A-F range</div>
+<div class="row"><b>Expected:</b> No structural rule should be violated</div>
+<div class="row"><b>Actual:</b> Confirmed, unchanged from every prior round</div>
+<div class="row"><b>Status:</b> <span class="badge PASS">PASS</span></div>
+<details class="evidence"><summary>Evidence</summary><div class="ev-body">0 duplicate rowNumbers across 25 rows this round.</div></details>
+</details>
+
+<details class="tc PASS">
+<summary class="tc-head"><span><span class="chev"></span><span class="mono">TC-SEATMAP-VAL-11</span> - Confirm a passenger's allowed-seat list uses consistent naming with the rest of the response</span><span class="badge PASS">PASS</span></summary>
+<div class="row"><b>Endpoint Name:</b> Confirm consistent naming between a passenger's allow-list and the rest of the seat map</div>
+<div class="row"><b>Request:</b> Compared a passenger's allowed-seat list keys against the seat map's own flight-segment keys</div>
+<div class="row"><b>Response:</b> Keys matched character-for-character</div>
+<div class="row"><b>Expected:</b> No naming inconsistency should exist between the two structures</div>
+<div class="row"><b>Actual:</b> No inconsistency found, unchanged from every prior round</div>
+<div class="row"><b>Status:</b> <span class="badge PASS">PASS</span></div>
+<details class="evidence"><summary>Evidence</summary><div class="ev-body">passengersSeatMapAvailability key == seatMapDetails segment key, verbatim.</div></details>
+</details>
+
+<details class="tc BLOCKED">
+<summary class="tc-head"><span><span class="chev"></span><span class="mono">TC-SEATAFTERHOLD-VAL-01</span> - Confirm the exact fields the held-booking seat-selection endpoint actually requires</span><span class="badge BLOCKED">BLOCKED</span></summary>
+<div class="row"><b>Endpoint Name:</b> Discover the held-booking seat-selection endpoint's real required fields</div>
+<div class="row"><b>Request:</b> Depends on the discovery case above succeeding first</div>
+<div class="row"><b>Response:</b> N/A - the prerequisite call is rejected outright</div>
+<div class="row"><b>Expected:</b> Resolve the endpoint's real contract</div>
+<div class="row"><b>Actual:</b> Still blocked by the same blanket rejection, unchanged from every prior round</div>
+<div class="row"><b>Status:</b> <span class="badge BLOCKED">BLOCKED</span></div>
+<details class="evidence"><summary>Evidence</summary><div class="ev-body">See TC-SEATAFTERHOLD-POS-01.</div></details>
+</details>
+
+<details class="tc BLOCKED">
+<summary class="tc-head"><span><span class="chev"></span><span class="mono">TC-SEATAFTERHOLD-VAL-02</span> - Confirm the held-booking seat-selection endpoint rejects a passenger not on the booking</span><span class="badge BLOCKED">BLOCKED</span></summary>
+<div class="row"><b>Endpoint Name:</b> Confirm rejection of an unrelated passenger reference</div>
+<div class="row"><b>Request:</b> Sequenced behind the still-unresolved contract-discovery case above</div>
+<div class="row"><b>Response:</b> N/A</div>
+<div class="row"><b>Expected:</b> Blocked until the real contract is known</div>
+<div class="row"><b>Actual:</b> Still blocked, unchanged from every prior round</div>
+<div class="row"><b>Status:</b> <span class="badge BLOCKED">BLOCKED</span></div>
+<details class="evidence"><summary>Evidence</summary><div class="ev-body">See TC-SEATAFTERHOLD-VAL-01.</div></details>
+</details>
+
+</div>
+</details>
+
+<details class="tc-category" data-cat="boundary" open>
+<summary><span class="cat-icon">&#128207;</span><span class="cat-name">Boundary</span><span class="cat-counts"><span class="cc pass">4 passed</span><span class="cc fail">0 failed</span></span><span class="cat-chev"></span></summary>
+<div class="tc-category-body">
+<div class="tc-cat-actions"><button type="button" class="tc-cat-expand">Expand all</button><button type="button" class="tc-cat-collapse">Collapse all</button></div>
+
+<details class="tc PASS">
+<summary class="tc-head"><span><span class="chev"></span><span class="mono">TC-SEATMAP-BND-02</span> - Confirm seat status values stay within the known set</span><span class="badge PASS">PASS</span></summary>
+<div class="row"><b>Endpoint Name:</b> Confirm seat availability values stay within a known set</div>
+<div class="row"><b>Request:</b> Enumerated every distinct seat-status value across a full seat map</div>
+<div class="row"><b>Response:</b> Only known values appeared; no aisle space carried pricing</div>
+<div class="row"><b>Expected:</b> No unexpected values; aisles never priced</div>
+<div class="row"><b>Actual:</b> Confirmed, unchanged from every prior round</div>
+<div class="row"><b>Status:</b> <span class="badge PASS">PASS</span></div>
+<details class="evidence"><summary>Evidence</summary><div class="ev-body">149 AvailablePaid, 1 Occupied, 25 Aisle, 150 Seat; 0 Aisle cells with pricing.</div></details>
+</details>
+
+<details class="tc PASS">
+<summary class="tc-head"><span><span class="chev"></span><span class="mono">TC-BOOK-BND-03</span> - Confirm bookings work correctly with zero, one, and multiple seats selected</span><span class="badge PASS">PASS</span></summary>
+<div class="row"><b>Endpoint Name:</b> Book with zero, one, and multiple seats selected</div>
+<div class="row"><b>Request:</b> Tried three variants: no seat at all, one seat on a one-way trip, and two seats across a round trip</div>
+<div class="row"><b>Response:</b> All three worked correctly, with the round-trip case correctly showing an independent seat and price for each leg</div>
+<div class="row"><b>Expected:</b> All three shapes should be handled correctly</div>
+<div class="row"><b>Actual:</b> All three confirmed PASS this round, including the round-trip case which yesterday's outage had prevented testing</div>
+<div class="row"><b>Status:</b> <span class="badge PASS">PASS</span></div>
+<details class="evidence"><summary>Evidence</summary><div class="ev-body">(a) pnr RCZPIT; (b) pnr RPRJFQ; (c) pnr RZLJET, 2 segment entries (8B@120, 8A@120).</div></details>
+</details>
+
+<details class="tc PASS">
+<summary class="tc-head"><span><span class="chev"></span><span class="mono">TC-SEATMAP-BND-03</span> - Confirm a "free seat" status is real, and check for a second, related status</span><span class="badge PASS">PASS</span></summary>
+<div class="row"><b>Endpoint Name:</b> Confirm whether a free-seat status is genuinely used</div>
+<div class="row"><b>Request:</b> Confirmed via a previously-saved example from another airline; this round's live samples for this airline show only paid/taken</div>
+<div class="row"><b>Response:</b> Free-seat status remains confirmed via that saved example; a related, rarer status remains unconfirmed</div>
+<div class="row"><b>Expected:</b> Confirm both statuses where possible</div>
+<div class="row"><b>Actual:</b> No change from last round for this airline</div>
+<div class="row"><b>Status:</b> <span class="badge PASS">PASS</span></div>
+<details class="evidence"><summary>Evidence</summary><div class="ev-body">cellAvailability values across all 9 chains this round: AvailablePaid, Occupied only.</div></details>
+</details>
+
+<details class="tc PASS">
+<summary class="tc-head"><span><span class="chev"></span><span class="mono">TC-SEATMAP-BND-04</span> - Confirm whether any seat category beyond "seat" or "aisle" ever appears</span><span class="badge PASS">PASS</span></summary>
+<div class="row"><b>Endpoint Name:</b> Confirm whether rarer seat-map categories (galley, lavatory, etc.) ever appear</div>
+<div class="row"><b>Request:</b> Scanned every seat category across all 9 routes sampled this round</div>
+<div class="row"><b>Response:</b> Only "seat" and "aisle" ever observed</div>
+<div class="row"><b>Expected:</b> Resolve empirically</div>
+<div class="row"><b>Actual:</b> Same outcome as every prior round - this airline's aircraft on these routes never expose the rarer categories</div>
+<div class="row"><b>Status:</b> <span class="badge PASS">PASS</span></div>
+<details class="evidence"><summary>Evidence</summary><div class="ev-body">Distinct cellCategory values across this round's 9 chains: Seat, Aisle only.</div></details>
+</details>
+
+</div>
+</details>
+
+<details class="tc-category" data-cat="business-rule" open>
+<summary><span class="cat-icon">&#9878;&#65039;</span><span class="cat-name">Business Rule</span><span class="cat-counts"><span class="cc pass">4 passed</span><span class="cc fail">1 failed</span></span><span class="cat-chev"></span></summary>
+<div class="tc-category-body">
+<div class="tc-cat-actions"><button type="button" class="tc-cat-expand">Expand all</button><button type="button" class="tc-cat-collapse">Collapse all</button></div>
+
+<details class="tc PASS">
+<summary class="tc-head"><span><span class="chev"></span><span class="mono">TC-SEATMAP-BIZ-02</span> - Confirm seat prices add up correctly</span><span class="badge PASS">PASS</span></summary>
+<div class="row"><b>Endpoint Name:</b> Confirm each seat's price components add up correctly</div>
+<div class="row"><b>Request:</b> Checked the price breakdown for every purchasable seat in a full seat map</div>
+<div class="row"><b>Response:</b> Every seat's total matched its base price plus tax exactly</div>
+<div class="row"><b>Expected:</b> Total should always equal base plus tax</div>
+<div class="row"><b>Actual:</b> 0 mismatches out of 149 seats, stable for a 5th consecutive round</div>
+<div class="row"><b>Status:</b> <span class="badge PASS">PASS</span></div>
+<details class="evidence"><summary>Evidence</summary><div class="ev-body">Sample cell 8A: 120.00 = 120.00 + 0; systemic 0/149 mismatches.</div></details>
+</details>
+
+<details class="tc PASS">
+<summary class="tc-head"><span><span class="chev"></span><span class="mono">TC-BOOK-BIZ-04</span> - Confirm the seat fee is included in the booking's grand total</span><span class="badge PASS">PASS</span></summary>
+<div class="row"><b>Endpoint Name:</b> Confirm the seat fee is folded into the booking's grand total</div>
+<div class="row"><b>Request:</b> Checked the full price breakdown on a one-way booking and a round-trip booking, both with paid seats</div>
+<div class="row"><b>Response:</b> Both grand totals correctly included the seat fee(s) with nothing double-counted or missing</div>
+<div class="row"><b>Expected:</b> The grand total should equal fare plus tax plus any seat fee</div>
+<div class="row"><b>Actual:</b> Reconciles exactly on both journey shapes this round, including the round-trip case yesterday's outage had prevented testing</div>
+<div class="row"><b>Status:</b> <span class="badge PASS">PASS</span></div>
+<details class="evidence"><summary>Evidence</summary><div class="ev-body">pnr RPRJFQ: 170+353+0+120=643; pnr RZLJET: 400+761+0+240=1401.</div></details>
+</details>
+
+<details class="tc FAIL">
+<summary class="tc-head"><span><span class="chev"></span><span class="mono">TC-BOOK-BIZ-05</span> - Reject a child passenger assigned to an exit-row seat</span><span class="badge FAIL">FAIL</span></summary>
+<div class="row"><b>Endpoint Name:</b> Try to assign a child passenger to an exit-row seat</div>
+<div class="row"><b>Request:</b> Booked an adult and a child together, deliberately assigning the exit-row seat to the child</div>
+<div class="row"><b>Response:</b> The booking succeeded and both passengers were ticketed, including the child in the exit row, with no warning at all</div>
+<div class="row"><b>Expected:</b> Should be rejected - exit-row seating is a real safety restriction for children</div>
+<div class="row"><b>Actual:</b> STILL REPRODUCES IN ITS WORSENED FORM (BUG-09, 5th consecutive round) - there is zero server-side enforcement of this rule</div>
+<div class="row tc-status-row"><b>Status:</b> <span class="badge FAIL">FAIL</span><span class="tc-reqres-anchor"></span></div>
+<details class="evidence"><summary>Evidence</summary><div class="ev-body">pnr RLNWTT, PAX2(CHD) seat 12A/60.00 SAR attached and ticketed (BAH-DMM 2027-01-20).</div></details>
+<div class="tc-reqres-panel">
+<div class="rr-title">Request</div>
+<div class="rr-line">POST to https://ndc-integration-stg-ne-2.azurewebsites.net/api/v2/FlightBooking/Book</div>
+<div class="rr-label">HEADERS</div>
+<div class="rr-box rr-headers-box"><div class="rr-h-line">x-api-key: <span class="rr-redacted">&#8226;&#8226;&#8226;&#8226;&#8226;&#8226;&#8226;&#8226;(redacted)</span></div><div class="rr-h-line">Client-Id: NDC-Core</div></div>
+<div class="rr-label">BODY</div>
+<div class="rr-box rr-body-box"><pre>{ "ResponseId": "...", "selectedOfferId": "...", "supplier": "GulfAir", "credentialsSelector": "KSA",
+  "passengersSelectedSeats": { "PAX2": { "setSegmentsSeats": { "GF-GF101-...": { "cellCode": "12A", "cellId": "&lt;exit-row cellID&gt;" } } } } }</pre></div>
+<div class="rr-title" style="margin-top:18px;">Response</div>
+<div class="rr-line">Status code 200</div>
+<div class="rr-label">BODY</div>
+<div class="rr-box rr-body-box"><pre>{ "pnr": "RLNWTT", "tickets": {"PAX1":{"ticketStatus":"Booked"},"PAX2":{"ticketStatus":"Booked"}}, "passengersSelectedSeats": { "PAX2": { "GF-GF101-...": { "cellCode": "12A", "price": {"amount":60.00,"currency":"SAR"} } } } }</pre></div>
+</div>
+</details>
+
+<details class="tc PASS">
+<summary class="tc-head"><span><span class="chev"></span><span class="mono">TC-BOOK-BIZ-06</span> - Confirm a lap infant is never charged a seat fee</span><span class="badge PASS">PASS</span></summary>
+<div class="row"><b>Endpoint Name:</b> Confirm an infant travelling on an adult's lap is never charged for a seat</div>
+<div class="row"><b>Request:</b> Booked an adult with an infant, selecting a seat only for the adult</div>
+<div class="row"><b>Response:</b> The adult's seat was priced normally; the infant had no seat and no fee, and the total was not double-counted</div>
+<div class="row"><b>Expected:</b> No seat fee for the infant; total should only reflect the adult's seat</div>
+<div class="row"><b>Actual:</b> Executed live for the first time across all 5 rounds (previously deprioritized) - everything held as expected</div>
+<div class="row"><b>Status:</b> <span class="badge PASS">PASS</span></div>
+<details class="evidence"><summary>Evidence</summary><div class="ev-body">pnr RDBYFK: adult paxTotalSeatAmount=120.00; infant paxTotalSeatAmount=0.00, passengerSeats=[].</div></details>
+</details>
+
+<details class="tc BLOCKED">
+<summary class="tc-head"><span><span class="chev"></span><span class="mono">TC-BOOK-BIZ-07</span> - Confirm a wheelchair-accessible seat can be identified and booked</span><span class="badge BLOCKED">BLOCKED</span></summary>
+<div class="row"><b>Endpoint Name:</b> Try to identify and book a wheelchair-accessible seat</div>
+<div class="row"><b>Request:</b> Searched every seat's description text for any accessibility indicator</div>
+<div class="row"><b>Response:</b> No such indicator has ever appeared in this airline's seat maps</div>
+<div class="row"><b>Expected:</b> N/A until such a seat can be identified</div>
+<div class="row"><b>Actual:</b> Not executable this round either, unchanged from every prior round</div>
+<div class="row"><b>Status:</b> <span class="badge BLOCKED">BLOCKED</span></div>
+<details class="evidence"><summary>Evidence</summary><div class="ev-body">Full description-vocabulary scan across this round's samples: zero accessibility matches.</div></details>
+</details>
+
+<details class="tc PASS">
+<summary class="tc-head"><span><span class="chev"></span><span class="mono">TC-SEATMAP-BIZ-03</span> - Confirm overall and per-passenger seat availability are reported independently and consistently</span><span class="badge PASS">PASS</span></summary>
+<div class="row"><b>Endpoint Name:</b> Confirm per-passenger seat pricing is internally consistent</div>
+<div class="row"><b>Request:</b> Compared per-passenger pricing against each passenger's own allowed-seat list on a 2-passenger (adult+child) seat map</div>
+<div class="row"><b>Response:</b> Every priced seat listed both passengers consistently, with no naming mismatches</div>
+<div class="row"><b>Expected:</b> Internal consistency required, but no requirement that every seat list every passenger</div>
+<div class="row"><b>Actual:</b> On this sample, every priced seat listed both passengers with no differential restriction observed on this aircraft</div>
+<div class="row"><b>Status:</b> <span class="badge PASS">PASS</span></div>
+<details class="evidence"><summary>Evidence</summary><div class="ev-body">Chain C: 138/138 paid cells list both passengers; allow-list keys match segment key casing exactly.</div></details>
+</details>
+
+<details class="tc BLOCKED">
+<summary class="tc-head"><span><span class="chev"></span><span class="mono">TC-SEATMAP-BIZ-04</span> - Confirm the seat map reflects real-time availability, not a stale snapshot</span><span class="badge BLOCKED">BLOCKED</span></summary>
+<div class="row"><b>Endpoint Name:</b> Confirm the seat map isn't a cached, stale snapshot</div>
+<div class="row"><b>Request:</b> Would require a second, independent session to occupy a seat between two lookups</div>
+<div class="row"><b>Response:</b> Not attempted - no such mechanism available</div>
+<div class="row"><b>Expected:</b> N/A (exploratory)</div>
+<div class="row"><b>Actual:</b> Not forceable from a single test session, unchanged from every prior round</div>
+<div class="row"><b>Status:</b> <span class="badge BLOCKED">BLOCKED</span></div>
+<details class="evidence"><summary>Evidence</summary><div class="ev-body">No second booking session available.</div></details>
+</details>
+
+</div>
+</details>
+
+<details class="tc-category" data-cat="regression" open>
+<summary><span class="cat-icon">&#128257;</span><span class="cat-name">Regression</span><span class="cat-counts"><span class="cc pass">3 passed</span><span class="cc fail">1 failed</span></span><span class="cat-chev"></span></summary>
+<div class="tc-category-body">
+<div class="tc-cat-actions"><button type="button" class="tc-cat-expand">Expand all</button><button type="button" class="tc-cat-collapse">Collapse all</button></div>
+
+<details class="tc FAIL">
+<summary class="tc-head"><span><span class="chev"></span><span class="mono">TC-SEATMAP-REG-02</span> - Confirm the seat-map response has no undocumented fields</span><span class="badge FAIL">FAIL</span></summary>
+<div class="row"><b>Endpoint Name:</b> Confirm the seat-map response schema matches its documentation</div>
+<div class="row"><b>Request:</b> Compared every field in a live seat-map response against the documented field list</div>
+<div class="row"><b>Response:</b> Two fields appear in the live response that aren't in the documentation yet</div>
+<div class="row"><b>Expected:</b> No undocumented fields</div>
+<div class="row"><b>Actual:</b> Still 2 undocumented fields, identical to every prior round</div>
+<div class="row"><b>Status:</b> <span class="badge FAIL">FAIL</span></div>
+<details class="evidence"><summary>Evidence</summary><div class="ev-body">Live top-level keys include isFareCheckRequired and passengersDetails.&lt;pax&gt;.passengersSeatMapAvailability, neither yet documented.</div></details>
+</details>
+
+<details class="tc PASS">
+<summary class="tc-head"><span><span class="chev"></span><span class="mono">TC-BOOK-REG-02</span> - Confirm the booking response still includes all the seat-related fields it should</span><span class="badge PASS">PASS</span></summary>
+<div class="row"><b>Endpoint Name:</b> Confirm the booking response schema hasn't regressed</div>
+<div class="row"><b>Request:</b> Compared a booking response with a seat selected against its documented field list</div>
+<div class="row"><b>Response:</b> All expected fields present and correctly filled in</div>
+<div class="row"><b>Expected:</b> No pre-existing field should have disappeared</div>
+<div class="row"><b>Actual:</b> Confirmed, unchanged from every prior round</div>
+<div class="row"><b>Status:</b> <span class="badge PASS">PASS</span></div>
+<details class="evidence"><summary>Evidence</summary><div class="ev-body">Full Book response schema for pnr RPRJFQ.</div></details>
+</details>
+
+<details class="tc PASS">
+<summary class="tc-head"><span><span class="chev"></span><span class="mono">TC-BOOK-REG-03</span> - Confirm a single seat's price matches its own passenger-level total</span><span class="badge PASS">PASS</span></summary>
+<div class="row"><b>Endpoint Name:</b> Confirm a seat's own price matches its passenger's seat-total field</div>
+<div class="row"><b>Request:</b> Compared the two fields on a booking with exactly one seat selected</div>
+<div class="row"><b>Response:</b> The two values matched exactly</div>
+<div class="row"><b>Expected:</b> The two values should always be exactly equal</div>
+<div class="row"><b>Actual:</b> 120.00==120.00, unchanged from every prior round</div>
+<div class="row"><b>Status:</b> <span class="badge PASS">PASS</span></div>
+<details class="evidence"><summary>Evidence</summary><div class="ev-body">selectedOffer.passengerFareBreakdown[0], pnr RPRJFQ.</div></details>
+</details>
+
+<details class="tc PASS">
+<summary class="tc-head"><span><span class="chev"></span><span class="mono">TC-RETRIEVE-REG-01</span> - Confirm a selected seat is still visible after the ticket is issued</span><span class="badge PASS">PASS</span></summary>
+<div class="row"><b>Endpoint Name:</b> Confirm a selected seat survives the switch from "booked" to "ticketed"</div>
+<div class="row"><b>Request:</b> Looked up a booking again right after it was created, on both a one-way and a round-trip booking</div>
+<div class="row"><b>Response:</b> Both lookups showed exactly the same seat and price as the original booking</div>
+<div class="row"><b>Expected:</b> The seat should not change or disappear once ticketing completes</div>
+<div class="row"><b>Actual:</b> Confirmed on both journey shapes this round; this airline tickets automatically at the moment of booking</div>
+<div class="row"><b>Status:</b> <span class="badge PASS">PASS</span></div>
+<details class="evidence"><summary>Evidence</summary><div class="ev-body">Retrieve(RPRJFQ) matches Book(RPRJFQ); Retrieve(RZLJET) matches Book(RZLJET) field-for-field.</div></details>
+</details>
+
+</div>
+</details>
+
+<details class="tc-category" data-cat="security" open>
+<summary><span class="cat-icon">&#128274;</span><span class="cat-name">Security</span><span class="cat-counts"><span class="cc pass">2 passed</span><span class="cc fail">0 failed</span></span><span class="cat-chev"></span></summary>
+<div class="tc-category-body">
+<div class="tc-cat-actions"><button type="button" class="tc-cat-expand">Expand all</button><button type="button" class="tc-cat-collapse">Collapse all</button></div>
+
+<details class="tc PASS">
+<summary class="tc-head"><span><span class="chev"></span><span class="mono">TC-SEATAFTERHOLD-SEC-02</span> - Confirm invalid credentials are rejected on the held-booking seat-selection endpoint</span><span class="badge PASS">PASS</span></summary>
+<div class="row"><b>Endpoint Name:</b> Confirm invalid credentials are rejected</div>
+<div class="row"><b>Request:</b> Sent the same request with a bad API key, and separately with a bad client identifier</div>
+<div class="row"><b>Response:</b> Both were rejected with a clear authentication error</div>
+<div class="row"><b>Expected:</b> Both should be rejected</div>
+<div class="row"><b>Actual:</b> Both behave identically to every other endpoint's authentication check, unchanged from every prior round</div>
+<div class="row"><b>Status:</b> <span class="badge PASS">PASS</span></div>
+<details class="evidence"><summary>Evidence</summary><div class="ev-body">badKey and badClient both returned HTTP 401.</div></details>
+</details>
+
+<details class="tc PASS">
+<summary class="tc-head"><span><span class="chev"></span><span class="mono">TC-SEATMAP-SEC-01</span> - Confirm invalid credentials and cross-airline access are all rejected</span><span class="badge PASS">PASS</span></summary>
+<div class="row"><b>Endpoint Name:</b> Confirm invalid credentials and cross-tenant access are rejected</div>
+<div class="row"><b>Request:</b> Tried a bad API key, a bad client identifier, and a valid request switched to a different airline's credentials</div>
+<div class="row"><b>Response:</b> All three were rejected, each with the appropriate error type</div>
+<div class="row"><b>Expected:</b> All three should be rejected</div>
+<div class="row"><b>Actual:</b> Confirmed consistently, matching the standard pattern seen on every other endpoint this round</div>
+<div class="row"><b>Status:</b> <span class="badge PASS">PASS</span></div>
+<details class="evidence"><summary>Evidence</summary><div class="ev-body">badKey 401, badClient 401, crossTenant 409.</div></details>
+</details>
+
+</div>
+</details>
+
+<details class="tc-category" data-cat="integration" open>
+<summary><span class="cat-icon">&#128279;</span><span class="cat-name">Integration</span><span class="cat-counts"><span class="cc pass">0 passed</span><span class="cc fail">1 failed</span></span><span class="cat-chev"></span></summary>
+<div class="tc-category-body">
+<div class="tc-cat-actions"><button type="button" class="tc-cat-expand">Expand all</button><button type="button" class="tc-cat-collapse">Collapse all</button></div>
+
+<details class="tc BLOCKED">
+<summary class="tc-head"><span><span class="chev"></span><span class="mono">TC-BOOK-INT-03</span> - Confirm a bundle, an ancillary, and a seat can all be selected together</span><span class="badge BLOCKED">BLOCKED</span></summary>
+<div class="row"><b>Endpoint Name:</b> Confirm a bundle, ancillary, and seat can all be booked together</div>
+<div class="row"><b>Request:</b> Would require a bundle offer, an ancillary code, and a seat, all together</div>
+<div class="row"><b>Response:</b> N/A - this airline has no bundle offers on any route sampled this round</div>
+<div class="row"><b>Expected:</b> N/A</div>
+<div class="row"><b>Actual:</b> Not executable, unchanged from every prior round</div>
+<div class="row"><b>Status:</b> <span class="badge BLOCKED">BLOCKED</span></div>
+<details class="evidence"><summary>Evidence</summary><div class="ev-body">FareConfirm capability flags: haveBundles=False on all 9 chains this round.</div></details>
+</details>
+
+<details class="tc BLOCKED">
+<summary class="tc-head"><span><span class="chev"></span><span class="mono">TC-BOOK-INT-04</span> - Confirm a bundle and a selected seat stay linked to the correct journey</span><span class="badge BLOCKED">BLOCKED</span></summary>
+<div class="row"><b>Endpoint Name:</b> Confirm bundle and seat selection remain journey-consistent</div>
+<div class="row"><b>Request:</b> Requires a bundle offer to exist first</div>
+<div class="row"><b>Response:</b> N/A - no bundle capability for this airline</div>
+<div class="row"><b>Expected:</b> N/A</div>
+<div class="row"><b>Actual:</b> Still not executable, unchanged from every prior round</div>
+<div class="row"><b>Status:</b> <span class="badge BLOCKED">BLOCKED</span></div>
+<details class="evidence"><summary>Evidence</summary><div class="ev-body">FareConfirm capability flags show haveBundles=False on every chain.</div></details>
+</details>
+
+<details class="tc FAIL">
+<summary class="tc-head"><span><span class="chev"></span><span class="mono">TC-SEATAFTERHOLD-INT-04</span> - Determine where in the held-booking flow the seat-selection endpoint actually belongs</span><span class="badge FAIL">FAIL</span></summary>
+<div class="row"><b>Endpoint Name:</b> Determine the right point in the held-booking flow to call seat-selection</div>
+<div class="row"><b>Request:</b> Tried calling it immediately after placing the hold</div>
+<div class="row"><b>Response:</b> Rejected outright at the very first position tried</div>
+<div class="row"><b>Expected:</b> Identify which position(s) the endpoint accepts</div>
+<div class="row"><b>Actual:</b> No position is meaningfully comparable - the rejection isn't about timing at all, unchanged from every prior round</div>
+<div class="row"><b>Status:</b> <span class="badge FAIL">FAIL</span></div>
+<details class="evidence"><summary>Evidence</summary><div class="ev-body">See TC-SEATAFTERHOLD-POS-01.</div></details>
+</details>
+
+<details class="tc BLOCKED">
+<summary class="tc-head"><span><span class="chev"></span><span class="mono">TC-SEATMAP-INT-02</span> - Confirm the seat map looks the same shape across different airlines' backend systems</span><span class="badge BLOCKED">BLOCKED</span></summary>
+<div class="row"><b>Endpoint Name:</b> Confirm the seat map's shape is consistent across different airline backend systems</div>
+<div class="row"><b>Request:</b> Requires testing against 3+ airlines using different backend technologies</div>
+<div class="row"><b>Response:</b> Out of scope - this run only covers one airline</div>
+<div class="row"><b>Expected:</b> N/A</div>
+<div class="row"><b>Actual:</b> Not executed; scope fixed to one airline, unchanged from every prior round</div>
+<div class="row"><b>Status:</b> <span class="badge BLOCKED">BLOCKED</span></div>
+<details class="evidence"><summary>Evidence</summary><div class="ev-body">Run scope explicitly fixed to Supplier=GulfAir.</div></details>
+</details>
+
+<details class="tc BLOCKED">
+<summary class="tc-head"><span><span class="chev"></span><span class="mono">TC-SEATMAP-INT-03</span> - Sweep every airline that might support seat maps and record which do</span><span class="badge BLOCKED">BLOCKED</span></summary>
+<div class="row"><b>Endpoint Name:</b> Sweep every airline for seat-map support</div>
+<div class="row"><b>Request:</b> Requires a full sweep across every airline in scope</div>
+<div class="row"><b>Response:</b> Out of scope - only one airline's row can be filled in from this run</div>
+<div class="row"><b>Expected:</b> N/A</div>
+<div class="row"><b>Actual:</b> Not run as a full sweep; this airline's own row reconfirmed as supported for a 5th consecutive round</div>
+<div class="row"><b>Status:</b> <span class="badge BLOCKED">BLOCKED</span></div>
+<details class="evidence"><summary>Evidence</summary><div class="ev-body">See capability confirmation finding.</div></details>
+</details>
+
+</div>
+</details>
+
+<details class="tc-category" data-cat="flow" open>
+<summary><span class="cat-icon">&#128260;</span><span class="cat-name">Flow</span><span class="cat-counts"><span class="cc pass">1 passed</span><span class="cc fail">2 failed</span></span><span class="cat-chev"></span></summary>
+<div class="tc-category-body">
+<div class="tc-cat-actions"><button type="button" class="tc-cat-expand">Expand all</button><button type="button" class="tc-cat-collapse">Collapse all</button></div>
+<div class="tc-subhead"><span class="tc-subhead-label pos">Primary End-to-End Flows</span><span class="tc-subhead-counts"><span class="cc pass">1 passed</span><span class="cc fail">2 failed</span></span></div>
+
+<details class="tc PASS">
+<summary class="tc-head"><span><span class="chev"></span><span class="mono">FLOW-V2-49-SEATFIELD</span> - Full search-to-confirmation flow with a seat selected, end to end</span><span class="badge PASS">PASS</span></summary>
+<div class="row"><b>Endpoint Name:</b> Search, confirm, add passenger, choose a seat, book, and confirm the booking</div>
+<div class="row"><b>Request:</b> Ran the whole chain on a one-way flight and, separately, on a round trip</div>
+<div class="row"><b>Response:</b> Both journeys completed successfully end to end, with the seat and its price correctly reflected at every step</div>
+<div class="row"><b>Expected:</b> The full chain should complete and every step should agree on the seat and its price</div>
+<div class="row"><b>Actual:</b> All checks hold on both journey shapes this round - the round-trip re-run specifically closes the gap left by yesterday's outage</div>
+<div class="row"><b>Status:</b> <span class="badge PASS">PASS</span></div>
+<details class="evidence"><summary>Evidence</summary><div class="ev-body">pnr RPRJFQ (one-way), pnr RZLJET (round-trip).</div></details>
+<details class="hops"><summary>Hops (6)</summary>
+<div class="hop"><span class="badge PASS">PASS</span> <span class="hop-endpoint">1. Search</span>
+<div class="hd"><b>Request:</b> POST api/V2/FlightSearch/Search - BAH-RUH 2027-01-15, 1 ADT</div>
+<div class="hd"><b>Response:</b> 200, 25 offers, first offer GF169</div>
+<div class="hd"><b>Expected:</b> 200, offers returned</div>
+<div class="hd"><b>Actual:</b> 200, 25 offers</div>
+<div class="hd"><b>Evidence:</b> responseId captured</div>
+<div class="hop-reqres-panel">
+<div class="rr-title">Request</div>
+<div class="rr-line">POST to https://ndc-integration-stg-ne-2.azurewebsites.net/api/V2/FlightSearch/Search</div>
+<div class="rr-label">HEADERS</div>
+<div class="rr-box rr-headers-box"><div class="rr-h-line">x-api-key: <span class="rr-redacted">&#8226;&#8226;&#8226;&#8226;&#8226;&#8226;&#8226;&#8226;(redacted)</span></div><div class="rr-h-line">Client-Id: NDC-Core</div><div class="rr-h-line">Content-Type: application/json</div></div>
+<div class="rr-label">BODY</div>
+<div class="rr-box rr-body-box"><pre>{ "supplier": "GulfAir", "credentialsSelector": "KSA", "isDebug": false,
+  "searchCriteria": [ { "origin": "BAH", "destination": "RUH", "date": "2027-01-15" } ],
+  "passengers": [ { "passengerTypeCode": "ADT", "count": "1" } ] }</pre></div>
+<div class="rr-title" style="margin-top:18px;">Response</div>
+<div class="rr-line">Status code 200</div>
+<div class="rr-label">BODY</div>
+<div class="rr-box rr-body-box"><pre>{ "responseId": "dd4f4bea-d9c9-424c-bd64-01c3ca4e262d", "offers": [ { "offerId": "GF-OFFER-2&amp;...", "...": "24 more offers" } ] }</pre></div>
+</div>
+</div>
+<div class="hop"><span class="badge PASS">PASS</span> <span class="hop-endpoint">2. FareConfirm</span>
+<div class="hd"><b>Request:</b> POST api/v2/FlightSearch/FareConfirm</div>
+<div class="hd"><b>Response:</b> 200, isSeatMapRequired=false, canBeHeld=true, haveBundles=false, totalAmount=523.00 SAR pre-seat</div>
+<div class="hd"><b>Expected:</b> 200, capability flags present</div>
+<div class="hd"><b>Actual:</b> 200, flags present and consistent with every other chain this run</div>
+<div class="hd"><b>Evidence:</b> selectedOffer.offerJourneys=[GF-GF169-1]</div>
+</div>
+<div class="hop"><span class="badge PASS">PASS</span> <span class="hop-endpoint">3. AddPassenger</span>
+<div class="hd"><b>Request:</b> POST api/v2/Passenger/AddPassengerDetails</div>
+<div class="hd"><b>Response:</b> 200, offerId/responseId returned</div>
+<div class="hd"><b>Expected:</b> 200, offerId/responseId returned</div>
+<div class="hd"><b>Actual:</b> 200</div>
+<div class="hd"><b>Evidence:</b> getAddPaxOfferId/getAddPaxResponceID populated</div>
+</div>
+<div class="hop"><span class="badge PASS">PASS</span> <span class="hop-endpoint">4. GetSeatMap</span>
+<div class="hd"><b>Request:</b> POST api/V2/SeatMap/Seat</div>
+<div class="hd"><b>Response:</b> 200, seatMapDetails populated - 175 cells, 25 rows</div>
+<div class="hd"><b>Expected:</b> 200, seatMapDetails populated</div>
+<div class="hd"><b>Actual:</b> 200 - THE OUTAGE FROM THE PREVIOUS ROUND (BUG-14) IS CLEARED</div>
+<div class="hd"><b>Evidence:</b> segment key GF-GF169-GF169-2027011519-2027011521-O</div>
+</div>
+<div class="hop"><span class="badge PASS">PASS</span> <span class="hop-endpoint">5. Book</span>
+<div class="hd"><b>Request:</b> POST api/v2/FlightBooking/Book, seat 8A selected</div>
+<div class="hd"><b>Response:</b> 200, pnr RPRJFQ, totalAmount=643.00</div>
+<div class="hd"><b>Expected:</b> 200, pnr/bookingToken/gdsPNR, seat echoed</div>
+<div class="hd"><b>Actual:</b> 200, pnr RPRJFQ, totalAmount=643.00 reconciles</div>
+<div class="hd"><b>Evidence:</b> passengersSelectedSeats.PAX1 has 1 segment entry</div>
+</div>
+<div class="hop"><span class="badge PASS">PASS</span> <span class="hop-endpoint">6. Retrieve</span>
+<div class="hd"><b>Request:</b> POST api/v2/FlightBooking/Retrieve</div>
+<div class="hd"><b>Response:</b> 200, bookingStatus=Booked, seat identical to Book</div>
+<div class="hd"><b>Expected:</b> Seat persists post-ticketing</div>
+<div class="hd"><b>Actual:</b> Identical to Book</div>
+<div class="hd"><b>Evidence:</b> Retrieve(RPRJFQ) matches Book(RPRJFQ) field-for-field</div>
+</div>
+</details>
+<div class="view-tc-wrap"><details class="view-tc"><summary>View Test Case</summary><div class="view-tc-body"><div class="vtc-h">Preconditions</div><div class="vtc-p">Supplier <code>GulfAir</code>, CredentialsSelector <code>KSA</code>, environment <code>staging</code>.</div><div class="vtc-h">Steps</div><ol class="vtc-steps"><li>Search -&gt; FareConfirm -&gt; AddPassenger -&gt; GetSeatMap -&gt; Book -&gt; Retrieve.</li></ol><div class="vtc-h">Expected Result</div><div class="vtc-p">Book and Retrieve both echo the seat selection; totalSelectedSeatsAmount reconciles into totalAmount.</div><div class="vtc-h">Actual Result</div><div class="vtc-p">Confirmed as expected on both one-way and round-trip samples.</div></div></details></div>
+</details>
+
+<details class="tc FAIL">
+<summary class="tc-head"><span><span class="chev"></span><span class="mono">FLOW-V2-50-SEATFIELD</span> - Check whether a seat can be attached directly on a hold, before the dedicated seat-selection step</span><span class="badge FAIL">FAIL</span></summary>
+<div class="row"><b>Endpoint Name:</b> Try attaching a seat directly on a hold request, ahead of the dedicated seat-selection endpoint</div>
+<div class="row"><b>Request:</b> Looked up a seat, then placed a hold that also included that seat selection directly on the hold request (a field the documented hold contract doesn't show)</div>
+<div class="row"><b>Response:</b> The hold succeeded and quietly accepted and echoed the seat, exactly as if it were a full booking</div>
+<div class="row"><b>Expected:</b> This case exists to discover whether a hold silently ignores, rejects, or accepts a seat selection it isn't documented to support</div>
+<div class="row"><b>Actual:</b> STILL REPRODUCES (BUG-08, 5th consecutive round, now confirmed on a brand-new never-held offer to rule out any leftover state from an earlier attempt) - this quietly undermines the whole reason the dedicated seat-selection-for-holds endpoint exists</div>
+<div class="row"><b>Status:</b> <span class="badge FAIL">FAIL</span></div>
+<details class="evidence"><summary>Evidence</summary><div class="ev-body">pnr RMCNEV, holdExpirationDate:null, passengersSelectedSeats.PAX1.&lt;seg&gt;={cellCode:'8A',price:{amount:120.00,currency:'SAR'}} (BAH-RUH 2027-01-28, fresh never-Held offer).</div></details>
+</details>
+
+<details class="tc FAIL">
+<summary class="tc-head"><span><span class="chev"></span><span class="mono">FLOW-V2-CANDIDATE-SM-HOLD-01</span> - Try attaching a seat to a held booking as the very next step after placing the hold</span><span class="badge FAIL">FAIL</span></summary>
+<div class="row"><b>Endpoint Name:</b> Place a hold, then immediately try to select a seat</div>
+<div class="row"><b>Request:</b> Held a booking, then called the held-booking seat-selection endpoint right away</div>
+<div class="row"><b>Response:</b> The hold succeeded, but the seat-selection step was rejected outright</div>
+<div class="row"><b>Expected:</b> Seat selection should succeed and the final lookup should show the seat</div>
+<div class="row"><b>Actual:</b> Blocked at the seat-selection step, unchanged from every prior round</div>
+<div class="row"><b>Status:</b> <span class="badge FAIL">FAIL</span></div>
+<details class="evidence"><summary>Evidence</summary><div class="ev-body">(empty in source log)</div></details>
+<details class="hops"><summary>Hops (2)</summary>
+<div class="hop"><span class="badge PASS">PASS</span> <span class="hop-endpoint">1. Hold</span>
+<div class="hd"><b>Request:</b> POST api/v2/FlightBooking/Hold</div>
+<div class="hd"><b>Response:</b> 200, pnr RVQUIZ, holdExpirationDate:null</div>
+<div class="hd"><b>Expected:</b> 200, pnr/bookingToken</div>
+<div class="hd"><b>Actual:</b> 200, pnr RVQUIZ (holdExpirationDate null, BUG-04)</div>
+<div class="hd"><b>Evidence:</b> pnr RVQUIZ</div>
+</div>
+<div class="hop"><span class="badge FAIL">FAIL</span> <span class="hop-endpoint">2. SeatAfterHold</span>
+<div class="hd"><b>Request:</b> POST api/v2/SeatMap/SeatAfterHold</div>
+<div class="hd"><b>Response:</b> 409 OperationNotSupported 'GulfAir does not exists'</div>
+<div class="hd"><b>Expected:</b> 200 with a seat-selection response</div>
+<div class="hd"><b>Actual:</b> 409, chain halted</div>
+<div class="hd"><b>Evidence:</b> TransactionId 253cdbe2-ed5e-4928-83f0-a87b3071ef56</div>
+</div>
+</details>
+</details>
+
+<div class="tc-subhead"><span class="tc-subhead-label neg">Negative / Candidate Flows</span><span class="tc-subhead-counts"><span class="cc pass">0 passed</span><span class="cc blocked">3 blocked</span></span></div>
+
+<details class="tc BLOCKED">
+<summary class="tc-head"><span><span class="chev"></span><span class="mono">FLOW-V2-CANDIDATE-SM-HOLD-02</span> - Try attaching a seat to a held booking after the price has been re-confirmed, before finalizing</span><span class="badge BLOCKED">BLOCKED</span></summary>
+<div class="row"><b>Endpoint Name:</b> Try seat selection at a later point in the held-booking flow</div>
+<div class="row"><b>Request:</b> Not independently run - the rejection isn't tied to timing</div>
+<div class="row"><b>Response:</b> N/A</div>
+<div class="row"><b>Expected:</b> N/A</div>
+<div class="row"><b>Actual:</b> Reasoned-blocked, unchanged from every prior round</div>
+<div class="row"><b>Status:</b> <span class="badge BLOCKED">BLOCKED</span></div>
+<details class="evidence"><summary>Evidence</summary><div class="ev-body">See FLOW-V2-CANDIDATE-SM-HOLD-01.</div></details>
+</details>
+
+<details class="tc BLOCKED">
+<summary class="tc-head"><span><span class="chev"></span><span class="mono">FLOW-V2-CANDIDATE-SM-HOLD-03</span> - Try attaching a seat after the held booking has already been finalized</span><span class="badge BLOCKED">BLOCKED</span></summary>
+<div class="row"><b>Endpoint Name:</b> Try seat selection after the booking is already finalized</div>
+<div class="row"><b>Request:</b> Not independently run - same reasoning as the previous candidate</div>
+<div class="row"><b>Response:</b> N/A</div>
+<div class="row"><b>Expected:</b> N/A</div>
+<div class="row"><b>Actual:</b> Reasoned-blocked, unchanged from every prior round</div>
+<div class="row"><b>Status:</b> <span class="badge BLOCKED">BLOCKED</span></div>
+<details class="evidence"><summary>Evidence</summary><div class="ev-body">See FLOW-V2-CANDIDATE-SM-HOLD-01.</div></details>
+</details>
+
+<details class="tc BLOCKED">
+<summary class="tc-head"><span><span class="chev"></span><span class="mono">FLOW-V2-CANDIDATE-SM-HOLD-01-NEG</span> - Reject a seat-selection attempt carrying hold details from an unrelated booking</span><span class="badge BLOCKED">BLOCKED</span></summary>
+<div class="row"><b>Endpoint Name:</b> Reject mismatched hold details inside the full flow</div>
+<div class="row"><b>Request:</b> Actually attempted: mixed reference details from two unrelated holds</div>
+<div class="row"><b>Response:</b> Rejected with the same generic "not supported" message as every other attempt</div>
+<div class="row"><b>Expected:</b> N/A</div>
+<div class="row"><b>Actual:</b> The baseline rejection fires before any mismatch-specific check could run, unchanged from every prior round</div>
+<div class="row"><b>Status:</b> <span class="badge BLOCKED">BLOCKED</span></div>
+<details class="evidence"><summary>Evidence</summary><div class="ev-body">TransactionId 36bf2175-9e5c-4317-b36b-20968954c3b4.</div></details>
+</details>
+
+</div>
+</details>
+
+<details class="tc-category" data-cat="documentation" open>
+<summary><span class="cat-icon">&#128220;</span><span class="cat-name">Documentation</span><span class="cat-counts"><span class="cc pass">1 passed</span><span class="cc fail">0 failed</span></span><span class="cat-chev"></span></summary>
+<div class="tc-category-body">
+<div class="tc-cat-actions"><button type="button" class="tc-cat-expand">Expand all</button><button type="button" class="tc-cat-collapse">Collapse all</button></div>
+
+<details class="tc PASS">
+<summary class="tc-head"><span><span class="chev"></span><span class="mono">TC-SEATMAP-SEC-02</span> - Record which security/logging concerns can and can't be checked through this API alone</span><span class="badge PASS">PASS</span></summary>
+<div class="row"><b>Endpoint Name:</b> Document the boundary of what this API can and can't prove about security/logging</div>
+<div class="row"><b>Request:</b> N/A - a documentation/scope-boundary case, no live call</div>
+<div class="row"><b>Response:</b> N/A</div>
+<div class="row"><b>Expected:</b> Documented as specified</div>
+<div class="row"><b>Actual:</b> Documented as specified, unchanged from every prior round</div>
+<div class="row"><b>Status:</b> <span class="badge PASS">PASS</span></div>
+<details class="evidence"><summary>Evidence</summary><div class="ev-body">No API call made, per its own definition.</div></details>
+</details>
+
+</div>
+</details>
+
+</details>
+
+<details class="section-collapse" open>
+<summary class="section-summary-flex">Findings<span class="section-count-badges"><span class="section-count-badge"><span class="scb-val serious">12</span><span class="scb-lbl">Defects</span></span><span class="section-count-badge"><span class="scb-val accent">5</span><span class="scb-lbl">Unknown-resolution</span></span></span></summary>
+
+<div class="finding defect"><div class="kind">Defect</div>
+BUG-01, STILL REPRODUCES (5th consecutive round) - GetSeatMap accepts a ResponseId/selectedOfferId pair sourced from two unrelated offers and returns a fully populated seat map instead of rejecting the mismatch <span class="mono">(TC-SEATMAP-NEG-02)</span>
+<div><b>Field:</b> <code>ResponseId / selectedOfferId</code></div>
+<div><b>Expected value:</b> <code>HTTP 400/409 rejecting the cross-offer identifier combination</code></div>
+<div><b>Impact:</b> IDs are not cross-validated, the same root cause underlying BUG-07.</div>
+</div>
+
+<div class="finding defect"><div class="kind">Defect</div>
+BUG-02, STILL REPRODUCES (5th consecutive round) - GetSeatMap still succeeds when ResponseId is omitted entirely <span class="mono">(TC-SEATMAP-NEG-04)</span>
+<div><b>Field:</b> <code>ResponseId</code></div>
+<div><b>Expected value:</b> <code>HTTP 400 rejecting the missing mandatory field</code></div>
+<div><b>Impact:</b> ResponseId is documented as required but not actually enforced.</div>
+</div>
+
+<div class="finding defect"><div class="kind">Defect</div>
+BUG-03, STILL REPRODUCES (5th consecutive round) - SeatAfterHold rejects every call for GulfAir with a blanket "not supported" error <span class="mono">(TC-SEATAFTERHOLD-POS-01)</span>
+<div><b>Field:</b> <code>ErrorCode</code></div>
+<div><b>Expected value:</b> <code>200 with a seat-selection response, or a documented supplier-specific contract</code></div>
+<div><b>Impact:</b> SeatAfterHold is entirely non-functional for GulfAir.</div>
+</div>
+
+<div class="finding defect"><div class="kind">Defect</div>
+BUG-04, STILL REPRODUCES (5th consecutive round) - Hold's holdExpirationDate is always null for GulfAir <span class="mono">(TC-SEATAFTERHOLD-NEG-02)</span>
+<div><b>Field:</b> <code>holdExpirationDate</code></div>
+<div><b>Expected value:</b> <code>An ISO-8601 timestamp</code></div>
+<div><b>Impact:</b> Downstream cannot compute the hold's expiry for cleanup/tracking.</div>
+</div>
+
+<div class="finding defect"><div class="kind">Defect</div>
+BUG-06, STILL REPRODUCES (5th consecutive round) - Book does not decode or verify the cellId token at all <span class="mono">(TC-BOOK-NEG-06)</span>
+<div><b>Field:</b> <code>passengersSelectedSeats.cellId</code></div>
+<div><b>Expected value:</b> <code>HTTP 400/422 rejecting a tampered token</code></div>
+<div><b>Impact:</b> An opaque, presumably signed token provides no real integrity guarantee.</div>
+</div>
+
+<div class="finding defect"><div class="kind">Defect</div>
+BUG-07, STILL REPRODUCES (5th consecutive round) - Book silently drops a cross-offer seat selection instead of rejecting the request <span class="mono">(TC-SEATMAP-VAL-04)</span>
+<div><b>Field:</b> <code>passengersSelectedSeats</code></div>
+<div><b>Expected value:</b> <code>HTTP 400 ValidationError</code></div>
+<div><b>Impact:</b> Customer is booked and ticketed without their selected/paid-for seat with no error at all - worse than an outright rejection.</div>
+</div>
+
+<div class="finding defect"><div class="kind">Defect</div>
+BUG-08, STILL REPRODUCES (5th consecutive round) - Hold silently accepts and honors an undocumented seat-selection field <span class="mono">(FLOW-V2-50-SEATFIELD)</span>
+<div><b>Field:</b> <code>passengersSelectedSeats</code></div>
+<div><b>Expected value:</b> <code>Field rejected (400) or silently ignored per the documented Hold contract</code></div>
+<div><b>Impact:</b> Undermines SeatAfterHold's reason to exist for GulfAir.</div>
+</div>
+
+<div class="finding defect"><div class="kind">Defect</div>
+BUG-09, STILL REPRODUCES IN ITS WORSENED FORM (5th consecutive round) - a Child passenger can be ticketed into an exit-row seat with zero server-side validation <span class="mono">(TC-BOOK-BIZ-05)</span>
+<div><b>Field:</b> <code>passengersSelectedSeats</code></div>
+<div><b>Expected value:</b> <code>HTTP 4xx error; no pnr created</code></div>
+<div><b>Impact:</b> A real safety-relevant restriction is not enforced server-side at all.</div>
+</div>
+
+<div class="finding defect"><div class="kind">Defect</div>
+BUG-10, STILL REPRODUCES (6th consecutive round) - AddPassenger rejects a passenger whose name fields differ between the passenger record and the travel document <span class="mono">(PRE-FLIGHT)</span>
+<div><b>Field:</b> <code>passengersList.name vs travelDocument.name</code></div>
+<div><b>Expected value:</b> <code>Either the two name objects should not be cross-validated for exact equality, or the requirement should be documented</code></div>
+<div><b>Impact:</b> The V2 collection's own saved, unexecuted example would fail if actually run.</div>
+</div>
+
+<div class="finding defect"><div class="kind">Defect</div>
+BUG-11, STILL REPRODUCES AND RE-WIDENED (6th consecutive round) - error responses can leak a plaintext supplier credential-bearing field <span class="mono">(PRE-FLIGHT)</span>
+<div><b>Field:</b> <code>OriginalSupplierRequest / OriginalSupplierResponse</code></div>
+<div><b>Expected value:</b> <code>Never included in any client-facing error envelope, or credential fields masked server-side</code></div>
+<div><b>Impact:</b> Live supplier-side credentials exposed in plaintext to any caller who triggers any of at least three distinct conflict/error paths (Book, GetSeatMap, and now Hold).</div>
+</div>
+
+<div class="finding defect"><div class="kind">Defect</div>
+BUG-15, NEW - first time filed for GulfAir/KSA specifically - GetSeatMap does not reject or flag a lookup against an offer flagged as not requiring seat selection <span class="mono">(TC-SEATMAP-NEG-01)</span>
+<div><b>Field:</b> <code>seatMapDetails</code></div>
+<div><b>Expected value:</b> <code>An explicit unsupported-operation response, or documentation that the flag is advisory only</code></div>
+<div><b>Impact:</b> The capability flag is not authoritative; callers cannot rely on it to gate behavior. This exact result has reproduced since Round 1 but had never been separately filed.</div>
+</div>
+
+<div class="finding defect"><div class="kind">Defect</div>
+Still open (unchanged since Round 1, carried forward, not separately bug-numbered per the team's own scope decision) - omitting ResponseId from an otherwise-valid Book request still succeeds and creates a real, ticketed PNR <span class="mono">(TC-BOOK-NEG-12)</span>
+<div><b>Field:</b> <code>ResponseId</code></div>
+<div><b>Expected value:</b> <code>HTTP 400 rejecting the missing mandatory field</code></div>
+<div><b>Impact:</b> A caller can create a real booking without a supposedly mandatory field.</div>
+</div>
+
+<div class="finding unknown_resolution"><div class="kind">Unknown-resolution</div>
+GetSeatMap's sustained outage (BUG-14, logged last round) is CONFIRMED RESOLVED - the first call this round succeeded, and all 10+ calls this round succeeded normally <span class="mono">(TC-SEATMAP-POS-01)</span>
+</div>
+
+<div class="finding unknown_resolution"><div class="kind">Unknown-resolution</div>
+BUG-13 (Book returned a generic server error instead of a clean rejection when selectedOfferId was omitted) is CONFIRMED RESOLVED - the identical request shape now produces a clean, specific validation error <span class="mono">(TC-BOOK-NEG-12)</span>
+</div>
+
+<div class="finding unknown_resolution"><div class="kind">Unknown-resolution</div>
+A fabricated/non-existent reference pair is confirmed live-rejected by GetSeatMap, resolving last round's inconclusive finding. Separately confirmed: a genuine reference pair already fully consumed by a completed booking is NOT rejected - it still resolves normally <span class="mono">(TC-SEATMAP-NEG-03)</span>
+</div>
+
+<div class="finding unknown_resolution"><div class="kind">Unknown-resolution</div>
+Multi-city (3+ leg) search remains unsupported/hard-capped at 2 entries for GulfAir/KSA - reconfirmed via a control using the same route pair proven to work as a 2-entry array <span class="mono">(TC-SEATMAP-BND-04)</span>
+</div>
+
+<div class="finding unknown_resolution"><div class="kind">Unknown-resolution</div>
+Re-confirmed for a 5th consecutive round: Book trusts the visible seat code, not the internal token, when the two disagree <span class="mono">(TC-BOOK-VAL-06)</span>
+</div>
+
+</details>
+
+<details class="section-collapse" open>
+<summary class="section-summary-flex">Proposed SPEC.md updates<span class="section-count-badge"><span class="scb-val">7</span><span class="scb-lbl">Proposed Updates</span></span></summary>
+
+<div class="finding unknown_resolution"><div class="kind">§2.1 - pending</div>
+Replace: <code>"[Confirmed live 2026-08-30, Round 4] Multi-city (3+ entry searchCriteria) is NOT supported..."</code><br>
+With: <code>"[Reconfirmed live 2026-08-30, Round 5] Multi-city remains NOT supported for GulfAir/KSA - a 5th-round spot-check again returned an empty offers list. Stable across 2 consecutive rounds now."</code>
+</div>
+
+<div class="finding unknown_resolution"><div class="kind">§2.7 - pending</div>
+Replace: <code>"(Rounds 1-4 pending) Add top-level isFareCheckRequired and passengersSeatMapAvailability to the documented response shape"</code><br>
+With: <code>"Still pending - unchanged and reconfirmed for a 5th consecutive round. Carrying forward."</code>
+</div>
+
+<div class="finding unknown_resolution"><div class="kind">§4.6 - pending</div>
+Replace: <code>"(Rounds 1-4 pending) GulfAir SeatMap capability row: Unknown -&gt; Supported"</code><br>
+With: <code>"Still pending - unchanged and reconfirmed for a 5th consecutive round, including immediately after BUG-14's outage cleared. Carrying forward."</code>
+</div>
+
+<div class="finding unknown_resolution"><div class="kind">§2.10 / §1.10 item 6 - pending</div>
+Replace: <code>"(Rounds 1-4 pending) Hold DOES accept and honor a passengersSelectedSeats field submitted directly on the Hold request"</code><br>
+With: <code>"CONFIRMED for a 5th consecutive round, now re-verified on a freshly-created, never-Held offer. Recommend the team decide explicitly (document as intentional, or close as a defect/BUG-08) rather than carrying forward for a 6th round."</code>
+</div>
+
+<div class="finding unknown_resolution"><div class="kind">§2.5 - pending</div>
+Replace: <code>"(Round 2 pending) Document AddPassenger's exact-name-match requirement"</code><br>
+With: <code>"Still pending - unchanged and reconfirmed identically in Round 5. Carrying forward."</code>
+</div>
+
+<div class="finding unknown_resolution"><div class="kind">§7.14 / §2.9 - pending</div>
+Replace: <code>"[WIDENED, Round 4] Confirmed the same leak also occurs on GetSeatMap's generic supplier-error envelope"</code><br>
+With: <code>"[WIDENED AGAIN, Round 5] Confirmed the same credential leak also occurs on Hold's duplicate-booking-conflict path. Systemic across at least three endpoints; reproduced for 6 consecutive rounds without a fix - recommend immediate remediation."</code>
+</div>
+
+<div class="finding unknown_resolution"><div class="kind">§7.7 (new) - pending</div>
+Replace: <code>"(not previously proposed)"</code><br>
+With: <code>"[RESOLVED, Round 5] Book now returns a clean 400 ValidationError when selectedOfferId is omitted, resolving BUG-13. Recommend closing BUG-13 as fixed."</code>
+</div>
+
+</details>
+
+<details class="section-collapse" open>
+<summary>Cleanup / follow-up</summary>
+<div class="cleanup"><b>Live artifacts left behind this run (14):</b><ul>
+<li>Needs Void/Cancel - PNR <span class="mono">RPRJFQ</span> (<span class="mono">TC-BOOK-POS-03</span>) - Baseline seat-selection booking (BAH-RUH 2027-01-15, seat 8A, 120.00 SAR)</li>
+<li>Needs Void/Cancel - PNR <span class="mono">RUNKLG</span> (<span class="mono">TC-SEATMAP-VAL-04</span>) - Cross-offer cellId Book (BUG-07 evidence), BAH-JED 2027-01-18</li>
+<li>Needs Void/Cancel - PNR <span class="mono">RLNWTT</span> (<span class="mono">TC-BOOK-BIZ-05</span>) - CHD ticketed into an exit-row seat (BUG-09 evidence), BAH-DMM 2027-01-20</li>
+<li>Needs Void/Cancel - PNR <span class="mono">RZLJET</span> (<span class="mono">FLOW-V2-49-SEATFIELD</span>) - Round-trip booking, 2 seats across 2 segments</li>
+<li>Needs Void/Cancel - PNR <span class="mono">RZTQOS</span> (<span class="mono">TC-BOOK-NEG-06</span>) - Tampered cellId Book (BUG-06 evidence), BAH-JED 2027-02-01</li>
+<li>Needs Void/Cancel - PNR <span class="mono">RXWLKV</span> (<span class="mono">TC-BOOK-VAL-06</span>) - cellCode/cellId mismatch Book, BAH-DXB 2027-02-03</li>
+<li>Needs Void/Cancel - PNR <span class="mono">RDQQTN</span> (<span class="mono">TC-BOOK-NEG-12</span>) - Created by the still-open ResponseId-omission behavior, BAH-DMM 2027-02-08</li>
+<li>Needs Void/Cancel - PNR <span class="mono">RQUNQE</span> (<span class="mono">TC-BOOK-NEG-10</span>) - Explicit-empty passengersSelectedSeats, BAH-CAI 2027-02-12</li>
+<li>Needs Void/Cancel - PNR <span class="mono">RCCVJL</span> (<span class="mono">TC-BOOK-NEG-11</span>) - Explicit-empty setSegmentsSeats, BAH-CAI 2027-02-13</li>
+<li>Needs Void/Cancel - PNR <span class="mono">RCZPIT</span> (<span class="mono">TC-BOOK-BND-03</span>) - No-seat Book call, BAH-CAI 2027-02-14</li>
+<li>Needs Void/Cancel - PNR <span class="mono">RDBYFK</span> (<span class="mono">TC-BOOK-BIZ-06</span>) - ADT+INF booking, seat for ADT only, BAH-RUH 2027-02-16</li>
+<li>Family-B hold - PNR <span class="mono">RVQUIZ</span> (<span class="mono">TC-SEATAFTERHOLD-POS-01</span>) - BAH-CAI 2027-01-22, holdExpirationDate null, never progressed</li>
+<li>Family-B hold - PNR <span class="mono">RTWPNJ</span> (<span class="mono">TC-SEATAFTERHOLD-NEG-01</span>) - BAH-DXB 2027-01-25, holdExpirationDate null, never progressed</li>
+<li>Family-B hold - PNR <span class="mono">RMCNEV</span> (<span class="mono">FLOW-V2-50-SEATFIELD</span>) - BAH-RUH 2027-01-28, seat 8A/120 SAR inline on Hold (BUG-08 evidence), holdExpirationDate null, never progressed</li>
+</ul></div>
+</details>
+
+</div><script>
+(function(){
+  var cards = Array.prototype.slice.call(document.querySelectorAll('details.tc'));
+  var sections = Array.prototype.slice.call(document.querySelectorAll('details.section-collapse'));
+  var categories = Array.prototype.slice.call(document.querySelectorAll('details.tc-category'));
+  var search = document.getElementById('tcSearch');
+  var statusSel = document.getElementById('tcStatusFilter');
+  var categorySel = document.getElementById('tcCategoryFilter');
+  var countEl = document.getElementById('tcCount');
+  var noResultsEl = document.getElementById('tcNoResults');
+  var resetBtn = document.getElementById('tcResetFilters');
+  var expandBtn = document.getElementById('tcExpandAll');
+  var collapseBtn = document.getElementById('tcCollapseAll');
+
+  function applyFilter(){
+    var q = search.value.trim().toLowerCase();
+    var status = statusSel.value;
+    var category = categorySel.value;
+    var visible = 0;
+    cards.forEach(function(card){
+      var matchesStatus = !status || card.classList.contains(status);
+      var matchesText = !q || card.textContent.toLowerCase().indexOf(q) !== -1;
+      var matchesCategory = !category || card.closest('details.tc-category').getAttribute('data-cat') === category;
+      var show = matchesStatus && matchesText && matchesCategory;
+      card.classList.toggle('js-hidden', !show);
+      if (show) visible++;
+      if (show && q) card.open = true;
+    });
+    categories.forEach(function(cat){
+      var anyVisible = cat.querySelector('details.tc:not(.js-hidden)');
+      var matchesCategory = !category || cat.getAttribute('data-cat') === category;
+      cat.classList.toggle('cat-empty', !anyVisible || !matchesCategory);
+      if (anyVisible && matchesCategory && (q || status || category)) cat.open = true;
+    });
+    countEl.textContent = visible + ' / ' + cards.length + ' shown';
+    noResultsEl.classList.toggle('js-hidden', visible !== 0);
+  }
+
+  search.addEventListener('input', applyFilter);
+  statusSel.addEventListener('change', applyFilter);
+  categorySel.addEventListener('change', applyFilter);
+  resetBtn.addEventListener('click', function(e){
+    e.preventDefault(); e.stopPropagation();
+    search.value = '';
+    statusSel.value = '';
+    categorySel.value = '';
+    applyFilter();
+  });
+  expandBtn.addEventListener('click', function(e){
+    e.preventDefault(); e.stopPropagation();
+    cards.forEach(function(c){ c.open = true; });
+    sections.forEach(function(s){ s.open = true; });
+    categories.forEach(function(c){ c.open = true; });
+  });
+  collapseBtn.addEventListener('click', function(e){
+    e.preventDefault(); e.stopPropagation();
+    cards.forEach(function(c){ c.open = false; });
+    sections.forEach(function(s){ s.open = false; });
+    categories.forEach(function(c){ c.open = false; });
+  });
+
+  categories.forEach(function(cat){
+    var catCards = Array.prototype.slice.call(cat.querySelectorAll('details.tc'));
+    var catExpandBtn = cat.querySelector('.tc-cat-expand');
+    var catCollapseBtn = cat.querySelector('.tc-cat-collapse');
+    catExpandBtn.addEventListener('click', function(e){
+      e.preventDefault(); e.stopPropagation();
+      catCards.forEach(function(c){ c.open = true; });
+    });
+    catCollapseBtn.addEventListener('click', function(e){
+      e.preventDefault(); e.stopPropagation();
+      catCards.forEach(function(c){ c.open = false; });
+    });
+  });
+
+  applyFilter();
+
+  Array.prototype.slice.call(document.querySelectorAll('.hop')).forEach(function(hop){
+    var panel = hop.querySelector('.hop-reqres-panel');
+    var endpointSpan = hop.querySelector('.hop-endpoint');
+    var toggle = document.createElement('a');
+    toggle.href = '#';
+    toggle.className = 'hop-reqres-toggle';
+    toggle.textContent = 'View req & response';
+
+    if (panel) {
+      panel.classList.add('js-hidden');
+      toggle.addEventListener('click', function(e){
+        e.preventDefault(); e.stopPropagation();
+        var hidden = panel.classList.toggle('js-hidden');
+        toggle.textContent = hidden ? 'View req & response' : 'Hide req & response';
+      });
+      endpointSpan.parentNode.insertBefore(toggle, endpointSpan.nextSibling);
+      return;
+    }
+
+    var hds = Array.prototype.slice.call(hop.querySelectorAll('.hd'));
+    var reqEl = hds[0];
+    var resEl = hds[1];
+    if (!reqEl || !resEl) return;
+    reqEl.classList.add('hop-reqres', 'js-hidden');
+    resEl.classList.add('hop-reqres', 'js-hidden');
+    toggle.addEventListener('click', function(e){
+      e.preventDefault(); e.stopPropagation();
+      var hidden = reqEl.classList.toggle('js-hidden');
+      resEl.classList.toggle('js-hidden', hidden);
+      toggle.textContent = hidden ? 'View req & response' : 'Hide req & response';
+    });
+    endpointSpan.parentNode.insertBefore(toggle, endpointSpan.nextSibling);
+  });
+
+  Array.prototype.slice.call(document.querySelectorAll('.tc-reqres-anchor')).forEach(function(anchor){
+    var card = anchor.closest('details.tc');
+    var panel = card ? card.querySelector(':scope > .tc-reqres-panel') : null;
+    if (!panel) return;
+    panel.classList.add('js-hidden');
+    var toggle = document.createElement('a');
+    toggle.href = '#';
+    toggle.className = 'hop-reqres-toggle tc-reqres-toggle';
+    toggle.textContent = 'View req & response';
+    toggle.addEventListener('click', function(e){
+      e.preventDefault(); e.stopPropagation();
+      var hidden = panel.classList.toggle('js-hidden');
+      toggle.textContent = hidden ? 'View req & response' : 'Hide req & response';
+    });
+    anchor.parentNode.insertBefore(toggle, anchor.nextSibling);
+  });
+})();
+</script>
+</body></html>

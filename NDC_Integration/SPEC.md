@@ -87,7 +87,7 @@ Both V1 and V2 use **static, hardcoded HTTP headers** on every request — there
 
 | Header | Value (staging) | Notes |
 |---|---|---|
-| `x-api-key` | `ttdb2dc2-58c5-481c-84b5-95350a3a7978-f61360c2-f536-4b19-9a25-97b8f17ce4dc` | Identical across **every** request in both collections, all suppliers |
+| `x-api-key` | *Not stored in the repo.* Set `NDC_API_KEY` in the git-ignored repo-root `.env` (see `.env.example`); Postman uses `{{x_api_key}}`. Get the value from the team secret channel. (Removed from this file 2026-11-17.) | Identical across **every** request in both collections, all suppliers |
 | `Client-Id` / `client-id` (casing varies per request) | `NDC-Core` | Identical across every request |
 | `CorrelationId` | Present but **disabled** on `CI_FlightSearchRequest` only in V1; absent everywhere else | `INFERRED`: intended for support-escalation tracing (per PRD §7 "correlation-ID tracing threaded through failures") but not actually wired into the working request set — a request-tracing gap |
 

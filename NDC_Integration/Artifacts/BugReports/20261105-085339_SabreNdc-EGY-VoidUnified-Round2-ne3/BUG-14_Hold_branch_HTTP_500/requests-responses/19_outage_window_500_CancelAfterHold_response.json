@@ -1,0 +1,8 @@
+{
+  "label": "outage window 500 CancelAfterHold",
+  "status": 500,
+  "durationMs": 81,
+  "requestedAtUtc": "2026-11-05T09:51:10.575Z",
+  "respondedAtUtc": "2026-11-05T09:51:10.656Z",
+  "body": "(empty body)"
+}

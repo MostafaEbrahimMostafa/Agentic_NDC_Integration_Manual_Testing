@@ -1,0 +1,428 @@
+{
+  "label": "V2 Hold",
+  "status": 200,
+  "durationMs": 7607,
+  "requestedAtUtc": "2026-11-05T10:37:01.489Z",
+  "respondedAtUtc": "2026-11-05T10:37:09.096Z",
+  "body": {
+    "supplier": "SabreNdc",
+    "pnr": "PUFMPG",
+    "gdsPNR": "PUFMPG",
+    "bookingToken": "1SXXXCDO8FC1M",
+    "voidCapability": "None",
+    "holdExpirationDate": "2026-11-10T21:59:00+02:00",
+    "passengersSelectedAncillaries": {},
+    "passengersSelectedSeats": {},
+    "journeys": {
+      "5DFB6223-1BD7-4C55-9214-090FB2ECEE3F": {
+        "origin": "CAI",
+        "destination": "JED",
+        "numberOfStops": 1,
+        "segmentRefIds": [
+          "SEG6",
+          "SEG13"
+        ]
+      }
+    },
+    "flightSegments": {
+      "SEG6": {
+        "origin": "CAI",
+        "destination": "DOH",
+        "departureDateTime": "2026-12-05T19:35:00",
+        "arrivalDateTime": "2026-12-05T23:40:00",
+        "departureTerminal": "2",
+        "arrivalTerminal": null,
+        "flightTime": 245,
+        "operatingCarrierCode": "QR",
+        "operatingFlightNumber": "1302",
+        "marketingCarrierCode": "QR",
+        "marketingFlightNumber": "1302",
+        "equipment": "77W"
+      },
+      "SEG13": {
+        "origin": "DOH",
+        "destination": "JED",
+        "departureDateTime": "2026-12-06T07:25:00",
+        "arrivalDateTime": "2026-12-06T10:05:00",
+        "departureTerminal": null,
+        "arrivalTerminal": "1",
+        "flightTime": 160,
+        "operatingCarrierCode": "QR",
+        "operatingFlightNumber": "1190",
+        "marketingCarrierCode": "QR",
+        "marketingFlightNumber": "1190",
+        "equipment": "77W"
+      }
+    },
+    "priceClasses": {
+      "7C29B28B-343D-42AF-BCBF-AE72DE1B52ED": {
+        "priceClassName": "ECONOMY CLASSIC",
+        "fareDescription": "PublicFare",
+        "rulesAndPenalties": []
+      }
+    },
+    "baggageDetails": {
+      "0": {
+        "carryOnBaggage": "",
+        "checkInBaggage": "Pieces: 2; Applicable party: Traveler"
+      }
+    },
+    "passengersList": {
+      "Passenger1": {
+        "title": "MR",
+        "name": {
+          "first": "Tarek",
+          "middle": "",
+          "last": "Osman"
+        },
+        "birthDate": "1990-02-15T00:00:00",
+        "gender": "Male",
+        "passengerTypeCode": "ADT",
+        "contactRefId": "10D54E96-0700-4660-BC1F-0226C9879FF8",
+        "travelDocument": {
+          "name": {
+            "first": "Tarek",
+            "middle": "",
+            "last": "Osman"
+          },
+          "nationality": "EG",
+          "expirationDate": "2030-10-01T00:00:00",
+          "issuanceDate": "2024-10-01T00:00:00",
+          "documentNumber": "A1858565",
+          "documentType": "Passport",
+          "gender": "Male",
+          "birthCountry": "EG",
+          "birthDate": "1990-02-15T00:00:00",
+          "issuanceCountryCode": "EG"
+        },
+        "parentPaxRefId": null,
+        "nationality": "EG",
+        "residentCountry": "EG",
+        "age": null
+      }
+    },
+    "contacts": {
+      "10D54E96-0700-4660-BC1F-0226C9879FF8": {
+        "email": "ndc.qa.void@gmail.com",
+        "phone": {
+          "type": "Home",
+          "countryDialingCode": "20",
+          "phoneNumber": "01005747258"
+        },
+        "address": null
+      }
+    },
+    "selectedOffer": {
+      "offerId": "1SXXXCDO8FC1M",
+      "offerJourneys": [
+        "5DFB6223-1BD7-4C55-9214-090FB2ECEE3F"
+      ],
+      "passengerFareBreakdown": [
+        {
+          "passengerRefId": "Passenger1",
+          "paxTotalAmount": {
+            "amount": 17565.8,
+            "currency": "EGP"
+          },
+          "passengerTypeCode": "ADT",
+          "paxTotalTaxAmount": {
+            "amount": 11029.8,
+            "currency": "EGP"
+          },
+          "paxBaseAmount": {
+            "amount": 6536,
+            "currency": "EGP"
+          },
+          "taxesAndFees": [
+            {
+              "code": "YQ",
+              "amount": {
+                "amount": 5539,
+                "currency": "EGP"
+              }
+            },
+            {
+              "code": "YR",
+              "amount": {
+                "amount": 1220,
+                "currency": "EGP"
+              }
+            },
+            {
+              "code": "EG",
+              "amount": {
+                "amount": 150,
+                "currency": "EGP"
+              }
+            },
+            {
+              "code": "EQ",
+              "amount": {
+                "amount": 111,
+                "currency": "EGP"
+              }
+            },
+            {
+              "code": "JK",
+              "amount": {
+                "amount": 100,
+                "currency": "EGP"
+              }
+            },
+            {
+              "code": "O2",
+              "amount": {
+                "amount": 15,
+                "currency": "EGP"
+              }
+            },
+            {
+              "code": "O9",
+              "amount": {
+                "amount": 56,
+                "currency": "EGP"
+              }
+            },
+            {
+              "code": "Q7",
+              "amount": {
+                "amount": 2,
+                "currency": "EGP"
+              }
+            },
+            {
+              "code": "QH",
+              "amount": {
+                "amount": 1385,
+                "currency": "EGP"
+              }
+            },
+            {
+              "code": "S4",
+              "amount": {
+                "amount": 111,
+                "currency": "EGP"
+              }
+            },
+            {
+              "code": "XK",
+              "amount": {
+                "amount": 150,
+                "currency": "EGP"
+              }
+            },
+            {
+              "code": "XL",
+              "amount": {
+                "amount": 10.8,
+                "currency": "EGP"
+              }
+            },
+            {
+              "code": "G4",
+              "amount": {
+                "amount": 913,
+                "currency": "EGP"
+              }
+            },
+            {
+              "code": "PZ",
+              "amount": {
+                "amount": 83,
+                "currency": "EGP"
+              }
+            },
+            {
+              "code": "QA",
+              "amount": {
+                "amount": 913,
+                "currency": "EGP"
+              }
+            },
+            {
+              "code": "R9",
+              "amount": {
+                "amount": 153,
+                "currency": "EGP"
+              }
+            },
+            {
+              "code": "E3",
+              "amount": {
+                "amount": 118,
+                "currency": "EGP"
+              }
+            }
+          ],
+          "segmentDetails": [
+            {
+              "segmentRefId": "SEG6",
+              "priceClassRefId": "7C29B28B-343D-42AF-BCBF-AE72DE1B52ED",
+              "baggageDetailsRefId": "0",
+              "cabinCode": "ECONOMY",
+              "rbd": "N"
+            },
+            {
+              "segmentRefId": "SEG13",
+              "priceClassRefId": "7C29B28B-343D-42AF-BCBF-AE72DE1B52ED",
+              "baggageDetailsRefId": "0",
+              "cabinCode": "ECONOMY",
+              "rbd": "N"
+            }
+          ],
+          "discount": null
+        }
+      ],
+      "priceDetails": {
+        "totalAncillariesAmount": {
+          "amount": 0,
+          "currency": null
+        },
+        "totalPassengersAncillaries": [],
+        "totalSelectedSeatsAmount": null,
+        "totalAmount": {
+          "amount": 17565.8,
+          "currency": "EGP"
+        },
+        "totalTaxAmount": {
+          "amount": 11029.8,
+          "currency": "EGP"
+        },
+        "totalBaseAmount": {
+          "amount": 6536,
+          "currency": "EGP"
+        },
+        "taxesAndFees": [
+          {
+            "code": "YQ",
+            "amount": {
+              "amount": 5539,
+              "currency": "EGP"
+            }
+          },
+          {
+            "code": "YR",
+            "amount": {
+              "amount": 1220,
+              "currency": "EGP"
+            }
+          },
+          {
+            "code": "EG",
+            "amount": {
+              "amount": 150,
+              "currency": "EGP"
+            }
+          },
+          {
+            "code": "EQ",
+            "amount": {
+              "amount": 111,
+              "currency": "EGP"
+            }
+          },
+          {
+            "code": "JK",
+            "amount": {
+              "amount": 100,
+              "currency": "EGP"
+            }
+          },
+          {
+            "code": "O2",
+            "amount": {
+              "amount": 15,
+              "currency": "EGP"
+            }
+          },
+          {
+            "code": "O9",
+            "amount": {
+              "amount": 56,
+              "currency": "EGP"
+            }
+          },
+          {
+            "code": "Q7",
+            "amount": {
+              "amount": 2,
+              "currency": "EGP"
+            }
+          },
+          {
+            "code": "QH",
+            "amount": {
+              "amount": 1385,
+              "currency": "EGP"
+            }
+          },
+          {
+            "code": "S4",
+            "amount": {
+              "amount": 111,
+              "currency": "EGP"
+            }
+          },
+          {
+            "code": "XK",
+            "amount": {
+              "amount": 150,
+              "currency": "EGP"
+            }
+          },
+          {
+            "code": "XL",
+            "amount": {
+              "amount": 10.8,
+              "currency": "EGP"
+            }
+          },
+          {
+            "code": "G4",
+            "amount": {
+              "amount": 913,
+              "currency": "EGP"
+            }
+          },
+          {
+            "code": "PZ",
+            "amount": {
+              "amount": 83,
+              "currency": "EGP"
+            }
+          },
+          {
+            "code": "QA",
+            "amount": {
+              "amount": 913,
+              "currency": "EGP"
+            }
+          },
+          {
+            "code": "R9",
+            "amount": {
+              "amount": 153,
+              "currency": "EGP"
+            }
+          },
+          {
+            "code": "E3",
+            "amount": {
+              "amount": 118,
+              "currency": "EGP"
+            }
+          }
+        ],
+        "discount": null
+      },
+      "refundability": "UnKnown",
+      "isDealCodeApplied": null,
+      "appliedDealCode": null,
+      "isPromoted": false,
+      "appliedPromotionCode": ""
+    },
+    "isBspCommissionApplied": false,
+    "diRemarks": [],
+    "emdTickets": {}
+  }
+}

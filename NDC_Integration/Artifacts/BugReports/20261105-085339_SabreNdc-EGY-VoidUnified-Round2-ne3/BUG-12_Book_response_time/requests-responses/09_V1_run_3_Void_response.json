@@ -1,0 +1,17 @@
+{
+  "label": "V1 run 3 Void",
+  "status": 200,
+  "durationMs": 9248,
+  "requestedAtUtc": "2026-11-05T11:40:11.461Z",
+  "respondedAtUtc": "2026-11-05T11:40:20.709Z",
+  "body": {
+    "voided": true,
+    "voidedTickets": [
+      {
+        "ticketStatus": "Voided",
+        "ticketNumber": "1572141659241",
+        "carrierCode": "QR"
+      }
+    ]
+  }
+}

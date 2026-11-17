@@ -1,0 +1,11 @@
+{
+  "label": "V1 CancelAfterHold",
+  "status": 200,
+  "durationMs": 3773,
+  "requestedAtUtc": "2026-11-05T10:53:42.160Z",
+  "respondedAtUtc": "2026-11-05T10:53:45.933Z",
+  "body": {
+    "cancelled": true,
+    "message": "Held Order Is Cancelled"
+  }
+}

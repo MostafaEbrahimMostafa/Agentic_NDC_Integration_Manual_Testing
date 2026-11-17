@@ -1,0 +1,16 @@
+{
+  "label": "V2 run 2 Book",
+  "method": "POST",
+  "url": "https://ndc-integration-stg-ne-3.azurewebsites.net/api/v2/FlightBooking/Book",
+  "headers": {
+    "x-api-key": "[REDACTED]",
+    "Client-Id": "NDC-Core",
+    "Content-Type": "application/json"
+  },
+  "body": {
+    "supplier": "SabreNdc",
+    "credentialsSelector": "EGY",
+    "ResponseId": "f8e41650-2aa7-4196-b76c-0e94a5a2d072",
+    "selectedOfferId": "b4332d47-e93f-4776-990e-4c2ef98a9ffa&lMCBpFBheDGaAZOlVGFoZXKgp0JhcmFrYXTW/yXZ8QABAaEwmpOlVGFoZXKgp0JhcmFrYXSiRUfW/3JDwgDW/2b7O4CoQTEzNzk1MzYBAaJFR9b/JdnxAKJFR8CiRUeiRUeBoTCTtW5kYy5xYS52b2lkQGdtYWlsLmNvbZOjKzIwqzAxMDA1NzQ3MjU4pk1vYmlsZZSpTmV3IENhaXJvqEFsIE5haGRhpUNBSVJPokVHlcC8Y2U1YmI0YmY5NDc4bXB6cWxtdzNoNWMxeTItMZG+Y2U1YmI0YmY5NDc4bXB6cWxtdzNoNWMxeTItMS0xkZPAqlBhc3NlbmdlcjGjQURUk8CSl6RTRUcyo0NBSaNET0jW/2sUC/zW/2sURWiiUVKiUVKXpFNFRzejRE9Io0pFRNb/axSzkNb/axTZEKJRUqJRUpTAk8CoMTc1NjUuODCjRUdQk8CoMTEwMjkuODCjRUdQk8CnNjUzNi4wMKNFR1A="
+  }
+}

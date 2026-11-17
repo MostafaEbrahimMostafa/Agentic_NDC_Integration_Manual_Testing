@@ -1,0 +1,26 @@
+{
+  "description": "G9 one-way, 1 ADT + 1 CHD + 1 INF. Bundle/ancillary/seat repros (NDC-BUG-0002, 0006, 0008, 0010). G9 schedule ends 2026-12-31: re-baseline with Validate_TestData_Search when offsetDays passes it.",
+  "supplier": "AirArabiaPlus",
+  "credentialsSelector": "USA",
+  "searchCriteria": [
+    {
+      "origin": "COK",
+      "destination": "SHJ",
+      "offsetDays": 25
+    }
+  ],
+  "passengers": [
+    {
+      "passengerTypeCode": "ADT",
+      "count": 1
+    },
+    {
+      "passengerTypeCode": "CHD",
+      "count": 1
+    },
+    {
+      "passengerTypeCode": "INF",
+      "count": 1
+    }
+  ]
+}

@@ -1,0 +1,311 @@
+{
+ "RES": {
+  "TC-SELECTAVAIL-POS-01": "PASS",
+  "TC-SELECTAVAIL-POS-02": "PASS",
+  "TC-SELECTAVAIL-POS-03": "BLOCKED",
+  "TC-SELECTAVAIL-POS-04": "PASS",
+  "TC-SELECTAVAIL-POS-05": "PASS",
+  "TC-SELECTAVAIL-VAL-01": "PASS",
+  "TC-SELECTAVAIL-VAL-02": "PASS",
+  "TC-SELECTAVAIL-VAL-03": "PASS",
+  "TC-SELECTAVAIL-NEG-01": "PASS",
+  "TC-SELECTAVAIL-NEG-02": "PASS",
+  "TC-SELECTAVAIL-NEG-03": "PASS",
+  "TC-SELECTAVAIL-NEG-04": "PASS",
+  "TC-SELECTAVAIL-NEG-05": "PASS",
+  "TC-SELECTAVAIL-NEG-06": "PASS",
+  "TC-SELECTAVAIL-NEG-07": "PASS",
+  "TC-SELECTAVAIL-NEG-08": "PASS",
+  "TC-SELECTAVAIL-NEG-09": "PASS",
+  "TC-SELECTAVAIL-NEG-10": "PASS",
+  "TC-SELECTAVAIL-NEG-11": "PASS",
+  "TC-SELECTAVAIL-NEG-12": "PASS",
+  "TC-SELECTAVAIL-NEG-13": "PASS",
+  "TC-SELECTAVAIL-NEG-14": "PASS",
+  "TC-SELECTAVAIL-NEG-15": "FAIL",
+  "TC-SELECTAVAIL-NEG-16": "FAIL",
+  "TC-SELECTAVAIL-NEG-17": "FAIL",
+  "TC-SELECTAVAIL-NEG-18": "FAIL",
+  "TC-SELECTAVAIL-NEG-19": "PASS",
+  "TC-SELECTAVAIL-NEG-20": "PASS",
+  "TC-SELECTAVAIL-SEC-01": "PASS",
+  "TC-SELECTAVAIL-SEC-02": "PASS",
+  "TC-SELECTAVAIL-SEC-03": "PASS",
+  "TC-SELECTAVAIL-REG-01": "PASS",
+  "TC-FARECONFIRM-INT-01": "PASS",
+  "TC-FARECONFIRM-INT-02": "PASS",
+  "TC-FARECONFIRM-INT-03": "FAIL",
+  "TC-FARECONFIRM-INT-04": "PASS",
+  "TC-FARECONFIRM-INT-05": "PASS",
+  "TC-FARECONFIRM-INT-06": "PASS",
+  "TC-FARECONFIRM-BIZ-01": "PASS",
+  "TC-FARECONFIRM-BIZ-02": "PASS",
+  "TC-FARECONFIRM-NEG-01": "FAIL",
+  "TC-FARECONFIRM-NEG-02": "PASS",
+  "TC-FARECONFIRM-NEG-03": "FAIL",
+  "TC-FARECONFIRM-NEG-04": "FAIL",
+  "TC-FARECONFIRM-VAL-01": "PASS"
+ },
+ "ERRS": {
+  "TC-SELECTAVAIL-NEG-01": {
+   "ep": "SelectAvailability",
+   "status": 400,
+   "code": "1001",
+   "msg": "Validation errors occurred. Please check your request.",
+   "casing": "camelCase",
+   "ok": true
+  },
+  "TC-SELECTAVAIL-NEG-02": {
+   "ep": "SelectAvailability",
+   "status": 400,
+   "code": "NDC-INT-TEC-A0001",
+   "msg": "Invalid request. Please check the request parameters and try again.",
+   "casing": "PascalCase",
+   "ok": true
+  },
+  "TC-SELECTAVAIL-NEG-03": {
+   "ep": "SelectAvailability",
+   "status": 400,
+   "code": "1001",
+   "msg": "Validation errors occurred. Please check your request.",
+   "casing": "camelCase",
+   "ok": true
+  },
+  "TC-SELECTAVAIL-NEG-04": {
+   "ep": "SelectAvailability",
+   "status": 400,
+   "code": "1001",
+   "msg": "Validation errors occurred. Please check your request.",
+   "casing": "camelCase",
+   "ok": true
+  },
+  "TC-SELECTAVAIL-NEG-05": {
+   "ep": "SelectAvailability",
+   "status": 400,
+   "code": "1001",
+   "msg": "Validation errors occurred. Please check your request.",
+   "casing": "camelCase",
+   "ok": true
+  },
+  "TC-SELECTAVAIL-NEG-06": {
+   "ep": "SelectAvailability",
+   "status": 400,
+   "code": "1001",
+   "msg": "Validation errors occurred. Please check your request.",
+   "casing": "camelCase",
+   "ok": true
+  },
+  "TC-SELECTAVAIL-NEG-07": {
+   "ep": "SelectAvailability",
+   "status": 400,
+   "code": "NDC-INT-TEC-A0001",
+   "msg": "Invalid request. Please check the request parameters and try again.",
+   "casing": "PascalCase",
+   "ok": true
+  },
+  "TC-SELECTAVAIL-NEG-08": {
+   "ep": "SelectAvailability",
+   "status": 400,
+   "code": "NDC-INT-TEC-A0001",
+   "msg": "Invalid request. Please check the request parameters and try again.",
+   "casing": "PascalCase",
+   "ok": true
+  },
+  "TC-SELECTAVAIL-NEG-09": {
+   "ep": "SelectAvailability",
+   "status": 400,
+   "code": "NDC-INT-TEC-A0001",
+   "msg": "Invalid request. Please check the request parameters and try again.",
+   "casing": "PascalCase",
+   "ok": true
+  },
+  "TC-SELECTAVAIL-NEG-10": {
+   "ep": "SelectAvailability",
+   "status": 400,
+   "code": "NDC-INT-TEC-A0001",
+   "msg": "Invalid request. Please check the request parameters and try again.",
+   "casing": "PascalCase",
+   "ok": true
+  },
+  "TC-SELECTAVAIL-NEG-11": {
+   "ep": "SelectAvailability",
+   "status": 400,
+   "code": "NDC-INT-TEC-A0001",
+   "msg": "Invalid request. Please check the request parameters and try again.",
+   "casing": "PascalCase",
+   "ok": true
+  },
+  "TC-SELECTAVAIL-NEG-12": {
+   "ep": "SelectAvailability",
+   "status": 400,
+   "code": "NDC-INT-TEC-A0001",
+   "msg": "Invalid request. Please check the request parameters and try again.",
+   "casing": "PascalCase",
+   "ok": true
+  },
+  "TC-SELECTAVAIL-NEG-13": {
+   "ep": "SelectAvailability",
+   "status": 400,
+   "code": "NDC-INT-TEC-A0001",
+   "msg": "Invalid request. Please check the request parameters and try again.",
+   "casing": "PascalCase",
+   "ok": true
+  },
+  "TC-SELECTAVAIL-NEG-14": {
+   "ep": "SelectAvailability",
+   "status": 400,
+   "code": "NDC-INT-TEC-A0001",
+   "msg": "Invalid request. Please check the request parameters and try again.",
+   "casing": "PascalCase",
+   "ok": true
+  },
+  "TC-SELECTAVAIL-NEG-15": {
+   "ep": "SelectAvailability",
+   "status": 400,
+   "code": "1001",
+   "msg": "Validation errors occurred. Please check your request.",
+   "casing": "camelCase",
+   "ok": false
+  },
+  "TC-SELECTAVAIL-NEG-16": {
+   "ep": "SelectAvailability",
+   "status": 400,
+   "code": "1001",
+   "msg": "Validation errors occurred. Please check your request.",
+   "casing": "camelCase",
+   "ok": false
+  },
+  "TC-SELECTAVAIL-NEG-17": {
+   "ep": "SelectAvailability",
+   "status": 400,
+   "code": "1001",
+   "msg": "Validation errors occurred. Please check your request.",
+   "casing": "camelCase",
+   "ok": false
+  },
+  "TC-SELECTAVAIL-NEG-18": {
+   "ep": "SelectAvailability",
+   "status": 400,
+   "code": "1001",
+   "msg": "Validation errors occurred. Please check your request.",
+   "casing": "camelCase",
+   "ok": false
+  },
+  "TC-SELECTAVAIL-NEG-19": {
+   "ep": "SelectAvailability",
+   "status": 400,
+   "code": "NDC-INT-TEC-A0001",
+   "msg": "Invalid request. Please check the request parameters and try again.",
+   "casing": "PascalCase",
+   "ok": true
+  },
+  "TC-SELECTAVAIL-SEC-03": {
+   "ep": "SelectAvailability",
+   "status": 400,
+   "code": "NDC-INT-TEC-A0001",
+   "msg": "Invalid request. Please check the request parameters and try again.",
+   "casing": "PascalCase",
+   "ok": true
+  },
+  "TC-FARECONFIRM-NEG-01": {
+   "ep": "FareConfirm",
+   "status": 200,
+   "msg": "undefined",
+   "casing": "none",
+   "ok": false
+  },
+  "TC-FARECONFIRM-NEG-02": {
+   "ep": "FareConfirm",
+   "status": 400,
+   "code": "NDC-INT-TEC-A0001",
+   "msg": "Invalid request. Please check the request parameters and try again.",
+   "casing": "PascalCase",
+   "ok": true
+  },
+  "TC-FARECONFIRM-NEG-03": {
+   "ep": "FareConfirm",
+   "status": 200,
+   "msg": "undefined",
+   "casing": "none",
+   "ok": false
+  },
+  "TC-FARECONFIRM-NEG-04": {
+   "ep": "FareConfirm",
+   "status": 200,
+   "msg": "undefined",
+   "casing": "none",
+   "ok": false
+  }
+ },
+ "DEF": [
+  {
+   "tc": "TC-SELECTAVAIL-NEG-15",
+   "actual": "HTTP 400; ErrorCode 1001; ErrorMessage \"Validation errors occurred. Please check your request.\"; Context [{\"name\":\"selectAvailabilityRequestDto\",\"value\":\"The selectAvailabilityRequestDto field is requir...; envelope camelCase. Problems: internal/.NET detail in ErrorMessage/Context.",
+   "hops": [
+    "00048_1794514220619",
+    "00049_1794514220717"
+   ]
+  },
+  {
+   "tc": "TC-SELECTAVAIL-NEG-16",
+   "actual": "HTTP 400; ErrorCode 1001; ErrorMessage \"Validation errors occurred. Please check your request.\"; Context [{\"name\":\"selectAvailabilityRequestDto\",\"value\":\"The selectAvailabilityRequestDto field is requir...; envelope camelCase. Problems: internal/.NET detail in ErrorMessage/Context.",
+   "hops": [
+    "00050_1794514223672",
+    "00051_1794514223773"
+   ]
+  },
+  {
+   "tc": "TC-SELECTAVAIL-NEG-17",
+   "actual": "HTTP 400; ErrorCode 1001; ErrorMessage \"Validation errors occurred. Please check your request.\"; Context [{\"name\":\"selectAvailabilityRequestDto\",\"value\":\"The selectAvailabilityRequestDto field is requir...; envelope camelCase. Problems: internal/.NET detail in ErrorMessage/Context.",
+   "hops": [
+    "00052_1794514226885",
+    "00053_1794514226972"
+   ]
+  },
+  {
+   "tc": "TC-SELECTAVAIL-NEG-18",
+   "actual": "HTTP 400; ErrorCode 1001; ErrorMessage \"Validation errors occurred. Please check your request.\"; Context [{\"name\":\"selectAvailabilityRequestDto\",\"value\":\"The selectAvailabilityRequestDto field is requir...; envelope camelCase. Problems: internal/.NET detail in ErrorMessage/Context.",
+   "hops": [
+    "00054_1794514229935",
+    "00055_1794514230034"
+   ]
+  },
+  {
+   "tc": "TC-FARECONFIRM-INT-03",
+   "actual": "Selected QR1310@2026-12-12T02:15:00 + QR1190@2026-12-12T07:25:00; FareConfirm offer has QR1310@2026-12-12T02:15:00 + QR1190@2026-12-12T07:25:00; rbd values in the offer [N] (selected bookingCode Y). Mismatch.",
+   "hops": [
+    "00076_1794514273265",
+    "00077_1794514274414",
+    "00078_1794514276993"
+   ]
+  },
+  {
+   "tc": "TC-FARECONFIRM-NEG-01",
+   "actual": "HTTP 200 — the request was accepted (200 — selectedOffer.offerId present, total 44832.4 EGP). Problems: HTTP 200 instead of a 4xx; error envelope incomplete (needs Status, TransactionId, ErrorCode, ErrorMessage); availability responseId accepted in place of the SelectAvailability responseId.",
+   "hops": [
+    "00095_1794514312810",
+    "00096_1794514313600",
+    "00097_1794514316002"
+   ]
+  },
+  {
+   "tc": "TC-FARECONFIRM-NEG-03",
+   "actual": "HTTP 200 — the request was accepted (200 — selectedOffer.offerId present, total 44832.4 EGP). Problems: HTTP 200 instead of a 4xx; error envelope incomplete (needs Status, TransactionId, ErrorCode, ErrorMessage); cross-offer pair accepted (High).",
+   "hops": [
+    "00101_1794514323297",
+    "00102_1794514324184",
+    "00103_1794514324977",
+    "00104_1794514327032"
+   ]
+  },
+  {
+   "tc": "TC-FARECONFIRM-NEG-04",
+   "actual": "HTTP 200 — the request was accepted (200 — selectedOffer.offerId present, total 44832.4 EGP). Problems: HTTP 200 instead of a 4xx; error envelope incomplete (needs Status, TransactionId, ErrorCode, ErrorMessage); missing mandatory ResponseId was not enforced.",
+   "hops": [
+    "00105_1794514330094",
+    "00106_1794514331009",
+    "00107_1794514332975"
+   ]
+  }
+ ]
+}

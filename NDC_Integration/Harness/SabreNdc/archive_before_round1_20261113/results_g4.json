@@ -1,0 +1,85 @@
+{
+ "RES": {
+  "TC-COLLECTION-VAL-01": "PASS",
+  "TC-COLLECTION-VAL-02": "FAIL",
+  "TC-COLLECTION-VAL-03": "PASS",
+  "TC-COLLECTION-VAL-04": "FAIL",
+  "FLOW-V2-SABAVAIL-01": "FAIL",
+  "FLOW-V2-SABAVAIL-02": "FAIL",
+  "FLOW-V2-SABAVAIL-03": "PASS",
+  "FLOW-V2-SABAVAIL-01-NEGHOP2": "FAIL",
+  "FLOW-V2-SABAVAIL-01-NEGHOP3": "PASS"
+ },
+ "ERRS": {
+  "FLOW-V2-SABAVAIL-01-NEGHOP2": {
+   "ep": "NextAvailability",
+   "status": 200,
+   "msg": "undefined",
+   "casing": "none",
+   "ok": false
+  },
+  "FLOW-V2-SABAVAIL-01-NEGHOP3": {
+   "ep": "SelectAvailability",
+   "status": 400,
+   "code": "NDC-INT-TEC-A0001",
+   "msg": "Invalid request. Please check the request parameters and try again.",
+   "casing": "PascalCase",
+   "ok": true
+  },
+  "FLOW-V2-SABAVAIL-01-NEGHOP4": {
+   "ep": "FareConfirm",
+   "status": 200,
+   "msg": "undefined",
+   "casing": "none",
+   "ok": false
+  }
+ },
+ "DEF": [
+  {
+   "tc": "TC-COLLECTION-VAL-02",
+   "actual": "As saved, the collection resolves the Availability/NextAvailability/SelectAvailability/FareConfirm requests ({{localUrl}}api/V2/FlightSearch/Availability, {{localUrl}}api/V2/FlightSearch/Availability, {{localUrl}}api/V2/FlightSearch/SelectAvailability, {{localUrl}}api/v2/FlightSearch/FareConfirm) against {{localUrl}} = https://localhost:7194/; {{baseUrl}} = https://ndc-supplier-integration.azurewebsites.net/ (the old ndc-supplier-integration host). Neither is the supplied host https://ndc-integration-stg-ne-7.azurewebsites.net/. A CLI run without an override sent POST https://localhost:7194/api/V2/FlightSearch/Availability which errored (no listener on localhost). The tester must override {{localUrl}} before every run (SPEC §1.6 warns about stale hosts).",
+   "hops": []
+  },
+  {
+   "tc": "TC-COLLECTION-VAL-04",
+   "actual": "Stale examples: CI_FlightAvailabilityRequest: saved example \"CI_FlightSearchRequest\" was captured from {{localUrl}}api/FlightSearch/Search, top-level keys [responseId, supplier, journeys, flightSegments, priceClasses, baggageDetails, offers, supplierRequest, supplierResponse], missing [availabilityId, hasMoreResults, originDestinations] || CI_FlightSelectAvailabilityRequest: saved example \"CI_FlightSearchRequest\" was captured from {{localUrl}}api/FlightSearch/Search, top-level keys [responseId, supplier, journeys, flightSegments, priceClasses, baggageDetails, offers, supplierRequest, supplierResponse], missing [offerId]. The live Availability response has availabilityId/responseId/hasMoreResults/originDestinations and the SelectAvailability response responseId/offerId (captured in this run).",
+   "hops": []
+  },
+  {
+   "tc": "FLOW-V2-SABAVAIL-01",
+   "actual": "Availability 3364 ms -> (NextAvailability not needed: Y found on page 1) -> SelectAvailability 1211 ms -> FareConfirm 1989 ms, every hop HTTP 200 with its ids non-empty. Validation problems: rbd [N] != Y",
+   "hops": [
+    "00001_1794514385323",
+    "00002_1794514386536",
+    "00003_1794514388527"
+   ]
+  },
+  {
+   "tc": "FLOW-V2-SABAVAIL-02",
+   "actual": "Availability 5503 ms -> (NextAvailability not needed: Y found on page 1) -> SelectAvailability 932 ms -> FareConfirm 3030 ms, every hop HTTP 200 with its ids non-empty. Validation problems: rbd [H] != Y",
+   "hops": [
+    "00004_1794514394218",
+    "00005_1794514395152",
+    "00006_1794514398183"
+   ]
+  },
+  {
+   "tc": "FLOW-V2-SABAVAIL-01-NEGHOP2",
+   "actual": "HTTP 200 — the request was accepted (200 — page 2, hasMoreResults=true, 1 originDestinations, journeys per OD [6], availabilityId/responseId present). Problems: HTTP 200 instead of a 4xx; error envelope incomplete (needs Status, TransactionId, ErrorCode, ErrorMessage); mismatched ids accepted and a page returned.",
+   "hops": [
+    "00008_1794514401243",
+    "00009_1794514403940",
+    "00010_1794514407646"
+   ]
+  },
+  {
+   "tc": "FLOW-V2-SABAVAIL-01-NEGHOP4",
+   "actual": "HTTP 200 — the request was accepted (200 — selectedOffer.offerId present, total 44832.4 EGP). Problems: HTTP 200 instead of a 4xx; error envelope incomplete (needs Status, TransactionId, ErrorCode, ErrorMessage); availability responseId accepted by FareConfirm.",
+   "hops": [
+    "00013_1794514413697",
+    "00014_1794514414564",
+    "00015_1794514416438"
+   ]
+  }
+ ]
+}

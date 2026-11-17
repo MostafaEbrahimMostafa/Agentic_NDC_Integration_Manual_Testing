@@ -1,0 +1,8 @@
+P_66589_paidMeal_try1 ok=true bundle 66589 pnr 6JX3OH sameAnc=true totalsEqual=true recon={"farecheck":[],"book":[],"retrieve":[]}
+P_66624_paidMeal_try1 ok=false bundle 66624 pnr null failedAt GetAncillary ancillary not selectable after retries: A1/G9$COK/SHJ$3281725$20261212034000$20261212062000/Meal; C2
+P_66624_paidMeal_try2 ok=false bundle 66624 pnr null failedAt GetAncillary ancillary not selectable after retries: A1/G9$COK/SHJ$3281725$20261212034000$20261212062000/Meal; C2
+P_66624_paidMeal_try3 ok=false bundle 66624 pnr null failedAt GetAncillary ancillary not selectable after retries: A1/G9$COK/SHJ$3281725$20261212034000$20261212062000/Meal; C2
+P_66624_paidMeal_try4 ok=false bundle 66624 pnr null failedAt GetAncillary ancillary not selectable after retries: A1/G9$COK/SHJ$3281725$20261212034000$20261212062000/Meal; C2
+P_66624_paidMeal_try5 ok=false bundle 66624 pnr null failedAt GetAncillary ancillary not selectable after retries: A1/G9$COK/SHJ$3281725$20261212034000$20261212062000/Meal; C2
+P_66624_paidMeal_try6 ok=false bundle 66624 pnr null failedAt GetAncillary ancillary not selectable after retries: A1/G9$COK/SHJ$3281725$20261212034000$20261212062000/Meal; C2
+verify10b done {"66589":1}

@@ -1,0 +1,27 @@
+# Bug reports — AirIndia / EGY - Booking Flow Regression Round 2 - ndc-supplier-integration - V1 and V2
+
+Run: 20261102-144242_AirIndia-EGY-Booking-Regression-Round2-supplier-integration
+
+- [BUG-01](./BUG-01_Retrieve_bookingToken.md) — [V1/V2][AirIndia][Retrieve] – bookingToken and gdsPNR Not Validated in Retrieve Request (Critical)
+- [BUG-02](./BUG-02_Book_ResponseId.md) — [V1/V2][AirIndia][Book] – ResponseId Not Validated in Book (and FareConfirm, GetOfferBundles, GetAncillary, GetSeatMap) (High)
+- [BUG-03](./BUG-03_Book_selectedOffer_priceDetails_tot.md) — [V2][AirIndia][Book] – Tax AB0500 Dropped from Book Totals on India-to-UAE Bookings (High)
+- [BUG-04](./BUG-04_Book_selectedOffer_priceDetails_tot.md) — [V1][AirIndia][Book] – priceDetails Excludes Paid Bundle and Disagrees with Passenger Rows in V1 Book (High)
+- [BUG-05](./BUG-05_Book_selectedBundles.md) — [V1][AirIndia][Book] – Empty selectedBundles Rejected by V1 Book (Medium)
+- [BUG-06](./BUG-06_FareConfirm-GetOfferBund_HTTP_status.md) — [V1][AirIndia][FareConfirm / GetOfferBundles / Book] – HTTP 500 Returned for Never-Issued Ids in V1 FareConfirm, GetOfferBundles and Book (High)
+- [BUG-07](./BUG-07_RetrieveBooking_HTTP_status.md) — [V1][AirIndia][RetrieveBooking] – V1 RetrieveBooking Returns HTTP 500 for a V2-Created PNR (Medium)
+- [BUG-08](./BUG-08_Retrieve_bookingStatus.md) — [V1/V2][AirIndia][Retrieve] – bookingStatus Returned as "UnKnown" (V2) and Missing (V1) in Retrieve Response (High)
+- [BUG-09](./BUG-09_Book_gdsPNR.md) — [V1/V2][AirIndia][Book] – gdsPNR Empty and voidCapability, creationDate Missing in Book Response (Medium)
+- [BUG-10](./BUG-10_Search_offers.md) — [V2][AirIndia][Search] – Search Returns Empty offers[] After ~15 s for Parties with Infants (High)
+- [BUG-11](./BUG-11_Search-AddPassenger_passengers.md) — [V1/V2][AirIndia][Search / AddPassenger] – Invalid Parties Accepted: Child Without Adult, 10 Passengers, 12-Year-Old Child (Medium)
+- [BUG-12](./BUG-12_Book_PassengersSelectedAncillaries_.md) — [V2][AirIndia][Book] – Unknown Passenger or Segment Keys Accepted in Book Selections (Medium)
+- [BUG-13](./BUG-13_Book_availableCount.md) — [V2][AirIndia][Book] – availableCount Advertises 50/400 but Book Allows Only One SSR per Passenger and Leg (Medium)
+- [BUG-14](./BUG-14_Book_bundleChoices.md) — [V1/V2][AirIndia][Book] – Advertised Meal Bundles (VIVC, NCOC) Rejected by Book on Some Flights (Medium)
+- [BUG-15](./BUG-15_AddPassenger_contactsList.md) — [V2][AirIndia][AddPassenger] – Second AddPassenger on the Same Offer Fails with "Duplicate contact type P" (Medium)
+- [BUG-16](./BUG-16_AddPassenger_passengersList_name_last.md) — [V2][AirIndia][AddPassenger] – Hyphen and Apostrophe Rejected in Passenger Names (Low)
+- [BUG-17](./BUG-17_All-booking-flow-endpoin_error_envelope.md) — [V1/V2][AirIndia][All booking-flow endpoints] – Two Error Envelopes and Catch-All Code NDC-INT-UNC-Z9999 for Business Errors (Medium)
+- [BUG-18](./BUG-18_Search_supplierRequest.md) — [V1/V2][AirIndia][Search] – Supplier Credentials Returned in Plaintext by Search with isdebug=true (Critical)
+- [BUG-19](./BUG-19_All-booking-flow-endpoin_OriginalSupplierRequest_Contex.md) — [V1/V2][AirIndia][All booking-flow endpoints] – Error Responses Expose Raw Supplier Payloads and Internal Type Names (Medium)
+- [BUG-20](./BUG-20_GetSeatMap_responseId.md) — [V2][AirIndia][GetSeatMap] – responseId Returned as the All-Zero GUID in GetSeatMap Response (Medium)
+- [BUG-21](./BUG-21_Book_taxesAndFees_code.md) — [V2][AirIndia][Book] – Tax Code Vocabulary Changes Between FareConfirm and Book (Low)
+- [BUG-22](./BUG-22_Book_commercial_blacklist.md) — [V1/V2][AirIndia][Book] – Book Succeeds for Commercially Blacklisted Supplier AirIndia (Medium)
+- [BUG-23](./BUG-23_GetOfferBundles_bundleName.md) — [V1/V2][AirIndia][GetOfferBundles] – bundleName Returned as the Raw Code and Infant bundlePrices Missing (Low)

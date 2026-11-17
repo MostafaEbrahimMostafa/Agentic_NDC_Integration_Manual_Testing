@@ -1,0 +1,19 @@
+{
+  "label": "V1 run 2 Void",
+  "method": "POST",
+  "url": "https://ndc-integration-stg-ne-3.azurewebsites.net/api/FlightBooking/Void",
+  "headers": {
+    "x-api-key": "[REDACTED]",
+    "Client-Id": "NDC-Core",
+    "Content-Type": "application/json"
+  },
+  "body": {
+    "supplier": "SabreNdc",
+    "credentialsSelector": "EGY",
+    "pnr": "ODQNZU",
+    "gdsPNR": "ODQNZU",
+    "bookingToken": "1SXXXCM642JZR",
+    "surName": "Barakat",
+    "voidTickets": []
+  }
+}

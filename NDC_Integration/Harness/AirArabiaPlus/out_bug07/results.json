@@ -1,0 +1,42 @@
+{
+ "host": "https://ndc-integration-stg-ne.azurewebsites.net/",
+ "routes": [
+  {
+   "route": "COK SHJ 2026-12-12",
+   "pax": "ADT+CHD+INF",
+   "status": 200,
+   "offers": 2,
+   "bag": {
+    "ADT:\"1\"": 2,
+    "CHD:\"1\"": 2,
+    "INF:null": 2
+   },
+   "fareConfirm": 200,
+   "fcBag": {
+    "ADT": "1",
+    "CHD": "1",
+    "INF": null
+   }
+  },
+  {
+   "route": "SHJ COK 2026-12-14",
+   "pax": "ADT+INF",
+   "status": 200,
+   "offers": 1,
+   "bag": {
+    "ADT:\"1\"": 1,
+    "INF:null": 1
+   }
+  },
+  {
+   "route": "AMM SHJ 2026-12-10",
+   "pax": "ADT+INF",
+   "status": 200,
+   "offers": 1,
+   "bag": {
+    "ADT:\"1\"": 1,
+    "INF:null": 1
+   }
+  }
+ ]
+}

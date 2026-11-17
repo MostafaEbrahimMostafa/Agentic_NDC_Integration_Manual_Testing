@@ -1,0 +1,64 @@
+{
+  "label": "hold V2 DMM-CAI #12 AddPassenger",
+  "method": "POST",
+  "url": "https://ndc-integration-stg-ne-3.azurewebsites.net/api/v2/Passenger/AddPassengerDetails",
+  "headers": {
+    "x-api-key": "[REDACTED]",
+    "Client-Id": "NDC-Core",
+    "Content-Type": "application/json"
+  },
+  "body": {
+    "supplier": "SabreNdc",
+    "credentialsSelector": "EGY",
+    "ResponseId": "82236b30-fb59-4079-9b00-15e10b658410",
+    "selectedOfferId": "ce5bb4bf9478q96fwmw3dckts6&lcC8Y2U1YmI0YmY5NDc4cTk2ZndtdzNkY2t0czYtMZG+Y2U1YmI0YmY5NDc4cTk2ZndtdzNkY2t0czYtMS0xkZPAqlBhc3NlbmdlcjGjQURUk8CSl6RTRUc4o0RNTaNET0jW/2sUkGjW/2sUn6SiUVKiUVKXpFNFRzmjRE9Io0NBSdb/axUasNb/axVBXKJRUqJRUpTAk8CoMTYzNTUuMDCjRUdQk8CnOTc4NC4wMKNFR1CTwKc2NTcxLjAwo0VHUA==",
+    "passengersList": {
+      "Pax1": {
+        "title": "Mr",
+        "name": {
+          "first": "Ghada",
+          "middle": "",
+          "last": "Badawy"
+        },
+        "nationality": "EG",
+        "residentCountry": "EG",
+        "birthDate": "1990-02-15T00:00:00.000Z",
+        "gender": "male",
+        "passengerTypeCode": "ADT",
+        "contactRefId": "0",
+        "travelDocument": {
+          "name": {
+            "first": "Ghada",
+            "middle": "",
+            "last": "Badawy"
+          },
+          "nationality": "EG",
+          "expirationDate": "2030-10-01T00:00:00.000Z",
+          "issuanceDate": "2024-10-01T00:00:00.000Z",
+          "documentNumber": "A1806565",
+          "documentType": "PASSPORT",
+          "gender": "male",
+          "birthCountry": "EG",
+          "birthDate": "1990-02-15T00:00:00.000Z",
+          "issuanceCountryCode": "EG"
+        }
+      }
+    },
+    "contactsList": {
+      "0": {
+        "Email": "ndc.qa.void@gmail.com",
+        "phone": {
+          "type": "Mobile",
+          "countryDialingCode": "+20",
+          "phoneNumber": "01005747258"
+        },
+        "Address": {
+          "Line1": "New Cairo",
+          "Line2": "Al Nahda",
+          "City": "CAIRO",
+          "CountryCode": "EG"
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,120 @@
+{
+ "RES": {
+  "TC-FLOW-V2-GALBOOK-01": "FAIL",
+  "TC-FLOW-V2-GALBOOK-02": "FAIL",
+  "TC-FLOW-V2-GALBOOK-03": "FAIL",
+  "TC-FLOW-V2-GALBOOK-04": "FAIL",
+  "TC-FLOW-V2-GALBOOK-05": "FAIL",
+  "TC-FLOW-V2-GALBOOK-06": "FAIL",
+  "TC-FLOW-V2-GALBOOK-07": "PASS",
+  "TC-FLOW-V2-GALBOOK-08": "PASS",
+  "TC-FLOW-V2-GALBOOK-09": "PASS",
+  "TC-FLOW-V2-GALBOOK-10": "PASS",
+  "TC-FLOW-V2-GALBOOK-11": "FAIL",
+  "TC-FLOW-V2-GALBOOK-12": "FAIL"
+ },
+ "ERRS": {},
+ "DEF": [
+  {
+   "tc": "TC-FLOW-V2-GALBOOK-01",
+   "actual": "Flow stopped at Book: HTTP 409; ErrorCode NDC-INT-UNC-Z9999; ErrorMessage \"NDC-INT-UNC-Z9999\"; Context [{\"Name\":\"12008\",\"Value\":\"Host error during ticket issue. FOP SELECTED NOT AUTHORIZED FOR CARRIER...; envelope Pasca.... Completed before that: 4 check(s) passed, failed: FareCheck is supported by the supplier for this offer (HTTP 409; ErrorCode OperationNotSupported; ErrorMessage \"This action is not currently supported by the selected supplier.\"; Context [{\"Name\":\"Opera...).",
+   "hops": [
+    "00001_1794731126355",
+    "00002_1794731126462",
+    "00003_1794731131549",
+    "00004_1794731132306",
+    "00005_1794731134856",
+    "00006_1794731135115",
+    "00007_1794731135505",
+    "00008_1794731166938"
+   ]
+  },
+  {
+   "tc": "TC-FLOW-V2-GALBOOK-02",
+   "actual": "Flow stopped at Book: HTTP 409; ErrorCode NDC-INT-UNC-Z9999; ErrorMessage \"NDC-INT-UNC-Z9999\"; Context [{\"Name\":\"12008\",\"Value\":\"Host error during ticket issue. FOP SELECTED NOT AUTHORIZED FOR CARRIER...; envelope Pasca.... Completed before that: 2 check(s) passed.",
+   "hops": [
+    "00009_1794731170351",
+    "00010_1794731170460",
+    "00011_1794731174729",
+    "00012_1794731174996",
+    "00013_1794731204745"
+   ]
+  },
+  {
+   "tc": "TC-FLOW-V2-GALBOOK-03",
+   "actual": "Flow stopped at Book: HTTP 409; ErrorCode NDC-INT-UNC-Z9999; ErrorMessage \"NDC-INT-UNC-Z9999\"; Context [{\"Name\":\"12008\",\"Value\":\"Host error during ticket issue. FOP SELECTED NOT AUTHORIZED FOR CARRIER...; envelope Pasca.... Completed before that: 4 check(s) passed, failed: FareCheck is supported by the supplier for this offer (HTTP 409; ErrorCode OperationNotSupported; ErrorMessage \"This action is not currently supported by the selected supplier.\"; Context [{\"Name\":\"Opera...).",
+   "hops": [
+    "00014_1794731208524",
+    "00015_1794731212069",
+    "00016_1794731212227",
+    "00017_1794731214897",
+    "00018_1794731215125",
+    "00019_1794731219952",
+    "00020_1794731220555",
+    "00021_1794731220745",
+    "00022_1794731252701"
+   ]
+  },
+  {
+   "tc": "TC-FLOW-V2-GALBOOK-04",
+   "actual": "Flow stopped at FareConfirm: HTTP 409; ErrorCode NDC-INT-UNC-Z9999; ErrorMessage \"NDC-INT-UNC-Z9999\"; Context [{\"Name\":\"4522\",\"Value\":\"NO VALID FARE FOR INPUT CRITERIA - NO VALID FARE FO.... Completed before that: 0 check(s) passed.",
+   "hops": [
+    "00023_1794731260258",
+    "00024_1794731260444",
+    "00025_1794731261526"
+   ]
+  },
+  {
+   "tc": "TC-FLOW-V2-GALBOOK-05",
+   "actual": "pnr null / gdsPNR JJ41RY; totals FareConfirm 3950, booked 3950 AED; flags {\"haveBundles\":false,\"canBeHeld\":true,\"offerHasAncillary\":false,\"offerHasSeat\":false,\"isSeatMapRequired\":false}. 13 checks: 11 passed, FAILED: Retrieve returns the same pnr (7DXPXQ vs null); Retrieve carries the selected flights (retrieve MS673@2026-12-15T01:05:00).",
+   "hops": [
+    "00026_1794731264664",
+    "00027_1794731264757",
+    "00028_1794731269075",
+    "00029_1794731270024",
+    "00030_1794731276577",
+    "00031_1794731285518",
+    "00032_1794731286964"
+   ]
+  },
+  {
+   "tc": "TC-FLOW-V2-GALBOOK-06",
+   "actual": "Flow stopped at Book: HTTP 409; ErrorCode NDC-INT-UNC-Z9999; ErrorMessage \"NDC-INT-UNC-Z9999\"; Context [{\"Name\":\"12008\",\"Value\":\"Host error during ticket issue. FOP SELECTED NOT AUTHORIZED FOR CARRIER...; envelope Pasca.... Completed before that: 2 check(s) passed. FareConfirm fare lines [ADT,CHD,INF].",
+   "hops": [
+    "00033_1794731290663",
+    "00034_1794731290773",
+    "00035_1794731295890",
+    "00036_1794731296085",
+    "00037_1794731331156"
+   ]
+  },
+  {
+   "tc": "TC-FLOW-V2-GALBOOK-11",
+   "actual": "pnr null / gdsPNR JJ41S2; totals FareConfirm 3950, booked 4370 AED; flags {\"haveBundles\":false,\"canBeHeld\":true,\"offerHasAncillary\":false,\"offerHasSeat\":false,\"isSeatMapRequired\":false}. 19 checks: 17 passed, FAILED: Retrieve returns the same pnr (7DXUD9 vs null); Retrieve carries the selected flights (retrieve MS673@2026-12-15T01:05:00). Baggage: Xik2OH/Xik2OH FENCING EQPMT UPTO 23KG 210; Xik2OH/Xik2OH FENCING EQPMT UPTO 23KG 210. Seats: 2f799a11-e0fd-4c1e-a7f7-1185052b67f6/Xik2OHSqWDKAM8S5EAAAAA seat 23-H; b685b0e1-93c9-4527-afed-3c4492752163/Xik2OHSqWDKAM8S5EAAAAA seat 25-A.",
+   "hops": [
+    "00063_1794731369969",
+    "00064_1794731370091",
+    "00065_1794731374479",
+    "00066_1794731374682",
+    "00067_1794731376947",
+    "00068_1794731377366",
+    "00069_1794731392093",
+    "00070_1794731401360",
+    "00071_1794731406007"
+   ]
+  },
+  {
+   "tc": "TC-FLOW-V2-GALBOOK-12",
+   "actual": "Flow stopped at BookAfterHold: HTTP 409; ErrorCode NDC-INT-UNC-Z9999; ErrorMessage \"NDC-INT-UNC-Z9999\"; Context [{\"Name\":\"12008\",\"Value\":\"Host error during ticket issue. FOP SELECTED NOT A.... Completed before that: 8 check(s) passed.",
+   "hops": [
+    "00072_1794731415105",
+    "00073_1794731415244",
+    "00074_1794731420760",
+    "00075_1794731421218",
+    "00076_1794731428430",
+    "00077_1794731438169",
+    "00078_1794731470624"
+   ]
+  }
+ ]
+}

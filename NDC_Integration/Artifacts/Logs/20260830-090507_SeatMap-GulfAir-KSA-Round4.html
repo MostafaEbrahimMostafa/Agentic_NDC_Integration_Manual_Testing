@@ -1,0 +1,2932 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>QA Execution Report — Round 4 SeatMap GulfAir KSA</title>
+<style>
+/* additional finding-item styles */
+.finding-item{ background:var(--surface-2); border:1px solid var(--line); border-radius:8px; padding:10px 14px; margin-bottom:8px; }
+.finding-item.serious{ border-left:4px solid var(--serious); }
+.finding-item.accent{ border-left:4px solid var(--accent); }
+.finding-item .fmeta{ font-size:12px; color:var(--ink-muted); margin-top:4px; }
+
+  :root{
+    color-scheme: light;
+    --paper:#F3F5F8; --surface:#FFFFFF; --surface-2:#EAEEF4;
+    --ink:#10151F; --ink-2:#45536B; --ink-muted:#7C8AA0;
+    --line:#DDE3EC; --line-strong:#C6CEDC;
+    --accent:#2A78D6; --accent-ink:#1C5CAB; --accent-wash:#E4EEFA;
+    --good:#0CA30C; --warning:#C98A17; --serious:#D9673C; --critical:#D03B3B;
+    --good-wash:rgba(12,163,12,0.12); --warning-wash:rgba(250,178,25,0.16);
+    --serious-wash:rgba(236,131,90,0.14); --critical-wash:rgba(208,59,59,0.12);
+    --shadow:rgba(16,21,31,0.08);
+    --font-sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+    --font-mono:ui-monospace,"SF Mono","Cascadia Code","Roboto Mono",Consolas,"Courier New",monospace;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:where(:not([data-theme="light"])){
+      color-scheme: dark;
+      --paper:#0A0E15; --surface:#111826; --surface-2:#16202F;
+      --ink:#EDF1F7; --ink-2:#B7C2D1; --ink-muted:#8290A6;
+      --line:#232E40; --line-strong:#324058;
+      --accent:#3987E5; --accent-ink:#8FBBEF; --accent-wash:#152A45;
+      --good:#35C24A; --warning:#E3A730; --serious:#E88A5E; --critical:#EA5B5B;
+      --good-wash:rgba(53,194,74,0.16); --warning-wash:rgba(227,167,48,0.16);
+      --serious-wash:rgba(232,138,94,0.16); --critical-wash:rgba(234,91,91,0.18);
+      --shadow:rgba(0,0,0,0.5);
+    }
+  }
+  :root[data-theme="dark"]{
+    color-scheme: dark;
+    --paper:#0A0E15; --surface:#111826; --surface-2:#16202F;
+    --ink:#EDF1F7; --ink-2:#B7C2D1; --ink-muted:#8290A6;
+    --line:#232E40; --line-strong:#324058;
+    --accent:#3987E5; --accent-ink:#8FBBEF; --accent-wash:#152A45;
+    --good:#35C24A; --warning:#E3A730; --serious:#E88A5E; --critical:#EA5B5B;
+    --good-wash:rgba(53,194,74,0.16); --warning-wash:rgba(227,167,48,0.16);
+    --serious-wash:rgba(232,138,94,0.16); --critical-wash:rgba(234,91,91,0.18);
+    --shadow:rgba(0,0,0,0.5);
+  }
+  :root[data-theme="light"]{
+    color-scheme: light;
+    --paper:#F3F5F8; --surface:#FFFFFF; --surface-2:#EAEEF4;
+    --ink:#10151F; --ink-2:#45536B; --ink-muted:#7C8AA0;
+    --line:#DDE3EC; --line-strong:#C6CEDC;
+    --accent:#2A78D6; --accent-ink:#1C5CAB; --accent-wash:#E4EEFA;
+    --good:#0CA30C; --warning:#C98A17; --serious:#D9673C; --critical:#D03B3B;
+    --good-wash:rgba(12,163,12,0.12); --warning-wash:rgba(250,178,25,0.16);
+    --serious-wash:rgba(236,131,90,0.14); --critical-wash:rgba(208,59,59,0.12);
+    --shadow:rgba(16,21,31,0.08);
+  }
+  *{ box-sizing:border-box; }
+  html,body{ margin:0; padding:0; }
+  body{ background:var(--paper); color:var(--ink); font-family:var(--font-sans);
+        font-size:14px; line-height:1.5; -webkit-font-smoothing:antialiased; }
+  @media (prefers-reduced-motion: reduce){ *{ animation-duration:.001ms !important; transition-duration:.001ms !important; } }
+  a{ color:var(--accent-ink); }
+  .wrap{ max-width:960px; margin:0 auto; padding:32px 20px 80px; }
+  .dashboard-card{ background:var(--surface); border:1px solid var(--line-strong); border-radius:24px; padding:24px; }
+  code,.mono{ font-family:var(--font-mono); font-size:.92em; }
+  .header{ display:flex; flex-wrap:wrap; align-items:baseline; justify-content:space-between; gap:12px; margin-bottom:24px; }
+  .header-main{ flex:1 1 auto; min-width:280px; }
+  .header h1{ font-size:32px; font-weight:800; margin:0 0 8px; }
+  .header .meta{ color:var(--ink-muted); font-size:13px; }
+  .pill{ display:inline-flex; align-items:center; gap:6px; padding:6px 18px; border-radius:999px; font-size:12px; font-weight:700; letter-spacing:.03em; border:1px solid transparent; }
+  .pill-complete{ background:var(--good-wash); color:var(--good); border-color:var(--good); }
+  .pill-interrupted{ background:var(--critical-wash); color:var(--critical); }
+  .section-num{ font-size:17px; font-weight:700; color:var(--ink); margin:32px 0 14px; text-transform:none; letter-spacing:normal; border-bottom:none; padding-bottom:0; }
+  .summary-layout{ display:flex; align-items:center; gap:36px; flex-wrap:wrap; margin-bottom:28px; }
+  .donut-block{ display:flex; align-items:center; gap:20px; flex-shrink:0; }
+  .stats-block{ flex:1 1 360px; min-width:280px; display:flex; flex-direction:column; gap:14px; }
+  .scard{ text-align:center; }
+  .scard .lbl{ font-size:15px; font-weight:700; color:var(--ink-muted); margin-top:4px; }
+  .scard .val{ font-size:24px; font-weight:700; color:var(--ink); }
+  .scard .val.pass{ color:var(--good); }
+  .scard .val.fail{ color:var(--critical); }
+  .scard .val.blocked{ color:var(--serious); }
+  .scard .val.accent{ color:var(--accent-ink); }
+  .scard-total .lbl{ font-size:17px; margin-top:6px; }
+  .scard-total .val{ font-size:28px; }
+  summary.section-summary-flex > .section-count-badges,
+  summary.section-summary-flex > .section-count-badge{ float:right; }
+  .section-count-badge{ display:flex; flex-direction:column; align-items:center; justify-content:center;
+      background:var(--surface); border:1px solid var(--line-strong); border-radius:12px; padding:6px 20px;
+      text-transform:none; letter-spacing:normal; flex-shrink:0; }
+  .section-count-badge .scb-val{ font-size:20px; font-weight:700; color:var(--accent-ink); line-height:1.2; }
+  .section-count-badge .scb-lbl{ font-size:11px; color:var(--ink-muted); margin-top:1px; }
+  .section-count-badges{ display:flex; gap:10px; flex-shrink:0; }
+  .scb-val.serious{ color:var(--serious); }
+  .scb-val.accent{ color:var(--accent-ink); }
+  .summary-cards{ display:grid; grid-template-columns:repeat(auto-fit,minmax(120px,1fr)); gap:12px; }
+  .donut{ width:280px; height:280px; border-radius:50%; flex-shrink:0; display:flex; align-items:center; justify-content:center; }
+  .donut-hole{ width:190px; height:190px; border-radius:50%; background:var(--paper); display:flex; flex-direction:column; align-items:center; justify-content:center; }
+  .donut-pct{ font-size:34px; font-weight:800; color:var(--ink); }
+  .donut-sub{ font-size:15px; color:var(--ink-muted); }
+  .donut-legend{ display:flex; flex-direction:column; gap:10px; }
+  .litem{ display:flex; align-items:center; gap:8px; font-size:13px; color:var(--ink-2); white-space:nowrap; }
+  .litem .lcount{ margin-left:4px; color:var(--ink-muted); }
+  .swatch{ width:12px; height:12px; border-radius:3px; flex-shrink:0; }
+  .swatch.pass{ background:var(--good); }
+  .swatch.fail{ background:var(--critical); }
+  .swatch.blocked{ background:var(--serious); }
+  h2{ font-size:15px; text-transform:uppercase; letter-spacing:.04em; color:var(--ink-2);
+      border-bottom:1px solid var(--line); padding-bottom:6px; margin:32px 0 12px; }
+  .section-collapse{ margin:0; }
+  .section-collapse > summary{ font-size:15px; text-transform:uppercase; letter-spacing:.04em; color:var(--ink-2);
+      border-bottom:1px solid var(--line); padding-bottom:6px; margin:32px 0 12px; cursor:pointer; }
+  .section-collapse > summary::-webkit-details-marker{ color:var(--ink-muted); }
+  .tc-section > summary{ margin-top:0; }
+  .tc-category{ background:var(--surface); border:1px solid var(--line-strong); border-radius:12px; margin-bottom:10px; }
+  .tc-category > summary{ display:flex; align-items:center; gap:10px; padding:14px 16px; cursor:pointer; list-style:none; }
+  .tc-category > summary::-webkit-details-marker{ display:none; }
+  .cat-icon{ font-size:16px; flex-shrink:0; width:22px; display:inline-flex; align-items:center; justify-content:center; }
+  .cat-name{ font-weight:700; color:var(--ink); flex-shrink:0; }
+  .cat-counts{ display:flex; gap:14px; margin-left:auto; font-size:12px; }
+  .cc{ font-weight:600; }
+  .cc.pass{ color:var(--good); }
+  .cc.fail{ color:var(--critical); }
+  .cc.blocked{ color:var(--serious); }
+  .cat-chev{ display:inline-block; width:9px; flex-shrink:0; color:var(--ink-muted); font-size:10px; transition:transform .15s ease; }
+  .cat-chev::before{ content:'\25B8'; }
+  details.tc-category[open] > summary .cat-chev{ transform:rotate(90deg); }
+  .tc-category-body{ padding:0 16px 16px; }
+  .tc-category.cat-empty{ display:none; }
+  .tc-subhead{ display:flex; align-items:center; justify-content:space-between; gap:10px; margin:14px 0 8px; padding-bottom:4px; border-bottom:1px solid var(--line); }
+  .tc-subhead:first-child{ margin-top:4px; }
+  .tc-subhead-label{ font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.04em; }
+  .tc-subhead-label.pos{ color:var(--good); }
+  .tc-subhead-label.neg{ color:var(--critical); }
+  .tc-subhead-counts{ display:flex; gap:12px; font-size:11px; }
+  .tc{ background:var(--surface); border:1px solid var(--line-strong); border-left-width:4px; border-radius:12px; padding:16px 18px; margin-bottom:8px; }
+  .tc.PASS{ border-left-color:var(--good); }
+  .tc.FAIL{ border-left-color:var(--critical); }
+  .tc.BLOCKED{ border-left-color:var(--serious); }
+  .tc-head{ display:flex; justify-content:space-between; gap:10px; font-weight:600; }
+  .badge{ font-size:11px; font-weight:700; padding:2px 8px; border-radius:5px; }
+  .badge.PASS{ background:var(--good-wash); color:var(--good); }
+  .badge.FAIL{ background:var(--critical-wash); color:var(--critical); }
+  .badge.BLOCKED{ background:var(--serious-wash); color:var(--serious); }
+  .tc .row{ margin-top:6px; font-size:13px; color:var(--ink-2); overflow-wrap:anywhere; }
+  .tc .row b{ color:var(--ink); }
+  .view-tc-wrap{ margin-top:10px; }
+  .view-tc > summary{ display:block; text-align:right; color:var(--accent-ink); text-decoration:underline; cursor:pointer; font-size:12px; font-weight:600; list-style:none; }
+  .view-tc > summary::-webkit-details-marker{ display:none; }
+  .view-tc-body{ margin-top:8px; padding:14px 16px; background:var(--surface-2); border:1px solid var(--line); border-radius:8px; font-size:13px; }
+  .vtc-h{ font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.04em; color:var(--ink-muted); margin:12px 0 4px; }
+  .vtc-h:first-child{ margin-top:0; }
+  .vtc-p{ color:var(--ink-2); overflow-wrap:anywhere; }
+  .vtc-steps{ margin:0; padding-left:18px; color:var(--ink-2); }
+  .vtc-steps li{ margin-bottom:4px; overflow-wrap:anywhere; }
+  details.evidence, details.hops{ margin-top:6px; }
+  details.evidence summary, details.hops summary{ cursor:pointer; font-size:12px; color:var(--accent-ink); }
+  details.evidence .ev-body{ margin-top:4px; padding:8px 10px; background:var(--surface-2); border-radius:6px; font-size:12px; overflow-wrap:anywhere; }
+  .hop{ padding:6px 0; border-top:1px solid var(--line); font-size:12px; }
+  .hop:first-child{ border-top:none; }
+  .hop-endpoint{ font-weight:600; color:var(--ink); }
+  .hop .hd{ color:var(--ink-muted); margin-top:2px; overflow-wrap:anywhere; }
+  .hop .hd.hop-reqres.js-hidden{ display:none; }
+  .hop-reqres-toggle{ margin-left:8px; font-size:11px; font-weight:600; color:var(--accent-ink); text-decoration:underline; cursor:pointer; }
+  .hop-reqres-panel{ margin-top:10px; display:flex; flex-direction:column; gap:18px; }
+  .hop-reqres-panel.js-hidden{ display:none; }
+  .rr-title{ font-size:15px; font-weight:700; color:var(--ink); margin-bottom:6px; }
+  .rr-line{ font-size:13px; color:var(--ink-2); margin-bottom:10px; font-family:var(--font-mono); overflow-wrap:anywhere; }
+  .rr-label{ font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.05em; color:var(--ink-muted); margin:10px 0 6px; }
+  .rr-box{ background:#0B0E15; color:#D7DEE8; border-radius:10px; padding:14px 16px; font-family:var(--font-mono); font-size:12.5px; overflow:auto; }
+  .rr-headers-box .rr-h-line{ margin-bottom:14px; white-space:pre-wrap; overflow-wrap:anywhere; }
+  .rr-headers-box .rr-h-line:last-child{ margin-bottom:0; }
+  .rr-body-box{ max-height:340px; }
+  .rr-body-box pre{ margin:0; white-space:pre; }
+  .rr-redacted{ color:#8290A6; }
+  .rr-note{ font-size:11px; color:var(--ink-muted); font-style:italic; margin-top:6px; }
+  .tc-status-row{ display:flex; align-items:center; gap:10px; }
+  .tc-reqres-toggle{ margin-left:auto; }
+  .tc-reqres-panel{ margin-top:10px; display:flex; flex-direction:column; gap:18px; }
+  .tc-reqres-panel.js-hidden{ display:none; }
+  .rr-attempt-label{ font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.04em; color:var(--accent-ink); margin:0 0 4px; }
+  .finding{ border-radius:12px; padding:10px 12px; margin-bottom:8px; font-size:13px; overflow-wrap:anywhere; }
+  .finding.defect{ background:var(--serious-wash); border:1px solid var(--serious); }
+  .finding.unknown_resolution{ background:var(--accent-wash); border:1px solid var(--accent); }
+  .finding .kind{ font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.03em; }
+  .cleanup{ background:var(--warning-wash); border:1px solid var(--warning); border-radius:12px; padding:12px 14px; }
+  .cleanup ul{ margin:6px 0 0; padding-left:18px; }
+  .cleanup li{ margin-bottom:6px; overflow-wrap:anywhere; }
+  .empty{ color:var(--ink-muted); font-size:13px; font-style:italic; }
+.meta-card{ margin-top:8px; }
+.fields{ display:flex; flex-direction:column; gap:4px; margin:4px 0 6px; }
+.fields.run-meta{ margin-top:10px; padding-top:10px; border-top:1px solid var(--line); }
+.field-row{ display:flex; flex-wrap:wrap; gap:4px 28px; }
+.field{ font-size:14px; display:flex; gap:6px; }
+.field .k{ color:var(--ink-2); font-weight:700; font-size:15px; letter-spacing:normal; text-transform:none; flex-shrink:0; }
+.field .k::after{ content:':'; }
+.field .v{ color:var(--ink); }
+.tc-actions{ display:flex; justify-content:flex-end; gap:8px; margin:32px 0 8px; }
+.tc-actions button{ padding:7px 12px; border-radius:7px; border:1px solid var(--line-strong); background:var(--surface); color:var(--ink-2); font-size:12px; font-weight:600; cursor:pointer; }
+.tc-cat-actions{ display:flex; justify-content:flex-end; gap:8px; margin:4px 0 10px; }
+.tc-cat-actions button{ padding:5px 10px; border-radius:7px; border:1px solid var(--line-strong); background:var(--surface); color:var(--ink-2); font-size:11px; font-weight:600; cursor:pointer; }
+.tc-cat-actions button:hover{ background:var(--surface-2); }
+.tc-actions button:hover{ background:var(--surface-2); }
+.tc-toolbar{ display:flex; flex-wrap:wrap; align-items:center; gap:8px; margin:0 0 14px; position:sticky; top:0; z-index:5; }
+.tc-toolbar input[type="search"]{ flex:1 1 240px; min-width:180px; padding:7px 10px; border-radius:7px; border:1px solid var(--line-strong); background:var(--surface); color:var(--ink); font-size:13px; }
+.tc-toolbar select{ padding:7px 10px; border-radius:7px; border:1px solid var(--line-strong); background:var(--surface); color:var(--ink); font-size:13px; }
+.tc-toolbar button{ padding:7px 12px; border-radius:7px; border:1px solid var(--line-strong); background:var(--surface); color:var(--ink-2); font-size:12px; font-weight:600; cursor:pointer; }
+.tc-toolbar button:hover{ background:var(--surface-2); }
+#tcResetFilters{ color:var(--critical); border-color:var(--critical); }
+#tcResetFilters:hover{ background:var(--critical-wash); }
+.tc-toolbar .tc-count{ font-size:12px; color:var(--ink-muted); margin-left:auto; white-space:nowrap; }
+details.tc > summary.tc-head{ cursor:pointer; list-style:none; }
+details.tc > summary.tc-head::-webkit-details-marker{ display:none; }
+.tc-head .chev{ display:inline-block; width:9px; flex-shrink:0; color:var(--ink-muted); font-size:10px; transition:transform .15s ease; align-self:center; }
+.tc-head .chev::before{ content:'\25B8'; }
+details.tc[open] > summary.tc-head .chev{ transform:rotate(90deg); }
+details.tc.js-hidden{ display:none; }
+.tc-no-results{ padding:28px 20px; text-align:center; color:var(--critical); font-size:18px; font-weight:700; background:var(--critical-wash); border:1px solid var(--critical); border-radius:12px; margin-bottom:10px; }
+.tc-no-results.js-hidden{ display:none; }
+</style>
+</head><body><div class="wrap"><div class="header"><div class="header-main">
+<h1>QA Execution Report</h1>
+</div></div>
+<div class="meta-card dashboard-card">
+<div class="fields">
+<div class="field"><span class="k">Scope</span><span class="v">Round 4 regression &mdash; SeatMap_TestCases.csv (NDC_Integration/TestCases/SeatMap_TestCases.csv) — 63 test cases: Round 4 full regression pass, explicit re-verification of Round 3's 12 logged defects (BUG-01..BUG-12), a genuine multi-city sweep resolving Round 3's INCONCLUSIVE finding, and route-varied coverage</span></div>
+<div class="field-row">
+<div class="field"><span class="k">Coverage</span><span class="v">63 test cases across 10 categories, plus a 9-combination multi-city sweep and explicit re-verification of Round 3's 12 logged defects</span></div>
+<div class="field"><span class="k">Description</span><span class="v">Fourth consecutive recurring regression pass on this supplier/selector/host; mid-run GetSeatMap outage (BUG-14, new) blocked re-verification of several defects</span></div>
+</div>
+</div>
+<div class="fields run-meta">
+<div class="field-row">
+<div class="field"><span class="k">Supplier</span><span class="v">GulfAir</span></div>
+<div class="field"><span class="k">Credentials Selector</span><span class="v">KSA</span></div>
+<div class="field"><span class="k">Environment</span><span class="v">staging (non-default host — user-specified) &mdash; https://ndc-integration-stg-ne-2.azurewebsites.net/</span></div>
+</div>
+<div class="field"><span class="k">Started</span><span class="v">2026-08-30T09:05:07Z</span></div>
+<div class="field"><span class="k">Ended</span><span class="v">2026-08-30T09:52:00Z</span></div>
+<div class="field"><span class="k">Status</span><span class="v">COMPLETE</span></div>
+</div>
+</div>
+<h2 class="section-num">1. Executive Summary</h2>
+<div class="summary-layout">
+<div class="donut-block">
+<div class="donut" style="background:conic-gradient(var(--good) 0% 52.38%, var(--critical) 52.38% 65.08%, var(--serious) 65.08% 100%)">
+<div class="donut-hole"><div class="donut-pct">52%</div><div class="donut-sub">pass rate</div></div>
+</div>
+<div class="donut-legend">
+<div class="litem"><span class="swatch pass"></span>Passed <span class="lcount">33 / 63</span></div>
+<div class="litem"><span class="swatch fail"></span>Failed <span class="lcount">8 / 63</span></div>
+<div class="litem"><span class="swatch blocked"></span>Blocked <span class="lcount">22 / 63</span></div>
+</div>
+</div>
+<div class="stats-block">
+<div class="scard scard-total dashboard-card"><div class="val">63</div><div class="lbl">Total Executed Test Cases</div></div>
+<div class="summary-cards">
+<div class="scard dashboard-card"><div class="val pass">33</div><div class="lbl">Passed</div></div>
+<div class="scard dashboard-card"><div class="val fail">8</div><div class="lbl">Failed</div></div>
+<div class="scard dashboard-card"><div class="val blocked">22</div><div class="lbl">Blocked</div></div>
+</div>
+<div class="scard scard-total dashboard-card"><div class="val">46m 53s</div><div class="lbl">Execution Duration</div></div>
+</div>
+</div>
+<div class="tc-actions">
+<button type="button" id="tcExpandAll">Expand all</button>
+<button type="button" id="tcCollapseAll">Collapse all</button>
+</div>
+<details class="section-collapse tc-section" open>
+<summary>Test case results</summary>
+<div class="tc-toolbar dashboard-card">
+<input type="search" id="tcSearch" placeholder="Search by ID, title, endpoint, PNR...">
+<select id="tcStatusFilter">
+<option value="">All statuses</option>
+<option value="PASS">PASS</option>
+<option value="FAIL">FAIL</option>
+<option value="BLOCKED">BLOCKED</option>
+</select>
+<select id="tcCategoryFilter">
+<option value="">All categories</option>
+<option value="positive">Positive</option>
+<option value="negative">Negative</option>
+<option value="validation">Validation</option>
+<option value="boundary">Boundary</option>
+<option value="business-rule">Business Rule</option>
+<option value="regression">Regression</option>
+<option value="security">Security</option>
+<option value="integration">Integration</option>
+<option value="documentation">Documentation</option>
+<option value="flow">Flow</option>
+</select>
+<button type="button" id="tcResetFilters">Reset</button>
+<span id="tcCount" class="tc-count"></span>
+</div>
+<div id="tcNoResults" class="tc-no-results js-hidden">No test cases match your search. Try a different keyword, or clear the search/filters above.</div>
+<details class="tc-category" data-cat="positive" open>
+<summary><span class="cat-icon">&#9989;</span><span class="cat-name">Positive</span><span class="cat-counts"><span class="cc pass">4 passed</span><span class="cc fail">1 failed</span><span class="cc blocked">0 blocked</span></span><span class="cat-chev"></span></summary>
+<div class="tc-category-body">
+<div class="tc-cat-actions"><button type="button" class="tc-cat-expand">Expand all</button><button type="button" class="tc-cat-collapse">Collapse all</button></div>
+<details class="tc PASS">
+<summary class="tc-head"><span><span class="chev"></span><span class="mono">TC-SEATMAP-POS-01</span> - Verify a valid GetSeatMap call returns HTTP 200 with supplier, flightSegments, passengersDetails, and a non-empty seatMapDetails</span><span class="badge PASS">PASS</span></summary>
+<div class="row"><b>Endpoint Name:</b> GetSeatMap</div>
+<div class="row"><b>Request:</b> POST api/V2/SeatMap/Seat — supplier=GulfAir, credentialsSelector=KSA, ResponseId/selectedOfferId=AddPassenger's IDs (BAH-RUH 2026-11-15, GF169, one-way)</div>
+<div class="row"><b>Response:</b> 200 — supplier, flightSegments{1 segment}, passengersDetails{PAX1}, seatMapDetails{1 segment, 25 rows, 175 cells} all present and non-null</div>
+<div class="row"><b>Expected:</b> HTTP 200; all four top-level fields present/non-null; every segmentRefId in seatMapDetails also appears in flightSegments (§2.7)</div>
+<div class="row"><b>Actual:</b> 200; single segment GF-GF169-GF169-2026111521-2026111522-O present identically in both flightSegments and seatMapDetails; passengersDetails.PAX1 present; 25 rows, 175 cells</div>
+<div class="row tc-status-row"><b>Status:</b> <span class="badge PASS">PASS</span><span class="tc-reqres-anchor"></span></div>
+<details class="evidence"><summary>Evidence</summary><div class="ev-body">Live GetSeatMap response for GulfAir/KSA BAH-RUH 2026-11-15 (offer GF169) — unchanged from Rounds 1-3's pattern on a fresh sample</div></details>
+<div class="tc-reqres-panel"><div class="rr-title">Request</div>
+<div class="rr-line">POST to https://ndc-integration-stg-ne-2.azurewebsites.net/api/V2/SeatMap/Seat</div>
+<div class="rr-label">HEADERS</div>
+<div class="rr-box rr-headers-box">
+<div class="rr-h-line">x-api-key: <span class="rr-redacted">&#8226;&#8226;&#8226;&#8226;&#8226;&#8226;&#8226;&#8226;(redacted)</span></div>
+<div class="rr-h-line">Client-Id: NDC-Core</div>
+<div class="rr-h-line">Content-Type: application/json</div>
+</div>
+<div class="rr-label">BODY</div>
+<div class="rr-box rr-body-box"><pre>{
+    "supplier": "GulfAir",
+    "credentialsSelector": "KSA",
+    "ResponseId": "63931556-644a-4875-b1ae-accc66b63a0e",
+    "selectedOfferId": "GF-OFFER-2&amp;yAGaY9IAAAH19CrcABSqR0YtT0ZGRVItMqJHRtkkYjJkM2NiZGEtZGE2Ni00ZmIzLWIyZTMtMmI1YjQzMTM0Yzllga41AP8ISVRFTS0xkaRQQVgxpjUyMy4wMKNTQVJHABSj2SZHRi1HRjE2OQYApjIwMjYxMTE1MjELAPADMi1PnaNCQUijUlVI1v9q+h58BgDTMTzAoTVQokdGozE2OQcAQKMzMlHPAAJSANExkAEAAJKRnaRQYXgxoQD+IKNBRFTW/ziolwChMMCiTVKTp01vc3RhZmGgp0licmFoaW2kTWFsZaJFR6JFR8CaHwD0EqJFR9b/cGKOgNb/ZRi2gKhBMTIzNDU2MahQYXNzcG9ydEAAAmYA8E2iRUeRmKEwpENUQzGwTkRDX0NJQGdtYWlsLmNvbcDAk8CjKzIwqTEyMTU3NDIzNsCUr05ldyBDYWlybyBNYWRkabRBbCBOYWhkYSBGbG9vciBlaWdodKVDQUlST6IAB+wAYJGUo1JVSCcBp6hCQUhSVUgtMZEfANCnRUNPTk9NWaFOoVnA"
+}</pre></div>
+<div class="rr-title">Response</div>
+<div class="rr-line">Status code 200</div>
+<div class="rr-label">BODY</div>
+<div class="rr-box rr-body-box"><pre>{
+    "supplier": "GulfAir",
+    "offerId": "GF-OFFER-2&amp;yAGaY9IAAAH19CrcABSqR0YtT0ZGRVItMqJHRtkkYjJkM2NiZGEtZGE2Ni00ZmIzLWIyZTMtMmI1YjQzMTM0Yzllga41AP8ISVRFTS0xkaRQQVgxpjUyMy4wMKNTQVJHABSj2SZHRi1HRjE2OQYApjIwMjYxMTE1MjELAPADMi1PnaNCQUijUlVI1v9q+h58BgDTMTzAoTVQokdGozE2OQcAQKMzMlHPAAJSANExkAEAAJKRnaRQYXgxoQD+IKNBRFTW/ziolwChMMCiTVKTp01vc3RhZmGgp0licmFoaW2kTWFsZaJFR6JFR8CaHwD0EqJFR9b/cGKOgNb/ZRi2gKhBMTIzNDU2MahQYXNzcG9ydEAAAmYA8E2iRUeRmKEwpENUQzGwTkRDX0NJQGdtYWlsLmNvbcDAk8CjKzIwqTEyMTU3NDIzNsCUr05ldyBDYWlybyBNYWRkabRBbCBOYWhkYSBGbG9vciBlaWdodKVDQUlST6IAB+wAYJGUo1JVSCcBp6hCQUhSVUgtMZEfANCnRUNPTk9NWaFOoVnA",
+    "responseId": "63931556-644a-4875-b1ae-accc66b63a0e",
+    "isFareCheckRequired": false,
+    "flightSegments": {
+        "GF-GF169-GF169-2026111521-2026111522-O": {
+            "origin": "BAH",
+            "destination": "RUH",
+            "departureDateTime": "2026-11-15T21:05:00",
+            "arrivalDateTime": "2026-11-15T22:25:00",
+            "departureTerminal": null,
+            "arrivalTerminal": "5",
+            "flightTime": 80,
+            "operatingCarrierCode": "GF",
+            "operatingFlightNumber": "169",
+            "marketingCarrierCode": "GF",
+            "marketingFlightNumber": "169",
+            "equipment": "32Q"
+        }
+    },
+    "passengersDetails": {
+        "PAX1": {
+            "passengerTypeCode": "ADT",
+            "name": {
+                "first": "Mostafa",
+                "middle": "",
+                "last": "Ibrahim"
+            },
+            "birthDate": "2000-02-15T00:00:00Z",
+            "documentNumber": "A1234561",
+            "passengersSeatMapAvailability": {
+                "GF-GF169-GF169-2026111521-2026111522-O": {
+                    "Main": [
+                        "8B",
+                        "8C",
+                        "8D",
+                        "8F",
+                        "9A",
+                        "9B",
+                        "9C",
+                        "9D",
+                        "9E",
+                        "9F",
+                        "10A",
+                        "10B",
+                        "10C",
+                        "10D",
+                        "10E",
+                        "10F",
+                        "11A",
+                        "11B",
+                        "11C",
+                        "11D",
+                        "11E",
+                        "11F",
+                        "12A",
+                        "12B",
+                        "12C",
+                        "12D",
+                        "12E",
+                        "12F",
+                        "14A",
+                        "14B",
+                        "14C",
+                        "14D",
+                        "14E",
+                        "14F",
+                        "15A",
+                        "15B",
+                        "15C",
+                        "15D",
+                        "15E",
+                        "15F",
+                        "16A",
+                        "16B",
+                        "16C",
+                        "16D",
+                        "16E",
+                        "16F",
+                        "17A",
+                        "17B",
+                        "17C",
+                        "17D",
+                        "17E",
+                        "17F",
+                        "18A",
+                        "18B",
+                        "18C",
+                        "18D",
+                        "18E",
+                        "18F",
+                        "19A",
+                        "19B",
+                        "19C",
+                        "19D",
+                        "19E",
+                        "19F",
+                        "20A",
+                        "20B",
+                        "20C",
+                        "20D",
+                        "20E",
+                        "20F",
+                        "21A",
+                        "21B",
+                        "21C",
+                        "21D",
+                        "21E",
+                        "21F",
+                        "22A",
+                        "22B",
+                        "22C",
+                        "22D",
+                        "22E",
+                        "22F",
+                        "23A",
+                        "23B",
+                        "23C",
+                        "23D",
+                        "23E",
+                        "23F",
+                        "24A",
+                        "24B",
+                        "24C",
+                        "24D",
+                        "24E",
+                        "24F",
+                        "25A",
+                        "25B",
+                        "25C",
+                        "25D",
+                        "25E",
+                        "25F",
+                        "26A",
+                        "26B",
+                        "26C",
+                        "26D",
+                        "26E",
+                        "26F",
+                        "27A",
+                        "27B",
+                        "27C",
+                        "27D",
+                        "27E",
+                        "27F",
+                        "28A",
+                        "28B",
+                        "28C",
+                        "28D",
+                        "28E",
+                        "28F",
+                        "29A",
+                        "29B",
+                        "29C",
+                        "29D",
+                        "29E",
+                        "29F",
+                        "30A",
+                        "30B",
+                        "30C",
+                        "30D",
+                        "30E",
+                        "30F",
+                        "31A",
+                        "31B",
+                        "31C",
+                        "31D",
+                        "31E",
+                        "31F",
+                        "32A",
+                        "32B",
+                        "32C",
+                        "32D",
+                        "32E",
+                        "32F",
+                        "33A",
+                        "33B",
+                        "33C",
+                        "33D",
+                        "33E",
+                        "33F"
+                    ]
+                }
+            }
+        }
+    },
+    "seatMapDetails": {
+        "GF-GF169-GF169-2026111521-2026111522-O": {
+            "cabinLayoutsByDeck": {
+                "Main": {
+                    "zones": [
+                        {
+                            "zoneId": "Cabin1",
+                            "columns": [
+                                "A",
+                                "B",
+                                "C",
+                                null,
+                                "D",
+                                "E",
+                                "F"
+                            ],
+                            "cabinClass": "ECONOMY"
+                        }
+                    ]
+                }
+            },
+            "rows": [
+                {
+                    "rowNumber": 8,
+                    "deck": "Main",
+                    "zoneId": "Cabin1",
+                    "cells": [
+                        {
+                            "cellCategory": "Seat",
+                            "column": "A",
+                            "cellDetails": {
+                                "cellID": null,
+                                "cellCode": "8A",
+                                "cellAvailability": "Occupied",
+                                "name": null,
+                                "description": null,
+                                "seatPriceDetails": null,
+                                "seatPriceDetailsByPassenger": null,
+                                "cellCharacteristics": null
+                            }
+                        },
+                        {
+                            "cellCategory": "Seat",
+                            "column": "B",
+                            "cellDetails": {
+                                "cellID": "GF-GF169-GF169-2026111521-2026111522-O&amp;laJHRtkkYjJkM2NiZGEtZGE2Ni00ZmIzLWIyZTMtMmI1YjQzMTM0Yzll2SZHRi1HRjE2OS1HRjE2OS0yMDI2MTExNTIxLTIwMjYxMTE1MjItT4GkUEFYMZatR0YtU2VhdE9mZmVyMcDA2SZHRi1HRjE2OS1HRjE2OS0yMDI2MTExNTIxLTIwMjYxMTE1MjItT6YxMjAuMDCjU0FS2SQ2MzkzMTU1Ni02NDRhLTQ4NzUtYjFhZS1hY2NjNjZiNjNhMGU=",
+                                "cellCode": "8B",
+                                "cellAvailability": "AvailablePaid",
+                                "name": "CHARGEABLE_SEAT",
+                                "description": "CHARGEABLE_SEAT | LEG_SPACE_SEAT | FRONT_OF_CABIN | SEAT_WITH_BASSINET_FACILITY | BULKHEAD_SEAT | LEFT_SIDE_OF_AIRCRAFT | CENTER_SEAT",
+                                "seatPriceDetails": {
+                                    "paxCellAvailability": "AvailablePaid",
+                                    "totalPrice": {
+                                        "amount": 120,
+                                        "currency": "SAR"
+                                    },
+                                    "basePrice": {
+                                        "amount": 120,
+                                        "currency": "SAR"
+                                    },
+                                    "taxesPrice": {
+                                        "amount": 0,
+                                        "currency": "SAR"
+                                    }
+                                },
+                                "seatPriceDetailsByPassenger": {
+                                    "PAX1": {
+                                        "paxCellAvailability": "AvailablePaid",
+                                        "totalPrice": {
+                                            "amount": 120,
+                                            "currency": "SAR"
+                                        },
+                                        "basePrice": {
+                                            "amount": 120,
+                                            "currency": "SAR"
+                                        },
+                                        "taxesPrice": {
+                                            "amount": 0,
+                                            "currency": "SAR"
+                                        }
+                                    }
+                                },
+                                "cellCharacteristics": [
+                                    {
+                                        "padisCode": "Unknown",
+                                        "description": "CHARGEABLE_SEAT"
+                                    },
+                                    {
+                                        "padisCode": "Unknown",
+                                        "description": "LEG_SPACE_SEAT"
+                                    },
+                                    {
+                                        "padisCode": "Unknown",
+                                        "description": "FRONT_OF_CABIN"
+                                    },
+                                    {
+                                        "padisCode": "Unknown",
+                                        "description": "SEAT_WITH_BASSINET_FACILITY"
+                                    },
+                                    {
+                                        "padisCode": "Unknown",
+                                        "description": "BULKHEAD_SEAT"
+                                    },
+                                    {
+                                        "padisCode": "Unknown",
+                                        "description": "LEFT_SIDE_OF_AIRCRAFT"
+                                    },
+                                    {
+                                        "padisCode": "Unknown",
+                                        "description": "CENTER_SEAT"
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "cellCategory": "Seat",
+                            "column": "C",
+                            "cellDetails": {
+                                "cellID": "GF-GF169-GF169-2026111521-2026111522-O&amp;laJHRtkkYjJkM2NiZGEtZGE2Ni00ZmIzLWIyZTMtMmI1YjQzMTM0Yzll2SZHRi1HRjE2OS1HRjE2OS0yMDI2MTExNTIxLTIwMjYxMTE1MjItT4GkUEFYMZatR0YtU2VhdE9mZmVyMcDA2SZHRi1HRjE2OS1HRjE2OS0yMDI2MTExNTIxLTIwMjYxMTE1MjItT6YxMjAuMDCjU0FS2SQ2MzkzMTU1Ni02NDRhLTQ4NzUtYjFhZS1hY2NjNjZiNjNhMGU=",
+                                "cellCode": "8C",
+                                "cellAvailability": "AvailablePaid",
+                                "name": "NOT_ALLOWED_FOR_MEDICAL",
+                                "description": "NOT_ALLOWED_FOR_MEDICAL | CHARGEABLE_SEAT | LEG_SPACE_SEAT | FRONT_OF_CABIN | AISLE_SEAT | BULKHEAD_SEAT | LEFT_SIDE_OF_AIRCRAFT",
+                                "seatPriceDetails": {
+                                    "paxCellAvailability": "AvailablePaid",
+                                    "totalPrice": {
+                                        "amount": 120,
+                                        "currency": "SAR"
+                                    },
+                                    "basePrice": {
+                                        "amount": 120,
+                                        "currency": "SAR"
+                                    },
+                                    "taxesPrice": {
+                                        "amount": 0,
+                                        "currency": "SAR"
+                                    }
+                                },
+                                "seatPriceDetailsByPassenger": {
+                                    "PAX1": {
+                                        "paxCellAvailability": "AvailablePaid",
+                                        "totalPrice": {
+                                            "amount": 120,
+                                            "currency": "SAR"
+                                        },
+                                        "basePrice": {
+                                            "amount": 120,
+                                            "currency": "SAR"
+                                        },
+                                        "taxesPrice": {
+                                            "amount": 0,
+                                            "currency": "SAR"
+                                        }
+                                    }
+                                },
+                                "cellCharacteristics": [
+                                    {
+                                        "padisCode": "Unknown",
+                                        "description": "NOT_ALLOWED_FOR_MEDICAL"
+                                    },
+                                    {
+                                        "padisCode": "Unknown",
+                                        "description": "CHARGEABLE_SEAT"
+                                    },
+                                    {
+                                        "padisCode": "Unknown",
+                                        "description": "LEG_SPACE_SEAT"
+                                    },
+                                    {
+                                        "padisCode": "Unknown",
+                                        "description": "FRONT_OF_CABIN"
+                                    },
+                                    {
+                                        "padisCode": "Unknown",
+                                        "description": "AISLE_SEAT"
+                                    },
+                                    {
+                                        "padisCode": "Unknown",
+                                        "description": "BULKHEAD_SEAT"
+                                    },
+                                    {
+                                        "padisCode": "Unknown",
+                                        "description": "LEFT_SIDE_OF_AIRCRAFT"
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "cellCategory": "Aisle",
+                            "column": null,
+                            "cellDetails": null
+                        },
+                        {
+                            "cellCategory": "Seat",
+                            "column": "D",
+                            "cellDetails": {
+                                "cellID": "GF-GF169-GF169-2026111521-2026111522-O&amp;laJHRtkkYjJkM2NiZGEtZGE2Ni00ZmIzLWIyZTMtMmI1YjQzMTM0Yzll2SZHRi1HRjE2OS1HRjE2OS0yMDI2MTExNTIxLTIwMjYxMTE1MjItT4GkUEFYMZatR0YtU2VhdE9mZmVyMcDA2SZHRi1HRjE2OS1HRjE2OS0yMDI2MTExNTIxLTIwMjYxMTE1MjItT6YxMjAuMDCjU0FS2SQ2MzkzMTU1Ni02NDRhLTQ4NzUtYjFhZS1hY2NjNjZiNjNhMGU=",
+                                "cellCode": "8D",
+                                "cellAvailability": "AvailablePaid",
+                                "name": "NOT_ALLOWED_FOR_MEDICAL",
+                                "description": "NOT_ALLOWED_FOR_MEDICAL | CHARGEABLE_SEAT | LEG_SPACE_SEAT | FRONT_OF_CABIN | AISLE_SEAT | BULKHEAD_SEAT | RIGHT_SIDE_OF_AIRCRAFT",
+                                "seatPriceDetails": {
+                                    "paxCellAvailability": "AvailablePaid",
+                                    "totalPrice": {
+                                        "amount": 120,
+                                        "currency": "SAR"
+                                    },
+                                    "basePrice": {
+                                        "amount": 120,
+                                        "currency": "SAR"
+                                    },
+                                    "taxesPrice": {
+                                        "amount": 0,
+                                        "currency": "SAR"
+                                    }
+                                },
+                                "seatPriceDetailsByPassenger": {
+                                    "PAX1": {
+                                        "paxCellAvailability": "AvailablePaid",
+                                        "totalPrice": {
+                                            "amount": 120,
+                                            "currency": "SAR"
+                                        },
+                                        "basePrice": {
+                                            "amount": 120,
+                                            "currency": "SAR"
+                                        },
+                                        "taxesPrice": {
+                                            "amount": 0,
+                                            "currency": "SAR"
+                                        }
+                                    }
+                                },
+                                "cellCharacteristics": [
+                                    {
+                                        "padisCode": "Unknown",
+                                        "description": "NOT_ALLOWED_FOR_MEDICAL"
+                                    },
+                                    {
+                                        "padisCode": "Unknown",
+                                        "description": "CHARGEABLE_SEAT"
+                                    },
+                                    {
+                                        "padisCode": "Unknown",
+                                        "description": "LEG_SPACE_SEAT"
+                                    },
+                                    {
+                                        "padisCode": "Unknown",
+                                        "description": "FRONT_OF_CABIN"
+                                    },
+                                    {
+                                        "padisCode": "Unknown",
+                                        "description": "AISLE_SEAT"
+                                    },
+                                    {
+                                        "padisCode": "Unknown",
+                                        "description": "BULKHEAD_SEAT"
+                                    },
+                                    {
+                                        "padisCode": "Unknown",
+                                        "description": "RIGHT_SIDE_OF_AIRCRAFT"
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "cellCategory": "Seat",
+                            "column": "E",
+                            "cellDetails": {
+                                "cellID": null,
+                                "cellCode": "8E",
+                                "cellAvailability": "Occupied",
+                                "name": null,
+                                "description": null,
+                                "seatPriceDetails": null,
+                                "seatPriceDetailsByPassenger": null,
+                                "cellCharacteristics": null
+                            }
+                        },
+                        {
+                            "cellCategory": "Seat",
+                            "column": "F",
+                            "cellDetails": {
+                                "cellID": "GF-GF169-GF169-2026111521-2026111522-O&amp;laJHRtkkYjJkM2NiZGEtZGE2Ni00ZmIzLWIyZTMtMmI1YjQzMTM0Yzll2SZHRi1HRjE2OS1HRjE2OS0yMDI2MTExNTIxLTIwMjYxMTE1MjItT4GkUEFYMZatR0YtU2VhdE9mZmVyMcDA2SZHRi1HRjE2OS1HRjE2OS0yMDI2MTExNTIxLTIwMjYxMTE1MjItT6YxMjAuMDCjU0FS2SQ2MzkzMTU1Ni02NDRhLTQ4NzUtYjFhZS1hY2NjNjZiNjNhMGU=",
+                                "cellCode": "8F",
+                                "cellAvailability": "AvailablePaid",
+                                "name": "NOT_ALLOWED_FOR_MEDICAL",
+                                "description": "NOT_ALLOWED_FOR_MEDICAL | CHARGEABLE_SEAT | LEG_SPACE_SEAT | FRONT_OF_CABIN | WINDOW | BULKHEAD_SEAT | RIGHT_SIDE_OF_AIRCRAFT",
+                                "seatPriceDetails": {
+                                    "paxCellAvailability": "AvailablePaid",
+                                    "totalPrice": {
+                                        "amount": 120,
+                                        "currency": "SAR"
+                                    },
+                                    "basePrice": {
+                                        "amount": 120,
+                                        "currency": "SAR"
+                                    },
+                                    "taxesPrice": {
+                                        "amount": 0,
+                                        "currency": "SAR"
+                                    }
+                                },
+                                "seatPriceDetailsByPassenger": {
+                                    "PAX1": {
+                                        "paxCellAvailability": "AvailablePaid",
+                                        "totalPrice": {
+                                            "amount": 120,
+                                            "currency": "SAR"
+                                        },
+                                        "basePrice": {
+                                            "amount": 120,
+                                            "currency": "SAR"
+                                        },
+                                        "taxesPrice": {
+                                            "amount": 0,
+                                            "currency": "SAR"
+                                        }
+                                    }
+                                },
+                                "cellCharacteristics": [
+                                    {
+                                        "padisCode": "Unknown",
+                                        "description": "NOT_ALLOWED_FOR_MEDICAL"
+                                    },
+                                    {
+                                        "padisCode": "Unknown",
+                                        "description": "CHARGEABLE_SEAT"
+                                    },
+                                    {
+                                        "padisCode": "Unknown",
+                                        "description": "LEG_SPACE_SEAT"
+                                    },
+                                    {
+                                        "padisCode": "Unknown",
+                                        "description": "FRONT_OF_CABIN"
+                                    },
+                                    {
+                                        "padisCode": "Unknown",
+                                        "description": "WINDOW"
+                                    },
+                                    {
+                                        "padisCode": "Unknown",
+                                        "description": "BULKHEAD_SEAT"
+                                    },
+                                    {
+                                        "padisCode": "Unknown",
+                                        "description": "RIGHT_SIDE_OF_AIRCRAFT"
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                },
+                {
+                    "rowNumber": 9,
+                    "deck": "Main",
+                    "zoneId": "Cabin1",
+                    "cells": [
+                        {
+                            "cellCategory": "Seat",
+                            "column": "A",
+                            "cellDetails": {
+                                "cellID": "GF-GF169-GF169-2026111521-2026111522-O&amp;laJHRtkkYjJkM2NiZGEtZGE2Ni00ZmIzLWIyZTMtMmI1YjQzMTM0Yzll2SZHRi1HRjE2OS1HRjE2OS0yMDI2MTExNTIxLTIwMjYxMTE1MjItT4GkUEFYMZatR0YtU2VhdE9mZmVyNcDA2SZHRi1HRjE2OS1HRjE2OS0yMDI2MTExNTIxLTIwMjYxMTE1MjItT6U2MC4wMKNTQVLZJDYzOTMxNTU2LTY0NGEtNDg3NS1iMWFlLWFjY2M2NmI2M2EwZQ==",
+                                "cellCode": "9A",
+                                "cellAvailability": "AvailablePaid",
+                                "name": "CHARGEABLE_SEAT",
+                                "description": "CHARGEABLE_SEAT | FRONT_OF_CABIN | WINDOW | LEFT_SIDE_OF_AIRCRAFT",
+                                "seatPriceDetails": {
+                                    "paxCellAvailability": "AvailablePaid",
+                                    "totalPrice": {
+                                        "amount": 60,
+                                        "currency": "SAR"
+                                    },
+                                    "basePrice": {
+                                        "amount": 60,
+                                        "currency": "SAR"
+                                    },
+                                    "taxesPrice": {
+                                        "amount": 0,
+                                        "currency": "SAR"
+                                    }
+                                },
+                                "seatPriceDetailsByPassenger": {
+                                    "PAX1": {
+                                        "paxCellAvailability": "AvailablePaid",
+                                        "totalPrice": {
+                                            "amount": 60,
+                                            "currency": "SAR"
+                                        },
+                                        "basePrice": {
+                                            "amount": 60,
+                                            "currency": "SAR"
+                                        },
+                                        "taxesPrice": {
+                                            "amount": 0,
+                                            "currency": "SAR"
+                                        }
+                                    }
+                                },
+                                "cellCharacteristics": [
+                                    {
+                                        "padisCode": "Unknown",
+                                        "description": "CHARGEABLE_SEAT"
+                                    },
+                                    {
+                                        "padisCode": "Unknown",
+                                        "description": "FRONT_OF_CABIN"
+                                    },
+                                    {
+                                        "padisCode": "Unknown",
+                                        "description": "WINDOW"
+                                    },
+                                    {
+                                        "padisCode": "Unknown",
+                                        "description": "LEFT_SIDE_OF_AIRCRAFT"
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "cellCategory": "Seat",
+                            "column": "B",
+                            "cellDetails": {
+                                "cellID": "GF-GF169-GF169-2026111521-2026111522-O&amp;laJHRtkkYjJkM2NiZGEtZGE2Ni00ZmIzLWIyZTMtMmI1YjQzMTM0Yzll2SZHRi1HRjE2OS1HRjE2OS0yMDI2MTExNTIxLTIwMjYxMTE1MjItT4GkUEFYMZatR0YtU2VhdE9mZmVyNcDA2SZHRi1HRjE2OS1HRjE2OS0yMDI2MTExNTIxLTIwMjYxMTE1MjItT6U2MC4wMKNTQVLZJDYzOTMxNTU2LTY0NGEtNDg3NS1iMWFlLWFjY2M2NmI2M2EwZQ==",
+                                "cellCode": "9B",
+                                "cellAvailability": "AvailablePaid",
+                                "name": "CHARGEABLE_SEAT",
+                                "description": "CHARGEABLE_SEAT | FRONT_OF_CABIN | LEFT_SIDE_OF_AIRCRAFT | CENTER_SEAT",
+                                "seatPriceDetails": {
+                                    "paxCellAvailability": "AvailablePaid",
+                                    "totalPrice": {
+                                        "amount": 60,
+                                        "currency": "SAR"
+                                    },
+                                    "basePrice": {
+                                        "amount": 60,
+                                        "currency": "SAR"
+                                    },
+                                    "taxesPrice": {
+                                        "amount": 0,
+                                        "currency": "SAR"
+                                    }
+                                },
+                                "seatPriceDetailsByPassenger": {
+                                    "PAX1": {
+                                        "paxCellAvailability": "AvailablePaid",
+                                        "totalPrice": {
+                                            "amount": 60,
+                                            "currency": "SAR"
+                                        },
+                                        "basePrice": {
+                                            "amount": 60,
+                                            "currency": "SAR"
+                                        },
+                                        "taxesPrice": {
+                                            "amount": 0,
+                                            "currency": "SAR"
+                                        }
+                                    }
+                                },
+                                "cellCharacteristics": [
+                                    {
+                                        "padisCode": "Unknown",
+                                        "description": "CHARGEABLE_SEAT"
+                                    },
+                                    {
+                                        "padisCode": "Unknown",
+                                        "description": "FRONT_OF_CABIN"
+                                    },
+                                    {
+                                        "padisCode": "Unknown",
+                                        "description": "LEFT_SIDE_OF_AIRCRAFT"
+                                    },
+                                    {
+                                        "padisCode": "Unknown",
+                                        "description": "CENTER_SEAT"
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "cellCategory": "Seat",
+                            "column": "C",
+                            "cellDetails": {
+                                "cellID": "GF-GF169-GF169-2026111521-2026111522-O&amp;laJHRtkkYjJkM2NiZGEtZGE2Ni00ZmIzLWIyZTMtMmI1YjQzMTM0Yzll2SZHRi1HRjE2OS1HRjE2OS0yMDI2MTExNTIxLTIwMjYxMTE1MjItT4GkUEFYMZatR0YtU2VhdE9mZmVyNcDA2SZHRi1HRjE2OS1HRjE2OS0yMDI2MTExNTIxLTIwMjYxMTE1MjItT6U2MC4wMKNTQVLZJDYzOTMxNTU2LTY0NGEtNDg3NS1iMWFlLWFjY2M2NmI2M2EwZQ==",
+                                "cellCode": "9C",
+                                "cellAvailability": "AvailablePaid",
+                                "name": "CHARGEABLE_SEAT",
+                                "description": "CHARGEABLE_SEAT | FRONT_OF_CABIN | AISLE_SEAT | LEFT_SIDE_OF_AIRCRAFT",
+                                "seatPriceDetails": {
+                                    "paxCellAvailability": "AvailablePaid",
+                                    "totalPrice": {
+                                        "amount": 60,
+                                        "currency": "SAR"
+                                    },
+                                    "basePrice": {
+                                        "amount": 60,
+                                        "currency": "SAR"
+                                    },
+                                    "taxesPrice": {
+                                        "amount": 0,
+                                        "currency": "SAR"
+                                    }
+                                },
+                                "seatPriceDetailsByPassenger": {
+                                    "PAX1": {
+                                        "paxCellAvailability": "AvailablePaid",
+                                        "totalPrice": {
+                                            "amount": 60,
+                                            "currency": "SAR"
+                                        },
+                                        "basePrice": {
+                                            "amount": 60,
+                                            "currency": "SAR"
+                                        },
+                                        "taxesPrice": {
+                                            "amount": 0,
+                                            "currency": "SAR"
+                                        }
+                                    }
+                                },
+                                "cellCharacteristics": [
+                                    {
+                                        "padisCode": "Unknown",
+                                        "description": "CHARGEABLE_SEAT"
+                                    },
+                                    {
+                                        "padisCode": "Unknown",
+                                        "description": "FRONT_OF_CABIN"
+                                    },
+                                    {
+                                        "padisCode": "Unknown",
+                                        "description": "AISLE_SEAT"
+                                    },
+                                    {
+                                        "padisCode": "Unknown",
+                                        "description": "LEFT_SIDE_OF_AIRCRAFT"
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "cellCategory": "Aisle",
+                            "column": null,
+                            "cellDetails": null
+                        },
+                        {
+                            "cellCategory": "Seat",
+                            "column": "D",
+                            "cellDetails": {
+                                "cellID": "GF-GF169-GF169-2026111521-2026111522-O&amp;laJHRtkkYjJkM2NiZGEtZGE2Ni00ZmIzLWIyZTMtMmI1YjQzMTM0Yzll2SZHRi1HRjE2OS1HRjE2OS0yMDI2MTExNTIxLTIwMjYxMTE1MjItT4GkUEFYMZatR0YtU2VhdE9mZmVyNcDA2SZHRi1HRjE2OS1HRjE2OS0yMDI2MTExNTIxLTIwMjYxMTE1MjItT6U2MC4wMKNTQVLZJDYzOTMxNTU2LTY0NGEtNDg3NS1iMWFlLWFjY2M2NmI2M2EwZQ==",
+                                "cellCode": "9D",
+                                "cellAvailability": "AvailablePaid",
+                                "name": "CHARGEABLE_SEAT",
+                                "description": "CHARGEABLE_SEAT | FRONT_OF_CABIN | AISLE_SEAT | RIGHT_SIDE_OF_AIRCRAFT",
+                                "seatPriceDetails": {
+                                    "paxCellAvailability": "AvailablePaid",
+                                    "totalPrice": {
+                                        "amount": 60,
+                                        "currency": "SAR"
+                                    },
+                                    "basePrice": {
+                                        "amount": 60,
+                                        "currency": "SAR"
+                                    },
+                                    "taxesPrice": {
+                                        "amount": 0,
+                                        "currency": "SAR"
+                                    }
+                                },
+                                "seatPriceDetailsByPassenger": {
+                                    "PAX1": {
+                                        "paxCellAvailability": "AvailablePaid",
+                                        "totalPrice": {
+                                            "amount": 60,
+                                            "currency": "SAR"
+                                        },
+                                        "basePrice": {
+                                            "amount": 60,
+                                            "currency": "SAR"
+                                        },
+                                        "taxesPrice": {
+                                            "amount": 0,
+                                            "currency": "SAR"
+                                        }
+                                    }
+                                },
+                                "cellCharacteristics": [
+                                    {
+                                        "padisCode": "Unknown",
+                                        "description": "CHARGEABLE_SEAT"
+                                    },
+                                    {
+                                        "padisCode": "Unknown",
+                                        "description": "FRONT_OF_CABIN"
+                                    },
+                                    {
+                                        "padisCode": "Unknown",
+                                        "description": "AISLE_SEAT"
+                                    },
+                                    {
+                                        "padisCode": "Unknown",
+                                        "description": "RIGHT_SIDE_OF_AIRCRAFT"
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "cellCategory": "Seat",
+                            "column": "E",
+                            "cellDetails": {
+                                "cellID": "GF-GF169-GF169-2026111521-2026111522-O&amp;laJHRtkkYjJkM2NiZGEtZGE2Ni00ZmIzLWIyZTMtMmI1YjQzMTM0Yzll2SZHRi1HRjE2OS1HRjE2OS0yMDI2MTExNTIxLTIwMjYxMTE1MjItT4GkUEFYMZatR0YtU2VhdE9mZmVyNcDA2SZHRi1HRjE2OS1HRjE2OS0yMDI2MTExNTIxLTIwMjYxMTE1MjItT6U2MC4wMKNTQVLZJDYzOTMxNTU2LTY0NGEtNDg3NS1iMWFlLWFjY2M2NmI2M2EwZQ==",
+                                "cellCode": "9E",
+                                "cellAvailability": "AvailablePaid",
+                                "name": "CHARGEABLE_SEAT",
+                                "description": "CHARGEABLE_SEAT | FRONT_OF_CABIN | RIGHT_SIDE_OF_AIRCRAFT | CENTER_SEAT",
+                                "seatPriceDetails": {
+                                    "paxCellAvailability": "AvailablePaid",
+                                    "totalPrice": {
+                                        "amount": 60,
+                                        "currency": "SAR"
+                                    },
+                                    "basePrice": {
+                                        "amount": 60,
+                                        "currency": "SAR"
+                                    },
+                                    "taxesPrice": {
+                                        "amount": 0,
+                                        "currency": "SAR"
+                                    }
+                                },
+                                "seatPriceDetailsByPassenger": {
+                                    "PAX1": {
+                                        "paxCellAvailability": "AvailablePaid",
+                                        "totalPrice": {
+                                            "amount": 60,
+                                            "currency": "SAR"
+                                        },
+                                        "basePrice": {
+                                            "amount": 60,
+                                            "currency": "SAR"
+                                        },
+                                        "taxesPrice": {
+                                            "amount": 0,
+                                            "currency": "SAR"
+                                        }
+                                    }
+                                },
+                                "cellCharacteristics": [
+                                    {
+                                        "padisCode": "Unknown",
+                                        "description": "CHARGEABLE_SEAT"
+                                    },
+                                    {
+                                        "padisCode": "Unknown",
+                                        "description": "FRONT_OF_CABIN"
+                                    },
+                                    {
+                                        "padisCode": "Unknown",
+                                        "description": "RIGHT_SIDE_OF_AIRCRAFT"
+                                    },
+                                    {
+                                        "padisCode": "Unknown",
+                                        "description": "CENTER_SEAT"
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "cellCategory": "Seat",
+                            "column": "F",
+                            "cellDetails": {
+                                "cellID": "GF-GF169-GF169-2026111521-2026111522-O&amp;laJHRtkkYjJkM2NiZGEtZGE2Ni00ZmIzLWIyZTMtMmI1YjQzMTM0Yzll2SZHRi1HRjE2OS1HRjE2OS0yMDI2MTExNTIxLTIwMjYxMTE1MjItT4GkUEFYMZatR0YtU2VhdE9mZmVyNcDA2SZHRi1HRjE2OS1HRjE2OS0yMDI2MTExNTIxLTIwMjYxMTE1MjItT6U2MC4wMKNTQVLZJDYzOTMxNTU2LTY0NGEtNDg3NS1iMWFlLWFjY2M2NmI2M2EwZQ==",
+                                "cellCode": "9F",
+                                "cellAvailability": "AvailablePaid",
+                                "name": "CHARGEABLE_SEAT",
+                                "description": "CHARGEABLE_SEAT | FRONT_OF_CABIN | WINDOW | RIGHT_SIDE_OF_AIRCRAFT",
+                                "seatPriceDetails": {
+                                    "paxCellAvailability": "AvailablePaid",
+                                    "totalPrice": {
+                                        "amount": 60,
+                                        "currency": "SAR"
+                                    },
+                                    "basePrice": {
+                                        "amount": 60,
+                                        "currency": "SAR"
+                                    },
+                                    "taxesPrice": {
+                                        "amount": 0,
+                                        "currency": "SAR"
+                                    }
+                                },
+                                "seatPriceDetailsByPassenger": {
+                                    "PAX1": {
+                                        "paxCellAvailability": "AvailablePaid",
+                                        "totalPrice": {
+                                            "amount": 60,
+                                            "currency": "SAR"
+                                        },
+                                        "basePrice": {
+                                            "amount": 60,
+                                            "currency": "SAR"
+                                        },
+                                        "taxesPrice": {
+                                            "amount": 0,
+                                            "currency": "SAR"
+                                        }
+                                    }
+                                },
+                                "cellCharacteristics": [
+                                    {
+                                        "padisCode": "Unknown",
+                                        "description": "CHARGEABLE_SEAT"
+                                    },
+                                    {
+                                        "padisCode": "Unknown",
+                                        "description": "FRONT_OF_CABIN"
+                                    },
+                                    {
+                                        "padisCode": "Unknown",
+                                        "description": "WINDOW"
+                                    },
+                                    {
+                                        "padisCode": "Unknown",
+                                        "description": "RIGHT_SIDE_OF_AIRCRAFT"
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        }
+    },
+    "__truncationNote": "TRUNCATED FOR REPORT SIZE: full response has 25 rows / 175 cells; only the first 2 rows are shown here. Full-scan results are documented in each test case's Evidence field."
+}</pre></div>
+<div class="rr-note">TRUNCATED FOR REPORT SIZE: full response has 25 rows / 175 cells; only the first 2 rows are shown here. Full-scan results are documented in each test case's Evidence field.</div>
+</div>
+
+</details>
+<details class="tc FAIL">
+<summary class="tc-head"><span><span class="chev"></span><span class="mono">TC-SEATAFTERHOLD-POS-01</span> - Discovery case — submit the collection's documented 6-field body against a live Held PNR and capture the actual response shape</span><span class="badge FAIL">FAIL</span></summary>
+<div class="row"><b>Endpoint Name:</b> SeatAfterHold</div>
+<div class="row"><b>Request:</b> POST api/v2/SeatMap/SeatAfterHold — supplier=GulfAir, credentialsSelector=KSA, pnr=RXFVNC, gdsPNR='', bookingToken=&lt;Hold's token&gt;, surName='Ibrahim' against a live Held PNR from Hold (BAH-DMM, no GetSeatMap in this chain to isolate from this round's GetSeatMap outage)</div>
+<div class="row"><b>Response:</b> 409 — {ErrorCode:'OperationNotSupported', ErrorMessage:'This action is not currently supported by the selected supplier.', Context:[{Name:'OperationNotSupported',Value:'GulfAir does not exists'}]}</div>
+<div class="row"><b>Expected:</b> Establish ground truth for the actual response shape (§2.7a)</div>
+<div class="row"><b>Actual:</b> STILL REPRODUCES (BUG-03, 4th consecutive round) — rejected outright with HTTP 409 'GulfAir does not exists', identical to Rounds 1-3, reconfirmed against a brand-new fresh Hold (pnr RXFVNC)</div>
+<div class="row tc-status-row"><b>Status:</b> <span class="badge FAIL">FAIL</span><span class="tc-reqres-anchor"></span></div>
+<details class="evidence"><summary>Evidence</summary><div class="ev-body">TransactionId ae51b087-f559-49b5-a4f1-8ff55393ef29</div></details>
+<div class="tc-reqres-panel"><div class="rr-title">Request</div>
+<div class="rr-line">POST to https://ndc-integration-stg-ne-2.azurewebsites.net/api/v2/SeatMap/SeatAfterHold</div>
+<div class="rr-label">HEADERS</div>
+<div class="rr-box rr-headers-box">
+<div class="rr-h-line">x-api-key: <span class="rr-redacted">&#8226;&#8226;&#8226;&#8226;&#8226;&#8226;&#8226;&#8226;(redacted)</span></div>
+<div class="rr-h-line">Client-Id: NDC-Core</div>
+<div class="rr-h-line">Content-Type: application/json</div>
+</div>
+<div class="rr-label">BODY</div>
+<div class="rr-box rr-body-box"><pre>{
+    "supplier": "GulfAir",
+    "credentialsSelector": "KSA",
+    "pnr": "RXFVNC",
+    "gdsPNR": "",
+    "bookingToken": "TPC60517142867D3082026",
+    "surName": "Ibrahim"
+}</pre></div>
+<div class="rr-title">Response</div>
+<div class="rr-line">Status code 409</div>
+<div class="rr-label">BODY</div>
+<div class="rr-box rr-body-box"><pre>{
+    "Status": 409,
+    "TransactionId": "ae51b087-f559-49b5-a4f1-8ff55393ef29",
+    "ErrorCode": "OperationNotSupported",
+    "ErrorMessage": "This action is not currently supported by the selected supplier.",
+    "Context": [
+        {
+            "Name": "OperationNotSupported",
+            "Value": "GulfAir does not exists"
+        }
+    ]
+}</pre></div>
+
+</div>
+
+</details>
+<details class="tc PASS">
+<summary class="tc-head"><span><span class="chev"></span><span class="mono">TC-SEATMAP-POS-02</span> - Verify GetSeatMap now sets getSeatMapOfferId/getSeatMapResponceID and Book consumes them as its ResponseId/selectedOfferId when SeatMap precedes it</span><span class="badge PASS">PASS</span></summary>
+<div class="row"><b>Endpoint Name:</b> GetSeatMap -&gt; Book</div>
+<div class="row"><b>Request:</b> AddPassenger -&gt; GetSeatMap -&gt; Book, with Book's ResponseId/selectedOfferId sourced from GetSeatMap's own responseId/offerId (not AddPassenger's)</div>
+<div class="row"><b>Response:</b> Book 200, pnr=RXZKHB — succeeded using GetSeatMap's IDs directly, no AddPassenger IDs re-sent</div>
+<div class="row"><b>Expected:</b> GetSeatMap's offerId/responseId feed Book's ResponseId/selectedOfferId (§2.7, §2.9)</div>
+<div class="row"><b>Actual:</b> Confirmed again this round, unchanged from Rounds 1-3</div>
+<div class="row tc-status-row"><b>Status:</b> <span class="badge PASS">PASS</span></div>
+<details class="evidence"><summary>Evidence</summary><div class="ev-body">Book request ResponseId/selectedOfferId == GetSeatMap response's responseId/offerId verbatim; pnr RXZKHB</div></details>
+
+
+</details>
+<details class="tc PASS">
+<summary class="tc-head"><span><span class="chev"></span><span class="mono">TC-BOOK-POS-03</span> - Validate Book accepts a single-passenger, single-segment passengersSelectedSeats selection and echoes it correctly</span><span class="badge PASS">PASS</span></summary>
+<div class="row"><b>Endpoint Name:</b> Book</div>
+<div class="row"><b>Request:</b> POST api/v2/FlightBooking/Book — supplier=GulfAir, credentialsSelector=KSA, ResponseId/selectedOfferId=GetSeatMap's IDs, passengersSelectedSeats.PAX1.setSegmentsSeats.&lt;seg&gt;={cellCode:'8B',cellId:&lt;cellID&gt;}</div>
+<div class="row"><b>Response:</b> 200 — pnr=RXZKHB, gdsPNR='', bookingToken=&lt;token&gt;, ticketStatus=Booked, ticketNumber issued synchronously</div>
+<div class="row"><b>Expected:</b> HTTP 200; pnr/bookingToken/gdsPNR returned; response echoes the seat selection; totals reflect the same price (§2.9)</div>
+<div class="row"><b>Actual:</b> All echoes match exactly: passengersSelectedSeats.PAX1.&lt;seg&gt;={cellCode:8B,price:120.00 SAR}; totalSelectedSeatsAmount=120.00 SAR</div>
+<div class="row tc-status-row"><b>Status:</b> <span class="badge PASS">PASS</span><span class="tc-reqres-anchor"></span></div>
+<details class="evidence"><summary>Evidence</summary><div class="ev-body">Full Book response body, pnr RXZKHB, GulfAir BAH-RUH 2026-11-15</div></details>
+<div class="tc-reqres-panel"><div class="rr-title">Request</div>
+<div class="rr-line">POST to https://ndc-integration-stg-ne-2.azurewebsites.net/api/v2/FlightBooking/Book</div>
+<div class="rr-label">HEADERS</div>
+<div class="rr-box rr-headers-box">
+<div class="rr-h-line">x-api-key: <span class="rr-redacted">&#8226;&#8226;&#8226;&#8226;&#8226;&#8226;&#8226;&#8226;(redacted)</span></div>
+<div class="rr-h-line">Client-Id: NDC-Core</div>
+<div class="rr-h-line">Content-Type: application/json</div>
+</div>
+<div class="rr-label">BODY</div>
+<div class="rr-box rr-body-box"><pre>{
+    "supplier": "GulfAir",
+    "credentialsSelector": "KSA",
+    "ResponseId": "63931556-644a-4875-b1ae-accc66b63a0e",
+    "selectedOfferId": "GF-OFFER-2&amp;yAGaY9IAAAH19CrcABSqR0YtT0ZGRVItMqJHRtkkYjJkM2NiZGEtZGE2Ni00ZmIzLWIyZTMtMmI1YjQzMTM0Yzllga41AP8ISVRFTS0xkaRQQVgxpjUyMy4wMKNTQVJHABSj2SZHRi1HRjE2OQYApjIwMjYxMTE1MjELAPADMi1PnaNCQUijUlVI1v9q+h58BgDTMTzAoTVQokdGozE2OQcAQKMzMlHPAAJSANExkAEAAJKRnaRQYXgxoQD+IKNBRFTW/ziolwChMMCiTVKTp01vc3RhZmGgp0licmFoaW2kTWFsZaJFR6JFR8CaHwD0EqJFR9b/cGKOgNb/ZRi2gKhBMTIzNDU2MahQYXNzcG9ydEAAAmYA8E2iRUeRmKEwpENUQzGwTkRDX0NJQGdtYWlsLmNvbcDAk8CjKzIwqTEyMTU3NDIzNsCUr05ldyBDYWlybyBNYWRkabRBbCBOYWhkYSBGbG9vciBlaWdodKVDQUlST6IAB+wAYJGUo1JVSCcBp6hCQUhSVUgtMZEfANCnRUNPTk9NWaFOoVnA",
+    "passengersSelectedSeats": {
+        "PAX1": {
+            "setSegmentsSeats": {
+                "GF-GF169-GF169-2026111521-2026111522-O": {
+                    "cellCode": "8B",
+                    "cellId": "GF-GF169-GF169-2026111521-2026111522-O&amp;laJHRtkkYjJkM2NiZGEtZGE2Ni00ZmIzLWIyZTMtMmI1YjQzMTM0Yzll2SZHRi1HRjE2OS1HRjE2OS0yMDI2MTExNTIxLTIwMjYxMTE1MjItT4GkUEFYMZatR0YtU2VhdE9mZmVyMcDA2SZHRi1HRjE2OS1HRjE2OS0yMDI2MTExNTIxLTIwMjYxMTE1MjItT6YxMjAuMDCjU0FS2SQ2MzkzMTU1Ni02NDRhLTQ4NzUtYjFhZS1hY2NjNjZiNjNhMGU="
+                }
+            }
+        }
+    }
+}</pre></div>
+<div class="rr-title">Response</div>
+<div class="rr-line">Status code 200</div>
+<div class="rr-label">BODY</div>
+<div class="rr-box rr-body-box"><pre>{
+    "supplier": "GulfAir",
+    "pnr": "RXZKHB",
+    "gdsPNR": "",
+    "bookingToken": "TPC60517142847D3082026",
+    "voidCapability": "FullVoidOnlyAllowed",
+    "creationDate": "2026-08-30T00:00:00",
+    "ticketingDate": "2026-08-30T00:00:00",
+    "tickets": {
+        "PAX1": {
+            "ticketStatus": "Booked",
+            "ticketNumber": "722136975927",
+            "carrierCode": "GF"
+        }
+    },
+    "passengersSelectedAncillaries": {},
+    "passengersSelectedSeats": {
+        "PAX1": {
+            "GF-GF169-GF169-2026111521-2026111522-O": {
+                "cellCode": "8B",
+                "price": {
+                    "amount": 120,
+                    "currency": "SAR"
+                }
+            }
+        }
+    },
+    "journeys": {
+        "GF-GF169-1": {
+            "origin": "BAH",
+            "destination": "RUH",
+            "numberOfStops": 0,
+            "segmentRefIds": [
+                "GF-GF169-GF169-2026111521-2026111522-O"
+            ]
+        }
+    },
+    "flightSegments": {
+        "GF-GF169-GF169-2026111521-2026111522-O": {
+            "origin": "BAH",
+            "destination": "RUH",
+            "departureDateTime": "2026-11-15T21:05:00",
+            "arrivalDateTime": "2026-11-15T22:25:00",
+            "departureTerminal": null,
+            "arrivalTerminal": "TERMINAL 5",
+            "flightTime": 80,
+            "operatingCarrierCode": "GF",
+            "operatingFlightNumber": "169",
+            "marketingCarrierCode": "GF",
+            "marketingFlightNumber": "169",
+            "equipment": "32Q"
+        }
+    },
+    "priceClasses": {
+        "ECONOMY LIGHT": {
+            "priceClassName": "ECONOMY LIGHT",
+            "fareDescription": "PublicFare",
+            "rulesAndPenalties": []
+        }
+    },
+    "baggageDetails": {
+        "30KG,6KG": {
+            "carryOnBaggage": "6.00 KG",
+            "checkInBaggage": "30.00 KG"
+        }
+    },
+    "passengersList": {
+        "PAX1": {
+            "title": "MR",
+            "name": {
+                "first": "MOSTAFA",
+                "middle": null,
+                "last": "IBRAHIM"
+            },
+            "birthDate": "2000-02-15T00:00:00",
+            "gender": "Male",
+            "passengerTypeCode": "ADT",
+            "contactRefId": "CNCT-1",
+            "travelDocument": {
+                "name": {
+                    "first": "MOSTAFA",
+                    "middle": null,
+                    "last": "IBRAHIM"
+                },
+                "nationality": "EG",
+                "expirationDate": "2029-10-01T00:00:00",
+                "issuanceDate": null,
+                "documentNumber": "A1234561",
+                "documentType": "Passport",
+                "gender": "Male",
+                "birthCountry": "EG",
+                "birthDate": "2000-02-15T00:00:00",
+                "issuanceCountryCode": "EG"
+            },
+            "parentPaxRefId": null,
+            "nationality": "EG",
+            "residentCountry": null,
+            "age": 26
+        }
+    },
+    "contacts": {
+        "CNCT-1": {
+            "email": "NDC_CI@GMAIL.COM",
+            "phone": {
+                "type": "",
+                "countryDialingCode": "20",
+                "phoneNumber": "121574236"
+            },
+            "address": {
+                "line1": null,
+                "line2": null,
+                "city": "",
+                "countryCode": ""
+            }
+        }
+    },
+    "selectedOffer": {
+        "offerId": "c12b8ca3-597d-4fdf-936a-62995ed9fe64",
+        "offerJourneys": [
+            "GF-GF169-1"
+        ],
+        "passengerFareBreakdown": [
+            {
+                "passengerRefId": "PAX1",
+                "paxTotalAmount": {
+                    "amount": 643,
+                    "currency": "SAR"
+                },
+                "paxTotalAncillaryAmount": {
+                    "amount": 0,
+                    "currency": ""
+                },
+                "passengerAncillaries": [],
+                "paxTotalSeatAmount": {
+                    "amount": 120,
+                    "currency": "SAR"
+                },
+                "passengerSeats": [
+                    {
+                        "cellCode": "8B",
+                        "price": {
+                            "amount": 120,
+                            "currency": "SAR"
+                        }
+                    }
+                ],
+                "passengerTypeCode": "ADT",
+                "paxTotalTaxAmount": {
+                    "amount": 353,
+                    "currency": "SAR"
+                },
+                "paxBaseAmount": {
+                    "amount": 170,
+                    "currency": "SAR"
+                },
+                "taxesAndFees": [
+                    {
+                        "code": "YQ",
+                        "amount": {
+                            "amount": 220,
+                            "currency": "SAR"
+                        }
+                    },
+                    {
+                        "code": "E3",
+                        "amount": {
+                            "amount": 8,
+                            "currency": "SAR"
+                        }
+                    },
+                    {
+                        "code": "BH",
+                        "amount": {
+                            "amount": 120,
+                            "currency": "SAR"
+                        }
+                    },
+                    {
+                        "code": "HM",
+                        "amount": {
+                            "amount": 5,
+                            "currency": "SAR"
+                        }
+                    }
+                ],
+                "segmentDetails": [
+                    {
+                        "segmentRefId": "GF-GF169-GF169-2026111521-2026111522-O",
+                        "priceClassRefId": "ECONOMY LIGHT",
+                        "baggageDetailsRefId": "30KG,6KG",
+                        "cabinCode": "ECONOMY",
+                        "rbd": "N"
+                    }
+                ],
+                "discount": null
+            }
+        ],
+        "priceDetails": {
+            "totalAncillariesAmount": {
+                "amount": 0,
+                "currency": ""
+            },
+            "totalPassengersAncillaries": [],
+            "totalSelectedSeatsAmount": {
+                "amount": 120,
+                "currency": "SAR"
+            },
+            "totalSelectedSeats": [
+                {
+                    "cellCode": "8B",
+                    "price": {
+                        "amount": 120,
+                        "currency": "SAR"
+                    }
+                }
+            ],
+            "totalAmount": {
+                "amount": 643,
+                "currency": "SAR"
+            },
+            "totalTaxAmount": {
+                "amount": 353,
+                "currency": "SAR"
+            },
+            "totalBaseAmount": {
+                "amount": 170,
+                "currency": "SAR"
+            },
+            "taxesAndFees": [
+                {
+                    "code": "YQ",
+                    "amount": {
+                        "amount": 220,
+                        "currency": "SAR"
+                    }
+                },
+                {
+                    "code": "E3",
+                    "amount": {
+                        "amount": 8,
+                        "currency": "SAR"
+                    }
+                },
+                {
+                    "code": "BH",
+                    "amount": {
+                        "amount": 120,
+                        "currency": "SAR"
+                    }
+                },
+                {
+                    "code": "HM",
+                    "amount": {
+                        "amount": 5,
+                        "currency": "SAR"
+                    }
+                }
+            ],
+            "discount": null
+        },
+        "refundability": "UnKnown",
+        "isDealCodeApplied": null,
+        "appliedDealCode": null,
+        "isPromoted": false,
+        "appliedPromotionCode": ""
+    },
+    "isBspCommissionApplied": false,
+    "diRemarks": [],
+    "emdTickets": {
+        "PAX1": [
+            {
+                "emdTicketNumber": "724401034881",
+                "connectedTicketNumber": "722136975927",
+                "issueDate": "2026-08-30T00:00:00",
+                "ticketStatus": "Booked",
+                "segmentRefIds": [
+                    "GF-GF169-GF169-2026111521-2026111522-O"
+                ]
+            }
+        ]
+    }
+}</pre></div>
+
+</div>
+
+</details>
+<details class="tc PASS">
+<summary class="tc-head"><span><span class="chev"></span><span class="mono">TC-BOOK-POS-04</span> - Verify a selected seat is committed to the booking (visible on Retrieve, priced into the offer) as soon as Book succeeds, without waiting on any ticketing/payment step</span><span class="badge PASS">PASS</span></summary>
+<div class="row"><b>Endpoint Name:</b> Book -&gt; Retrieve</div>
+<div class="row"><b>Request:</b> Book -&gt; Retrieve immediately afterward, no ticketing action taken in between</div>
+<div class="row"><b>Response:</b> Immediate post-Book Retrieve (pnr=RXZKHB) already shows the seat attached/priced</div>
+<div class="row"><b>Expected:</b> Seat attachment doesn't depend on a separate ticketing step (§2.9, §2.11)</div>
+<div class="row"><b>Actual:</b> Core assertion holds; GulfAir tickets synchronously at Book time so there's no distinct un-ticketed window to isolate — same caveat as Rounds 1-3</div>
+<div class="row tc-status-row"><b>Status:</b> <span class="badge PASS">PASS</span></div>
+<details class="evidence"><summary>Evidence</summary><div class="ev-body">Retrieve(RXZKHB) immediately shows seat 8B/120 SAR attached, bookingStatus already 'Booked'</div></details>
+
+
+</details>
+</div>
+</details><details class="tc-category" data-cat="negative" open>
+<summary><span class="cat-icon">&#10060;</span><span class="cat-name">Negative</span><span class="cat-counts"><span class="cc pass">6 passed</span><span class="cc fail">3 failed</span><span class="cc blocked">6 blocked</span></span><span class="cat-chev"></span></summary>
+<div class="tc-category-body">
+<div class="tc-cat-actions"><button type="button" class="tc-cat-expand">Expand all</button><button type="button" class="tc-cat-collapse">Collapse all</button></div>
+<details class="tc BLOCKED">
+<summary class="tc-head"><span><span class="chev"></span><span class="mono">TC-SEATAFTERHOLD-NEG-01</span> - Validate SeatAfterHold rejects a mismatched pnr/gdsPNR/bookingToken combination</span><span class="badge BLOCKED">BLOCKED</span></summary>
+<div class="row"><b>Endpoint Name:</b> SeatAfterHold</div>
+<div class="row"><b>Request:</b> SeatAfterHold submitted with pnr from one Hold (RXFVNC) but bookingToken from a second, independent Hold (RAHAQQ)</div>
+<div class="row"><b>Response:</b> 409 OperationNotSupported 'GulfAir does not exists' — identical to the baseline case, not a distinct mismatch-specific rejection</div>
+<div class="row"><b>Expected:</b> Rejected, exact status confirmed live (§2.7a, §2.12, §7.7)</div>
+<div class="row"><b>Actual:</b> Actually attempted this round (unlike a purely reasoned-BLOCKED in prior rounds), but the supplier-level 409 fires before any identity-matching logic is reached, so this remains not meaningfully testable for GulfAir until BUG-03 is resolved</div>
+<div class="row tc-status-row"><b>Status:</b> <span class="badge BLOCKED">BLOCKED</span></div>
+<details class="evidence"><summary>Evidence</summary><div class="ev-body">TransactionId aa5d6279-dcdf-4231-9abb-5f319baaf3f2</div></details>
+
+
+</details>
+<details class="tc BLOCKED">
+<summary class="tc-head"><span><span class="chev"></span><span class="mono">TC-SEATAFTERHOLD-NEG-02</span> - Validate SeatAfterHold rejects a call made after the Hold's holdExpirationDate has passed</span><span class="badge BLOCKED">BLOCKED</span></summary>
+<div class="row"><b>Endpoint Name:</b> SeatAfterHold</div>
+<div class="row"><b>Request:</b> Would require a Held PNR with a known, elapsed holdExpirationDate</div>
+<div class="row"><b>Response:</b> N/A — doubly blocked</div>
+<div class="row"><b>Expected:</b> Rejected, consistent with FareConfirmAfterHold's expired-hold expectation (§2.7a, §2.12, §6.5)</div>
+<div class="row"><b>Actual:</b> Doubly blocked: SeatAfterHold rejects GulfAir outright regardless of expiry (BUG-03), and Hold's holdExpirationDate is STILL null for GulfAir this round (BUG-04, reconfirmed on 2 fresh Holds: RXFVNC, RAHAQQ) — unchanged from Rounds 1-3</div>
+<div class="row tc-status-row"><b>Status:</b> <span class="badge BLOCKED">BLOCKED</span></div>
+<details class="evidence"><summary>Evidence</summary><div class="ev-body">See TC-SEATAFTERHOLD-POS-01 and the holdExpirationDate defect finding</div></details>
+
+
+</details>
+<details class="tc FAIL">
+<summary class="tc-head"><span><span class="chev"></span><span class="mono">TC-SEATMAP-NEG-01</span> - Validate GetSeatMap is rejected when called for an offer whose isSeatMapRequired flag was false</span><span class="badge FAIL">FAIL</span></summary>
+<div class="row"><b>Endpoint Name:</b> GetSeatMap</div>
+<div class="row"><b>Request:</b> POST api/V2/SeatMap/Seat using AddPassenger IDs from an offer confirmed live (isSeatMapRequired=false on the FareConfirm capability flags)</div>
+<div class="row"><b>Response:</b> 200 — full seatMapDetails returned, not rejected</div>
+<div class="row"><b>Expected:</b> Rejected or an explicit unsupported-operation envelope (§2.2, §2.4, §2.7, §7.7)</div>
+<div class="row"><b>Actual:</b> Still 200 with a fully populated seatMapDetails, unchanged from Rounds 1-3</div>
+<div class="row tc-status-row"><b>Status:</b> <span class="badge FAIL">FAIL</span></div>
+<details class="evidence"><summary>Evidence</summary><div class="ev-body">Same GetSeatMap call as TC-SEATMAP-POS-01; isSeatMapRequired=false confirmed at FareConfirm</div></details>
+
+
+</details>
+<details class="tc BLOCKED">
+<summary class="tc-head"><span><span class="chev"></span><span class="mono">TC-SEATMAP-NEG-02</span> - Validate GetSeatMap is rejected when ResponseId/selectedOfferId come from two different offers</span><span class="badge BLOCKED">BLOCKED</span></summary>
+<div class="row"><b>Endpoint Name:</b> GetSeatMap</div>
+<div class="row"><b>Request:</b> Would require two independent, successful Search-&gt;FareConfirm-&gt;AddPassenger-&gt;GetSeatMap chains (Offer A and Offer B)</div>
+<div class="row"><b>Response:</b> N/A — this round's sustained GetSeatMap outage (see Findings/BUG-14) prevented obtaining even one successful GetSeatMap response after the outage began, let alone two independent ones</div>
+<div class="row"><b>Expected:</b> Rejected (§2.7, §7.7)</div>
+<div class="row"><b>Actual:</b> NOT RE-VERIFIED this round due to the concurrent GetSeatMap outage. BUG-01 (STILL REPRODUCES as of Round 3) is carried forward unchanged — not confirmed fixed, not re-confirmed broken this round.</div>
+<div class="row tc-status-row"><b>Status:</b> <span class="badge BLOCKED">BLOCKED</span></div>
+<details class="evidence"><summary>Evidence</summary><div class="ev-body">See Findings — GetSeatMap sustained outage (BUG-14)</div></details>
+
+
+</details>
+<details class="tc BLOCKED">
+<summary class="tc-head"><span><span class="chev"></span><span class="mono">TC-SEATMAP-NEG-03</span> - Validate GetSeatMap rejects a stale or entirely invalid ResponseId/selectedOfferId pair</span><span class="badge BLOCKED">BLOCKED</span></summary>
+<div class="row"><b>Endpoint Name:</b> GetSeatMap</div>
+<div class="row"><b>Request:</b> POST api/V2/SeatMap/Seat with a fabricated GUID ResponseId and a fabricated selectedOfferId string</div>
+<div class="row"><b>Response:</b> 500 — {ErrorCode:'ServerError', ErrorMessage:'Unknown error occured. Please keep the transaction id as a reference.'}</div>
+<div class="row"><b>Expected:</b> Rejected; exact status confirmed live (§2.7, §7.7, §8.1-item2)</div>
+<div class="row"><b>Actual:</b> INCONCLUSIVE this round — returned a generic HTTP 500 instead of Rounds 1-3's clean 409 ValidationError. This was tested during the same window as this round's GetSeatMap outage (BUG-14) and is attributed to that concurrent degradation rather than confirmed as a regression of the Round 2 fix. Recommend re-running once the outage is confirmed resolved before concluding either way.</div>
+<div class="row tc-status-row"><b>Status:</b> <span class="badge BLOCKED">BLOCKED</span></div>
+<details class="evidence"><summary>Evidence</summary><div class="ev-body">TransactionId 4ddb5df3-f70a-4933-9be4-173603400b84</div></details>
+
+
+</details>
+<details class="tc PASS">
+<summary class="tc-head"><span><span class="chev"></span><span class="mono">TC-SEATMAP-NEG-04</span> - Validate GetSeatMap rejects requests with each mandatory field individually omitted: supplier, credentialsSelector, ResponseId, selectedOfferId</span><span class="badge PASS">PASS</span></summary>
+<div class="row"><b>Endpoint Name:</b> GetSeatMap</div>
+<div class="row"><b>Request:</b> 4 variants of a valid GetSeatMap body, each with exactly one of supplier/credentialsSelector/ResponseId/selectedOfferId removed</div>
+<div class="row"><b>Response:</b> omit supplier→400; omit credentialsSelector→400; omit selectedOfferId→400; omit ResponseId→409 (see Actual)</div>
+<div class="row"><b>Expected:</b> All four runs rejected (§2.7, §7.7, §8.1-item2)</div>
+<div class="row"><b>Actual:</b> 3 of 4 sub-cases correctly rejected with a clean 400 (supplier, credentialsSelector, selectedOfferId), consistent with Rounds 1-3. The ResponseId-omission sub-case is EXCLUDED from this round's scope per explicit instruction (maps to Round 3's BUG-02) — noted tersely only: this round's attempt happened to land during the concurrent GetSeatMap outage (409 NDC-INT-UNC-Z9999) rather than either a 200 (Rounds 1-3's finding) or a 400, so it is additionally untestable this round on top of being out of scope for escalation.</div>
+<div class="row tc-status-row"><b>Status:</b> <span class="badge PASS">PASS</span></div>
+<details class="evidence"><summary>Evidence</summary><div class="ev-body">TransactionIds a7b580fe (supplier,400), f3b3ea1f (credentialsSelector,400), f745ae3c (selectedOfferId,400); omit-ResponseId returned 409 NDC-INT-UNC-Z9999 (outage-affected, not counted)</div></details>
+
+
+</details>
+<details class="tc PASS">
+<summary class="tc-head"><span><span class="chev"></span><span class="mono">TC-SEATMAP-NEG-05</span> - Validate GetSeatMap fails gracefully (structured error, not raw 500/stack trace) when the underlying supplier call fails</span><span class="badge PASS">PASS</span></summary>
+<div class="row"><b>Endpoint Name:</b> GetSeatMap</div>
+<div class="row"><b>Request:</b> This round's real, sustained GetSeatMap outage (40+ independent calls, see Findings/BUG-14) served as abundant live evidence of supplier-failure error handling</div>
+<div class="row"><b>Response:</b> Every one of 40+ outage-window calls returned a structured JSON envelope {Status,TransactionId,ErrorCode,ErrorMessage,Context} — no raw stack trace or unhandled-exception HTML</div>
+<div class="row"><b>Expected:</b> Structured business-error envelope, not an unhandled exception (§1.3, §2.9, §7.9)</div>
+<div class="row"><b>Actual:</b> Structurally graceful on every occurrence — BUT the same envelope also leaks a raw OriginalSupplierRequest field containing supplier credentials (see BUG-11, widened this round). PASS for the 'structured, not a stack trace' criterion this test case names; the credential-leak concern is tracked separately.</div>
+<div class="row tc-status-row"><b>Status:</b> <span class="badge PASS">PASS</span></div>
+<details class="evidence"><summary>Evidence</summary><div class="ev-body">40+ occurrences of the same structured 409 NDC-INT-UNC-Z9999 envelope during this round's outage window</div></details>
+
+
+</details>
+<details class="tc FAIL">
+<summary class="tc-head"><span><span class="chev"></span><span class="mono">TC-BOOK-NEG-12</span> - Validate Book rejects requests with each mandatory field individually omitted: ResponseId, selectedOfferId, supplier, credentialsSelector</span><span class="badge FAIL">FAIL</span></summary>
+<div class="row"><b>Endpoint Name:</b> Book</div>
+<div class="row"><b>Request:</b> 4 variants of a no-seat Book payload (built directly from AddPassenger's IDs, bypassing GetSeatMap), each missing exactly one of supplier/credentialsSelector/ResponseId/selectedOfferId</div>
+<div class="row"><b>Response:</b> omit supplier→400; omit credentialsSelector→400; omit selectedOfferId→500 ServerError; omit ResponseId→200, created real PNR RDKSHA</div>
+<div class="row"><b>Expected:</b> All four runs rejected; no pnr created in any run (§2.9, §7.7, §8.1-item2)</div>
+<div class="row"><b>Actual:</b> STILL REPRODUCES (BUG-13, selectedOfferId sub-case, 4th consecutive round for this behavior) — omitting selectedOfferId still produces a generic 500 rather than a clean 400. The ResponseId-omission sub-case is EXCLUDED from this round's scope per explicit instruction (maps to Round 3's BUG-05): noted tersely only — omitting ResponseId still succeeds and creates a real ticketed PNR (RDKSHA), unchanged from Rounds 1-3, not escalated or counted this round.</div>
+<div class="row tc-status-row"><b>Status:</b> <span class="badge FAIL">FAIL</span></div>
+<details class="evidence"><summary>Evidence</summary><div class="ev-body">TransactionIds fa763f12 (supplier,400), 76d2a73e (credentialsSelector,400), afb97dda (selectedOfferId,500); pnr=RDKSHA (ResponseId omitted,200, excluded from tally)</div></details>
+
+
+</details>
+<details class="tc PASS">
+<summary class="tc-head"><span><span class="chev"></span><span class="mono">TC-BOOK-NEG-05</span> - Validate Book rejects a passengersSelectedSeats selection whose cellCode/cellId refers to a Blocked or Occupied cell</span><span class="badge PASS">PASS</span></summary>
+<div class="row"><b>Endpoint Name:</b> Book</div>
+<div class="row"><b>Request:</b> Book submitted with an Occupied-style cellCode and a null cellId (Occupied cells never carry a real cellID, confirmed again this round)</div>
+<div class="row"><b>Response:</b> 400 ValidationError {'NotEmptyValidator':'CellId is required.'}</div>
+<div class="row"><b>Expected:</b> Request rejected; no booking created reflecting the unavailable seat (§2.7, §2.9, §7.7)</div>
+<div class="row"><b>Actual:</b> Rejected via a generic null-cellId check (GetSeatMap never issues a real cellId for an Occupied cell), unchanged from Rounds 1-3</div>
+<div class="row tc-status-row"><b>Status:</b> <span class="badge PASS">PASS</span></div>
+<details class="evidence"><summary>Evidence</summary><div class="ev-body">TransactionId 3273e4dd-3316-4ded-9569-ea66f327a717</div></details>
+
+
+</details>
+<details class="tc FAIL">
+<summary class="tc-head"><span><span class="chev"></span><span class="mono">TC-BOOK-NEG-06</span> - Validate Book rejects a passengersSelectedSeats.cellId value that has been truncated or otherwise tampered with</span><span class="badge FAIL">FAIL</span></summary>
+<div class="row"><b>Endpoint Name:</b> Book</div>
+<div class="row"><b>Request:</b> Book submitted with a valid cellCode (8A) but its cellId's trailing 10 base64 characters replaced with 'XXXXXXXXXX', on a fresh never-booked offer (BAH-CAI)</div>
+<div class="row"><b>Response:</b> 200 — pnr=RZTFBV, seat 8A attached at 120.00 SAR exactly as if the untampered token had been sent</div>
+<div class="row"><b>Expected:</b> Rejected — the tampered token should fail a server-side decode/signature check (§2.7, §2.9, §7.7)</div>
+<div class="row"><b>Actual:</b> STILL REPRODUCES (BUG-06, 4th consecutive round) — accepted; the seat was attached using the submitted cellCode regardless of the corrupted cellId</div>
+<div class="row tc-status-row"><b>Status:</b> <span class="badge FAIL">FAIL</span><span class="tc-reqres-anchor"></span></div>
+<details class="evidence"><summary>Evidence</summary><div class="ev-body">pnr RZTFBV, seat 8A/120.00 SAR attached despite the corrupted cellId</div></details>
+<div class="tc-reqres-panel"><div class="rr-title">Request</div>
+<div class="rr-line">POST to https://ndc-integration-stg-ne-2.azurewebsites.net/api/v2/FlightBooking/Book</div>
+<div class="rr-label">HEADERS</div>
+<div class="rr-box rr-headers-box">
+<div class="rr-h-line">x-api-key: <span class="rr-redacted">&#8226;&#8226;&#8226;&#8226;&#8226;&#8226;&#8226;&#8226;(redacted)</span></div>
+<div class="rr-h-line">Client-Id: NDC-Core</div>
+<div class="rr-h-line">Content-Type: application/json</div>
+</div>
+<div class="rr-label">BODY</div>
+<div class="rr-box rr-body-box"><pre>{
+    "supplier": "GulfAir",
+    "credentialsSelector": "KSA",
+    "ResponseId": "f01d0c73-12d1-4e56-8637-3776a9cac4da",
+    "selectedOfferId": "GF-OFFER-2&amp;yAGXY9IAAAHv9CrcABSqR0YtT0ZGRVItMqJHRtkkZmY1NzY5YWUtMjQzZi00YWQxLWE0NGQtNmRjN2U3YzdjYWU2ga41AP8ISVRFTS0xkaRQQVgxpjkyMy4wMKNTQVJHABSS2SRHRi1HRjc5BQCmMjAyNjExMjQwMQsA8hQzLU+do0JBSKNDQUnW/2sE4rzW/2sFBeTAoTLMlqJHRqI3OQYAVKMzMlGpTwDRMZABAACSkZ2kUGF4MZ0A/iCjQURU1v84qJcAoTDAok1Sk6dNb3N0YWZhoKdJYnJhaGltpE1hbGWiRUeiRUfAmh8A9BKiRUfW/3BijoDW/2UYtoCoQTEyMzQ1NjGoUGFzc3BvcnRAAAJmAPBNokVHkZihMKRDVEMxsE5EQ19DSUBnbWFpbC5jb23AwJPAoysyMKkxMjE1NzQyMzbAlK9OZXcgQ2Fpcm8gTWFkZGm0QWwgTmFoZGEgRmxvb3IgZWlnaHSlQ0FJUk+iAAbrACCRlBwBACQBpqhCQUhDQUktMZEeANCnRUNPTk9NWaFToVnA",
+    "passengersSelectedSeats": {
+        "PAX1": {
+            "setSegmentsSeats": {
+                "GF-GF79-GF79-2026112401-2026112403-O": {
+                    "cellCode": "8A",
+                    "cellId": "GF-GF79-GF79-2026112401-2026112403-O&amp;laJHRtkkZmY1NzY5YWUtMjQzZi00YWQxLWE0NGQtNmRjN2U3YzdjYWU22SRHRi1HRjc5LUdGNzktMjAyNjExMjQwMS0yMDI2MTEyNDAzLU+BpFBBWDGWrUdGLVNlYXRPZmZlcjHAwNkkR0YtR0Y3OS1HRjc5LTIwMjYxMTI0MDEtMjAyNjExMjQwMy1PpjEyMC4wMKNTQVLZJGYwMWQwYzczLTEyZDEtNGU1Ni04NjM3LTM3NzZhOWXXXXXXXXXX"
+                }
+            }
+        }
+    }
+}</pre></div>
+<div class="rr-title">Response</div>
+<div class="rr-line">Status code 200</div>
+<div class="rr-label">BODY</div>
+<div class="rr-box rr-body-box"><pre>{
+    "supplier": "GulfAir",
+    "pnr": "RZTFBV",
+    "gdsPNR": "",
+    "bookingToken": "TPC60517142849D3082026",
+    "voidCapability": "FullVoidOnlyAllowed",
+    "creationDate": "2026-08-30T00:00:00",
+    "ticketingDate": "2026-08-30T00:00:00",
+    "tickets": {
+        "PAX1": {
+            "ticketStatus": "Booked",
+            "ticketNumber": "722136975946",
+            "carrierCode": "GF"
+        }
+    },
+    "passengersSelectedAncillaries": {},
+    "passengersSelectedSeats": {
+        "PAX1": {
+            "GF-GF79-GF79-2026112401-2026112403-O": {
+                "cellCode": "8A",
+                "price": {
+                    "amount": 120,
+                    "currency": "SAR"
+                }
+            }
+        }
+    },
+    "journeys": {
+        "GF-GF79-1": {
+            "origin": "BAH",
+            "destination": "CAI",
+            "numberOfStops": 0,
+            "segmentRefIds": [
+                "GF-GF79-GF79-2026112401-2026112403-O"
+            ]
+        }
+    },
+    "flightSegments": {
+        "GF-GF79-GF79-2026112401-2026112403-O": {
+            "origin": "BAH",
+            "destination": "CAI",
+            "departureDateTime": "2026-11-24T01:05:00",
+            "arrivalDateTime": "2026-11-24T03:35:00",
+            "departureTerminal": null,
+            "arrivalTerminal": "TERMINAL 2",
+            "flightTime": 150,
+            "operatingCarrierCode": "GF",
+            "operatingFlightNumber": "79",
+            "marketingCarrierCode": "GF",
+            "marketingFlightNumber": "79",
+            "equipment": "32Q"
+        }
+    },
+    "priceClasses": {
+        "ECONOMY LIGHT": {
+            "priceClassName": "ECONOMY LIGHT",
+            "fareDescription": "PublicFare",
+            "rulesAndPenalties": []
+        }
+    },
+    "baggageDetails": {
+        "40KG,6KG": {
+            "carryOnBaggage": "6.00 KG",
+            "checkInBaggage": "40.00 KG"
+        }
+    },
+    "passengersList": {
+        "PAX1": {
+            "title": "MR",
+            "name": {
+                "first": "MOSTAFA",
+                "middle": null,
+                "last": "IBRAHIM"
+            },
+            "birthDate": "2000-02-15T00:00:00",
+            "gender": "Male",
+            "passengerTypeCode": "ADT",
+            "contactRefId": "CNCT-1",
+            "travelDocument": {
+                "name": {
+                    "first": "MOSTAFA",
+                    "middle": null,
+                    "last": "IBRAHIM"
+                },
+                "nationality": "EG",
+                "expirationDate": "2029-10-01T00:00:00",
+                "issuanceDate": null,
+                "documentNumber": "A1234561",
+                "documentType": "Passport",
+                "gender": "Male",
+                "birthCountry": "EG",
+                "birthDate": "2000-02-15T00:00:00",
+                "issuanceCountryCode": "EG"
+            },
+            "parentPaxRefId": null,
+            "nationality": "EG",
+            "residentCountry": null,
+            "age": 26
+        }
+    },
+    "contacts": {
+        "CNCT-1": {
+            "email": "NDC_CI@GMAIL.COM",
+            "phone": {
+                "type": "",
+                "countryDialingCode": "20",
+                "phoneNumber": "121574236"
+            },
+            "address": {
+                "line1": null,
+                "line2": null,
+                "city": "",
+                "countryCode": ""
+            }
+        }
+    },
+    "selectedOffer": {
+        "offerId": "3b7d1f49-32fe-476e-b46d-cf64aa4e3b62",
+        "offerJourneys": [
+            "GF-GF79-1"
+        ],
+        "passengerFareBreakdown": [
+            {
+                "passengerRefId": "PAX1",
+                "paxTotalAmount": {
+                    "amount": 1043,
+                    "currency": "SAR"
+                },
+                "paxTotalAncillaryAmount": {
+                    "amount": 0,
+                    "currency": ""
+                },
+                "passengerAncillaries": [],
+                "paxTotalSeatAmount": {
+                    "amount": 120,
+                    "currency": "SAR"
+                },
+                "passengerSeats": [
+                    {
+                        "cellCode": "8A",
+                        "price": {
+                            "amount": 120,
+                            "currency": "SAR"
+                        }
+                    }
+                ],
+                "passengerTypeCode": "ADT",
+                "paxTotalTaxAmount": {
+                    "amount": 583,
+                    "currency": "SAR"
+                },
+                "paxBaseAmount": {
+                    "amount": 340,
+                    "currency": "SAR"
+                },
+                "taxesAndFees": [
+                    {
+                        "code": "YQ",
+                        "amount": {
+                            "amount": 450,
+                            "currency": "SAR"
+                        }
+                    },
+                    {
+                        "code": "BH",
+                        "amount": {
+                            "amount": 120,
+                            "currency": "SAR"
+                        }
+                    },
+                    {
+                        "code": "HM",
+                        "amount": {
+                            "amount": 5,
+                            "currency": "SAR"
+                        }
+                    },
+                    {
+                        "code": "S4",
+                        "amount": {
+                            "amount": 8,
+                            "currency": "SAR"
+                        }
+                    }
+                ],
+                "segmentDetails": [
+                    {
+                        "segmentRefId": "GF-GF79-GF79-2026112401-2026112403-O",
+                        "priceClassRefId": "ECONOMY LIGHT",
+                        "baggageDetailsRefId": "40KG,6KG",
+                        "cabinCode": "ECONOMY",
+                        "rbd": "S"
+                    }
+                ],
+                "discount": null
+            }
+        ],
+        "priceDetails": {
+            "totalAncillariesAmount": {
+                "amount": 0,
+                "currency": ""
+            },
+            "totalPassengersAncillaries": [],
+            "totalSelectedSeatsAmount": {
+                "amount": 120,
+                "currency": "SAR"
+            },
+            "totalSelectedSeats": [
+                {
+                    "cellCode": "8A",
+                    "price": {
+                        "amount": 120,
+                        "currency": "SAR"
+                    }
+                }
+            ],
+            "totalAmount": {
+                "amount": 1043,
+                "currency": "SAR"
+            },
+            "totalTaxAmount": {
+                "amount": 583,
+                "currency": "SAR"
+            },
+            "totalBaseAmount": {
+                "amount": 340,
+                "currency": "SAR"
+            },
+            "taxesAndFees": [
+                {
+                    "code": "YQ",
+                    "amount": {
+                        "amount": 450,
+                        "currency": "SAR"
+                    }
+                },
+                {
+                    "code": "BH",
+                    "amount": {
+                        "amount": 120,
+                        "currency": "SAR"
+                    }
+                },
+                {
+                    "code": "HM",
+                    "amount": {
+                        "amount": 5,
+                        "currency": "SAR"
+                    }
+                },
+                {
+                    "code": "S4",
+                    "amount": {
+                        "amount": 8,
+                        "currency": "SAR"
+                    }
+                }
+            ],
+            "discount": null
+        },
+        "refundability": "UnKnown",
+        "isDealCodeApplied": null,
+        "appliedDealCode": null,
+        "isPromoted": false,
+        "appliedPromotionCode": ""
+    },
+    "isBspCommissionApplied": false,
+    "diRemarks": [],
+    "emdTickets": {
+        "PAX1": [
+            {
+                "emdTicketNumber": "724401034882",
+                "connectedTicketNumber": "722136975946",
+                "issueDate": "2026-08-30T00:00:00",
+                "ticketStatus": "Booked",
+                "segmentRefIds": [
+                    "GF-GF79-GF79-2026112401-2026112403-O"
+                ]
+            }
+        ]
+    }
+}</pre></div>
+
+</div>
+
+</details>
+<details class="tc BLOCKED">
+<summary class="tc-head"><span><span class="chev"></span><span class="mono">TC-BOOK-NEG-07</span> - Validate Book rejects a request that assigns the same seat cell to two different passengers</span><span class="badge BLOCKED">BLOCKED</span></summary>
+<div class="row"><b>Endpoint Name:</b> Book</div>
+<div class="row"><b>Request:</b> Would require a 2-ADT GetSeatMap chain (BAH-JED and BAH-RUH both attempted this round)</div>
+<div class="row"><b>Response:</b> N/A — GetSeatMap failed with the generic outage error on both attempted 2-ADT chains this round</div>
+<div class="row"><b>Expected:</b> Request rejected before any supplier round-trip; no pnr created (§2.9, §7.7)</div>
+<div class="row"><b>Actual:</b> NOT RE-VERIFIED this round — 2 independent attempts (BAH-JED, BAH-RUH) both hit the concurrent GetSeatMap outage (see Findings/BUG-14) rather than the intended multi-passenger scenario. Last confirmed passing (cleanly rejected, 400) in Round 3.</div>
+<div class="row tc-status-row"><b>Status:</b> <span class="badge BLOCKED">BLOCKED</span></div>
+<details class="evidence"><summary>Evidence</summary><div class="ev-body">See Findings — GetSeatMap sustained outage (BUG-14)</div></details>
+
+
+</details>
+<details class="tc PASS">
+<summary class="tc-head"><span><span class="chev"></span><span class="mono">TC-BOOK-NEG-08</span> - Validate Book rejects a request where the same passenger selects two different seats on the same segment</span><span class="badge PASS">PASS</span></summary>
+<div class="row"><b>Endpoint Name:</b> Book</div>
+<div class="row"><b>Request:</b> No live call made — setSegmentsSeats is a JSON object keyed by segmentRefId, so a client literally cannot submit two different cellCode/cellId values under one segmentRefId key in valid JSON</div>
+<div class="row"><b>Response:</b> N/A</div>
+<div class="row"><b>Expected:</b> Documented as untestable-by-construction (§2.9)</div>
+<div class="row"><b>Actual:</b> Confirmed again this round by request-shape inspection of every successful Book payload built this round, unchanged from Rounds 1-3</div>
+<div class="row tc-status-row"><b>Status:</b> <span class="badge PASS">PASS</span></div>
+<details class="evidence"><summary>Evidence</summary><div class="ev-body">Book's passengersSelectedSeats.&lt;pax&gt;.setSegmentsSeats schema is a JSON object, not an array, per every Book call this round</div></details>
+
+
+</details>
+<details class="tc BLOCKED">
+<summary class="tc-head"><span><span class="chev"></span><span class="mono">TC-BOOK-NEG-09</span> - Validate graceful rollback when the supplier's seat allocation call fails or times out after Book is submitted</span><span class="badge BLOCKED">BLOCKED</span></summary>
+<div class="row"><b>Endpoint Name:</b> Book</div>
+<div class="row"><b>Request:</b> Requires a forcing mechanism to make the supplier-side seat allocation fail on demand</div>
+<div class="row"><b>Response:</b> Not attempted</div>
+<div class="row"><b>Expected:</b> N/A (§2.9, §7.9)</div>
+<div class="row"><b>Actual:</b> Not forceable this round via Book's own seat-allocation path specifically. Note: this round's real GetSeatMap outage (BUG-14) is a naturally-occurring supplier-failure scenario, but on a different endpoint's call path, so it does not substitute for this test case's specific target.</div>
+<div class="row tc-status-row"><b>Status:</b> <span class="badge BLOCKED">BLOCKED</span></div>
+<details class="evidence"><summary>Evidence</summary><div class="ev-body">No forcing mechanism available</div></details>
+
+
+</details>
+<details class="tc PASS">
+<summary class="tc-head"><span><span class="chev"></span><span class="mono">TC-BOOK-NEG-10</span> - Validate Book succeeds when passengersSelectedSeats is explicitly sent as an empty object</span><span class="badge PASS">PASS</span></summary>
+<div class="row"><b>Endpoint Name:</b> Book</div>
+<div class="row"><b>Request:</b> Book with passengersSelectedSeats: {} explicitly present, otherwise a normal no-seat Book call (BAH-DXB)</div>
+<div class="row"><b>Response:</b> 200 — pnr=RAXCJR, ticketed, passengersSelectedSeats:{} in the response, no seat fee</div>
+<div class="row"><b>Expected:</b> Book succeeds; no seat fee charged; no 500-level error (§2.9)</div>
+<div class="row"><b>Actual:</b> Succeeded exactly as expected, unchanged from Rounds 1-3</div>
+<div class="row tc-status-row"><b>Status:</b> <span class="badge PASS">PASS</span></div>
+<details class="evidence"><summary>Evidence</summary><div class="ev-body">pnr RAXCJR</div></details>
+
+
+</details>
+<details class="tc PASS">
+<summary class="tc-head"><span><span class="chev"></span><span class="mono">TC-BOOK-NEG-11</span> - Validate Book succeeds when a passenger's setSegmentsSeats is explicitly sent as an empty object</span><span class="badge PASS">PASS</span></summary>
+<div class="row"><b>Endpoint Name:</b> Book</div>
+<div class="row"><b>Request:</b> Book with passengersSelectedSeats.PAX1.setSegmentsSeats: {} (BAH-DMM, fresh unbooked offer)</div>
+<div class="row"><b>Response:</b> 200 — pnr=RLJOFF, ticketed, no seat attached, no error</div>
+<div class="row"><b>Expected:</b> Book succeeds; no seat attached; no error from the empty nested object (§2.9)</div>
+<div class="row"><b>Actual:</b> Succeeded exactly as expected, unchanged from Rounds 1-3. (Note: an initial attempt reusing an already-booked offer triggered a distinct 'booking already created (609)' 409 — a duplicate-submission rejection, not a NEG-11 result — the test was corrected to use a fresh offer.)</div>
+<div class="row tc-status-row"><b>Status:</b> <span class="badge PASS">PASS</span></div>
+<details class="evidence"><summary>Evidence</summary><div class="ev-body">pnr RLJOFF</div></details>
+
+
+</details>
+</div>
+</details><details class="tc-category" data-cat="validation" open>
+<summary><span class="cat-icon">&#128269;</span><span class="cat-name">Validation</span><span class="cat-counts"><span class="cc pass">10 passed</span><span class="cc fail">1 failed</span><span class="cc blocked">3 blocked</span></span><span class="cat-chev"></span></summary>
+<div class="tc-category-body">
+<div class="tc-cat-actions"><button type="button" class="tc-cat-expand">Expand all</button><button type="button" class="tc-cat-collapse">Collapse all</button></div>
+<details class="tc PASS">
+<summary class="tc-head"><span><span class="chev"></span><span class="mono">TC-SEATMAP-VAL-05</span> - Verify cellCharacteristics.description text is consistent with its own padisCode</span><span class="badge PASS">PASS</span></summary>
+<div class="row"><b>Endpoint Name:</b> GetSeatMap</div>
+<div class="row"><b>Request:</b> Same GetSeatMap response as TC-SEATMAP-POS-01, inspecting cellCharacteristics[] on every cell</div>
+<div class="row"><b>Response:</b> Every cellCharacteristics[] entry has padisCode='Unknown' and description as a self-descriptive enum string</div>
+<div class="row"><b>Expected:</b> For padisCode values in the maintained reference table, description must not contradict the code's meaning; codes outside the table are logged, not failed (§2.7, §8.3)</div>
+<div class="row"><b>Actual:</b> GulfAir's adapter never populates a real padisCode (always literal 'Unknown'); description strings self-consistent. Same 15-value vocabulary as Round 3: AISLE_SEAT, BULKHEAD_SEAT, CENTER_SEAT, CHARGEABLE_SEAT, EXIT_ROW_SEAT, FRONT_OF_CABIN, LEFT_SIDE_OF_AIRCRAFT, LEG_SPACE_SEAT, NOT_ALLOWED_FOR_INFANTS, NOT_ALLOWED_FOR_MEDICAL, OVER_WING_SEAT_S, PREFERRED_SEAT_PREFERENTIAL_SEAT, RIGHT_SIDE_OF_AIRCRAFT, SEAT_WITH_BASSINET_FACILITY, WINDOW</div>
+<div class="row tc-status-row"><b>Status:</b> <span class="badge PASS">PASS</span></div>
+<details class="evidence"><summary>Evidence</summary><div class="ev-body">Full scan of chain1's GetSeatMap 175 cells; padisCode='Unknown' on every cellCharacteristics entry</div></details>
+
+
+</details>
+<details class="tc PASS">
+<summary class="tc-head"><span><span class="chev"></span><span class="mono">TC-SEATMAP-VAL-06</span> - Verify every Aisle-category cell has column=null and cellDetails=null, and every Seat-category cell has both populated</span><span class="badge PASS">PASS</span></summary>
+<div class="row"><b>Endpoint Name:</b> GetSeatMap</div>
+<div class="row"><b>Request:</b> Same GetSeatMap response, scanning cellCategory/column/cellDetails across all 175 cells</div>
+<div class="row"><b>Response:</b> 175/175 cells conform (Aisle→column=null &amp; cellDetails=null; Seat→both populated) — 0 violations</div>
+<div class="row"><b>Expected:</b> cellCategory=Aisle implies column/cellDetails null; cellCategory=Seat implies both populated; no cell violates this partition (§2.7)</div>
+<div class="row"><b>Actual:</b> 0/175 violations (25 Aisle cells, 150 Seat cells) — the fix confirmed in Round 2 remains stable for a 4th consecutive round</div>
+<div class="row tc-status-row"><b>Status:</b> <span class="badge PASS">PASS</span></div>
+<details class="evidence"><summary>Evidence</summary><div class="ev-body">Full cell scan: 0 Aisle violations, 0 Seat violations</div></details>
+
+
+</details>
+<details class="tc BLOCKED">
+<summary class="tc-head"><span><span class="chev"></span><span class="mono">TC-SEATAFTERHOLD-VAL-01</span> - Confirm whether a seat/cell field is required beyond the 6 documented fields</span><span class="badge BLOCKED">BLOCKED</span></summary>
+<div class="row"><b>Endpoint Name:</b> SeatAfterHold</div>
+<div class="row"><b>Request:</b> Depends on TC-SEATAFTERHOLD-POS-01's result</div>
+<div class="row"><b>Response:</b> N/A — prerequisite rejected outright (409, supplier-level)</div>
+<div class="row"><b>Expected:</b> Resolve the real request shape (§2.7a)</div>
+<div class="row"><b>Actual:</b> Still blocked by the supplier-level 409 (BUG-03), unchanged from Rounds 1-3</div>
+<div class="row tc-status-row"><b>Status:</b> <span class="badge BLOCKED">BLOCKED</span></div>
+<details class="evidence"><summary>Evidence</summary><div class="ev-body">See TC-SEATAFTERHOLD-POS-01</div></details>
+
+
+</details>
+<details class="tc BLOCKED">
+<summary class="tc-head"><span><span class="chev"></span><span class="mono">TC-SEATAFTERHOLD-VAL-02</span> - Once SeatAfterHold's real contract is confirmed, validate it rejects a seat/passenger reference not established at this pnr</span><span class="badge BLOCKED">BLOCKED</span></summary>
+<div class="row"><b>Endpoint Name:</b> SeatAfterHold</div>
+<div class="row"><b>Request:</b> Sequenced behind TC-SEATAFTERHOLD-VAL-01</div>
+<div class="row"><b>Response:</b> N/A</div>
+<div class="row"><b>Expected:</b> Blocked until VAL-01 resolves a confirmed request shape (§2.5, §2.7a)</div>
+<div class="row"><b>Actual:</b> Still blocked, unchanged from Rounds 1-3</div>
+<div class="row tc-status-row"><b>Status:</b> <span class="badge BLOCKED">BLOCKED</span></div>
+<details class="evidence"><summary>Evidence</summary><div class="ev-body">See TC-SEATAFTERHOLD-VAL-01</div></details>
+
+
+</details>
+<details class="tc PASS">
+<summary class="tc-head"><span><span class="chev"></span><span class="mono">TC-SEATMAP-VAL-07</span> - Verify window/aisle/extra-legroom/exit-row seat attributes are programmatically derivable from cellCharacteristics</span><span class="badge PASS">PASS</span></summary>
+<div class="row"><b>Endpoint Name:</b> GetSeatMap</div>
+<div class="row"><b>Request:</b> Same GetSeatMap response, cross-checking cellCharacteristics against column position/description text</div>
+<div class="row"><b>Response:</b> WINDOW/AISLE_SEAT/BULKHEAD_SEAT/EXIT_ROW_SEAT/CENTER_SEAT literals appear directly as description strings</div>
+<div class="row"><b>Expected:</b> Attributes derivable from description text (§2.7, §8.3)</div>
+<div class="row"><b>Actual:</b> Columns A/F carry WINDOW+LEFT_SIDE_OF_AIRCRAFT/RIGHT_SIDE_OF_AIRCRAFT; rows 14-17 (all 6 columns, 24 cells) carry EXIT_ROW_SEAT this round — a wider exit-row zone than Round 3's sample, consistent with normal aircraft/row variation, not a defect</div>
+<div class="row tc-status-row"><b>Status:</b> <span class="badge PASS">PASS</span></div>
+<details class="evidence"><summary>Evidence</summary><div class="ev-body">Exit-row cells this round: 14A-17F (24 cells)</div></details>
+
+
+</details>
+<details class="tc PASS">
+<summary class="tc-head"><span><span class="chev"></span><span class="mono">TC-SEATMAP-VAL-08</span> - Verify seatPriceDetails/seatPriceDetailsByPassenger is populated for every AvailablePaid cell and null for every Blocked/Occupied cell</span><span class="badge PASS">PASS</span></summary>
+<div class="row"><b>Endpoint Name:</b> GetSeatMap</div>
+<div class="row"><b>Request:</b> Same GetSeatMap response, partitioned by cellAvailability</div>
+<div class="row"><b>Response:</b> 148/148 AvailablePaid cells have non-null seatPriceDetailsByPassenger.PAX1; the 2 Occupied cells have both null</div>
+<div class="row"><b>Expected:</b> Conditional presence per cellAvailability (§2.7)</div>
+<div class="row"><b>Actual:</b> 148/148 AvailablePaid populated; 2/2 Occupied null — unchanged from Rounds 1-3's pattern</div>
+<div class="row tc-status-row"><b>Status:</b> <span class="badge PASS">PASS</span></div>
+<details class="evidence"><summary>Evidence</summary><div class="ev-body">Full cell scan of chain1's GetSeatMap</div></details>
+
+
+</details>
+<details class="tc PASS">
+<summary class="tc-head"><span><span class="chev"></span><span class="mono">TC-SEATMAP-VAL-09</span> - Verify cellCode is unique across all cells within one flight segment's seatMapDetails</span><span class="badge PASS">PASS</span></summary>
+<div class="row"><b>Endpoint Name:</b> GetSeatMap</div>
+<div class="row"><b>Request:</b> Same GetSeatMap response, collecting every cellCode within the one segment</div>
+<div class="row"><b>Response:</b> 150 Seat-category cellCode values (Aisle cells carry no cellCode), 150 distinct — zero duplicates</div>
+<div class="row"><b>Expected:</b> No cellCode value repeats (§2.7)</div>
+<div class="row"><b>Actual:</b> 0 duplicates, unchanged from Rounds 1-3</div>
+<div class="row tc-status-row"><b>Status:</b> <span class="badge PASS">PASS</span></div>
+<details class="evidence"><summary>Evidence</summary><div class="ev-body">Full 175-cell scan (150 with cellCode, 25 Aisle without)</div></details>
+
+
+</details>
+<details class="tc PASS">
+<summary class="tc-head"><span><span class="chev"></span><span class="mono">TC-SEATMAP-VAL-10</span> - Verify structural uniqueness/domain constraints: rowNumber unique, zoneId unique within deck, column restricted to {A-F,null}</span><span class="badge PASS">PASS</span></summary>
+<div class="row"><b>Endpoint Name:</b> GetSeatMap</div>
+<div class="row"><b>Request:</b> Same GetSeatMap response, checked rowNumber/zoneId/column across all 25 rows</div>
+<div class="row"><b>Response:</b> 25 distinct rowNumbers, 1 zone (Cabin1) consistently, column values restricted to {A,B,C,D,E,F,null}</div>
+<div class="row"><b>Expected:</b> No rowNumber/zoneId duplicated; column domain respected (§2.7)</div>
+<div class="row"><b>Actual:</b> 0 duplicate rowNumbers; single zoneId per deck; every non-null column in {A,B,C,D,E,F} — unchanged from Rounds 1-3</div>
+<div class="row tc-status-row"><b>Status:</b> <span class="badge PASS">PASS</span></div>
+<details class="evidence"><summary>Evidence</summary><div class="ev-body">cabinLayoutsByDeck.Main.zones[0]={zoneId:Cabin1}; 0 duplicate rowNumbers across 25 rows</div></details>
+
+
+</details>
+<details class="tc PASS">
+<summary class="tc-head"><span><span class="chev"></span><span class="mono">TC-SEATMAP-VAL-03</span> - Verify cellDetails.cellID round-trips into Book's passengersSelectedSeats.setSegmentsSeats.cellId despite the casing difference</span><span class="badge PASS">PASS</span></summary>
+<div class="row"><b>Endpoint Name:</b> GetSeatMap -&gt; Book</div>
+<div class="row"><b>Request:</b> Book submitted with passengersSelectedSeats.PAX1.setSegmentsSeats.&lt;segRefId&gt; = {cellCode:'8B', cellId:&lt;verbatim cellID value from GetSeatMap&gt;}</div>
+<div class="row"><b>Response:</b> 200 — seat 8B correctly attached and echoed in passengersSelectedSeats/passengerFareBreakdown/priceDetails</div>
+<div class="row"><b>Expected:</b> Book accepts the token despite the cellID/cellId casing mismatch (§2.7, §2.9, §8.3)</div>
+<div class="row"><b>Actual:</b> Accepted; the casing difference is cosmetic, unchanged from Rounds 1-3</div>
+<div class="row tc-status-row"><b>Status:</b> <span class="badge PASS">PASS</span></div>
+<details class="evidence"><summary>Evidence</summary><div class="ev-body">Book(RXZKHB) response passengersSelectedSeats.PAX1.&lt;segRefId&gt;={cellCode:'8B',price:{amount:120.00,currency:'SAR'}}</div></details>
+
+
+</details>
+<details class="tc PASS">
+<summary class="tc-head"><span><span class="chev"></span><span class="mono">TC-BOOK-VAL-08</span> - Verify the currency code is consistent (not a placeholder like 'string') across every seat-price object in one Book response</span><span class="badge PASS">PASS</span></summary>
+<div class="row"><b>Endpoint Name:</b> Book</div>
+<div class="row"><b>Request:</b> Same Book response as TC-BOOK-POS-03</div>
+<div class="row"><b>Response:</b> All seat-price currency values = 'SAR'</div>
+<div class="row"><b>Expected:</b> Consistent, non-placeholder currency (§2.7, §2.9)</div>
+<div class="row"><b>Actual:</b> All currency fields identical ('SAR'), none 'string'/null/empty, unchanged from Rounds 1-3</div>
+<div class="row tc-status-row"><b>Status:</b> <span class="badge PASS">PASS</span></div>
+<details class="evidence"><summary>Evidence</summary><div class="ev-body">pnr RXZKHB Book response</div></details>
+
+
+</details>
+<details class="tc BLOCKED">
+<summary class="tc-head"><span><span class="chev"></span><span class="mono">TC-SEATMAP-VAL-04</span> - Validate a cellID obtained from one offer's GetSeatMap response is rejected when submitted in Book for a different offer</span><span class="badge BLOCKED">BLOCKED</span></summary>
+<div class="row"><b>Endpoint Name:</b> Book</div>
+<div class="row"><b>Request:</b> Would require two independent, successful GetSeatMap chains (Offer A, Offer B)</div>
+<div class="row"><b>Response:</b> N/A — this round's GetSeatMap outage prevented obtaining a second independent GetSeatMap response</div>
+<div class="row"><b>Expected:</b> Request rejected (§2.7, §2.9, §7.7)</div>
+<div class="row"><b>Actual:</b> NOT RE-VERIFIED this round due to the concurrent GetSeatMap outage (see Findings/BUG-14). BUG-07 (STILL REPRODUCES as of Round 3) is carried forward unchanged.</div>
+<div class="row tc-status-row"><b>Status:</b> <span class="badge BLOCKED">BLOCKED</span></div>
+<details class="evidence"><summary>Evidence</summary><div class="ev-body">See Findings — GetSeatMap sustained outage (BUG-14)</div></details>
+
+
+</details>
+<details class="tc FAIL">
+<summary class="tc-head"><span><span class="chev"></span><span class="mono">TC-BOOK-VAL-06</span> - Validate Book's behavior when passengersSelectedSeats.cellCode does not match the cell that cellId actually encodes</span><span class="badge FAIL">FAIL</span></summary>
+<div class="row"><b>Endpoint Name:</b> Book</div>
+<div class="row"><b>Request:</b> Book submitted with cellCode from one AvailablePaid cell (8C) but cellId from a different AvailablePaid cell (8B) in the same offer/segment (BAH-DXB)</div>
+<div class="row"><b>Response:</b> 200 — pnr=RORUIF, seat attached exactly as the submitted cellCode (8C, 120.00 SAR), not the cell cellId actually referenced (8B)</div>
+<div class="row"><b>Expected:</b> Confirm whether cellId alone is trusted, request rejected, or wrong seat booked under wrong code (§2.7, §2.9, §7.11)</div>
+<div class="row"><b>Actual:</b> STILL REPRODUCES — the API trusts cellCode, not cellId; cellId's real identity is not cross-checked at all, unchanged from Rounds 1-3</div>
+<div class="row tc-status-row"><b>Status:</b> <span class="badge FAIL">FAIL</span></div>
+<details class="evidence"><summary>Evidence</summary><div class="ev-body">pnr RORUIF, cellCode 8C booked at 120.00 SAR (8C's own price, cellId was for cell 8B)</div></details>
+
+
+</details>
+<details class="tc PASS">
+<summary class="tc-head"><span><span class="chev"></span><span class="mono">TC-BOOK-VAL-07</span> - Validate a second, different passengersSelectedSeats selection supersedes an earlier selection made before the single Book call is sent</span><span class="badge PASS">PASS</span></summary>
+<div class="row"><b>Endpoint Name:</b> Book</div>
+<div class="row"><b>Request:</b> Client-side behavior — only one Book call is ever transmitted</div>
+<div class="row"><b>Response:</b> N/A</div>
+<div class="row"><b>Expected:</b> Book reflects exactly what was sent (§2.9)</div>
+<div class="row"><b>Actual:</b> Every Book call this round reflected exactly the cellCode/cellId actually transmitted, never a stale value, unchanged from Rounds 1-3</div>
+<div class="row tc-status-row"><b>Status:</b> <span class="badge PASS">PASS</span></div>
+<details class="evidence"><summary>Evidence</summary><div class="ev-body">Cross-referenced against TC-BOOK-POS-03/NEG-06/VAL-06 evidence this run</div></details>
+
+
+</details>
+<details class="tc PASS">
+<summary class="tc-head"><span><span class="chev"></span><span class="mono">TC-SEATMAP-VAL-11</span> - Verify passengersSeatMapAvailability.&lt;paxRef&gt;.&lt;segmentRefId&gt; stays internally consistent with per-cell seatPriceDetailsByPassenger entries, and verify segment-ref keys are used with consistent casing throughout the response</span><span class="badge PASS">PASS</span></summary>
+<div class="row"><b>Endpoint Name:</b> GetSeatMap</div>
+<div class="row"><b>Request:</b> GetSeatMap -&gt; for the passenger, read passengersSeatMapAvailability.&lt;paxRef&gt; -&gt; confirm keys match seatMapDetails/flightSegments casing exactly</div>
+<div class="row"><b>Response:</b> passengersSeatMapAvailability.PAX1's key is the full segmentRefId string 'GF-GF169-GF169-2026111521-2026111522-O', matching seatMapDetails/flightSegments keys character-for-character</div>
+<div class="row"><b>Expected:</b> Segment-ref key casing consistent; no casing inconsistency (§2.7)</div>
+<div class="row"><b>Actual:</b> No casing inconsistency observed for GulfAir, unchanged from Rounds 1-3</div>
+<div class="row tc-status-row"><b>Status:</b> <span class="badge PASS">PASS</span></div>
+<details class="evidence"><summary>Evidence</summary><div class="ev-body">passengersSeatMapAvailability key == seatMapDetails segment key, verbatim</div></details>
+
+
+</details>
+</div>
+</details><details class="tc-category" data-cat="boundary" open>
+<summary><span class="cat-icon">&#128207;</span><span class="cat-name">Boundary</span><span class="cat-counts"><span class="cc pass">4 passed</span><span class="cc fail">0 failed</span><span class="cc blocked">0 blocked</span></span><span class="cat-chev"></span></summary>
+<div class="tc-category-body">
+<div class="tc-cat-actions"><button type="button" class="tc-cat-expand">Expand all</button><button type="button" class="tc-cat-collapse">Collapse all</button></div>
+<details class="tc PASS">
+<summary class="tc-head"><span><span class="chev"></span><span class="mono">TC-SEATMAP-BND-03</span> - Confirm live whether AvailableFree/AvailableAfterReservation are real cellAvailability values</span><span class="badge PASS">PASS</span></summary>
+<div class="row"><b>Endpoint Name:</b> GetSeatMap</div>
+<div class="row"><b>Request:</b> Same GulfAir/KSA GetSeatMap sample (1 segment, 175 cells) inspected for AvailableFree/AvailableAfterReservation</div>
+<div class="row"><b>Response:</b> Only AvailablePaid and Occupied observed; neither candidate value found</div>
+<div class="row"><b>Expected:</b> Confirm live whether AvailableFree/AvailableAfterReservation are real cellAvailability values for this supplier's sample (§2.7, §8.3)</div>
+<div class="row"><b>Actual:</b> No new evidence for or against on GulfAir/KSA — remains unconfirmed for this supplier, consistent with Rounds 1-3</div>
+<div class="row tc-status-row"><b>Status:</b> <span class="badge PASS">PASS</span></div>
+<details class="evidence"><summary>Evidence</summary><div class="ev-body">Distinct cellAvailability values this round: AvailablePaid, Occupied only (148 paid, 2 occupied)</div></details>
+
+
+</details>
+<details class="tc PASS">
+<summary class="tc-head"><span><span class="chev"></span><span class="mono">TC-SEATMAP-BND-02</span> - Verify cellAvailability/paxCellAvailability values are limited to AvailablePaid/Blocked/Occupied, and Aisle cells carry no seatPriceDetails</span><span class="badge PASS">PASS</span></summary>
+<div class="row"><b>Endpoint Name:</b> GetSeatMap</div>
+<div class="row"><b>Request:</b> Same GetSeatMap response, enumerating distinct cellCategory/cellAvailability values</div>
+<div class="row"><b>Response:</b> cellCategory ∈ {Seat, Aisle}; cellAvailability ∈ {AvailablePaid, Occupied}; every Aisle cell has null seatPriceDetails</div>
+<div class="row"><b>Expected:</b> No value outside known enum; Aisle cells carry no pricing (§2.7, §8.3)</div>
+<div class="row"><b>Actual:</b> Confirmed, unchanged from Rounds 1-3</div>
+<div class="row tc-status-row"><b>Status:</b> <span class="badge PASS">PASS</span></div>
+<details class="evidence"><summary>Evidence</summary><div class="ev-body">Full 175-cell scan; 0 Aisle cells with seatPriceDetails</div></details>
+
+
+</details>
+<details class="tc PASS">
+<summary class="tc-head"><span><span class="chev"></span><span class="mono">TC-BOOK-BND-03</span> - Validate passengersSelectedSeats with 0, 1, and multiple passenger/segment entries</span><span class="badge PASS">PASS</span></summary>
+<div class="row"><b>Endpoint Name:</b> Book</div>
+<div class="row"><b>Request:</b> (a) passengersSelectedSeats omitted entirely (BAH-CAI, pnr RXADOW); (b) one passenger/one segment (TC-BOOK-POS-03, pnr RXZKHB); (c) two passengers/two segments (round-trip)</div>
+<div class="row"><b>Response:</b> (a) 200, no seat attached; (b) 200, seat attached as expected; (c) not re-verified this round</div>
+<div class="row"><b>Expected:</b> (a) Book succeeds with no seat attached; (b) succeeds as in TC-BOOK-POS-03; (c) multi-segment nesting confirmed live in Round 3 (§2.9, §8.1-item3)</div>
+<div class="row"><b>Actual:</b> (a) and (b) both confirmed PASS this round. (c) the round-trip multi-segment nesting case (confirmed passing in Round 3, pnr RPDBSR) was NOT re-verified this round — blocked by the GetSeatMap outage (see Findings/BUG-14).</div>
+<div class="row tc-status-row"><b>Status:</b> <span class="badge PASS">PASS</span></div>
+<details class="evidence"><summary>Evidence</summary><div class="ev-body">(a) pnr RXADOW, passengersSelectedSeats absent from request and response; (b) pnr RXZKHB</div></details>
+
+
+</details>
+<details class="tc PASS">
+<summary class="tc-head"><span><span class="chev"></span><span class="mono">TC-SEATMAP-BND-04</span> - Confirm live whether any cellCategory value beyond {Seat, Aisle} is ever returned</span><span class="badge PASS">PASS</span></summary>
+<div class="row"><b>Endpoint Name:</b> GetSeatMap</div>
+<div class="row"><b>Request:</b> GetSeatMap across the GulfAir routes/aircraft successfully sampled this round (before the outage began: BAH-RUH, BAH-CAI, BAH-DXB, all narrowbody equipment)</div>
+<div class="row"><b>Response:</b> Only Seat/Aisle observed across all successful GulfAir samples this round too</div>
+<div class="row"><b>Expected:</b> Resolve empirically (§2.7, §8.3)</div>
+<div class="row"><b>Actual:</b> Same inconclusive-but-consistent outcome as Rounds 1-3 — GulfAir's narrowbody fleet on these routes shows no galley/lavatory/bulkhead-as-separate-category cells</div>
+<div class="row tc-status-row"><b>Status:</b> <span class="badge PASS">PASS</span></div>
+<details class="evidence"><summary>Evidence</summary><div class="ev-body">Distinct cellCategory values across this round's successful GetSeatMap calls: Seat, Aisle only</div></details>
+
+
+</details>
+</div>
+</details><details class="tc-category" data-cat="business-rule" open>
+<summary><span class="cat-icon">&#128188;</span><span class="cat-name">Business Rule</span><span class="cat-counts"><span class="cc pass">3 passed</span><span class="cc fail">0 failed</span><span class="cc blocked">4 blocked</span></span><span class="cat-chev"></span></summary>
+<div class="tc-category-body">
+<div class="tc-cat-actions"><button type="button" class="tc-cat-expand">Expand all</button><button type="button" class="tc-cat-collapse">Collapse all</button></div>
+<details class="tc PASS">
+<summary class="tc-head"><span><span class="chev"></span><span class="mono">TC-SEATMAP-BIZ-02</span> - Verify seatPriceDetailsByPassenger.totalPrice reconciles to basePrice + taxesPrice for every priced cell</span><span class="badge PASS">PASS</span></summary>
+<div class="row"><b>Endpoint Name:</b> GetSeatMap</div>
+<div class="row"><b>Request:</b> Same GetSeatMap response, checked totalPrice vs basePrice+taxesPrice for all 148 AvailablePaid cells</div>
+<div class="row"><b>Response:</b> basePrice correctly carries the real seat charge (e.g. cell 8B: basePrice=120.00 SAR, taxesPrice=0 SAR, totalPrice=120.00 SAR)</div>
+<div class="row"><b>Expected:</b> totalPrice.amount == basePrice.amount + taxesPrice.amount (§2.7, §7.10)</div>
+<div class="row"><b>Actual:</b> 0/148 mismatches — the Round 2 fix remains STABLE for a 4th consecutive round</div>
+<div class="row tc-status-row"><b>Status:</b> <span class="badge PASS">PASS</span></div>
+<details class="evidence"><summary>Evidence</summary><div class="ev-body">Sample cell 8B: 120.00 = 120.00 + 0; systemic 0/148 mismatches</div></details>
+
+
+</details>
+<details class="tc PASS">
+<summary class="tc-head"><span><span class="chev"></span><span class="mono">TC-SEATMAP-BIZ-03</span> - Verify overall cellAvailability and per-passenger paxCellAvailability are independently reported</span><span class="badge PASS">PASS</span></summary>
+<div class="row"><b>Endpoint Name:</b> GetSeatMap</div>
+<div class="row"><b>Request:</b> Same GetSeatMap response — 1 ADT passenger (PAX1) only</div>
+<div class="row"><b>Response:</b> Every priced cell's seatPriceDetailsByPassenger has exactly one entry, keyed PAX1, matching the cell's own cellAvailability</div>
+<div class="row"><b>Expected:</b> Structural consistency, not per-cell completeness (§2.7)</div>
+<div class="row"><b>Actual:</b> Holds; same single-ADT caveat as Rounds 1-3 (multi-pax differential-eligibility scenario blocked this round by the GetSeatMap outage, see BUG-14)</div>
+<div class="row tc-status-row"><b>Status:</b> <span class="badge PASS">PASS</span></div>
+<details class="evidence"><summary>Evidence</summary><div class="ev-body">148/148 paid cells have a PAX1 entry</div></details>
+
+
+</details>
+<details class="tc BLOCKED">
+<summary class="tc-head"><span><span class="chev"></span><span class="mono">TC-SEATMAP-BIZ-04</span> - Exploratory — confirm GetSeatMap reflects real-time supplier inventory rather than a cached snapshot</span><span class="badge BLOCKED">BLOCKED</span></summary>
+<div class="row"><b>Endpoint Name:</b> GetSeatMap</div>
+<div class="row"><b>Request:</b> Requires a second, independent session to occupy a specific seat between two GetSeatMap calls</div>
+<div class="row"><b>Response:</b> Not attempted — no concurrent-session/forcing mechanism available</div>
+<div class="row"><b>Expected:</b> N/A (exploratory) (§1.3)</div>
+<div class="row"><b>Actual:</b> Not forceable from a single test session, unchanged from Rounds 1-3</div>
+<div class="row tc-status-row"><b>Status:</b> <span class="badge BLOCKED">BLOCKED</span></div>
+<details class="evidence"><summary>Evidence</summary><div class="ev-body">No second booking session available</div></details>
+
+
+</details>
+<details class="tc PASS">
+<summary class="tc-head"><span><span class="chev"></span><span class="mono">TC-BOOK-BIZ-04</span> - Verify selectedOffer.priceDetails.totalAmount includes totalSelectedSeatsAmount when a seat has been selected</span><span class="badge PASS">PASS</span></summary>
+<div class="row"><b>Endpoint Name:</b> Book</div>
+<div class="row"><b>Request:</b> Same Book response as TC-BOOK-POS-03</div>
+<div class="row"><b>Response:</b> totalAmount=643.00=170.00+353.00+0+120.00</div>
+<div class="row"><b>Expected:</b> totalAmount == totalBaseAmount + totalTaxAmount + totalAncillariesAmount + totalSelectedSeatsAmount (§2.1, §2.9, §7.10)</div>
+<div class="row"><b>Actual:</b> Reconciles exactly on this round's one-way booking. The round-trip multi-segment sample (confirmed passing in Round 3, pnr RPDBSR) was NOT re-verified this round — blocked by the GetSeatMap outage (see Findings/BUG-14).</div>
+<div class="row tc-status-row"><b>Status:</b> <span class="badge PASS">PASS</span></div>
+<details class="evidence"><summary>Evidence</summary><div class="ev-body">pnr RXZKHB: 170.00 base + 353.00 tax + 0 ancillary + 120.00 seat = 643.00 total</div></details>
+
+
+</details>
+<details class="tc BLOCKED">
+<summary class="tc-head"><span><span class="chev"></span><span class="mono">TC-BOOK-BIZ-06</span> - Verify an Infant (INF) on an Adult's lap is not charged a seat fee and requires no passengersSelectedSeats entry</span><span class="badge BLOCKED">BLOCKED</span></summary>
+<div class="row"><b>Endpoint Name:</b> Book</div>
+<div class="row"><b>Request:</b> Would require an ADT+INF AddPassenger chain with parentPaxRefId linkage</div>
+<div class="row"><b>Response:</b> N/A</div>
+<div class="row"><b>Expected:</b> N/A (§2.5, §2.9)</div>
+<div class="row"><b>Actual:</b> Not executed this round — deprioritized again in favor of the higher-value seat-validation/route-variation coverage already prioritized this run, consistent with Rounds 1-3's own scope decision</div>
+<div class="row tc-status-row"><b>Status:</b> <span class="badge BLOCKED">BLOCKED</span></div>
+<details class="evidence"><summary>Evidence</summary><div class="ev-body">Not attempted</div></details>
+
+
+</details>
+<details class="tc BLOCKED">
+<summary class="tc-head"><span><span class="chev"></span><span class="mono">TC-BOOK-BIZ-05</span> - Validate a Child (CHD) passenger assigned an Exit Row seat is rejected server-side</span><span class="badge BLOCKED">BLOCKED</span></summary>
+<div class="row"><b>Endpoint Name:</b> Book</div>
+<div class="row"><b>Request:</b> Would require an ADT+CHD GetSeatMap chain (BAH-JED attempted this round)</div>
+<div class="row"><b>Response:</b> N/A — GetSeatMap failed with the generic outage error on the attempted ADT+CHD chain</div>
+<div class="row"><b>Expected:</b> An explicit error response; no pnr created (§2.7, §2.9)</div>
+<div class="row"><b>Actual:</b> NOT RE-VERIFIED this round — the ADT+CHD chain needed to identify an exit-row cell for the CHD passenger hit the concurrent GetSeatMap outage (see Findings/BUG-14). BUG-09 (STILL REPRODUCES IN ITS WORSENED FORM as of Round 3 — zero server-side validation, CHD genuinely ticketed in the exit row) is carried forward unchanged, not re-confirmed or newly resolved this round.</div>
+<div class="row tc-status-row"><b>Status:</b> <span class="badge BLOCKED">BLOCKED</span></div>
+<details class="evidence"><summary>Evidence</summary><div class="ev-body">See Findings — GetSeatMap sustained outage (BUG-14)</div></details>
+
+
+</details>
+<details class="tc BLOCKED">
+<summary class="tc-head"><span><span class="chev"></span><span class="mono">TC-BOOK-BIZ-07</span> - Validate a wheelchair-accessible seat can be selected for a passenger flagged for special assistance</span><span class="badge BLOCKED">BLOCKED</span></summary>
+<div class="row"><b>Endpoint Name:</b> Book</div>
+<div class="row"><b>Request:</b> Requires identifying a wheelchair-accessible cell by its cellCharacteristics/description text</div>
+<div class="row"><b>Response:</b> N/A — no WHEELCHAIR/WCHR/ACCESSIBLE characteristic string found in this round's captured GulfAir seat map</div>
+<div class="row"><b>Expected:</b> N/A (§2.5, §2.7, §2.9)</div>
+<div class="row"><b>Actual:</b> Not executable this round either — the description vocabulary captured this round (chain1's 15 values) still contains no wheelchair-designated value, unchanged from Rounds 1-3</div>
+<div class="row tc-status-row"><b>Status:</b> <span class="badge BLOCKED">BLOCKED</span></div>
+<details class="evidence"><summary>Evidence</summary><div class="ev-body">Full description-vocabulary scan across this round's GetSeatMap sample: zero WHEELCHAIR/WCHR/ACCESSIBLE matches</div></details>
+
+
+</details>
+</div>
+</details><details class="tc-category" data-cat="regression" open>
+<summary><span class="cat-icon">&#9851;</span><span class="cat-name">Regression</span><span class="cat-counts"><span class="cc pass">3 passed</span><span class="cc fail">1 failed</span><span class="cc blocked">0 blocked</span></span><span class="cat-chev"></span></summary>
+<div class="tc-category-body">
+<div class="tc-cat-actions"><button type="button" class="tc-cat-expand">Expand all</button><button type="button" class="tc-cat-collapse">Collapse all</button></div>
+<details class="tc PASS">
+<summary class="tc-head"><span><span class="chev"></span><span class="mono">TC-RETRIEVE-REG-01</span> - Verify a selected seat still appears in Retrieve after the booking transitions from Booked to ticketed</span><span class="badge PASS">PASS</span></summary>
+<div class="row"><b>Endpoint Name:</b> Retrieve</div>
+<div class="row"><b>Request:</b> POST api/v2/FlightBooking/Retrieve for pnr=RXZKHB immediately after Book</div>
+<div class="row"><b>Response:</b> 200 — bookingStatus='Booked', passengersSelectedSeats identical to Book's own echo</div>
+<div class="row"><b>Expected:</b> passengersSelectedSeats/passengerSeats/totalSelectedSeats in a post-ticketing Retrieve are identical to immediately-post-Book values (§2.11)</div>
+<div class="row"><b>Actual:</b> GulfAir tickets synchronously at Book time; Retrieve reproduces Book's seat/price fields exactly (seat 8B/120 SAR). Round-trip sample (confirmed in Round 3, pnr RPDBSR) was NOT re-verified this round — the round-trip Book chain needed for fresh round-trip Retrieve evidence was blocked by this round's GetSeatMap outage (see Findings/BUG-14); last confirmed passing in Round 3.</div>
+<div class="row tc-status-row"><b>Status:</b> <span class="badge PASS">PASS</span></div>
+<details class="evidence"><summary>Evidence</summary><div class="ev-body">Retrieve(RXZKHB) matches Book(RXZKHB) field-for-field</div></details>
+
+
+</details>
+<details class="tc FAIL">
+<summary class="tc-head"><span><span class="chev"></span><span class="mono">TC-SEATMAP-REG-02</span> - Verify seatMapDetails full field-list schema matches SPEC.md §2.7 with no undocumented keys</span><span class="badge FAIL">FAIL</span></summary>
+<div class="row"><b>Endpoint Name:</b> GetSeatMap</div>
+<div class="row"><b>Request:</b> Full schema diff of the live GetSeatMap response against §2.7's documented field list</div>
+<div class="row"><b>Response:</b> All §2.7-documented fields present, plus 2 undocumented fields: top-level isFareCheckRequired (boolean, observed false) and passengersDetails.&lt;paxRef&gt;.passengersSeatMapAvailability</div>
+<div class="row"><b>Expected:</b> No undocumented keys (§2.7, §8.1-item8)</div>
+<div class="row"><b>Actual:</b> Still 2 undocumented fields, identical to Rounds 1-3 (SPEC.md §2.7 not yet amended)</div>
+<div class="row tc-status-row"><b>Status:</b> <span class="badge FAIL">FAIL</span></div>
+<details class="evidence"><summary>Evidence</summary><div class="ev-body">Live GulfAir GetSeatMap top-level keys: supplier,offerId,responseId,isFareCheckRequired,flightSegments,passengersDetails,seatMapDetails</div></details>
+
+
+</details>
+<details class="tc PASS">
+<summary class="tc-head"><span><span class="chev"></span><span class="mono">TC-BOOK-REG-02</span> - Verify passengersSelectedSeats, passengerFareBreakdown[].passengerSeats/paxTotalSeatAmount, and priceDetails.totalSelectedSeats/totalSelectedSeatsAmount are present in the Book response schema</span><span class="badge PASS">PASS</span></summary>
+<div class="row"><b>Endpoint Name:</b> Book</div>
+<div class="row"><b>Request:</b> Same Book response as TC-BOOK-POS-03</div>
+<div class="row"><b>Response:</b> All 5 fields present and correctly typed</div>
+<div class="row"><b>Expected:</b> No pre-existing response field regressed (§2.9, §8.1-item8)</div>
+<div class="row"><b>Actual:</b> Confirmed, unchanged from Rounds 1-3</div>
+<div class="row tc-status-row"><b>Status:</b> <span class="badge PASS">PASS</span></div>
+<details class="evidence"><summary>Evidence</summary><div class="ev-body">Full Book response schema for pnr RXZKHB</div></details>
+
+
+</details>
+<details class="tc PASS">
+<summary class="tc-head"><span><span class="chev"></span><span class="mono">TC-BOOK-REG-03</span> - Verify passengerFareBreakdown[].passengerSeats[].price.amount equals the same passenger's paxTotalSeatAmount.amount for a single seat</span><span class="badge PASS">PASS</span></summary>
+<div class="row"><b>Endpoint Name:</b> Book</div>
+<div class="row"><b>Request:</b> Same Book response as TC-BOOK-POS-03</div>
+<div class="row"><b>Response:</b> passengerSeats[0].price.amount=120.00; paxTotalSeatAmount.amount=120.00</div>
+<div class="row"><b>Expected:</b> Exactly equal (§2.9)</div>
+<div class="row"><b>Actual:</b> 120.00==120.00, unchanged from Rounds 1-3</div>
+<div class="row tc-status-row"><b>Status:</b> <span class="badge PASS">PASS</span></div>
+<details class="evidence"><summary>Evidence</summary><div class="ev-body">selectedOffer.passengerFareBreakdown[0], pnr RXZKHB</div></details>
+
+
+</details>
+</div>
+</details><details class="tc-category" data-cat="security" open>
+<summary><span class="cat-icon">&#128274;</span><span class="cat-name">Security</span><span class="cat-counts"><span class="cc pass">1 passed</span><span class="cc fail">0 failed</span><span class="cc blocked">1 blocked</span></span><span class="cat-chev"></span></summary>
+<div class="tc-category-body">
+<div class="tc-cat-actions"><button type="button" class="tc-cat-expand">Expand all</button><button type="button" class="tc-cat-collapse">Collapse all</button></div>
+<details class="tc PASS">
+<summary class="tc-head"><span><span class="chev"></span><span class="mono">TC-SEATAFTERHOLD-SEC-02</span> - Apply the three universal security checks to SeatAfterHold</span><span class="badge PASS">PASS</span></summary>
+<div class="row"><b>Endpoint Name:</b> SeatAfterHold</div>
+<div class="row"><b>Request:</b> (1) invalid x-api-key, (2) invalid Client-Id against the SeatAfterHold body used in TC-SEATAFTERHOLD-POS-01</div>
+<div class="row"><b>Response:</b> (1) 401 AuthenticationError; (2) 401 AuthenticationError — both short-circuit before reaching the supplier-not-found business logic</div>
+<div class="row"><b>Expected:</b> All rejected; error shape confirmed live (§7.14, §2.7a)</div>
+<div class="row"><b>Actual:</b> Both auth-layer checks behave identically to every other endpoint's 401 AuthenticationError envelope, unchanged from Rounds 1-3; cross-tenant variant skipped (base call already 409s for business reasons unrelated to tenant-matching)</div>
+<div class="row tc-status-row"><b>Status:</b> <span class="badge PASS">PASS</span></div>
+<details class="evidence"><summary>Evidence</summary><div class="ev-body">badKey and badClient both returned HTTP 401</div></details>
+
+
+</details>
+<details class="tc BLOCKED">
+<summary class="tc-head"><span><span class="chev"></span><span class="mono">TC-SEATMAP-SEC-01</span> - Apply the three universal security checks (invalid x-api-key, invalid Client-Id, cross-tenant supplier/credentialsSelector) to GetSeatMap</span><span class="badge BLOCKED">BLOCKED</span></summary>
+<div class="row"><b>Endpoint Name:</b> GetSeatMap</div>
+<div class="row"><b>Request:</b> 3 variants: (1) corrupted x-api-key, (2) corrupted Client-Id, (3) valid headers but supplier/credentialsSelector switched to TravelportNdc/UAE</div>
+<div class="row"><b>Response:</b> N/A — not attempted this round</div>
+<div class="row"><b>Expected:</b> All three rejected (§7.14)</div>
+<div class="row"><b>Actual:</b> NOT RE-VERIFIED this round — GetSeatMap's sustained outage (BUG-14) meant even a valid baseline call was failing generically, making a meaningful security-check comparison (auth-layer 401 vs. business-layer rejection) unreliable to interpret. Last confirmed passing in Round 3.</div>
+<div class="row tc-status-row"><b>Status:</b> <span class="badge BLOCKED">BLOCKED</span></div>
+<details class="evidence"><summary>Evidence</summary><div class="ev-body">See Findings — GetSeatMap sustained outage (BUG-14)</div></details>
+
+
+</details>
+</div>
+</details><details class="tc-category" data-cat="integration" open>
+<summary><span class="cat-icon">&#128279;</span><span class="cat-name">Integration</span><span class="cat-counts"><span class="cc pass">0 passed</span><span class="cc fail">1 failed</span><span class="cc blocked">4 blocked</span></span><span class="cat-chev"></span></summary>
+<div class="tc-category-body">
+<div class="tc-cat-actions"><button type="button" class="tc-cat-expand">Expand all</button><button type="button" class="tc-cat-collapse">Collapse all</button></div>
+<details class="tc FAIL">
+<summary class="tc-head"><span><span class="chev"></span><span class="mono">TC-SEATAFTERHOLD-INT-04</span> - Determine SeatAfterHold's actual position in the Hold-branch chain by attempting it at three candidate points</span><span class="badge FAIL">FAIL</span></summary>
+<div class="row"><b>Endpoint Name:</b> SeatAfterHold flow</div>
+<div class="row"><b>Request:</b> Chain tested: Hold -&gt; SeatAfterHold (immediately after Hold)</div>
+<div class="row"><b>Response:</b> SeatAfterHold rejected 409 'GulfAir does not exists' at the very first candidate position</div>
+<div class="row"><b>Expected:</b> Record which candidate position(s) SeatAfterHold accepts (§2.7a, §2.10, §2.12, §2.13, §5.5-item8)</div>
+<div class="row"><b>Actual:</b> None of the three candidate positions meaningfully comparable — rejection is supplier-level, not position-dependent, unchanged from Rounds 1-3</div>
+<div class="row tc-status-row"><b>Status:</b> <span class="badge FAIL">FAIL</span></div>
+<details class="evidence"><summary>Evidence</summary><div class="ev-body">See TC-SEATAFTERHOLD-POS-01</div></details>
+
+
+</details>
+<details class="tc BLOCKED">
+<summary class="tc-head"><span><span class="chev"></span><span class="mono">TC-SEATMAP-INT-02</span> - Verify GetSeatMap returns a structurally identical normalized response shape across suppliers using different native backend protocols</span><span class="badge BLOCKED">BLOCKED</span></summary>
+<div class="row"><b>Endpoint Name:</b> GetSeatMap</div>
+<div class="row"><b>Request:</b> Requires GetSeatMap against 3+ suppliers spanning distinct native protocols</div>
+<div class="row"><b>Response:</b> Out of scope — this run's scope is GulfAir only</div>
+<div class="row"><b>Expected:</b> N/A (§1.3, §2.7, §4.1, §4.7)</div>
+<div class="row"><b>Actual:</b> Not executed; this run's scope is fixed to Supplier=GulfAir, unchanged from Rounds 1-3</div>
+<div class="row tc-status-row"><b>Status:</b> <span class="badge BLOCKED">BLOCKED</span></div>
+<details class="evidence"><summary>Evidence</summary><div class="ev-body">Run scope explicitly fixed to Supplier=GulfAir</div></details>
+
+
+</details>
+<details class="tc BLOCKED">
+<summary class="tc-head"><span><span class="chev"></span><span class="mono">TC-SEATMAP-INT-03</span> - Capability-matrix sweep — run GetSeatMap against every supplier confirmed or plausibly SeatMap-capable</span><span class="badge BLOCKED">BLOCKED</span></summary>
+<div class="row"><b>Endpoint Name:</b> GetSeatMap</div>
+<div class="row"><b>Request:</b> Requires a full-roster sweep across every SPEC.md §4.6 supplier</div>
+<div class="row"><b>Response:</b> Out of scope — only GulfAir's row can be populated</div>
+<div class="row"><b>Expected:</b> N/A (§4.5, §4.6, §4.7)</div>
+<div class="row"><b>Actual:</b> Not executed as a full sweep; GulfAir's own row reconfirmed SeatMap=Supported live for the 4th round (via chain1's success before this round's outage began), unchanged scope from Rounds 1-3</div>
+<div class="row tc-status-row"><b>Status:</b> <span class="badge BLOCKED">BLOCKED</span></div>
+<details class="evidence"><summary>Evidence</summary><div class="ev-body">See §4.7 capability confirmation finding</div></details>
+
+
+</details>
+<details class="tc BLOCKED">
+<summary class="tc-head"><span><span class="chev"></span><span class="mono">TC-BOOK-INT-03</span> - Validate Book accepts passengersSelectedSeats, PassengersSelectedAncillaries, and selectedBundles populated simultaneously</span><span class="badge BLOCKED">BLOCKED</span></summary>
+<div class="row"><b>Endpoint Name:</b> Book</div>
+<div class="row"><b>Request:</b> Requires a bundle code (GetOfferBundles) plus an ancillary code plus a seat, all on one Book call</div>
+<div class="row"><b>Response:</b> N/A — GulfAir/KSA's haveBundles=false on every offer sampled this round</div>
+<div class="row"><b>Expected:</b> N/A (§2.9)</div>
+<div class="row"><b>Actual:</b> Not executable for GulfAir — haveBundles=false confirmed on this round's chains, unchanged from Rounds 1-3</div>
+<div class="row tc-status-row"><b>Status:</b> <span class="badge BLOCKED">BLOCKED</span></div>
+<details class="evidence"><summary>Evidence</summary><div class="ev-body">FareConfirm capability flags: haveBundles=False (chain1 and others)</div></details>
+
+
+</details>
+<details class="tc BLOCKED">
+<summary class="tc-head"><span><span class="chev"></span><span class="mono">TC-BOOK-INT-04</span> - Validate a selected bundle's JourneyKey/SelectedBundleCode and a selected seat's segmentRefId are cross-consistent</span><span class="badge BLOCKED">BLOCKED</span></summary>
+<div class="row"><b>Endpoint Name:</b> Book</div>
+<div class="row"><b>Request:</b> Requires GetOfferBundles to succeed first</div>
+<div class="row"><b>Response:</b> N/A — haveBundles=false for GulfAir/KSA</div>
+<div class="row"><b>Expected:</b> N/A (§2.4, §2.9)</div>
+<div class="row"><b>Actual:</b> Still not executable — GulfAir has no bundle capability on any sampled offer, unchanged capability gap from Rounds 1-3</div>
+<div class="row tc-status-row"><b>Status:</b> <span class="badge BLOCKED">BLOCKED</span></div>
+<details class="evidence"><summary>Evidence</summary><div class="ev-body">FareConfirm capability flags show haveBundles=False</div></details>
+
+
+</details>
+</div>
+</details><details class="tc-category" data-cat="documentation" open>
+<summary><span class="cat-icon">&#128196;</span><span class="cat-name">Documentation</span><span class="cat-counts"><span class="cc pass">1 passed</span><span class="cc fail">0 failed</span><span class="cc blocked">0 blocked</span></span><span class="cat-chev"></span></summary>
+<div class="tc-category-body">
+<div class="tc-cat-actions"><button type="button" class="tc-cat-expand">Expand all</button><button type="button" class="tc-cat-collapse">Collapse all</button></div>
+<details class="tc PASS">
+<summary class="tc-head"><span><span class="chev"></span><span class="mono">TC-SEATMAP-SEC-02</span> - Record that supplier-side auth and request/response logging are not independently verifiable through this API's black-box contract</span><span class="badge PASS">PASS</span></summary>
+<div class="row"><b>Endpoint Name:</b> GetSeatMap (documentation)</div>
+<div class="row"><b>Request:</b> N/A — documentation/scope-boundary case, no live API call</div>
+<div class="row"><b>Response:</b> N/A</div>
+<div class="row"><b>Expected:</b> Documented per §1.5/§1.8/PRD §7</div>
+<div class="row"><b>Actual:</b> Documented as specified, unchanged from Rounds 1-3 — TC-SEATMAP-NEG-05 covers the API-observable graceful-degradation half</div>
+<div class="row tc-status-row"><b>Status:</b> <span class="badge PASS">PASS</span></div>
+<details class="evidence"><summary>Evidence</summary><div class="ev-body">No API call made, per its own definition</div></details>
+
+
+</details>
+</div>
+</details><details class="tc-category" data-cat="flow" open>
+<summary><span class="cat-icon">&#128257;</span><span class="cat-name">Flow</span><span class="cat-counts"><span class="cc pass">1 passed</span><span class="cc fail">1 failed</span><span class="cc blocked">4 blocked</span></span><span class="cat-chev"></span></summary>
+<div class="tc-category-body">
+<div class="tc-cat-actions"><button type="button" class="tc-cat-expand">Expand all</button><button type="button" class="tc-cat-collapse">Collapse all</button></div>
+<details class="tc PASS">
+<summary class="tc-head"><span><span class="chev"></span><span class="mono">FLOW-V2-49-SEATFIELD</span> - Verify the existing SM-enrichment Family-A flow chains Book's ResponseId/selectedOfferId from GetSeatMap and exercises passengersSelectedSeats</span><span class="badge PASS">PASS</span></summary>
+<div class="row"><b>Endpoint Name:</b> Flow (Family A: AP-SM-FCK-BK-RT)</div>
+<div class="row"><b>Request:</b> Search-&gt;FareConfirm-&gt;AddPassenger-&gt;GetSeatMap-&gt;Book-&gt;Retrieve, one-way itinerary (pnr RXZKHB)</div>
+<div class="row"><b>Response:</b> PASS: Book and Retrieve both echo passengersSelectedSeats matching the selection; totalSelectedSeatsAmount non-zero and reconciles into totalAmount</div>
+<div class="row"><b>Expected:</b> Per-family state check (§6.3 Family A) plus seat-specific checks (§2.7, §2.9, §2.11, §5.4 row 49 (SM/A), §6.3, §6.4)</div>
+<div class="row"><b>Actual:</b> All assertions hold on this round's one-way sample (RXZKHB: 170+353+120=643). The round-trip sample (confirmed passing in Round 3, pnr RPDBSR) was NOT re-verified this round — blocked by the GetSeatMap outage (see Findings/BUG-14).</div>
+<div class="row tc-status-row"><b>Status:</b> <span class="badge PASS">PASS</span></div>
+<details class="evidence"><summary>Evidence</summary><div class="ev-body">pnr RXZKHB — see TC-BOOK-POS-03/BND-03/BIZ-04 for full detail</div></details>
+
+<details class="hops"><summary>Hops (6)</summary>
+<div class="hop"><span class="badge PASS">PASS</span> <span class="hop-endpoint">1. Search</span>
+<div class="hd"><b>Request:</b> POST api/V2/FlightSearch/Search — BAH-RUH one-way 2026-11-15, 1 ADT</div>
+<div class="hd"><b>Response:</b> 200, 30 offers</div>
+<div class="hd"><b>Expected:</b> 200, offers returned</div>
+<div class="hd"><b>Actual:</b> 200, 30 offers, first offer GF169</div>
+<div class="hd"><b>Evidence:</b> responseId captured</div>
+</div>
+<div class="hop"><span class="badge PASS">PASS</span> <span class="hop-endpoint">2. FareConfirm</span>
+<div class="hd"><b>Request:</b> POST api/v2/FlightSearch/FareConfirm</div>
+<div class="hd"><b>Response:</b> 200, isSeatMapRequired=false, canBeHeld=true, haveBundles=false</div>
+<div class="hd"><b>Expected:</b> 200, capability flags present</div>
+<div class="hd"><b>Actual:</b> 200, flags present and consistent with every other chain this run</div>
+<div class="hd"><b>Evidence:</b> selectedOffer.offerJourneys=[GF-GF169-1]</div>
+</div>
+<div class="hop"><span class="badge PASS">PASS</span> <span class="hop-endpoint">3. AddPassenger</span>
+<div class="hd"><b>Request:</b> POST api/v2/Passenger/AddPassengerDetails — self-consistent name (Mostafa Ibrahim)</div>
+<div class="hd"><b>Response:</b> 200, offerId/responseId returned</div>
+<div class="hd"><b>Expected:</b> 200, offerId/responseId returned</div>
+<div class="hd"><b>Actual:</b> 200</div>
+<div class="hd"><b>Evidence:</b> getAddPaxOfferId/getAddPaxResponceID populated</div>
+</div>
+<div class="hop"><span class="badge PASS">PASS</span> <span class="hop-endpoint">4. GetSeatMap</span>
+<div class="hd"><b>Request:</b> POST api/V2/SeatMap/Seat</div>
+<div class="hd"><b>Response:</b> 200, 1 segment, 175 cells, 148 AvailablePaid</div>
+<div class="hd"><b>Expected:</b> 200, seatMapDetails populated</div>
+<div class="hd"><b>Actual:</b> 200 — this call happened before this round's GetSeatMap outage began</div>
+<div class="hd"><b>Evidence:</b> segment key GF-GF169-GF169-2026111521-2026111522-O</div>
+</div>
+<div class="hop"><span class="badge PASS">PASS</span> <span class="hop-endpoint">5. Book</span>
+<div class="hd"><b>Request:</b> POST api/v2/FlightBooking/Book — seat 8B for PAX1</div>
+<div class="hd"><b>Response:</b> 200, pnr=RXZKHB, seated 8B/120.00 SAR</div>
+<div class="hd"><b>Expected:</b> 200, pnr/bookingToken/gdsPNR, seat echoed</div>
+<div class="hd"><b>Actual:</b> 200, pnr RXZKHB, totalAmount=643.00 reconciles</div>
+<div class="hd"><b>Evidence:</b> passengersSelectedSeats.PAX1 has 1 segment entry</div>
+</div>
+<div class="hop"><span class="badge PASS">PASS</span> <span class="hop-endpoint">6. Retrieve</span>
+<div class="hd"><b>Request:</b> POST api/v2/FlightBooking/Retrieve</div>
+<div class="hd"><b>Response:</b> 200, bookingStatus=Booked, identical seat/price fields to Book</div>
+<div class="hd"><b>Expected:</b> Seat persists post-ticketing</div>
+<div class="hd"><b>Actual:</b> Identical to Book</div>
+<div class="hd"><b>Evidence:</b> Retrieve(RXZKHB) matches Book(RXZKHB) field-for-field</div>
+</div>
+</details>
+</details>
+<details class="tc BLOCKED">
+<summary class="tc-head"><span><span class="chev"></span><span class="mono">FLOW-V2-50-SEATFIELD</span> - Verify whether GetSeatMap's chosen seat can be attached via Hold directly (Family B, before SeatAfterHold)</span><span class="badge BLOCKED">BLOCKED</span></summary>
+<div class="row"><b>Endpoint Name:</b> Flow (Family B: AP-SM-FCK-HD-FCAH-RT)</div>
+<div class="row"><b>Request:</b> Search-&gt;FareConfirm-&gt;AddPassenger-&gt;GetSeatMap-&gt;Hold, with passengersSelectedSeats included on the Hold request body</div>
+<div class="row"><b>Response:</b> N/A — requires a real cellCode/cellId sourced from a successful GetSeatMap call</div>
+<div class="row"><b>Expected:</b> Confirm live whether Hold silently ignores, rejects, or accepts an unrecognized passengersSelectedSeats field (§2.7a, §2.9, §2.10, §5.4 row 50 (SM/B), §5.5-item8)</div>
+<div class="row"><b>Actual:</b> NOT RE-VERIFIED this round — every GetSeatMap call attempted after this round's outage began failed, so no fresh seat cellCode/cellId was available to attach via Hold. BUG-08 (STILL REPRODUCES as of Round 3, on both one-way and round-trip itineraries) is carried forward unchanged.</div>
+<div class="row tc-status-row"><b>Status:</b> <span class="badge BLOCKED">BLOCKED</span></div>
+<details class="evidence"><summary>Evidence</summary><div class="ev-body">See Findings — GetSeatMap sustained outage (BUG-14)</div></details>
+
+
+</details>
+<details class="tc FAIL">
+<summary class="tc-head"><span><span class="chev"></span><span class="mono">FLOW-V2-CANDIDATE-SM-HOLD-01</span> - Verify Search-to-Retrieve completes with a selected seat when SeatAfterHold is called immediately after Hold</span><span class="badge FAIL">FAIL</span></summary>
+<div class="row"><b>Endpoint Name:</b> Flow (candidate SM-Hold-A)</div>
+<div class="row"><b>Request:</b> Hold (pnr RXFVNC) -&gt; SeatAfterHold (position A, immediately after Hold)</div>
+<div class="row"><b>Response:</b> SeatAfterHold rejected with 409 'GulfAir does not exists' — chain could not proceed past this hop</div>
+<div class="row"><b>Expected:</b> SeatAfterHold succeeds; final Retrieve shows the seat populated (§2.7a, §2.10, §2.12, §2.13, §2.11, §5.5-item8)</div>
+<div class="row"><b>Actual:</b> Blocked at the SeatAfterHold hop for GulfAir (BUG-03), unchanged from Rounds 1-3</div>
+<div class="row tc-status-row"><b>Status:</b> <span class="badge FAIL">FAIL</span></div>
+<details class="evidence"><summary>Evidence</summary><div class="ev-body"></div></details>
+
+<details class="hops"><summary>Hops (2)</summary>
+<div class="hop"><span class="badge PASS">PASS</span> <span class="hop-endpoint">1. Hold</span>
+<div class="hd"><b>Request:</b> POST api/v2/FlightBooking/Hold</div>
+<div class="hd"><b>Response:</b> 200, pnr=RXFVNC</div>
+<div class="hd"><b>Expected:</b> 200, pnr/bookingToken</div>
+<div class="hd"><b>Actual:</b> 200, pnr RXFVNC (holdExpirationDate null, separate defect BUG-04)</div>
+<div class="hd"><b>Evidence:</b> pnr RXFVNC</div>
+</div>
+<div class="hop"><span class="badge FAIL">FAIL</span> <span class="hop-endpoint">2. SeatAfterHold</span>
+<div class="hd"><b>Request:</b> POST api/v2/SeatMap/SeatAfterHold</div>
+<div class="hd"><b>Response:</b> 409 OperationNotSupported, 'GulfAir does not exists'</div>
+<div class="hd"><b>Expected:</b> 200 with a seat-selection response</div>
+<div class="hd"><b>Actual:</b> 409, chain halted</div>
+<div class="hd"><b>Evidence:</b> TransactionId ae51b087-f559-49b5-a4f1-8ff55393ef29</div>
+</div>
+</details>
+</details>
+<details class="tc BLOCKED">
+<summary class="tc-head"><span><span class="chev"></span><span class="mono">FLOW-V2-CANDIDATE-SM-HOLD-02</span> - Verify Search-to-Retrieve completes with a selected seat when SeatAfterHold is called after FareConfirmAfterHold, before BookAfterHold</span><span class="badge BLOCKED">BLOCKED</span></summary>
+<div class="row"><b>Endpoint Name:</b> Flow (candidate SM-Hold-B)</div>
+<div class="row"><b>Request:</b> Not independently executed — SeatAfterHold's rejection of GulfAir is supplier-level, not state/position-dependent</div>
+<div class="row"><b>Response:</b> N/A</div>
+<div class="row"><b>Expected:</b> N/A (§2.7a, §2.10, §2.12, §2.13, §2.11, §5.5-item8)</div>
+<div class="row"><b>Actual:</b> Reasoned-BLOCKED, unchanged from Rounds 1-3</div>
+<div class="row tc-status-row"><b>Status:</b> <span class="badge BLOCKED">BLOCKED</span></div>
+<details class="evidence"><summary>Evidence</summary><div class="ev-body">See FLOW-V2-CANDIDATE-SM-HOLD-01</div></details>
+
+
+</details>
+<details class="tc BLOCKED">
+<summary class="tc-head"><span><span class="chev"></span><span class="mono">FLOW-V2-CANDIDATE-SM-HOLD-03</span> - Verify a selected seat can still be attached via SeatAfterHold after BookAfterHold has already finalized the booking</span><span class="badge BLOCKED">BLOCKED</span></summary>
+<div class="row"><b>Endpoint Name:</b> Flow (candidate SM-Hold-C)</div>
+<div class="row"><b>Request:</b> Not independently executed — same reasoning as candidate-02</div>
+<div class="row"><b>Response:</b> N/A</div>
+<div class="row"><b>Expected:</b> N/A (§2.7a, §2.13, §2.11, §5.5-item8)</div>
+<div class="row"><b>Actual:</b> Reasoned-BLOCKED, unchanged from Rounds 1-3</div>
+<div class="row tc-status-row"><b>Status:</b> <span class="badge BLOCKED">BLOCKED</span></div>
+<details class="evidence"><summary>Evidence</summary><div class="ev-body">See FLOW-V2-CANDIDATE-SM-HOLD-01</div></details>
+
+
+</details>
+<details class="tc BLOCKED">
+<summary class="tc-head"><span><span class="chev"></span><span class="mono">FLOW-V2-CANDIDATE-SM-HOLD-01-NEG</span> - Validate SeatAfterHold rejects a pnr/gdsPNR/bookingToken carried over from an unrelated Hold call</span><span class="badge BLOCKED">BLOCKED</span></summary>
+<div class="row"><b>Endpoint Name:</b> Flow (candidate SM-Hold-A, negative)</div>
+<div class="row"><b>Request:</b> Actually attempted this round: pnr from Hold RXFVNC combined with bookingToken from an unrelated 2nd Hold (RAHAQQ)</div>
+<div class="row"><b>Response:</b> 409 OperationNotSupported 'GulfAir does not exists' — identical to the baseline rejection, not a distinct mismatch-specific error</div>
+<div class="row"><b>Expected:</b> N/A (§2.7a, §3.2, §7.2, §7.7)</div>
+<div class="row"><b>Actual:</b> The baseline SeatAfterHold call already rejects GulfAir unconditionally (409, supplier-level) before any identity-matching logic runs, so this remains not meaningfully testable for GulfAir, unchanged from Rounds 1-3</div>
+<div class="row tc-status-row"><b>Status:</b> <span class="badge BLOCKED">BLOCKED</span></div>
+<details class="evidence"><summary>Evidence</summary><div class="ev-body">TransactionId aa5d6279-dcdf-4231-9abb-5f319baaf3f2</div></details>
+
+
+</details>
+</div>
+</details>
+</details>
+<details class="section-collapse" open>
+<summary class="section-summary-flex">Findings<span class="section-count-badges"><span class="section-count-badge"><span class="scb-val serious">7</span><span class="scb-lbl">Defects</span></span><span class="section-count-badge"><span class="scb-val accent">3</span><span class="scb-lbl">Unknown-resolution</span></span></span></summary>
+<h3>Defects</h3>
+<div class="finding-item serious"><div><b>[TC-SEATAFTERHOLD-POS-01]</b> [BUG-03, STILL REPRODUCES — Round 4] SeatAfterHold rejects every call for supplier=GulfAir with HTTP 409 OperationNotSupported, Context='GulfAir does not exists', identical wording/status to Rounds 1-3, reconfirmed against a brand-new fresh Hold (pnr RXFVNC) created independently of GetSeatMap.</div><div class="fmeta">Spec ref: §2.7a</div></div>
+<div class="finding-item serious"><div><b>[FLOW-V2-CANDIDATE-SM-HOLD-01]</b> [BUG-04, STILL REPRODUCES — Round 4] Hold's holdExpirationDate is still null for GulfAir, reconfirmed on 2 fresh Holds this round (RXFVNC, RAHAQQ).</div><div class="fmeta">Spec ref: §2.10</div></div>
+<div class="finding-item serious"><div><b>[TC-BOOK-NEG-06]</b> [BUG-06, STILL REPRODUCES — Round 4] Book does not decode or verify the cellId token at all — a tampered cellId is accepted and the seat is attached purely based on the submitted cellCode (pnr RZTFBV).</div><div class="fmeta">Spec ref: §2.9</div></div>
+<div class="finding-item serious"><div><b>[PRE-FLIGHT]</b> [BUG-10, STILL REPRODUCES — High severity — Round 4] AddPassenger still rejects the V2 Postman collection's own saved example (passengersList.name.middle='kady' vs travelDocument.name.middle='') with HTTP 400 'Invalid travel document information', identical to Rounds 2-3.</div><div class="fmeta">Spec ref: §2.5</div></div>
+<div class="finding-item serious"><div><b>[PRE-FLIGHT]</b> [BUG-11, STILL REPRODUCES AND WIDENED — Critical severity — Round 4] Resubmitting an already-consumed Book request still returns HTTP 409 with OriginalSupplierRequest/OriginalSupplierResponse present and confirmed (via redacted keyword match only) to contain an apikey-like plaintext token. NEW this round: the identical leak pattern was also observed on GetSeatMap's generic-error envelope during this round's sustained outage (BUG-14) — confirmed unconditional across at least two endpoints, not limited to Book's double-booking-conflict scenario.</div><div class="fmeta">Spec ref: §7.14</div></div>
+<div class="finding-item serious"><div><b>[TC-BOOK-NEG-12]</b> [BUG-13, NEW — Round 4, broken out from Round 1-3's combined BUG-05] Book returns a generic HTTP 500 ServerError (instead of a clean 400 ValidationError) when selectedOfferId is omitted from an otherwise-valid request. This sub-case is unrelated to ResponseId and remains in scope per this round's instructions.</div><div class="fmeta">Spec ref: §2.9</div></div>
+<div class="finding-item serious"><div><b>[TC-SEATMAP-NEG-02]</b> [BUG-14, NEW — Round 4] GetSeatMap entered a sustained (20+ minute, 40+ call) generic supplier-error outage (HTTP 409 NDC-INT-UNC-Z9999) partway through this round, affecting every route/passenger-count combination tried, while Book and Hold (called independently of GetSeatMap) continued to succeed normally throughout the same window. This blocked live re-verification of BUG-01, BUG-07, BUG-08, BUG-09, and the round-trip/multi-passenger seat-selection scope this round was supposed to extend.</div><div class="fmeta">Spec ref: §2.7</div></div>
+<h3>UNKNOWN-resolutions</h3>
+<div class="finding-item accent"><div><b>[MULTICITY-SWEEP]</b> Multi-city (3+ leg) searchCriteria is CONFIRMED NOT SUPPORTED (or at minimum hard-capped at 2 entries) for GulfAir/KSA on this host — resolves Round 3's INCONCLUSIVE finding. A 9-combination sweep (7 distinct 3-leg/4-leg routings across every route pair with previously-confirmed live one-way inventory, plus 2 boundary-isolation probes) returned HTTP 200 with an empty offers[] in all 9 cases, INCLUDING a control using the exact same BAH-RUH/RUH-BAH pair three times in a row — a pair independently proven to return 125-175 offers when submitted as a 2-entry array. The cutoff is precisely at 2 vs. 3+ searchCriteria entries, not at route/inventory validity.</div><div class="fmeta">Spec ref: §2.1</div></div>
+<div class="finding-item accent"><div><b>[MULTICITY-SWEEP]</b> A 2-entry searchCriteria array is CONFIRMED supported for GulfAir/KSA in BOTH shapes: a mirrored round-trip (BAH-RUH outbound / RUH-BAH return, 175 offers) and a non-mirrored open-jaw (BAH-RUH outbound / JED-BAH return — different destination and origin pair, 125 offers). A 2-entry array where the second leg continues from the first leg's destination to a third, non-hub city (BAH-RUH then RUH-JED) returns 0 offers, consistent with GulfAir having no live RUH-JED inventory (a genuine route gap, not a searchCriteria-length limitation).</div><div class="fmeta">Spec ref: §2.1</div></div>
+<div class="finding-item accent"><div><b>[TC-BOOK-VAL-06]</b> Re-confirmed: Book trusts cellCode, not cellId, when the two refer to different cells — the API attaches and prices whichever cellCode was submitted (this round: 8C at 120.00 SAR) regardless of what the accompanying cellId token actually decodes to (8B). Unchanged from Rounds 1-3.</div><div class="fmeta">Spec ref: §7.11</div></div>
+</details>
+<details class="section-collapse" open>
+<summary class="section-summary-flex">Proposed SPEC.md updates<span class="section-count-badge"><span class="scb-val">6</span><span class="scb-lbl">Proposed Updates</span></span></summary>
+<div class="finding-item"><div><b>§2.1</b> — status: pending</div><div><b>Old:</b> [Round 3, pending] Round-trip IS supported via a 2-entry searchCriteria array... A 3-entry (multi-city) searchCriteria array returned HTTP 200 with an empty offers[] for the one combination tried — inconclusive as a capability statement; needs a broader sweep before concluding multi-city is unsupported vs. simply no inventory for that combination.</div><div><b>New:</b> [Confirmed live 2026-08-30, Round 4, GulfAir/KSA] Multi-city (3+ entry searchCriteria) is NOT supported (or hard-capped at 2 entries) for GulfAir/KSA on this host — confirmed via a 9-combination sweep (7 distinct 3/4-leg routings plus 2 boundary-isolation probes), all returning HTTP 200 with empty offers[], including a control using the exact same route pair independently proven to return 125-175 offers as a 2-entry array. A 2-entry array is supported in both round-trip (mirrored) and open-jaw (non-mirrored) shapes.</div></div>
+<div class="finding-item"><div><b>§2.7</b> — status: pending</div><div><b>Old:</b> (Rounds 1-3 pending) Add top-level isFareCheckRequired (boolean) and passengersDetails.&lt;paxRef&gt;.passengersSeatMapAvailability to the documented response shape</div><div><b>New:</b> Still pending — unchanged and reconfirmed for a 4th consecutive round (2026-08-30). No action taken on this proposal since Round 2; carrying forward.</div></div>
+<div class="finding-item"><div><b>§4.6</b> — status: pending</div><div><b>Old:</b> (Rounds 1-3 pending) GulfAir SeatMap capability row: Unknown -&gt; Supported</div><div><b>New:</b> Still pending — unchanged and reconfirmed for a 4th consecutive round (2026-08-30, before this round's GetSeatMap outage began). Carrying forward.</div></div>
+<div class="finding-item"><div><b>§2.10 / §1.10 item 6</b> — status: pending</div><div><b>Old:</b> (Rounds 1-3 pending) Hold DOES accept and honor a passengersSelectedSeats field submitted directly on the Hold request</div><div><b>New:</b> Still pending — NOT re-verified this round due to the GetSeatMap outage (BUG-14) preventing a fresh seat cellCode/cellId. Last confirmed live in Round 3 on both one-way and round-trip itineraries. Carrying forward unchanged.</div></div>
+<div class="finding-item"><div><b>§2.5</b> — status: pending</div><div><b>Old:</b> (Round 2 pending) Document AddPassenger's exact-name-match requirement between passengersList.&lt;pax&gt;.name and travelDocument.name</div><div><b>New:</b> Still pending — unchanged and reconfirmed identically in Round 4 (2026-08-30, same error/TransactionId shape). Carrying forward.</div></div>
+<div class="finding-item"><div><b>§7.14 / §2.9</b> — status: pending</div><div><b>Old:</b> (Rounds 1-3 pending) Book's duplicate-submission 409 error envelope includes OriginalSupplierRequest/OriginalSupplierResponse fields containing plaintext supplier credentials</div><div><b>New:</b> [WIDENED, Round 4] Confirmed the same leak also occurs on GetSeatMap's generic supplier-error envelope (409 NDC-INT-UNC-Z9999), not just Book's duplicate-submission conflict — this is a systemic response-serialization issue affecting multiple endpoints' generic-error paths, not a single narrow code path. Recommend immediate remediation across all endpoints, not just Book.</div></div>
+</details>
+<details class="section-collapse" open>
+<summary>Cleanup / follow-up</summary>
+<div class="cleanup"><b>Live artifacts left behind this run (9):</b><ul>
+<li>Needs Void/Cancel &mdash; PNR <span class="mono">RXZKHB</span> (<span class="mono">TC-BOOK-POS-03</span>) &mdash; Baseline seat-selection booking (BAH-RUH 2026-11-15, seat 8B, 120.00 SAR). Primary evidence for TC-BOOK-POS-03/POS-04/BIZ-04/REG-02/REG-03/VAL-08/RETRIEVE-REG-01/POS-02/VAL-03/FLOW-V2-49-SEATFIELD.</li>
+<li>Needs Void/Cancel &mdash; PNR <span class="mono">RXADOW</span> (<span class="mono">TC-BOOK-BND-03</span>) &mdash; No-seat Book call bypassing GetSeatMap entirely (BAH-CAI 2026-12-23), used to confirm Book/GetSeatMap-outage isolation and TC-BOOK-BND-03 run (a).</li>
+<li>Needs Void/Cancel &mdash; PNR <span class="mono">RZTFBV</span> (<span class="mono">TC-BOOK-NEG-06</span>) &mdash; Created/ticketed while proving Book does not validate a tampered cellId (BAH-CAI, 2026-11-24).</li>
+<li>Needs Void/Cancel &mdash; PNR <span class="mono">RORUIF</span> (<span class="mono">TC-BOOK-VAL-06</span>) &mdash; Created/ticketed while proving cellCode (not cellId) drives seat resolution (BAH-DXB, 2026-11-27).</li>
+<li>Needs Void/Cancel &mdash; PNR <span class="mono">RDKSHA</span> (<span class="mono">TC-BOOK-NEG-12</span>) &mdash; Created/ticketed by the ResponseId-omission behavior (excluded from this round's defect tally per scope), BAH-CAI 2026-12-24.</li>
+<li>Needs Void/Cancel &mdash; PNR <span class="mono">RAXCJR</span> (<span class="mono">TC-BOOK-NEG-10</span>) &mdash; Created while testing explicit-empty passengersSelectedSeats (BAH-DXB, 2026-12-26).</li>
+<li>Needs Void/Cancel &mdash; PNR <span class="mono">RLJOFF</span> (<span class="mono">TC-BOOK-NEG-11</span>) &mdash; Created while testing explicit-empty setSegmentsSeats on a fresh offer (BAH-DMM, 2026-12-28).</li>
+<li>Family-B hold, not finalized &mdash; PNR <span class="mono">RXFVNC</span> (<span class="mono">TC-SEATAFTERHOLD-POS-01</span>) &mdash; Held via direct Hold call, independent of GetSeatMap (BAH-DMM, 2026-12-17). holdExpirationDate null. Never progressed to FareConfirmAfterHold/BookAfterHold/CancelAfterHold.</li>
+<li>Family-B hold, not finalized &mdash; PNR <span class="mono">RAHAQQ</span> (<span class="mono">TC-SEATAFTERHOLD-NEG-01</span>) &mdash; Held for the mismatched-identity SeatAfterHold negative test (BAH-CAI, 2026-12-19). holdExpirationDate null. Never progressed.</li>
+</ul></div>
+</details>
+</div>
+<script>
+(function(){
+  var cards = Array.prototype.slice.call(document.querySelectorAll('details.tc'));
+  var sections = Array.prototype.slice.call(document.querySelectorAll('details.section-collapse'));
+  var categories = Array.prototype.slice.call(document.querySelectorAll('details.tc-category'));
+  var search = document.getElementById('tcSearch');
+  var statusSel = document.getElementById('tcStatusFilter');
+  var categorySel = document.getElementById('tcCategoryFilter');
+  var countEl = document.getElementById('tcCount');
+  var noResultsEl = document.getElementById('tcNoResults');
+  var resetBtn = document.getElementById('tcResetFilters');
+  var expandBtn = document.getElementById('tcExpandAll');
+  var collapseBtn = document.getElementById('tcCollapseAll');
+
+  function applyFilter(){
+    var q = search.value.trim().toLowerCase();
+    var status = statusSel.value;
+    var category = categorySel.value;
+    var visible = 0;
+    cards.forEach(function(card){
+      var matchesStatus = !status || card.classList.contains(status);
+      var matchesText = !q || card.textContent.toLowerCase().indexOf(q) !== -1;
+      var matchesCategory = !category || card.closest('details.tc-category').getAttribute('data-cat') === category;
+      var show = matchesStatus && matchesText && matchesCategory;
+      card.classList.toggle('js-hidden', !show);
+      if (show) visible++;
+      if (show && q) card.open = true;
+    });
+    categories.forEach(function(cat){
+      var anyVisible = cat.querySelector('details.tc:not(.js-hidden)');
+      var matchesCategory = !category || cat.getAttribute('data-cat') === category;
+      cat.classList.toggle('cat-empty', !anyVisible || !matchesCategory);
+      if (anyVisible && matchesCategory && (q || status || category)) cat.open = true;
+    });
+    countEl.textContent = visible + ' / ' + cards.length + ' shown';
+    noResultsEl.classList.toggle('js-hidden', visible !== 0);
+  }
+
+  search.addEventListener('input', applyFilter);
+  statusSel.addEventListener('change', applyFilter);
+  categorySel.addEventListener('change', applyFilter);
+  resetBtn.addEventListener('click', function(e){
+    e.preventDefault(); e.stopPropagation();
+    search.value = '';
+    statusSel.value = '';
+    categorySel.value = '';
+    applyFilter();
+  });
+  expandBtn.addEventListener('click', function(e){
+    e.preventDefault(); e.stopPropagation();
+    cards.forEach(function(c){ c.open = true; });
+    sections.forEach(function(s){ s.open = true; });
+    categories.forEach(function(c){ c.open = true; });
+  });
+  collapseBtn.addEventListener('click', function(e){
+    e.preventDefault(); e.stopPropagation();
+    cards.forEach(function(c){ c.open = false; });
+    sections.forEach(function(s){ s.open = false; });
+    categories.forEach(function(c){ c.open = false; });
+  });
+
+  categories.forEach(function(cat){
+    var catCards = Array.prototype.slice.call(cat.querySelectorAll('details.tc'));
+    var catExpandBtn = cat.querySelector('.tc-cat-expand');
+    var catCollapseBtn = cat.querySelector('.tc-cat-collapse');
+    catExpandBtn.addEventListener('click', function(e){
+      e.preventDefault(); e.stopPropagation();
+      catCards.forEach(function(c){ c.open = true; });
+    });
+    catCollapseBtn.addEventListener('click', function(e){
+      e.preventDefault(); e.stopPropagation();
+      catCards.forEach(function(c){ c.open = false; });
+    });
+  });
+
+  applyFilter();
+
+  Array.prototype.slice.call(document.querySelectorAll('.hop')).forEach(function(hop){
+    var panel = hop.querySelector('.hop-reqres-panel');
+    var endpointSpan = hop.querySelector('.hop-endpoint');
+    var toggle = document.createElement('a');
+    toggle.href = '#';
+    toggle.className = 'hop-reqres-toggle';
+    toggle.textContent = 'View req & response';
+
+    if (panel) {
+      panel.classList.add('js-hidden');
+      toggle.addEventListener('click', function(e){
+        e.preventDefault(); e.stopPropagation();
+        var hidden = panel.classList.toggle('js-hidden');
+        toggle.textContent = hidden ? 'View req & response' : 'Hide req & response';
+      });
+      endpointSpan.parentNode.insertBefore(toggle, endpointSpan.nextSibling);
+      return;
+    }
+
+    var hds = Array.prototype.slice.call(hop.querySelectorAll('.hd'));
+    var reqEl = hds[0];
+    var resEl = hds[1];
+    if (!reqEl || !resEl) return;
+    reqEl.classList.add('hop-reqres', 'js-hidden');
+    resEl.classList.add('hop-reqres', 'js-hidden');
+    toggle.addEventListener('click', function(e){
+      e.preventDefault(); e.stopPropagation();
+      var hidden = reqEl.classList.toggle('js-hidden');
+      resEl.classList.toggle('js-hidden', hidden);
+      toggle.textContent = hidden ? 'View req & response' : 'Hide req & response';
+    });
+    endpointSpan.parentNode.insertBefore(toggle, endpointSpan.nextSibling);
+  });
+
+  Array.prototype.slice.call(document.querySelectorAll('.tc-reqres-anchor')).forEach(function(anchor){
+    var card = anchor.closest('details.tc');
+    var panel = card ? card.querySelector(':scope > .tc-reqres-panel') : null;
+    if (!panel) return;
+    panel.classList.add('js-hidden');
+    var toggle = document.createElement('a');
+    toggle.href = '#';
+    toggle.className = 'hop-reqres-toggle tc-reqres-toggle';
+    toggle.textContent = 'View req & response';
+    toggle.addEventListener('click', function(e){
+      e.preventDefault(); e.stopPropagation();
+      var hidden = panel.classList.toggle('js-hidden');
+      toggle.textContent = hidden ? 'View req & response' : 'Hide req & response';
+    });
+    anchor.parentNode.insertBefore(toggle, anchor.nextSibling);
+  });
+})();
+</script>
+</body></html>

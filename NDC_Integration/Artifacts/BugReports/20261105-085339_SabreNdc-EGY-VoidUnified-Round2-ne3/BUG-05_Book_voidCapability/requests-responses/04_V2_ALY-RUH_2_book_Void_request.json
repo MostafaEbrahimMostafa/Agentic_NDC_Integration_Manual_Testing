@@ -1,0 +1,19 @@
+{
+  "label": "V2 ALY-RUH #2 (book) Void",
+  "method": "POST",
+  "url": "https://ndc-integration-stg-ne-3.azurewebsites.net/api/V2/FlightBooking/Void",
+  "headers": {
+    "x-api-key": "[REDACTED]",
+    "Client-Id": "NDC-Core",
+    "Content-Type": "application/json"
+  },
+  "body": {
+    "supplier": "SabreNdc",
+    "credentialsSelector": "EGY",
+    "pnr": "PNZKVA",
+    "gdsPNR": "PNZKVA",
+    "bookingToken": "1SXXXCAAR83OX",
+    "surName": "Yehia",
+    "voidTickets": []
+  }
+}

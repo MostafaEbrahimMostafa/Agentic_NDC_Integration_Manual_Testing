@@ -260,7 +260,7 @@
         "header": [
           {
             "key": "x-api-key",
-            "value": "ttdb2dc2-58c5-481c-84b5-95350a3a7978-f61360c2-f536-4b19-9a25-97b8f17ce4dc",
+            "value": "{{x_api_key}}",
             "type": "text"
           },
           {
@@ -392,7 +392,7 @@
         "header": [
           {
             "key": "x-api-key",
-            "value": "ttdb2dc2-58c5-481c-84b5-95350a3a7978-f61360c2-f536-4b19-9a25-97b8f17ce4dc",
+            "value": "{{x_api_key}}",
             "type": "text"
           },
           {
@@ -518,7 +518,7 @@
         "header": [
           {
             "key": "x-api-key",
-            "value": "ttdb2dc2-58c5-481c-84b5-95350a3a7978-f61360c2-f536-4b19-9a25-97b8f17ce4dc",
+            "value": "{{x_api_key}}",
             "type": "text"
           },
           {
@@ -571,7 +571,7 @@
         "header": [
           {
             "key": "x-api-key",
-            "value": "ttdb2dc2-58c5-481c-84b5-95350a3a7978-f61360c2-f536-4b19-9a25-97b8f17ce4dc",
+            "value": "{{x_api_key}}",
             "type": "text"
           },
           {
@@ -695,7 +695,7 @@
         "header": [
           {
             "key": "x-api-key",
-            "value": "ttdb2dc2-58c5-481c-84b5-95350a3a7978-f61360c2-f536-4b19-9a25-97b8f17ce4dc",
+            "value": "{{x_api_key}}",
             "type": "text"
           },
           {
@@ -819,7 +819,7 @@
         "header": [
           {
             "key": "x-api-key",
-            "value": "ttdb2dc2-58c5-481c-84b5-95350a3a7978-f61360c2-f536-4b19-9a25-97b8f17ce4dc",
+            "value": "{{x_api_key}}",
             "type": "text"
           },
           {
@@ -938,7 +938,7 @@
         "header": [
           {
             "key": "x-api-key",
-            "value": "ttdb2dc2-58c5-481c-84b5-95350a3a7978-f61360c2-f536-4b19-9a25-97b8f17ce4dc",
+            "value": "{{x_api_key}}",
             "type": "text"
           },
           {
@@ -1057,7 +1057,7 @@
         "header": [
           {
             "key": "x-api-key",
-            "value": "ttdb2dc2-58c5-481c-84b5-95350a3a7978-f61360c2-f536-4b19-9a25-97b8f17ce4dc",
+            "value": "{{x_api_key}}",
             "type": "text"
           },
           {
@@ -1176,7 +1176,7 @@
         "header": [
           {
             "key": "x-api-key",
-            "value": "ttdb2dc2-58c5-481c-84b5-95350a3a7978-f61360c2-f536-4b19-9a25-97b8f17ce4dc",
+            "value": "{{x_api_key}}",
             "type": "text"
           },
           {
@@ -1214,7 +1214,7 @@
         "header": [
           {
             "key": "x-api-key",
-            "value": "ttdb2dc2-58c5-481c-84b5-95350a3a7978-f61360c2-f536-4b19-9a25-97b8f17ce4dc",
+            "value": "{{x_api_key}}",
             "type": "text"
           },
           {
@@ -1252,7 +1252,7 @@
         "header": [
           {
             "key": "x-api-key",
-            "value": "ttdb2dc2-58c5-481c-84b5-95350a3a7978-f61360c2-f536-4b19-9a25-97b8f17ce4dc",
+            "value": "{{x_api_key}}",
             "type": "text"
           },
           {

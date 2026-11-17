@@ -1,0 +1,21 @@
+{
+  "label": "hold V1 CAI-RUH #17 FareConfirm",
+  "status": 409,
+  "durationMs": 586,
+  "requestedAtUtc": "2026-11-05T11:15:40.434Z",
+  "respondedAtUtc": "2026-11-05T11:15:41.020Z",
+  "body": {
+    "Status": 409,
+    "TransactionId": "f0a39f20-66f3-46e8-88fa-eb7a2e265cdf",
+    "ErrorCode": "NDC-INT-UNC-Z9999",
+    "ErrorMessage": "NDC-INT-UNC-Z9999",
+    "Context": [
+      {
+        "Name": "SupplierServerError",
+        "Value": "Resource Not Found (404)"
+      }
+    ],
+    "OriginalSupplierRequest": "[REDACTED - raw supplier payload, per SPEC.md 7.14]",
+    "OriginalSupplierResponse": "[REDACTED - raw supplier payload, per SPEC.md 7.14]"
+  }
+}

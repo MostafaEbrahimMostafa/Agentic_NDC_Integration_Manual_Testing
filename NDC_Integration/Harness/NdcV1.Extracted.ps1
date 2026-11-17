@@ -35,11 +35,27 @@ $Global:NdcEnvs = @{
 }
 
 # ---------------------------------------------------------------- headers (SPEC 1.5)
-# Static staging key extracted from Collection_V1's request headers.
-# Staging-only credential. Do not put a production key in this file.
+# Secrets are NOT stored in this file. They come from $env:NDC_API_KEY / $env:NDC_CLIENT_ID
+# or from the git-ignored repo-root .env file (copy .env.example to .env and fill it in).
+function Get-NdcEnvValue {
+  param([string] $Name)
+  $v = [Environment]::GetEnvironmentVariable($Name)
+  if ($v) { return $v }
+  $envFile = Join-Path $PSScriptRoot "..\..\.env"
+  if (Test-Path $envFile) {
+    foreach ($line in Get-Content $envFile) {
+      if ($line -match ('^\s*' + [regex]::Escape($Name) + '\s*=\s*(.*?)\s*$')) { return $Matches[1].Trim('"', "'") }
+    }
+  }
+  return $null
+}
+$Global:NdcApiKey = Get-NdcEnvValue "NDC_API_KEY"
+if (-not $Global:NdcApiKey) { Write-Warning "NDC_API_KEY is not set: copy .env.example to .env at the repo root (or set `$env:NDC_API_KEY). API calls will fail with 401." }
+$ndcClientId = Get-NdcEnvValue "NDC_CLIENT_ID"
+if (-not $ndcClientId) { $ndcClientId = "NDC-Core" }
 $Global:NdcHeaders = @{
-  "x-api-key" = "ttdb2dc2-58c5-481c-84b5-95350a3a7978-f61360c2-f536-4b19-9a25-97b8f17ce4dc"
-  "Client-Id" = "NDC-Core"
+  "x-api-key" = $Global:NdcApiKey
+  "Client-Id" = $ndcClientId
 }
 
 # ---------------------------------------------------------------- V1 endpoint paths

@@ -1,0 +1,18 @@
+{
+  "label": "V2 Void-on-held",
+  "status": 400,
+  "durationMs": 1172,
+  "requestedAtUtc": "2026-11-05T10:54:17.444Z",
+  "respondedAtUtc": "2026-11-05T10:54:18.615Z",
+  "body": {
+    "Status": 400,
+    "TransactionId": "38dd5f2d-2636-4690-8de2-0b53a9fd4fa0",
+    "ErrorCode": "NDC-INT-TEC-A0001",
+    "ErrorMessage": "Invalid request. Please check the request parameters and try again.",
+    "Context": [
+      {
+        "Value": "Only fulfilled, ticketed orders can be voided."
+      }
+    ]
+  }
+}

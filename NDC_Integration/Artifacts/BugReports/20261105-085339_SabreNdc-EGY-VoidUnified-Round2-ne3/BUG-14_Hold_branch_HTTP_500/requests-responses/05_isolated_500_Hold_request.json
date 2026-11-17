@@ -1,0 +1,16 @@
+{
+  "label": "isolated 500 Hold",
+  "method": "POST",
+  "url": "https://ndc-integration-stg-ne-3.azurewebsites.net/api/v2/FlightBooking/Hold",
+  "headers": {
+    "x-api-key": "[REDACTED]",
+    "Client-Id": "NDC-Core",
+    "Content-Type": "application/json"
+  },
+  "body": {
+    "fareConfirmResponseId": "ff2aefe6-0745-40a9-93db-324c05fa9918",
+    "selectedOfferId": "94a412d0-649f-4879-a6bd-b8331b750334&lMCBpFBheDGaAZOjSmFkoKZOYWd1aWLW/yXZ8QABAaEwmpOjSmFkoKZOYWd1aWKiRUfW/3JDwgDW/2b7O4CoQTE4MDY1OTgBAaJFR9b/JdnxAKJFR8CiRUeiRUeBoTCTtW5kYy5xYS52b2lkQGdtYWlsLmNvbZOjKzIwqzAxMDA1NzQ3MjU4pk1vYmlsZZSpTmV3IENhaXJvqEFsIE5haGRhpUNBSVJPokVHlcC8Y2U1YmI0YmY5NDc4cTk2ZndtdzNkcTJ6dTctMZG+Y2U1YmI0YmY5NDc4cTk2ZndtdzNkcTJ6dTctMS0xkZPAqlBhc3NlbmdlcjGjQURUk8CSl6RTRUc2o01FRKNET0jW/2sTlszW/2sTtnCiUVKiUVKXpFNFRzejRE9Io0NBSdb/axRx8Nb/axSYnKJRUqJRUpTAk8CoMTUxNjIuMDCjRUdQk8CnOTA0MC4wMKNFR1CTwKc2MTIyLjAwo0VHUA==",
+    "supplier": "SabreNdc",
+    "credentialsSelector": "EGY"
+  }
+}

@@ -1,0 +1,161 @@
+{
+    "supplier": "GulfAir",
+    "isFareCheckRequired": false,
+    "offerId": "GF-OFFER-2&yAPCY9IAAAZQ9CrcABSqR0YtT0ZGRVItMqJHRtkkOTU4N2I0YjMtNDc5Yy00Mjg1LWIxNDMtMGQxZDNhMDViNTVmgq41AMBJVEVNLTGSpFBBWDEFABoyGgARMhoAEDMaAN80pzY4MDAuMDCjU0FSZwAUktkkR0YtR0Y4MAUApjIwMjYxMjA0MDQLAPADOC1PnaNDQUmjQkFI1v9rEj9wBgDSd7ChMsDM8KJHRqI4MAYAVKMzMlGpTwATMVoAIjc5BQACTwBDMTEwMVoAQDExMDNaADBCQUheAGDW/2sbTDwGAHBvZMChMsyWVAAiNzkGAAZaAPEANzktMZACAgCSlJ2kUGF4EgH5HDGjQURU1v84qJcAoTDAok1Sk6dNb3N0YWZhoKJBQaRNYWxlokVHokVHwJoaAPQSokVH1v9wYo6A1v9lGLaAqEExMjM0NTYxqFBhc3Nwb3J0OwACXAAxokVHdAAQMmwBEjJ0AEMdPvaAdADkpUFobWVkoKZIYXNzYW47AAJ2AAocAAF4AP8Ec5aTgNb/YMftgKhCOTg3NjU0M3gAAABgAAR4ABA2eACgM6NDSETW/1bguewA+A6kTUlTU5OlTGFpbGGkT21hcqdJYnJhaGltpkZlbfcADyMAAAGGADBvFlSGAMVIDACoRjIyMzM0NDWGAAZEAAJwAAQAARA3iAASNIgAMFmSOQAB4qRNU1RSk6dZb3Vzc2Vm7gAPCQECDyMAAgGKAMF1yYQA1v9i+YyAqEeIACU1NooABE0BAnAA8zCiRUeRmKEwpENUQzG3bW9vbnRyYXZlbDYyNkBnbWFpbC5jb23AwJPApCs5NzGpNTA5NzAwNzg0wJSlRlogSFEGAJZEVUJBSaJBRcCyAiCSlOMCAI0CpqhDQUlCQUgtMZEeABCUGQAAIQCTqEJBSENBSS0yHQD/BTc5LTGnRUNPTk9NWaFOoVmRgtkwVQMR9AMtT2ZmZXJJdGVtLTLcABCmMTm8A/YNulIxP1IxP0dGLVNFUlZJQ0VERUYtMEUxLTQyrBUA/ygtMr1QUkVQQUlEIEVYQ0VTUyBCQUcgUEVSIDVLRyBHRqFDozBFMaZCRy1BVFCnQmFnZ2FnZdk4NAAK8gZ+MEUxfkdGfkFUUH5CR35DflNBUn6ZABC3kQTSVEhFUl9BTEFDQVJURdUEY6JHRsCQke4DD0gEDBCUOwIBtAMBRQMCtgQDLgEiNzkFAA8pBAQOLgEVMS4BVjI/UjI/GQEFLgEfNy4BYwCZAA8uARIP8wAMDC4BUKRQQVg0",
+    "responseId": "ac4a407a-ac2b-4dc4-8189-1144df6d565b",
+    "journeys": {
+        "GF-GF80-1": {
+            "origin": "CAI",
+            "destination": "BAH",
+            "numberOfStops": 0,
+            "segmentRefIds": [
+                "GF-GF80-GF80-2026120404-2026120408-O"
+            ]
+        },
+        "GF-GF79-1": {
+            "origin": "BAH",
+            "destination": "CAI",
+            "numberOfStops": 0,
+            "segmentRefIds": [
+                "GF-GF79-GF79-2026121101-2026121103-O"
+            ]
+        }
+    },
+    "flightSegments": {
+        "GF-GF80-GF80-2026120404-2026120408-O": {
+            "origin": "CAI",
+            "destination": "BAH",
+            "departureDateTime": "2026-12-04T04:20:00",
+            "arrivalDateTime": "2026-12-04T08:20:00",
+            "departureTerminal": "2",
+            "arrivalTerminal": null,
+            "flightTime": 240,
+            "operatingCarrierCode": "GF",
+            "operatingFlightNumber": "80",
+            "marketingCarrierCode": "GF",
+            "marketingFlightNumber": "80",
+            "equipment": "32Q"
+        },
+        "GF-GF79-GF79-2026121101-2026121103-O": {
+            "origin": "BAH",
+            "destination": "CAI",
+            "departureDateTime": "2026-12-11T01:05:00",
+            "arrivalDateTime": "2026-12-11T03:35:00",
+            "departureTerminal": null,
+            "arrivalTerminal": "2",
+            "flightTime": 150,
+            "operatingCarrierCode": "GF",
+            "operatingFlightNumber": "79",
+            "marketingCarrierCode": "GF",
+            "marketingFlightNumber": "79",
+            "equipment": "32Q"
+        }
+    },
+    "passengersAncillariesAvailabilty": {
+        "PAX1": {
+            "passengerTypeCode": "ADT",
+            "name": {
+                "first": "Mostafa",
+                "middle": "",
+                "last": "AA"
+            },
+            "birthDate": "2000-02-15T00:00:00Z",
+            "documentNumber": "A1234561",
+            "segmentAncillariesAvailability": {},
+            "journeyAncillariesAvailability": {
+                "GF-GF80-1": [
+                    "GF-GF80-GF80-2026120404-2026120408-O-OfferItem-2"
+                ],
+                "GF-GF79-1": [
+                    "GF-GF79-GF79-2026121101-2026121103-O-OfferItem-2"
+                ]
+            }
+        },
+        "PAX2": {
+            "passengerTypeCode": "ADT",
+            "name": {
+                "first": "Ahmed",
+                "middle": "",
+                "last": "Hassan"
+            },
+            "birthDate": "1985-07-20T00:00:00Z",
+            "documentNumber": "B9876543",
+            "segmentAncillariesAvailability": {},
+            "journeyAncillariesAvailability": {
+                "GF-GF80-1": [
+                    "GF-GF80-GF80-2026120404-2026120408-O-OfferItem-2"
+                ],
+                "GF-GF79-1": [
+                    "GF-GF79-GF79-2026121101-2026121103-O-OfferItem-2"
+                ]
+            }
+        },
+        "PAX3": {
+            "passengerTypeCode": "CHD",
+            "name": {
+                "first": "Laila",
+                "middle": "Omar",
+                "last": "Ibrahim"
+            },
+            "birthDate": "2016-03-10T00:00:00Z",
+            "documentNumber": "F2233445",
+            "segmentAncillariesAvailability": {},
+            "journeyAncillariesAvailability": {
+                "GF-GF80-1": [
+                    "GF-GF80-GF80-2026120404-2026120408-O-OfferItem-2"
+                ],
+                "GF-GF79-1": [
+                    "GF-GF79-GF79-2026121101-2026121103-O-OfferItem-2"
+                ]
+            }
+        },
+        "PAX4": {
+            "passengerTypeCode": "CHD",
+            "name": {
+                "first": "Youssef",
+                "middle": "Ahmed",
+                "last": "Hassan"
+            },
+            "birthDate": "2017-08-15T00:00:00Z",
+            "documentNumber": "G3344556",
+            "segmentAncillariesAvailability": {},
+            "journeyAncillariesAvailability": {
+                "GF-GF80-1": [
+                    "GF-GF80-GF80-2026120404-2026120408-O-OfferItem-2"
+                ],
+                "GF-GF79-1": [
+                    "GF-GF79-GF79-2026121101-2026121103-O-OfferItem-2"
+                ]
+            }
+        }
+    },
+    "segmentsAncillariesDetails": {},
+    "journeysAncillariesDetails": {
+        "GF-GF80-1": [
+            {
+                "name": "R1?R1?GF-SERVICEDEF-0E1-42",
+                "code": "GF-GF80-GF80-2026120404-2026120408-O-OfferItem-2",
+                "price": {
+                    "amount": 190.00,
+                    "currency": "SAR"
+                },
+                "description": "PREPAID EXCESS BAG PER 5KG GF",
+                "availableCount": 4,
+                "ancillaryCategory": "Baggage"
+            }
+        ],
+        "GF-GF79-1": [
+            {
+                "name": "R2?R2?GF-SERVICEDEF-0E1-47",
+                "code": "GF-GF79-GF79-2026121101-2026121103-O-OfferItem-2",
+                "price": {
+                    "amount": 191.00,
+                    "currency": "SAR"
+                },
+                "description": "PREPAID EXCESS BAG PER 5KG GF",
+                "availableCount": 4,
+                "ancillaryCategory": "Baggage"
+            }
+        ]
+    }
+}

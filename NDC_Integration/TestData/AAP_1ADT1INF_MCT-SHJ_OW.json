@@ -1,0 +1,22 @@
+{
+  "description": "G9 one-way, 1 ADT + 1 INF. Search-level repros: INF baggageDetailsRefId, rbd (NDC-BUG-0007, 0009).",
+  "supplier": "AirArabiaPlus",
+  "credentialsSelector": "USA",
+  "searchCriteria": [
+    {
+      "origin": "MCT",
+      "destination": "SHJ",
+      "offsetDays": 23
+    }
+  ],
+  "passengers": [
+    {
+      "passengerTypeCode": "ADT",
+      "count": 1
+    },
+    {
+      "passengerTypeCode": "INF",
+      "count": 1
+    }
+  ]
+}

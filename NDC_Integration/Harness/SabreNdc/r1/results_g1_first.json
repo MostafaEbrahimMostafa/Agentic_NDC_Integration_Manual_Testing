@@ -1,0 +1,311 @@
+{
+ "RES": {
+  "TC-CAPCHECK-SABRENDC-POS-01": "PASS",
+  "TC-CAPCHECK-SABRENDC-POS-02": "PASS",
+  "TC-AVAIL-POS-01": "PASS",
+  "TC-AVAIL-POS-02": "PASS",
+  "TC-AVAIL-POS-03": "PASS",
+  "TC-AVAIL-POS-04": "PASS",
+  "TC-AVAIL-POS-05": "PASS",
+  "TC-AVAIL-VAL-01": "PASS",
+  "TC-AVAIL-VAL-02": "PASS",
+  "TC-AVAIL-VAL-03": "PASS",
+  "TC-AVAIL-VAL-04": "PASS",
+  "TC-AVAIL-VAL-05": "PASS",
+  "TC-AVAIL-VAL-06": "PASS",
+  "TC-AVAIL-VAL-07": "FAIL",
+  "TC-AVAIL-VAL-08": "FAIL",
+  "TC-AVAIL-VAL-09": "PASS",
+  "TC-AVAIL-VAL-10": "PASS",
+  "TC-AVAIL-VAL-11": "FAIL",
+  "TC-AVAIL-VAL-12": "PASS",
+  "TC-AVAIL-VAL-13": "PASS",
+  "TC-AVAIL-NEG-01": "PASS",
+  "TC-AVAIL-NEG-02": "PASS",
+  "TC-AVAIL-NEG-03": "PASS",
+  "TC-AVAIL-NEG-04": "PASS",
+  "TC-AVAIL-NEG-05": "PASS",
+  "TC-AVAIL-NEG-06": "PASS",
+  "TC-AVAIL-NEG-07": "PASS",
+  "TC-AVAIL-NEG-08": "PASS",
+  "TC-AVAIL-NEG-09": "PASS",
+  "TC-AVAIL-NEG-10": "FAIL",
+  "TC-AVAIL-NEG-11": "PASS",
+  "TC-AVAIL-NEG-12": "FAIL",
+  "TC-AVAIL-NEG-13": "PASS",
+  "TC-AVAIL-NEG-14": "PASS",
+  "TC-AVAIL-NEG-15": "PASS",
+  "TC-AVAIL-NEG-16": "PASS",
+  "TC-AVAIL-NEG-17": "PASS",
+  "TC-AVAIL-NEG-18": "FAIL",
+  "TC-AVAIL-NEG-19": "PASS",
+  "TC-AVAIL-NEG-20": "PASS",
+  "TC-AVAIL-NEG-21": "PASS",
+  "TC-AVAIL-NEG-22": "PASS",
+  "TC-AVAIL-NEG-23": "FAIL",
+  "TC-AVAIL-NEG-24": "PASS",
+  "TC-AVAIL-NEG-25": "BLOCKED",
+  "TC-AVAIL-NEG-26": "BLOCKED",
+  "TC-AVAIL-BND-01": "PASS",
+  "TC-AVAIL-BND-02": "PASS",
+  "TC-AVAIL-BND-03": "PASS",
+  "TC-AVAIL-BND-04": "PASS",
+  "TC-AVAIL-BND-05": "PASS",
+  "TC-AVAIL-BND-06": "PASS",
+  "TC-AVAIL-BND-07": "PASS",
+  "TC-AVAIL-BND-08": "PASS",
+  "TC-AVAIL-SEC-01": "PASS",
+  "TC-AVAIL-SEC-02": "PASS",
+  "TC-AVAIL-SEC-03": "PASS",
+  "TC-AVAIL-SEC-04": "PASS",
+  "TC-AVAIL-SEC-05": "FAIL",
+  "TC-AVAIL-SEC-06": "PASS",
+  "TC-AVAIL-SEC-07": "FAIL"
+ },
+ "ERRS": {
+  "TC-AVAIL-NEG-01": {
+   "ep": "Availability",
+   "status": 400,
+   "code": "1001",
+   "msg": "Validation errors occurred. Please check your request.",
+   "casing": "camelCase",
+   "ok": true
+  },
+  "TC-AVAIL-NEG-02": {
+   "ep": "Availability",
+   "status": 400,
+   "code": "1001",
+   "msg": "Validation errors occurred. Please check your request.",
+   "casing": "camelCase",
+   "ok": true
+  },
+  "TC-AVAIL-NEG-03": {
+   "ep": "Availability",
+   "status": 400,
+   "code": "1001",
+   "msg": "Validation errors occurred. Please check your request.",
+   "casing": "camelCase",
+   "ok": true
+  },
+  "TC-AVAIL-NEG-04": {
+   "ep": "Availability",
+   "status": 400,
+   "code": "1001",
+   "msg": "Validation errors occurred. Please check your request.",
+   "casing": "camelCase",
+   "ok": true
+  },
+  "TC-AVAIL-NEG-05": {
+   "ep": "Availability",
+   "status": 400,
+   "code": "1001",
+   "msg": "Validation errors occurred. Please check your request.",
+   "casing": "camelCase",
+   "ok": true
+  },
+  "TC-AVAIL-NEG-06": {
+   "ep": "Availability",
+   "status": 400,
+   "code": "1001",
+   "msg": "Validation errors occurred. Please check your request.",
+   "casing": "camelCase",
+   "ok": true
+  },
+  "TC-AVAIL-NEG-07": {
+   "ep": "Availability",
+   "status": 400,
+   "code": "NDC-INT-TEC-A0001",
+   "msg": "Invalid request. Please check the request parameters and try again.",
+   "casing": "PascalCase",
+   "ok": true
+  },
+  "TC-AVAIL-NEG-08": {
+   "ep": "Availability",
+   "status": 400,
+   "code": "1001",
+   "msg": "Validation errors occurred. Please check your request.",
+   "casing": "camelCase",
+   "ok": true
+  },
+  "TC-AVAIL-NEG-09": {
+   "ep": "Availability",
+   "status": 400,
+   "code": "1001",
+   "msg": "Validation errors occurred. Please check your request.",
+   "casing": "camelCase",
+   "ok": true
+  },
+  "TC-AVAIL-NEG-10": {
+   "ep": "Availability",
+   "status": 200,
+   "msg": "undefined",
+   "casing": "none",
+   "ok": false
+  },
+  "TC-AVAIL-NEG-11": {
+   "ep": "Availability",
+   "status": 400,
+   "code": "1001",
+   "msg": "Validation errors occurred. Please check your request.",
+   "casing": "camelCase",
+   "ok": true
+  },
+  "TC-AVAIL-NEG-12": {
+   "ep": "Availability",
+   "status": 400,
+   "code": "1001",
+   "msg": "Validation errors occurred. Please check your request.",
+   "casing": "camelCase",
+   "ok": false
+  },
+  "TC-AVAIL-NEG-13": {
+   "ep": "Availability",
+   "status": 400,
+   "code": "1001",
+   "msg": "Validation errors occurred. Please check your request.",
+   "casing": "camelCase",
+   "ok": true
+  },
+  "TC-AVAIL-NEG-16": {
+   "ep": "Availability",
+   "status": 400,
+   "code": "NDC-INT-TEC-A0001",
+   "msg": "Invalid request. Please check the request parameters and try again.",
+   "casing": "PascalCase",
+   "ok": true
+  },
+  "TC-AVAIL-NEG-17": {
+   "ep": "Availability",
+   "status": 400,
+   "code": "NDC-INT-TEC-A0001",
+   "msg": "Invalid request. Please check the request parameters and try again.",
+   "casing": "PascalCase",
+   "ok": true
+  },
+  "TC-AVAIL-NEG-18": {
+   "ep": "Availability",
+   "status": 400,
+   "code": "1001",
+   "msg": "Validation errors occurred. Please check your request.",
+   "casing": "camelCase",
+   "ok": false
+  },
+  "TC-AVAIL-NEG-19": {
+   "ep": "Availability",
+   "status": 400,
+   "code": "1001",
+   "msg": "Validation errors occurred. Please check your request.",
+   "casing": "camelCase",
+   "ok": true
+  },
+  "TC-AVAIL-NEG-20": {
+   "ep": "Availability",
+   "status": 400,
+   "code": "1001",
+   "msg": "Validation errors occurred. Please check your request.",
+   "casing": "camelCase",
+   "ok": true
+  },
+  "TC-AVAIL-NEG-23": {
+   "ep": "Availability",
+   "status": 400,
+   "code": "1001",
+   "msg": "Validation errors occurred. Please check your request.",
+   "casing": "camelCase",
+   "ok": false,
+   "malformed": true
+  },
+  "TC-AVAIL-BND-07": {
+   "ep": "Availability",
+   "status": 400,
+   "code": "NDC-INT-TEC-A0001",
+   "msg": "Invalid request. Please check the request parameters and try again.",
+   "casing": "PascalCase",
+   "ok": true
+  },
+  "TC-AVAIL-BND-08": {
+   "ep": "Availability",
+   "status": 400,
+   "code": "1001",
+   "msg": "Validation errors occurred. Please check your request.",
+   "casing": "camelCase",
+   "ok": true
+  },
+  "TC-AVAIL-SEC-06": {
+   "ep": "Availability",
+   "status": 400,
+   "code": "1001",
+   "msg": "Validation errors occurred. Please check your request.",
+   "casing": "camelCase",
+   "ok": true
+  }
+ },
+ "DEF": [
+  {
+   "tc": "TC-AVAIL-VAL-07",
+   "actual": "HTTP 200 — accepted. departure day(s) 2026-12-11,2026-12-12; flights 8 vs 8 with T00:00:00Z (same count).",
+   "hops": [
+    "00019_1794403232411",
+    "00020_1794403235576"
+   ]
+  },
+  {
+   "tc": "TC-AVAIL-VAL-08",
+   "actual": "HTTP 200 — accepted. departure day(s) 2026-12-11,2026-12-12 (requested 2026-12-11); 10 segments depart before 15:30, so the time part is ignored.",
+   "hops": [
+    "00021_1794403238922"
+   ]
+  },
+  {
+   "tc": "TC-AVAIL-VAL-11",
+   "actual": "HTTP 500; ErrorCode ServerError; ErrorMessage \"Unknown error occured. Please keep the transaction id as a reference.\"; Context []; envelope PascalCase — rejected, a divergence from Search (SPEC §1.7).",
+   "hops": [
+    "00024_1794403243543"
+   ]
+  },
+  {
+   "tc": "TC-AVAIL-NEG-10",
+   "actual": "HTTP 200 — the request was accepted (200 — page 1, hasMoreResults=true, 1 originDestinations, journeys per OD [6], availabilityId/responseId present). Problems: HTTP 200 instead of a 4xx; error envelope incomplete (needs Status, TransactionId, ErrorCode, ErrorMessage).",
+   "hops": [
+    "00037_1794403261577"
+   ]
+  },
+  {
+   "tc": "TC-AVAIL-NEG-12",
+   "actual": "HTTP 400; ErrorCode 1001; ErrorMessage \"Validation errors occurred. Please check your request.\"; Context [{\"name\":\"availabilityRequestDto\",\"value\":\"The availabilityRequestDto field is required.\"},{\"name...; envelope camelCase. Problems: internal/.NET detail in ErrorMessage/Context.",
+   "hops": [
+    "00039_1794403263738"
+   ]
+  },
+  {
+   "tc": "TC-AVAIL-NEG-18",
+   "actual": "HTTP 400; ErrorCode 1001; ErrorMessage \"Validation errors occurred. Please check your request.\"; Context [{\"name\":\"availabilityRequestDto\",\"value\":\"The availabilityRequestDto field is required.\"},{\"name...; envelope camelCase. Problems: internal/.NET detail in ErrorMessage/Context.",
+   "hops": [
+    "00045_1794403269655"
+   ]
+  },
+  {
+   "tc": "TC-AVAIL-NEG-23",
+   "actual": "HTTP 400; ErrorCode 1001; ErrorMessage \"Validation errors occurred. Please check your request.\"; Context [{\"name\":\"$\",\"value\":\"The JSON object contains a trailing comma at the end which is not supported...; envelope camelCase. Problems: internal/.NET detail in ErrorMessage/Context.",
+   "hops": [
+    "00050_1794403275021"
+   ]
+  },
+  {
+   "tc": "TC-AVAIL-SEC-05",
+   "actual": "HTTP 409. Supplier request/response fields in the body: OriginalSupplierRequest, OriginalSupplierResponse; credential-like content (password/WSSE/api key/username): true; PCC/branch identifier (TargetBranch) in supplierRequest: false; AuthorizedBy value: n/a.",
+   "hops": [
+    "00070_1794403303727"
+   ]
+  },
+  {
+   "tc": "TC-AVAIL-SEC-07",
+   "actual": "Inspected #1: HTTP 400, #2: HTTP 400, #3: HTTP 400 bodies for .NET type names, stack traces, raw supplier fragments and internal hosts: #1 internal/.NET detail; #2 internal/.NET detail; #3 internal/.NET detail.",
+   "hops": [
+    "00072_1794403311571",
+    "00073_1794403311662",
+    "00074_1794403311762"
+   ]
+  }
+ ]
+}

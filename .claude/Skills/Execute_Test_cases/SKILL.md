@@ -37,6 +37,27 @@ guessed one.
 4. If a test case's scope is ambiguous (which supplier, which environment, which credentialsSelector)
    do not default silently — ask, then reuse the answer for the rest of the session.
 
+## AI guardrails — [`../_shared/AI_Guardrails.md`](../_shared/AI_Guardrails.md) (always apply)
+
+- **Build:** put `build` in `run_start` (RC label, host-exposed version, or
+  `{"label":"not exposed","source":"unknown"}`). If behaviour changes mid-run, append a `build_change`
+  line (G-4c, KB L-04).
+- **Evidence on every verdict (G-1):** each `test_case` carries `evidence_refs[]` (saved response +
+  JSON path + operator) and `spec_ref`. Cite the raw capture when the log copy is truncated. An
+  absence claim also lists `also_checked`.
+- **Code compares (G-2):** price sums, cross-step equality and counts come from code (`Test-NdcPrice`,
+  `equalsStep` refs, a script), never from prose arithmetic.
+- **Label the expectation (G-3):** every FAIL carries `expectation_source` = `SPEC` (with a verbatim
+  `expectation_quote`), `LIVE-CONFIRMED` (with `expectation_cite`) or `INFERRED`. A FAIL against an
+  `INFERRED` expectation is a question for the user, never a defect.
+- **Before logging a `finding kind:"defect"` (G-2, G-4b):** reproduce it a second time (fresh
+  Search) and list both runs in `repro.records`; get a fresh-sub-agent second opinion with
+  [`../_shared/second-opinion-prompt.md`](../_shared/second-opinion-prompt.md) and copy its answer into
+  `second_opinion`. These two steps are for defects only, not for every PASS.
+- **At close-out:** run `node .claude/Skills/_shared/scripts/verify-evidence.js <log>.jsonl` and
+  report its gate table. Only **FILE** defects go to `generate-bug-report`. Raise QUESTION and
+  NEEDS-HUMAN items with the user.
+
 ## Inputs
 
 - A test case (or set) from `NDC_Integration/TestCases/` (produced by `generate-test-cases`), **or**
@@ -115,7 +136,9 @@ The only things allowed to end a run before the full scope is covered are: a har
 7. **When a result contradicts SPEC.md** (not an `UNKNOWN` being resolved, but an actual mismatch
    with a stated fact), report it as a defect/finding distinctly from an `UNKNOWN`-confirmation —
    these have different implications (one is new information, the other is a regression or a wrong
-   assumption in the spec) and should never be conflated in the report.
+   assumption in the spec) and should never be conflated in the report. A contradiction becomes a
+   `defect` only when the expectation is `SPEC` or `LIVE-CONFIRMED` and the guardrail gate passes
+   (AI guardrails above). Otherwise log it as a FAIL with `expectation_source:"INFERRED"` and ask.
 
 ## Output
 

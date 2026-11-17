@@ -1,0 +1,5 @@
+const fs=require('fs');let l=fs.readFileSync('gl.js','utf8');
+const old="const selBody = (j, map, over = {}) => ({ ...SUPB, availabilityId: j.availabilityId, responseId: j.responseId, bookingClassIds: map, ...over });";
+if(!l.includes(old)) throw new Error('selBody line not found');
+l=l.replace(old,"// Build of 2026-11-15 (after ~08:40 UTC) rejects bookingClassIds as {journey:{segment:[id]}} (HTTP 400) and accepts {journey:{segment:id}}; SELECT_FORM=array restores the old form\nconst selForm = map => { if (process.env.SELECT_FORM === 'array' || !map || typeof map !== 'object') return map; const o = {}; for (const [jk, segs] of Object.entries(map)) { if (!segs || typeof segs !== 'object' || Array.isArray(segs)) { o[jk] = segs; continue; } o[jk] = {}; for (const [sk, v] of Object.entries(segs)) o[jk][sk] = Array.isArray(v) && v.length === 1 ? v[0] : v; } return o; };\nconst selBody = (j, map, over = {}) => ({ ...SUPB, availabilityId: j.availabilityId, responseId: j.responseId, bookingClassIds: selForm(map), ...over });");
+fs.writeFileSync('gl.js',l);console.log('ok');

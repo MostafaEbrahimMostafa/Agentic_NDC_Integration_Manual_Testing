@@ -1,6 +1,6 @@
 <!--
-  Fixed structure for a single bug report — NDC_Integration/Artifacts/BugReports/<slug>/BUG-<NN>_
-  <API_NAME>_<FIELD_NAME>.md. One of these per defect (`finding` line with kind:"defect"). Populate
+  Fixed structure for a single bug report — NDC_Integration/Artifacts/BugReports/<slug>/BUG-<NN>_<API_NAME>_<FIELD_NAME>/
+  BUG-<NN>_<API_NAME>_<FIELD_NAME>.md (next to a requests-responses/ folder of JSON files). One of these per defect (`finding` line with kind:"defect"). Populate
   the placeholders, don't redesign the section headings, their emojis, or their order — this is a
   fixed house format.
 
@@ -62,6 +62,7 @@ consumers.
 - **Environment:** `<ENVIRONMENT>`
 - **Credentials Selector:** `<CREDENTIAL_SELECTOR>`
 - **Correlation ID:** `<CORRELATION_ID>`
+- **Registry ID:** `<GLOBAL_ID>` (`NDC_Integration/Artifacts/Bug_Registry.csv`)
 
 ## 📊 Severity
 
@@ -85,6 +86,14 @@ this severity, per SKILL.md's heuristic>.
   "<FIELD_NAME>": "<EXPECTED_VALUE>"
 }
 ```
+
+## 📁 Request / response files
+
+Full request and response bodies (x-api-key redacted; raw supplier payloads redacted per SPEC.md 7.14) are in the `requests-responses/` folder next to this file:
+
+- `01_<label>_request.json` / `01_<label>_response.json` — <label>, `<endpoint path>`, HTTP <status>
+
+<!-- One line per pair, in call order. Folder layout and naming are in SKILL.md, "Where output goes". -->
 
 ## 💥 Impact
 

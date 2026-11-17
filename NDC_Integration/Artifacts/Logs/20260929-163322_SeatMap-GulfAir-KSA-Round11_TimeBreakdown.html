@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>NDC Integration - Execution Time Breakdown</title>
+<style>
+  :root{
+    color-scheme: light;
+    --paper:#F3F5F8; --surface:#FFFFFF; --surface-2:#EAEEF4;
+    --ink:#10151F; --ink-2:#45536B; --ink-muted:#7C8AA0;
+    --line:#DDE3EC; --line-strong:#C6CEDC;
+    --accent:#2A78D6; --accent-ink:#1C5CAB; --accent-wash:#E4EEFA;
+    --good:#0CA30C; --warning:#C98A17; --serious:#D9673C; --critical:#D03B3B;
+    --good-wash:rgba(12,163,12,0.12); --warning-wash:rgba(250,178,25,0.16);
+    --serious-wash:rgba(236,131,90,0.14); --critical-wash:rgba(208,59,59,0.12);
+    --shadow:rgba(16,21,31,0.08);
+    --time-exec:#2A78D6; --time-wait:#C98A17; --time-claude:#7C5CE0; --time-report:#0C9488; --time-overhead:#7C8AA0;
+    --font-sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+    --font-mono:ui-monospace,"SF Mono","Cascadia Code","Roboto Mono",Consolas,"Courier New",monospace;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:where(:not([data-theme="light"])){
+      color-scheme: dark;
+      --paper:#0A0E15; --surface:#111826; --surface-2:#16202F;
+      --ink:#EDF1F7; --ink-2:#B7C2D1; --ink-muted:#8290A6;
+      --line:#232E40; --line-strong:#324058;
+      --accent:#3987E5; --accent-ink:#8FBBEF; --accent-wash:#152A45;
+      --good:#35C24A; --warning:#E3A730; --serious:#E88A5E; --critical:#EA5B5B;
+      --good-wash:rgba(53,194,74,0.16); --warning-wash:rgba(227,167,48,0.16);
+      --serious-wash:rgba(232,138,94,0.16); --critical-wash:rgba(234,91,91,0.18);
+      --shadow:rgba(0,0,0,0.5);
+      --time-exec:#3987E5; --time-wait:#E3A730; --time-claude:#9B85F0; --time-report:#2FD1C0; --time-overhead:#8290A6;
+    }
+  }
+  :root[data-theme="dark"]{
+    color-scheme: dark;
+    --paper:#0A0E15; --surface:#111826; --surface-2:#16202F;
+    --ink:#EDF1F7; --ink-2:#B7C2D1; --ink-muted:#8290A6;
+    --line:#232E40; --line-strong:#324058;
+    --accent:#3987E5; --accent-ink:#8FBBEF; --accent-wash:#152A45;
+    --good:#35C24A; --warning:#E3A730; --serious:#E88A5E; --critical:#EA5B5B;
+    --good-wash:rgba(53,194,74,0.16); --warning-wash:rgba(227,167,48,0.16);
+    --serious-wash:rgba(232,138,94,0.16); --critical-wash:rgba(234,91,91,0.18);
+    --shadow:rgba(0,0,0,0.5);
+    --time-exec:#3987E5; --time-wait:#E3A730; --time-claude:#9B85F0; --time-report:#2FD1C0; --time-overhead:#8290A6;
+  }
+  :root[data-theme="light"]{
+    color-scheme: light;
+    --paper:#F3F5F8; --surface:#FFFFFF; --surface-2:#EAEEF4;
+    --ink:#10151F; --ink-2:#45536B; --ink-muted:#7C8AA0;
+    --line:#DDE3EC; --line-strong:#C6CEDC;
+    --accent:#2A78D6; --accent-ink:#1C5CAB; --accent-wash:#E4EEFA;
+    --good:#0CA30C; --warning:#C98A17; --serious:#D9673C; --critical:#D03B3B;
+    --good-wash:rgba(12,163,12,0.12); --warning-wash:rgba(250,178,25,0.16);
+    --serious-wash:rgba(236,131,90,0.14); --critical-wash:rgba(208,59,59,0.12);
+    --shadow:rgba(16,21,31,0.08);
+    --time-exec:#2A78D6; --time-wait:#C98A17; --time-claude:#7C5CE0; --time-report:#0C9488; --time-overhead:#7C8AA0;
+  }
+  *{ box-sizing:border-box; }
+  html,body{ margin:0; padding:0; }
+  body{ background:var(--paper); color:var(--ink); font-family:var(--font-sans);
+        font-size:14px; line-height:1.5; -webkit-font-smoothing:antialiased; }
+  @media (prefers-reduced-motion: reduce){ *{ animation-duration:.001ms !important; transition-duration:.001ms !important; } }
+  a{ color:var(--accent-ink); }
+  .wrap{ max-width:1040px; margin:0 auto; padding:32px 20px 80px; }
+  .dashboard-card{ background:var(--surface); border:1px solid var(--line-strong); border-radius:24px; padding:24px; }
+  code,.mono{ font-family:var(--font-mono); font-size:.92em; }
+  .tb-back{ font-size:13px; color:var(--ink-muted); text-decoration:none; }
+  .tb-back:hover{ text-decoration:underline; }
+  .header{ margin-bottom:20px; }
+  .header h1{ font-size:30px; font-weight:800; margin:10px 0 8px; }
+  .meta-card{ margin-top:8px; }
+  .fields{ display:flex; flex-direction:column; gap:4px; margin:4px 0 6px; }
+  .field-row{ display:flex; flex-wrap:wrap; gap:4px 28px; }
+  .field{ font-size:14px; display:flex; gap:6px; }
+  .field .k{ color:var(--ink-2); font-weight:700; font-size:15px; letter-spacing:normal; text-transform:none; flex-shrink:0; }
+  .field .k::after{ content:':'; }
+  .field .v{ color:var(--ink); }
+  h2.section-num{ font-size:15px; text-transform:uppercase; letter-spacing:.04em; color:var(--ink-2);
+      border-bottom:1px solid var(--line); padding-bottom:6px; margin:32px 0 14px; }
+  .empty{ color:var(--ink-muted); font-size:13px; font-style:italic; }
+
+  .tb-cat-cards{ display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:12px; margin-bottom:22px; }
+  .tb-cat-card{ text-align:center; }
+  .tb-cat-card .val{ font-size:22px; font-weight:700; color:var(--ink); }
+  .tb-cat-card .pct{ font-size:13px; font-weight:600; margin-top:2px; }
+  .tb-cat-card .lbl{ font-size:12px; color:var(--ink-muted); margin-top:4px; }
+  .tb-cat-card .swatch{ display:inline-block; width:10px; height:10px; border-radius:3px; margin-right:6px; vertical-align:middle; }
+  .tb-cat-card.exec .pct{ color:var(--time-exec); }
+  .tb-cat-card.wait .pct{ color:var(--time-wait); }
+  .tb-cat-card.claude .pct{ color:var(--time-claude); }
+  .tb-cat-card.report .pct{ color:var(--time-report); }
+  .tb-cat-card.overhead .pct{ color:var(--time-overhead); }
+
+  .tb-bars{ display:flex; flex-direction:column; gap:10px; margin:18px 0 20px; }
+  .tb-bar-row{ display:flex; align-items:center; gap:14px; }
+  .tb-bar-label{ width:180px; flex-shrink:0; font-size:13px; font-weight:600; color:var(--ink-2); display:flex; align-items:center; gap:8px; }
+  .tb-bar-track{ flex:1 1 auto; background:var(--surface-2); border-radius:7px; height:16px; overflow:hidden; }
+  .tb-bar-fill{ height:100%; border-radius:7px; }
+  .tb-bar-value{ width:170px; flex-shrink:0; text-align:right; font-size:12.5px; color:var(--ink-2); font-family:var(--font-mono); }
+
+  .tb-reconcile{ font-size:13px; color:var(--ink-2); margin-top:14px; padding-top:14px; border-top:1px solid var(--line); }
+  .tb-reconcile b{ color:var(--ink); }
+  .tb-warning{ background:var(--warning-wash); border:1px solid var(--warning); border-radius:12px; padding:12px 14px; margin-top:12px; font-size:13px; color:var(--ink); }
+  .tb-warning .w-title{ font-weight:700; color:var(--warning); margin-bottom:4px; }
+
+  table.tb-table{ width:100%; border-collapse:collapse; font-size:13px; }
+  table.tb-table th{ text-align:left; font-size:11px; text-transform:uppercase; letter-spacing:.04em; color:var(--ink-muted); font-weight:700; padding:8px 10px; border-bottom:1px solid var(--line-strong); white-space:nowrap; }
+  table.tb-table td{ padding:9px 10px; border-bottom:1px solid var(--line); color:var(--ink-2); vertical-align:top; overflow-wrap:anywhere; }
+  table.tb-table tr:last-child td{ border-bottom:none; }
+  table.tb-table td.num, table.tb-table th.num{ text-align:right; font-family:var(--font-mono); white-space:nowrap; }
+  .tb-table-wrap{ overflow-x:auto; }
+
+  .tc-toolbar{ display:flex; flex-wrap:wrap; align-items:center; gap:8px; margin:0 0 14px; position:sticky; top:0; z-index:5; background:var(--paper); padding:6px 0; }
+  .tc-toolbar input[type="search"]{ flex:1 1 220px; min-width:160px; padding:7px 10px; border-radius:7px; border:1px solid var(--line-strong); background:var(--surface); color:var(--ink); font-size:13px; }
+  .tc-toolbar select{ padding:7px 10px; border-radius:7px; border:1px solid var(--line-strong); background:var(--surface); color:var(--ink); font-size:13px; }
+  .tc-toolbar button{ padding:7px 12px; border-radius:7px; border:1px solid var(--line-strong); background:var(--surface); color:var(--ink-2); font-size:12px; font-weight:600; cursor:pointer; }
+  .tc-toolbar button:hover{ background:var(--surface-2); }
+  #tcbReset{ color:var(--critical); border-color:var(--critical); }
+  #tcbReset:hover{ background:var(--critical-wash); }
+  .tc-toolbar .tc-count{ font-size:12px; color:var(--ink-muted); margin-left:auto; white-space:nowrap; }
+  .tb-no-results{ padding:24px 16px; text-align:center; color:var(--critical); font-size:15px; font-weight:700; background:var(--critical-wash); border:1px solid var(--critical); border-radius:12px; margin-top:8px; }
+  .tb-no-results.js-hidden{ display:none; }
+
+  table.tcb-table{ width:100%; border-collapse:collapse; font-size:12.5px; }
+  table.tcb-table th{ text-align:left; font-size:11px; text-transform:uppercase; letter-spacing:.03em; color:var(--ink-muted); font-weight:700; padding:8px 9px; border-bottom:1px solid var(--line-strong); white-space:nowrap; cursor:pointer; user-select:none; }
+  table.tcb-table th:hover{ color:var(--ink); }
+  table.tcb-table th .sort-arrow{ font-size:9px; margin-left:3px; color:var(--accent-ink); }
+  table.tcb-table td{ padding:8px 9px; border-bottom:1px solid var(--line); color:var(--ink-2); vertical-align:top; overflow-wrap:anywhere; }
+  table.tcb-table td.num{ text-align:right; font-family:var(--font-mono); white-space:nowrap; }
+  table.tcb-table tr.js-hidden{ display:none; }
+  .badge{ font-size:11px; font-weight:700; padding:2px 8px; border-radius:5px; white-space:nowrap; }
+  .badge.PASS{ background:var(--good-wash); color:var(--good); }
+  .badge.FAIL{ background:var(--critical-wash); color:var(--critical); }
+  .badge.BLOCKED{ background:var(--serious-wash); color:var(--serious); }
+  .timing-partial{ font-size:10.5px; font-style:italic; color:var(--warning); display:block; margin-top:2px; }
+
+  .tb-timeline{ display:flex; flex-direction:column; }
+  .tb-tl-row{ display:flex; gap:14px; padding:7px 0; border-bottom:1px solid var(--line); font-size:13px; }
+  .tb-tl-row:last-child{ border-bottom:none; }
+  .tb-tl-time{ width:150px; flex-shrink:0; font-family:var(--font-mono); color:var(--ink-muted); font-size:12px; }
+  .tb-tl-label{ color:var(--ink-2); }
+  .tb-tl-label b{ color:var(--ink); }
+
+  .tb-overhead-box{ margin-top:14px; padding-top:14px; border-top:1px solid var(--line); }
+  .tb-overhead-box .oh-title{ font-size:12px; font-weight:700; color:var(--ink-2); margin-bottom:8px; }
+  .tb-oh-rows{ display:flex; flex-direction:column; gap:6px; }
+  .tb-oh-row{ display:flex; justify-content:space-between; gap:14px; font-size:12.5px; color:var(--ink-2); }
+  .tb-oh-row .oh-val{ font-family:var(--font-mono); color:var(--ink); white-space:nowrap; }
+  .tb-phase-note{ font-size:12px; color:var(--ink-muted); margin:-6px 0 14px; }
+</style>
+</head><body><div class="wrap">
+
+<a class="tb-back" href="./20260929-163322_SeatMap-GulfAir-KSA-Round11.html">&larr; Back to QA Execution Report</a>
+
+<div class="header">
+<h1>Execution Time Breakdown</h1>
+</div>
+
+<div class="meta-card dashboard-card">
+<div class="field-row">
+<div class="field"><span class="k">Total Duration</span><span class="v">19m 7s</span></div>
+<div class="field"><span class="k">Execution Start</span><span class="v">2026-09-29 13:33:23 UTC</span></div>
+<div class="field"><span class="k">Execution End</span><span class="v">2026-09-29 13:52:30 UTC</span></div>
+</div>
+</div>
+
+<h2 class="section-num">1. Time Breakdown</h2>
+<div class="tb-cat-cards">
+<div class="tb-cat-card exec dashboard-card"><div class="val">7m 5s</div><div class="pct">37.1%</div><div class="lbl"><span class="swatch" style="background:var(--time-exec)"></span>Test Case Execution</div></div>
+<div class="tb-cat-card wait dashboard-card"><div class="val">0s</div><div class="pct">0.0%</div><div class="lbl"><span class="swatch" style="background:var(--time-wait)"></span>Waiting</div></div>
+<div class="tb-cat-card claude dashboard-card"><div class="val">0s</div><div class="pct">0.0%</div><div class="lbl"><span class="swatch" style="background:var(--time-claude)"></span>Claude / AI Processing</div></div>
+<div class="tb-cat-card report dashboard-card"><div class="val">1m 34s</div><div class="pct">8.2%</div><div class="lbl"><span class="swatch" style="background:var(--time-report)"></span>Reporting</div></div>
+<div class="tb-cat-card overhead dashboard-card"><div class="val">10m 28s</div><div class="pct">54.8%</div><div class="lbl"><span class="swatch" style="background:var(--time-overhead)"></span>Other / Overhead</div></div>
+</div>
+
+<div class="dashboard-card">
+<div class="tb-bars">
+<div class="tb-bar-row"><div class="tb-bar-label"><span class="swatch" style="display:inline-block;width:10px;height:10px;border-radius:3px;background:var(--time-exec)"></span>Test Case Execution</div><div class="tb-bar-track"><div class="tb-bar-fill" style="width:37.1%;background:var(--time-exec)"></div></div><div class="tb-bar-value">7m 5s &middot; 37.1%</div></div>
+<div class="tb-bar-row"><div class="tb-bar-label"><span class="swatch" style="display:inline-block;width:10px;height:10px;border-radius:3px;background:var(--time-wait)"></span>Waiting</div><div class="tb-bar-track"><div class="tb-bar-fill" style="width:0%;background:var(--time-wait)"></div></div><div class="tb-bar-value">0s &middot; 0.0%</div></div>
+<div class="tb-bar-row"><div class="tb-bar-label"><span class="swatch" style="display:inline-block;width:10px;height:10px;border-radius:3px;background:var(--time-claude)"></span>Claude / AI Processing</div><div class="tb-bar-track"><div class="tb-bar-fill" style="width:0%;background:var(--time-claude)"></div></div><div class="tb-bar-value">0s &middot; 0.0%</div></div>
+<div class="tb-bar-row"><div class="tb-bar-label"><span class="swatch" style="display:inline-block;width:10px;height:10px;border-radius:3px;background:var(--time-report)"></span>Reporting</div><div class="tb-bar-track"><div class="tb-bar-fill" style="width:8.2%;background:var(--time-report)"></div></div><div class="tb-bar-value">1m 34s &middot; 8.2%</div></div>
+<div class="tb-bar-row"><div class="tb-bar-label"><span class="swatch" style="display:inline-block;width:10px;height:10px;border-radius:3px;background:var(--time-overhead)"></span>Other / Overhead</div><div class="tb-bar-track"><div class="tb-bar-fill" style="width:54.8%;background:var(--time-overhead)"></div></div><div class="tb-bar-value">10m 28s &middot; 54.8%</div></div>
+</div>
+
+<div class="tb-reconcile">Accounted Time: <b>19m 7s</b> &nbsp;=&nbsp; Total Duration: <b>19m 7s</b> &nbsp;&#10003;</div>
+
+<div class="tb-overhead-box">
+<div class="oh-title">What's in Other / Overhead (10m 28s)</div>
+<div class="tb-oh-rows">
+<div class="tb-oh-row"><span class="oh-label">Setup before first test case (preparing the run before the first live call)</span><span class="oh-val">22s</span></div>
+<div class="tb-oh-row"><span class="oh-label">Between TC-SEATMAP-POS-02 and TC-SEATMAP-VAL-03 (idle interval between one test case's verdict and the next one's first call; no timestamped operation logged)</span><span class="oh-val">18s</span></div>
+<div class="tb-oh-row"><span class="oh-label">Between TC-SEATMAP-VAL-04 and TC-SEATMAP-BIZ-03 (idle interval between one test case's verdict and the next one's first call; no timestamped operation logged)</span><span class="oh-val">20s</span></div>
+<div class="tb-oh-row"><span class="oh-label">Between the end of Test Execution and the start of Bug Reporting (no timestamped operation logged in this window)</span><span class="oh-val">4m 32s</span></div>
+<div class="tb-oh-row"><span class="oh-label">Between the end of Bug Reporting and the start of Report Generation (no timestamped operation logged in this window)</span><span class="oh-val">4m 56s</span></div>
+</div>
+</div>
+</div>
+
+<h2 class="section-num">2. Execution Phases</h2>
+<div class="tb-phase-note">Note: "Test Execution" here is wall-clock time for the whole phase (8m 5s), including the setup and between-test-case gaps &mdash; it's not the same number as the "Test Case Execution" category above (7m 5s), which counts only the merged union of the test cases' own spans. The difference between them is the Setup and Between-test-case rows of the Overhead breakdown in section 1.</div>
+<div class="dashboard-card tb-table-wrap">
+<table class="tb-table">
+<thead><tr><th>Phase</th><th>Start</th><th>End</th><th class="num">Duration</th><th class="num">%</th></tr></thead>
+<tbody>
+<tr><td>Test Execution</td><td>13:33:23</td><td>13:41:27</td><td class="num">8m 5s</td><td class="num">42.3%</td></tr>
+<tr><td>Bug Reporting</td><td>13:46:00</td><td>13:47:33</td><td class="num">1m 33s</td><td class="num">8.1%</td></tr>
+<tr><td>Report Generation</td><td>13:52:29</td><td>13:52:30</td><td class="num">1s</td><td class="num">0.1%</td></tr>
+</tbody>
+</table>
+</div>
+
+<h2 class="section-num">3. Claude / AI Operations</h2>
+<div class="dashboard-card tb-table-wrap">
+<div class="empty">No AI operations recorded for this run.</div>
+</div>
+
+<h2 class="section-num">4. Reporting Breakdown</h2>
+<div class="dashboard-card tb-table-wrap">
+<table class="tb-table">
+<thead><tr><th>Operation</th><th class="num">Duration</th></tr></thead>
+<tbody>
+<tr><td>Bug Report Generation</td><td class="num">1m 33s</td></tr>
+<tr><td>Final HTML Report Generation</td><td class="num">0s</td></tr>
+<tr><td>Time Breakdown Report Generation</td><td class="num">0s</td></tr>
+</tbody>
+<tfoot><tr><td><b>Total Reporting Time</b></td><td class="num"><b>1m 34s</b></td></tr></tfoot>
+</table>
+</div>
+
+<h2 class="section-num">5. Test Case Time</h2>
+<div class="tc-toolbar dashboard-card">
+<input type="search" id="tcbSearch" placeholder="Search test case ID or title...">
+<select id="tcbStatusFilter">
+<option value="">All statuses</option>
+<option value="PASS">Passed</option>
+<option value="FAIL">Failed</option>
+<option value="BLOCKED">Blocked</option>
+</select>
+<button type="button" id="tcbReset">Reset</button>
+<span class="tc-count" id="tcbCount">11 / 11 shown</span>
+</div>
+<div class="tb-no-results js-hidden" id="tcbNoResults">No test cases match the current search/filter.</div>
+<div class="dashboard-card tb-table-wrap">
+<table class="tcb-table" id="tcbTable">
+<thead><tr>
+<th data-sort="idx" data-type="num">#</th>
+<th data-sort="tcid" data-type="text">Test Case ID</th>
+<th data-sort="title" data-type="text">Test Case</th>
+<th data-sort="status" data-type="text">Status</th>
+<th data-sort="start" data-type="num">Start</th>
+<th data-sort="end" data-type="num">End</th>
+<th data-sort="exec" data-type="num" class="num">Execution</th>
+<th data-sort="wait" data-type="num" class="num">Waiting</th>
+<th data-sort="claude" data-type="num" class="num">Claude</th>
+<th data-sort="report" data-type="num" class="num">Reporting</th>
+<th data-sort="total" data-type="num" class="num">Total</th>
+</tr></thead>
+<tbody>
+<tr data-tcid="TC-SEATMAP-POS-02" data-title="Verify GetSeatMap sets getSeatMapOfferId/getSeatMapResponceID and Book consumes them as ResponseId/selectedOfferId when SeatMap precedes it" data-status="PASS">
+<td data-sort-v="1">1</td>
+<td>TC-SEATMAP-POS-02</td>
+<td>Verify GetSeatMap sets getSeatMapOfferId/getSeatMapResponceID and Book consumes them as ResponseId/selectedOfferId when SeatMap precedes it</td>
+<td><span class="badge PASS">PASS</span></td>
+<td data-sort-v="1790688824713">13:33:45</td>
+<td data-sort-v="1790688983985">13:36:24</td>
+<td class="num" data-sort-v="159">2m 39s</td>
+<td class="num" data-sort-v="0">0s</td>
+<td class="num" data-sort-v="0">0s</td>
+<td class="num" data-sort-v="0">0s</td>
+<td class="num" data-sort-v="159">2m 39s</td>
+</tr>
+<tr data-tcid="TC-SEATMAP-VAL-03" data-title="Verify cellID round-trips into Book's passengersSelectedSeats.setSegmentsSeats.cellId despite casing difference (cellID vs cellId)" data-status="PASS">
+<td data-sort-v="2">2</td>
+<td>TC-SEATMAP-VAL-03</td>
+<td>Verify cellID round-trips into Book's passengersSelectedSeats.setSegmentsSeats.cellId despite casing difference (cellID vs cellId)</td>
+<td><span class="badge PASS">PASS</span></td>
+<td data-sort-v="1790689002533">13:36:43</td>
+<td data-sort-v="1790689085593">13:38:06</td>
+<td class="num" data-sort-v="83">1m 23s</td>
+<td class="num" data-sort-v="0">0s</td>
+<td class="num" data-sort-v="0">0s</td>
+<td class="num" data-sort-v="0">0s</td>
+<td class="num" data-sort-v="83">1m 23s</td>
+</tr>
+<tr data-tcid="TC-SEATMAP-VAL-04" data-title="Validate a cellID obtained from one offer's GetSeatMap response is rejected when submitted in Book for a different offer" data-status="FAIL">
+<td data-sort-v="3">3</td>
+<td>TC-SEATMAP-VAL-04</td>
+<td>Validate a cellID obtained from one offer's GetSeatMap response is rejected when submitted in Book for a different offer</td>
+<td><span class="badge FAIL">FAIL</span></td>
+<td data-sort-v="1790689113998">13:38:34</td>
+<td data-sort-v="1790689199443">13:39:59</td>
+<td class="num" data-sort-v="85">1m 25s</td>
+<td class="num" data-sort-v="0">0s</td>
+<td class="num" data-sort-v="0">0s</td>
+<td class="num" data-sort-v="47">47s</td>
+<td class="num" data-sort-v="132">2m 12s</td>
+</tr>
+<tr data-tcid="TC-SEATMAP-VAL-07" data-title="Verify window/aisle/extra-legroom/exit-row seat attributes are programmatically derivable from cellCharacteristics for every Seat-category cell" data-status="PASS">
+<td data-sort-v="4">4</td>
+<td>TC-SEATMAP-VAL-07</td>
+<td>Verify window/aisle/extra-legroom/exit-row seat attributes are programmatically derivable from cellCharacteristics for every Seat-category cell</td>
+<td><span class="badge PASS">PASS</span></td>
+<td data-sort-v="1790688836711">13:33:57</td>
+<td data-sort-v="1790688944916">13:35:45</td>
+<td class="num" data-sort-v="108">1m 48s</td>
+<td class="num" data-sort-v="0">0s</td>
+<td class="num" data-sort-v="0">0s</td>
+<td class="num" data-sort-v="0">0s</td>
+<td class="num" data-sort-v="108">1m 48s</td>
+</tr>
+<tr data-tcid="TC-SEATMAP-VAL-08" data-title="Verify seatPriceDetails/seatPriceDetailsByPassenger is populated for every AvailablePaid cell and null/absent for every Blocked or Occupied cell" data-status="PASS">
+<td data-sort-v="5">5</td>
+<td>TC-SEATMAP-VAL-08</td>
+<td>Verify seatPriceDetails/seatPriceDetailsByPassenger is populated for every AvailablePaid cell and null/absent for every Blocked or Occupied cell</td>
+<td><span class="badge PASS">PASS</span></td>
+<td data-sort-v="1790688836711">13:33:57</td>
+<td data-sort-v="1790688944916">13:35:45</td>
+<td class="num" data-sort-v="108">1m 48s</td>
+<td class="num" data-sort-v="0">0s</td>
+<td class="num" data-sort-v="0">0s</td>
+<td class="num" data-sort-v="0">0s</td>
+<td class="num" data-sort-v="108">1m 48s</td>
+</tr>
+<tr data-tcid="TC-SEATMAP-VAL-09" data-title="Verify cellCode is unique across all cells within one flight segment's seatMapDetails" data-status="PASS">
+<td data-sort-v="6">6</td>
+<td>TC-SEATMAP-VAL-09</td>
+<td>Verify cellCode is unique across all cells within one flight segment's seatMapDetails</td>
+<td><span class="badge PASS">PASS</span></td>
+<td data-sort-v="1790688836711">13:33:57</td>
+<td data-sort-v="1790688944916">13:35:45</td>
+<td class="num" data-sort-v="108">1m 48s</td>
+<td class="num" data-sort-v="0">0s</td>
+<td class="num" data-sort-v="0">0s</td>
+<td class="num" data-sort-v="0">0s</td>
+<td class="num" data-sort-v="108">1m 48s</td>
+</tr>
+<tr data-tcid="TC-SEATMAP-VAL-10" data-title="Verify structural uniqueness and domain constraints across decks/zones/rows/columns" data-status="PASS">
+<td data-sort-v="7">7</td>
+<td>TC-SEATMAP-VAL-10</td>
+<td>Verify structural uniqueness and domain constraints across decks/zones/rows/columns</td>
+<td><span class="badge PASS">PASS</span></td>
+<td data-sort-v="1790688836711">13:33:57</td>
+<td data-sort-v="1790688944916">13:35:45</td>
+<td class="num" data-sort-v="108">1m 48s</td>
+<td class="num" data-sort-v="0">0s</td>
+<td class="num" data-sort-v="0">0s</td>
+<td class="num" data-sort-v="0">0s</td>
+<td class="num" data-sort-v="108">1m 48s</td>
+</tr>
+<tr data-tcid="TC-SEATMAP-BIZ-03" data-title="Verify overall cellAvailability and per-passenger seatPriceDetailsByPassenger entries are independently reported and internally consistent (not required to list every passenger)" data-status="PASS">
+<td data-sort-v="8">8</td>
+<td>TC-SEATMAP-BIZ-03</td>
+<td>Verify overall cellAvailability and per-passenger seatPriceDetailsByPassenger entries are independently reported and internally consistent (not required to list every passenger)</td>
+<td><span class="badge PASS">PASS</span></td>
+<td data-sort-v="1790689219094">13:40:19</td>
+<td data-sort-v="1790689231574">13:40:32</td>
+<td class="num" data-sort-v="12">12s</td>
+<td class="num" data-sort-v="0">0s</td>
+<td class="num" data-sort-v="0">0s</td>
+<td class="num" data-sort-v="0">0s</td>
+<td class="num" data-sort-v="12">12s</td>
+</tr>
+<tr data-tcid="TC-SEATMAP-BIZ-04" data-title="Exploratory - confirm GetSeatMap reflects real-time supplier inventory rather than a cached snapshot" data-status="PASS">
+<td data-sort-v="9">9</td>
+<td>TC-SEATMAP-BIZ-04</td>
+<td>Exploratory - confirm GetSeatMap reflects real-time supplier inventory rather than a cached snapshot</td>
+<td><span class="badge PASS">PASS</span></td>
+<td data-sort-v="1790689011096">13:36:51</td>
+<td data-sort-v="1790689126000">13:38:46</td>
+<td class="num" data-sort-v="115">1m 55s</td>
+<td class="num" data-sort-v="0">0s</td>
+<td class="num" data-sort-v="0">0s</td>
+<td class="num" data-sort-v="0">0s</td>
+<td class="num" data-sort-v="115">1m 55s</td>
+</tr>
+<tr data-tcid="TC-SEATMAP-SEC-01" data-title="Apply the three universal caller-facing security checks (invalid x-api-key, invalid Client-Id, cross-tenant supplier/credentialsSelector) to GetSeatMap" data-status="FAIL">
+<td data-sort-v="10">10</td>
+<td>TC-SEATMAP-SEC-01</td>
+<td>Apply the three universal caller-facing security checks (invalid x-api-key, invalid Client-Id, cross-tenant supplier/credentialsSelector) to GetSeatMap</td>
+<td><span class="badge FAIL">FAIL</span></td>
+<td data-sort-v="1790689231574">13:40:32</td>
+<td data-sort-v="1790689287449">13:41:27</td>
+<td class="num" data-sort-v="56">56s</td>
+<td class="num" data-sort-v="0">0s</td>
+<td class="num" data-sort-v="0">0s</td>
+<td class="num" data-sort-v="47">47s</td>
+<td class="num" data-sort-v="103">1m 43s</td>
+</tr>
+<tr data-tcid="TC-SEATMAP-SEC-02" data-title="Record that supplier-side authentication security and request/response logging are not independently verifiable through this API's black-box contract" data-status="PASS">
+<td data-sort-v="11">11</td>
+<td>TC-SEATMAP-SEC-02</td>
+<td>Record that supplier-side authentication security and request/response logging are not independently verifiable through this API's black-box contract</td>
+<td><span class="badge PASS">PASS</span></td>
+<td data-sort-v="1790689287449">13:41:27</td>
+<td data-sort-v="1790689287449">13:41:27</td>
+<td class="num" data-sort-v="0">0s</td>
+<td class="num" data-sort-v="0">0s</td>
+<td class="num" data-sort-v="0">0s</td>
+<td class="num" data-sort-v="0">0s</td>
+<td class="num" data-sort-v="0">0s</td>
+</tr>
+</tbody>
+</table>
+<div class="tb-reconcile">Execution column: rows sum to <b>15m 42s</b>, minus <b>8m 37s</b> of parallel overlap (e.g. VAL-07/08/09/10 ran inside POS-02's window), = <b>7m 5s</b> Test Case Execution (merged wall-clock, section 1). Reporting column: the 1m 33s Bug Report Generation is split evenly across the 2 defect test cases (VAL-04, SEC-01); the per-test-case log-write time (JSONL append + .md re-render) was not stamped for any test case in this run, so it is not included and the 0s on the other rows means "not recorded", not "none".</div>
+</div>
+
+<h2 class="section-num">6. Timeline</h2>
+<div class="dashboard-card">
+<div class="tb-timeline">
+<div class="tb-tl-row"><div class="tb-tl-time">13:33:23</div><div class="tb-tl-label"><b>Test Execution</b> started</div></div>
+<div class="tb-tl-row"><div class="tb-tl-time">13:33:45</div><div class="tb-tl-label">TC-SEATMAP-POS-02 started</div></div>
+<div class="tb-tl-row"><div class="tb-tl-time">13:33:57</div><div class="tb-tl-label">TC-SEATMAP-VAL-07 started</div></div>
+<div class="tb-tl-row"><div class="tb-tl-time">13:33:57</div><div class="tb-tl-label">TC-SEATMAP-VAL-08 started</div></div>
+<div class="tb-tl-row"><div class="tb-tl-time">13:33:57</div><div class="tb-tl-label">TC-SEATMAP-VAL-09 started</div></div>
+<div class="tb-tl-row"><div class="tb-tl-time">13:33:57</div><div class="tb-tl-label">TC-SEATMAP-VAL-10 started</div></div>
+<div class="tb-tl-row"><div class="tb-tl-time">13:36:43</div><div class="tb-tl-label">TC-SEATMAP-VAL-03 started</div></div>
+<div class="tb-tl-row"><div class="tb-tl-time">13:36:51</div><div class="tb-tl-label">TC-SEATMAP-BIZ-04 started</div></div>
+<div class="tb-tl-row"><div class="tb-tl-time">13:38:34</div><div class="tb-tl-label">TC-SEATMAP-VAL-04 started</div></div>
+<div class="tb-tl-row"><div class="tb-tl-time">13:40:19</div><div class="tb-tl-label">TC-SEATMAP-BIZ-03 started</div></div>
+<div class="tb-tl-row"><div class="tb-tl-time">13:40:32</div><div class="tb-tl-label">TC-SEATMAP-SEC-01 started</div></div>
+<div class="tb-tl-row"><div class="tb-tl-time">13:41:27</div><div class="tb-tl-label">TC-SEATMAP-SEC-02 started</div></div>
+<div class="tb-tl-row"><div class="tb-tl-time">13:41:27</div><div class="tb-tl-label"><b>Test Execution</b> ended</div></div>
+<div class="tb-tl-row"><div class="tb-tl-time">13:46:00</div><div class="tb-tl-label"><b>Bug Reporting</b> started</div></div>
+<div class="tb-tl-row"><div class="tb-tl-time">13:47:33</div><div class="tb-tl-label"><b>Bug Reporting</b> ended</div></div>
+<div class="tb-tl-row"><div class="tb-tl-time">13:52:29</div><div class="tb-tl-label"><b>Report Generation</b> started</div></div>
+<div class="tb-tl-row"><div class="tb-tl-time">13:52:30</div><div class="tb-tl-label"><b>Report Generation</b> ended</div></div>
+<div class="tb-tl-row"><div class="tb-tl-time">13:52:30</div><div class="tb-tl-label">Execution completed</div></div>
+</div>
+</div>
+
+<script>
+(function(){
+  var search = document.getElementById('tcbSearch');
+  var statusFilter = document.getElementById('tcbStatusFilter');
+  var resetBtn = document.getElementById('tcbReset');
+  var countEl = document.getElementById('tcbCount');
+  var noResults = document.getElementById('tcbNoResults');
+  var table = document.getElementById('tcbTable');
+  if(!table) return;
+  var tbody = table.tBodies[0];
+  var allRows = Array.prototype.slice.call(tbody.rows);
+  var total = allRows.length;
+
+  function applyFilter(){
+    var q = (search.value || '').trim().toLowerCase();
+    var st = statusFilter.value;
+    var shown = 0;
+    allRows.forEach(function(row){
+      var matchesQ = !q || (row.getAttribute('data-tcid').toLowerCase().indexOf(q) !== -1) ||
+                     (row.getAttribute('data-title').toLowerCase().indexOf(q) !== -1);
+      var matchesSt = !st || row.getAttribute('data-status') === st;
+      var show = matchesQ && matchesSt;
+      row.classList.toggle('js-hidden', !show);
+      if(show) shown++;
+    });
+    countEl.textContent = shown + ' / ' + total + ' shown';
+    noResults.classList.toggle('js-hidden', shown !== 0);
+  }
+
+  search.addEventListener('input', applyFilter);
+  statusFilter.addEventListener('change', applyFilter);
+  resetBtn.addEventListener('click', function(){
+    search.value = ''; statusFilter.value = ''; applyFilter();
+  });
+
+  var sortState = { key: null, dir: 1 };
+  var headers = Array.prototype.slice.call(table.tHead.rows[0].cells);
+  headers.forEach(function(th, colIdx){
+    var key = th.getAttribute('data-sort');
+    if(!key) return;
+    th.addEventListener('click', function(){
+      var dir = (sortState.key === key) ? -sortState.dir : 1;
+      sortState = { key: key, dir: dir };
+      headers.forEach(function(h){ h.querySelectorAll('.sort-arrow').forEach(function(a){ a.remove(); }); });
+      var arrow = document.createElement('span');
+      arrow.className = 'sort-arrow';
+      arrow.textContent = dir === 1 ? '▴' : '▾';
+      th.appendChild(arrow);
+
+      var type = th.getAttribute('data-type');
+      var rows = Array.prototype.slice.call(tbody.rows);
+      rows.sort(function(a, b){
+        var av = a.cells[colIdx].getAttribute('data-sort-v');
+        var bv = b.cells[colIdx].getAttribute('data-sort-v');
+        if(type === 'num'){
+          av = parseFloat(av); bv = parseFloat(bv);
+          return (av - bv) * dir;
+        }
+        av = a.cells[colIdx].textContent.trim().toLowerCase();
+        bv = b.cells[colIdx].textContent.trim().toLowerCase();
+        return av.localeCompare(bv) * dir;
+      });
+      rows.forEach(function(r){ tbody.appendChild(r); });
+    });
+  });
+
+  applyFilter();
+})();
+</script>
+<script>
+(function(){
+  var reset = document.getElementById('tcbReset');
+  var table = document.getElementById('tcbTable');
+  if (!reset || !table) return;
+  var wrap = table.closest('.tb-table-wrap') || table.parentNode;
+  var noRes = document.getElementById('tcbNoResults');
+  function make(id, label, open){
+    var b = document.createElement('button');
+    b.type = 'button'; b.id = id; b.textContent = label;
+    b.addEventListener('click', function(){
+      wrap.hidden = !open;
+      if (noRes) noRes.style.display = open ? '' : 'none';
+    });
+    return b;
+  }
+  reset.parentNode.insertBefore(make('tcbExpandAll', 'Expand all', true), reset);
+  reset.parentNode.insertBefore(make('tcbCollapseAll', 'Collapse all', false), reset);
+})();
+</script>
+
+</div></body></html>

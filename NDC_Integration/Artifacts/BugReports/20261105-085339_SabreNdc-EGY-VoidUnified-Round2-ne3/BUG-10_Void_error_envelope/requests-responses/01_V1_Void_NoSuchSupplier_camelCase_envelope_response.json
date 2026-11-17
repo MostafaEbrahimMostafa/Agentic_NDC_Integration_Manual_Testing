@@ -1,0 +1,25 @@
+{
+  "label": "V1 Void NoSuchSupplier (camelCase envelope)",
+  "status": 400,
+  "durationMs": 121,
+  "requestedAtUtc": "2026-11-05T10:54:43.671Z",
+  "respondedAtUtc": "2026-11-05T10:54:43.792Z",
+  "body": {
+    "status": 400,
+    "transactionId": "7438e406-4e59-4ddc-83d1-6b9dde66bda0",
+    "errorCode": "1001",
+    "errorMessage": "Validation errors occurred. Please check your request.",
+    "context": [
+      {
+        "name": "voidRequestDto",
+        "value": "The voidRequestDto field is required."
+      },
+      {
+        "name": "$.supplier",
+        "value": "The JSON value could not be converted to NDC.Integrations.Application.Dtos.Api.Supplier. Path: $.supplier | LineNumber: 0 | BytePositionInLine: 28."
+      }
+    ],
+    "originalSupplierRequest": null,
+    "originalSupplierResponse": null
+  }
+}

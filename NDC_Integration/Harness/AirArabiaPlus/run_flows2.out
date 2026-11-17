@@ -1,0 +1,27 @@
+to run 104 of 138
+PASS    RT-BAS-02  All 7 calls succeeded; booking 6X9X35; 10 checks passed.
+PASS    RT-ANC-01  All 13 calls succeeded; booking 6A87T5; 13 checks passed.
+PASS    RT-ANC-02  All 10 calls succeeded; booking 6C9R8Q; 13 checks passed.
+FAIL    RT-BUN-01  Flow completed but 2 check(s) failed: Book price reconciles (<=0.05 rounding) [ADT A1 paxTotalAmount vs base+tax+ancillaries+bundles (seat price is ca
+PASS    RT-BUN-02  All 11 calls succeeded; booking 6WGU1P; 15 checks passed.
+PASS    RTC-ANC-01  All 8 calls succeeded; booking 6YD4GX; 13 checks passed.
+PASS    RTC-ANC-02  All 8 calls succeeded; booking 6SXIUT; 13 checks passed.
+PASS    RTC-BUN-01  All 11 calls succeeded; booking 67ZTYB; 15 checks passed.
+PASS    RTC-BUN-02  All 11 calls succeeded; booking 64Z769; 15 checks passed.
+PASS    FLOW-V2-26  All 8 calls succeeded; booking 62GF2E; 13 checks passed.
+BLOCKED FLOW-V2-27  Steps before Void succeeded (7 calls); Void refused with 409 OperationNotSupported ("This action is not currently supported by the selected supplier")
+PASS    FLOW-V2-28  All 10 calls succeeded; booking 6S0TYZ; 21 checks passed.
+BLOCKED FLOW-V2-29  Steps before Void succeeded (9 calls); Void refused with 409 OperationNotSupported ("This action is not currently supported by the selected supplier")
+BLOCKED FLOW-V2-30  Steps before CancelAfterHold succeeded (8 calls); CancelAfterHold refused with 409 OperationNotSupported ("This action is not currently supported by t
+FAIL    FLOW-V2-31  Failed at GetAncillary: ancillary not selectable after retries: A1/G9$SHJ/COK$3297676$20261220132500$20261220184500/Meal; C2/G9$SHJ/COK$3297676$202612
+PASS    FLOW-V2-32  All 13 calls succeeded; booking 6ZJVQE; 18 checks passed.
+BLOCKED FLOW-V2-33  Steps before Void succeeded (13 calls); Void refused with 409 OperationNotSupported ("This action is not currently supported by the selected supplier"
+PASS    FLOW-V2-34  All 15 calls succeeded; booking 60UAX2; 26 checks passed.
+BLOCKED FLOW-V2-35  Steps before Void succeeded (14 calls); Void refused with 409 OperationNotSupported ("This action is not currently supported by the selected supplier"
+BLOCKED FLOW-V2-36  Steps before CancelAfterHold succeeded (13 calls); CancelAfterHold refused with 409 OperationNotSupported ("This action is not currently supported by 
+render-md failed <anonymous_script>:1
+{"type":"test_case","tc_id":"FLOW-V2-36","title":"[FC-BDL-F][Response] Verify Search -> FareConfirm -> GetOfferBundles -> AddPassenger -> Hold -> FareConfirmAfterHold -> Retrieve -> CancelAfterHold completes with bookingStatus transitioning held -> cancelled/terminated via Canc
+PASS    FLOW-V2-37  All 10 calls succeeded; booking 6V0TOX; 12 checks passed.
+render-md failed <anonymous_script>:1
+{"type":"test_case","tc_id":"FLOW-V2-36","title":"[FC-BDL-F][Response] Verify Search -> FareConfirm -> GetOfferBundles -> AddPassenger -> Hold -> FareConfirmAfterHold -> Retrieve -> CancelAfterHold completes with bookingStatus transitioning held -> cancelled/terminated via Canc
+PASS    FLOW-V2-38  All 11 calls succeeded; booking 6JJ5ML; 15 checks passed.

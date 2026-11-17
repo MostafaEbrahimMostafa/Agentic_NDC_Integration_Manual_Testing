@@ -25,6 +25,12 @@ fixture is still searchable, and where one isn't, it repairs the fixture rather 
 so unlike `execute-test-cases`, it is safe to point at any environment without an authorization
 check. That property is the whole reason this skill is separate; do not extend it past Search.
 
+**AI guardrails** ([`../_shared/AI_Guardrails.md`](../_shared/AI_Guardrails.md)): PASS/FAIL comes
+from the script's rule (HTTP 200 + non-empty `offers[]`), never from reading responses. One empty
+result is re-checked before FAIL (CLAUDE.md rule 10, KB L-06). An empty sweep is an environment or
+data finding (Blocked), never a product defect, unless the pattern in KB L-06 holds and the user
+agrees.
+
 ## Inputs
 
 Ask for whatever isn't given, then hold it constant for the entire sweep:

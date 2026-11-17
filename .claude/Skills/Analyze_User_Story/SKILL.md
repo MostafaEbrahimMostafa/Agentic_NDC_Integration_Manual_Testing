@@ -37,6 +37,11 @@ straight to test-case writing from a vague AC is how a suite ends up testing the
 - [references/ambiguity-checklist.md](references/ambiguity-checklist.md) — the seven ambiguity
   categories to check every AC against, plus a fully worked example against the real
   `SeatMap_UserStory.md` file in this repo. Calibrate detail level and question style against it.
+- **AI guardrails** ([`../_shared/AI_Guardrails.md`](../_shared/AI_Guardrails.md), G-1/G-3): every AC
+  mapping cites the SPEC section and labels its basis `SPEC` / `LIVE-CONFIRMED` / `INFERRED`. An AC
+  mapped onto a SPEC line marked `INFERRED`/`UNKNOWN` is ambiguous, not "covered". Never fill a gap
+  from another supplier's behaviour. The Testable Scope keeps these labels so test generation does
+  not treat assumptions as facts (KB L-05).
 
 ## Inputs
 

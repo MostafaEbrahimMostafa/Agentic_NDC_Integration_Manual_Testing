@@ -1,0 +1,19 @@
+{
+  "label": "V1 Void - invalid x-api-key",
+  "status": 401,
+  "durationMs": 92,
+  "requestedAtUtc": "2026-11-05T10:55:42.083Z",
+  "respondedAtUtc": "2026-11-05T10:55:42.175Z",
+  "body": {
+    "Status": 401,
+    "TransactionId": "5dbe32b4-3e46-4218-8267-ac2b3d45a9a9",
+    "ErrorCode": "AuthenticationError",
+    "ErrorMessage": "Authentication error. Please check your credentials.",
+    "Context": [
+      {
+        "Name": "Authentication error. Please check your credentials.",
+        "Value": "Invalid authorization header"
+      }
+    ]
+  }
+}

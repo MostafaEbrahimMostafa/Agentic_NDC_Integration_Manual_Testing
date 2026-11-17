@@ -1,0 +1,278 @@
+{
+  "label": "book V1 DMM-CAI #1 FareConfirm",
+  "status": 200,
+  "durationMs": 3101,
+  "requestedAtUtc": "2026-11-05T10:48:23.432Z",
+  "respondedAtUtc": "2026-11-05T10:48:26.533Z",
+  "body": {
+    "responseId": "9ebec3af-8ed1-4899-bba6-a4fbf97dc423",
+    "supplier": "SabreNdc",
+    "journeys": {
+      "SEG4,SEG6": {
+        "origin": "DMM",
+        "destination": "CAI",
+        "numberOfStops": 1,
+        "segmentRefIds": [
+          "SEG4",
+          "SEG6"
+        ]
+      }
+    },
+    "flightSegments": {
+      "SEG4": {
+        "origin": "DMM",
+        "destination": "DOH",
+        "departureDateTime": "2026-12-05T10:50:00",
+        "arrivalDateTime": "2026-12-05T11:55:00",
+        "departureTerminal": "",
+        "arrivalTerminal": "",
+        "flightTime": 65,
+        "operatingCarrierCode": "QR",
+        "operatingFlightNumber": "1151",
+        "marketingCarrierCode": "QR",
+        "marketingFlightNumber": "1151",
+        "equipment": "359"
+      },
+      "SEG6": {
+        "origin": "DOH",
+        "destination": "CAI",
+        "departureDateTime": "2026-12-05T15:35:00",
+        "arrivalDateTime": "2026-12-05T18:20:00",
+        "departureTerminal": "",
+        "arrivalTerminal": "2",
+        "flightTime": 165,
+        "operatingCarrierCode": "QR",
+        "operatingFlightNumber": "1307",
+        "marketingCarrierCode": "QR",
+        "marketingFlightNumber": "1307",
+        "equipment": "359"
+      }
+    },
+    "priceClasses": {
+      "CLASSIC": {
+        "priceClassName": "ECONOMY CLASSIC",
+        "fareDescription": "PublicFare",
+        "rulesAndPenalties": [
+          "Earn Avios - 50% Avios accumulation",
+          "Award and upgrade - Upgrade with Avios",
+          "Hand baggage - 1 piece, 7kg total",
+          "Checked Baggage - Weight concept routes: 25kg Piece concept routes: 2 pieces, 23kg each",
+          "Refund Fees - Charges will apply",
+          "Change Fees - Charges will apply",
+          "Lounge Access - Charges will apply",
+          "Combination of Fares - When a ticket is booked with a combination of fares, the most restrictive cancellation rule will apply.",
+          "Seat selection - Standard Seat :Charges will apply Preferred Seat :Charges will apply"
+        ]
+      }
+    },
+    "baggageDetails": {
+      "0": {
+        "carryOnBaggage": "",
+        "checkInBaggage": "Pieces: 2"
+      }
+    },
+    "selectedOffer": {
+      "offerId": "ce5bb4bf9478q96fwmw3f8ejz7&lcC8Y2U1YmI0YmY5NDc4cTk2ZndtdzNmOGVqejctMZG+Y2U1YmI0YmY5NDc4cTk2ZndtdzNmOGVqejctMS0xkZPAqlBhc3NlbmdlcjGjQURUk8CSl6RTRUc0o0RNTaNET0jW/2sT7FjW/2sT+5SiUVKiUVKXpFNFRzajRE9Io0NBSdb/axQvJNb/axRV0KJRUqJRUpTAk8CoMTA2NjguMDCjRUdQk8CnOTc4NC4wMKNFR1CTwKY4ODQuMDCjRUdQ",
+      "offerJourneys": [
+        "SEG4,SEG6"
+      ],
+      "passengerFareBreakdown": [
+        {
+          "passengerTypeCode": "ADT",
+          "paxTotalTaxAmount": {
+            "amount": 9784,
+            "currency": "EGP"
+          },
+          "paxBaseAmount": {
+            "amount": 884,
+            "currency": "EGP"
+          },
+          "taxesAndFees": [
+            {
+              "code": "YQ",
+              "amount": {
+                "amount": 3878,
+                "currency": "EGP"
+              }
+            },
+            {
+              "code": "YR",
+              "amount": {
+                "amount": 1220,
+                "currency": "EGP"
+              }
+            },
+            {
+              "code": "S4",
+              "amount": {
+                "amount": 111,
+                "currency": "EGP"
+              }
+            },
+            {
+              "code": "E3",
+              "amount": {
+                "amount": 118,
+                "currency": "EGP"
+              }
+            },
+            {
+              "code": "IO",
+              "amount": {
+                "amount": 2320,
+                "currency": "EGP"
+              }
+            },
+            {
+              "code": "T2",
+              "amount": {
+                "amount": 75,
+                "currency": "EGP"
+              }
+            },
+            {
+              "code": "G4",
+              "amount": {
+                "amount": 913,
+                "currency": "EGP"
+              }
+            },
+            {
+              "code": "PZ",
+              "amount": {
+                "amount": 83,
+                "currency": "EGP"
+              }
+            },
+            {
+              "code": "QA",
+              "amount": {
+                "amount": 913,
+                "currency": "EGP"
+              }
+            },
+            {
+              "code": "R9",
+              "amount": {
+                "amount": 153,
+                "currency": "EGP"
+              }
+            }
+          ],
+          "segmentDetails": [
+            {
+              "segmentRefId": "SEG4",
+              "priceClassRefId": "CLASSIC",
+              "baggageDetailsRefId": "0",
+              "cabinCode": "ECONOMY",
+              "rbd": "O"
+            },
+            {
+              "segmentRefId": "SEG6",
+              "priceClassRefId": "CLASSIC",
+              "baggageDetailsRefId": "0",
+              "cabinCode": "ECONOMY",
+              "rbd": "O"
+            }
+          ],
+          "discount": null
+        }
+      ],
+      "priceDetails": {
+        "totalAmount": {
+          "amount": 10668,
+          "currency": "EGP"
+        },
+        "totalTaxAmount": {
+          "amount": 9784,
+          "currency": "EGP"
+        },
+        "totalBaseAmount": {
+          "amount": 884,
+          "currency": "EGP"
+        },
+        "taxesAndFees": [
+          {
+            "code": "YQ",
+            "amount": {
+              "amount": 3878,
+              "currency": "EGP"
+            }
+          },
+          {
+            "code": "YR",
+            "amount": {
+              "amount": 1220,
+              "currency": "EGP"
+            }
+          },
+          {
+            "code": "S4",
+            "amount": {
+              "amount": 111,
+              "currency": "EGP"
+            }
+          },
+          {
+            "code": "E3",
+            "amount": {
+              "amount": 118,
+              "currency": "EGP"
+            }
+          },
+          {
+            "code": "IO",
+            "amount": {
+              "amount": 2320,
+              "currency": "EGP"
+            }
+          },
+          {
+            "code": "T2",
+            "amount": {
+              "amount": 75,
+              "currency": "EGP"
+            }
+          },
+          {
+            "code": "G4",
+            "amount": {
+              "amount": 913,
+              "currency": "EGP"
+            }
+          },
+          {
+            "code": "PZ",
+            "amount": {
+              "amount": 83,
+              "currency": "EGP"
+            }
+          },
+          {
+            "code": "QA",
+            "amount": {
+              "amount": 913,
+              "currency": "EGP"
+            }
+          },
+          {
+            "code": "R9",
+            "amount": {
+              "amount": 153,
+              "currency": "EGP"
+            }
+          }
+        ],
+        "discount": null,
+        "isDealCodeApplied": false,
+        "appliedDealCode": null,
+        "isPromoted": false,
+        "appliedPromotionCode": "",
+        "offerAncillaries": null
+      },
+      "refundability": "UnKnown",
+      "haveBundles": false,
+      "canBeHeld": true
+    }
+  }
+}

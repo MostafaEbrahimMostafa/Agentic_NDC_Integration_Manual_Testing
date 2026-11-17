@@ -1,0 +1,65 @@
+{
+  "label": "hold V1 RUH-CAI #10 Hold",
+  "method": "POST",
+  "url": "https://ndc-integration-stg-ne-3.azurewebsites.net/api/FlightBooking/Hold",
+  "headers": {
+    "x-api-key": "[REDACTED]",
+    "Client-Id": "NDC-Core",
+    "Content-Type": "application/json"
+  },
+  "body": {
+    "supplier": "SabreNdc",
+    "credentialsSelector": "EGY",
+    "fareConfirmResponseId": "bef12a26-3e94-4514-ba39-144bfba94c8b",
+    "selectedOfferId": "ce5bb4bf9478q96fwmw3g9kss2&lcC8Y2U1YmI0YmY5NDc4cTk2ZndtdzNnOWtzczItMZG+Y2U1YmI0YmY5NDc4cTk2ZndtdzNnOWtzczItMS0xkZPAqlBhc3NlbmdlcjGjQURUk8CSl6VTRUcxMaNSVUijRE9I1v9rFIlg1v9rFJ54olFSolFSl6VTRUcxMqNET0ijQ0FJ1v9rFRqw1v9rFUFcolFSolFSlMCTwKgxNjEzMi4wMKNFR1CTwKgxMDA4NC4wMKNFR1CTwKc2MDQ4LjAwo0VHUA==",
+    "passengersList": {
+      "Pax1": {
+        "title": "Mr",
+        "name": {
+          "first": "Fadi",
+          "middle": "",
+          "last": "Fouad"
+        },
+        "nationality": "EG",
+        "residentCountry": "EG",
+        "birthDate": "1990-02-15T00:00:00.000Z",
+        "gender": "male",
+        "passengerTypeCode": "ADT",
+        "contactRefId": "0",
+        "travelDocument": {
+          "name": {
+            "first": "Fadi",
+            "middle": "",
+            "last": "Fouad"
+          },
+          "nationality": "EG",
+          "expirationDate": "2030-10-01T00:00:00.000Z",
+          "issuanceDate": "2024-10-01T00:00:00.000Z",
+          "documentNumber": "A1858722",
+          "documentType": "PASSPORT",
+          "gender": "male",
+          "birthCountry": "EG",
+          "birthDate": "1990-02-15T00:00:00.000Z",
+          "issuanceCountryCode": "EG"
+        }
+      }
+    },
+    "contactsList": {
+      "0": {
+        "Email": "ndc.qa.void@gmail.com",
+        "phone": {
+          "type": "Mobile",
+          "countryDialingCode": "+20",
+          "phoneNumber": "01005747258"
+        },
+        "Address": {
+          "Line1": "New Cairo",
+          "Line2": "Al Nahda",
+          "City": "CAIRO",
+          "CountryCode": "EG"
+        }
+      }
+    },
+    "selectedBundles": []
+  }
+}

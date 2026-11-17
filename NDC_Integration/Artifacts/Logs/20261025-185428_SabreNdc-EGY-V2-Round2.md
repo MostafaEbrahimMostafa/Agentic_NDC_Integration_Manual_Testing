@@ -1,0 +1,2804 @@
+# QA Execution Report — SabreNdc / EGY - TestCases_V2.csv (V2 flows and endpoint cases) - Round 2
+
+**Environment:** staging (ndc-integration-stg-ne-3) &middot; https://ndc-integration-stg-ne-3.azurewebsites.net/
+**Supplier:** SabreNdc  **Credentials Selector:** EGY
+**Started:** 2026-10-25T18:48:56.265Z
+**Ended:** 2026-10-25T19:32:26.362Z
+**Status:** COMPLETE
+**Execution Duration:** 43m 30s ([View Time Breakdown](20261025-185428_SabreNdc-EGY-V2-Round2_TimeBreakdown.html))
+**Prior runs:** 20261025-093421_SabreNdc-EGY-V2 (Round 1: 26 pass / 3 fail / 183 blocked),20261025-092205_SabreNdc-EGY-Generic (Round 1),20261022-093839_SabreNdc-Void-EGY-V1V2 (Void suite) (see NDC_Integration/Artifacts/Logs/)
+
+## Scope note
+
+2 SPEC.md update proposal(s) from Round 1 were re-confirmed unchanged this round and are not repeated here; they are still pending in the Round 1 logs (apply with the update-spec skill).
+
+## Summary
+
+- Test cases logged: 212 of 212 planned
+- Passed: 26
+- Failed: 3
+- Blocked: 183
+- Failed test cases: FLOW-V2-26-NEG, FLOW-V2-30, FLOW-V2-78
+- Blocked test cases: FLOW-V2-27-NEG, FLOW-V2-28-NEG, FLOW-V2-29-NEG, FLOW-V2-30-NEG, FLOW-V2-31, FLOW-V2-32, FLOW-V2-32-NEG, FLOW-V2-33, FLOW-V2-33-NEG, FLOW-V2-34, FLOW-V2-34-NEG, FLOW-V2-35, FLOW-V2-35-NEG, FLOW-V2-36, FLOW-V2-36-NEG, FLOW-V2-37, FLOW-V2-37-NEG, FLOW-V2-38, FLOW-V2-38-NEG, FLOW-V2-39, FLOW-V2-39-NEG, FLOW-V2-40, FLOW-V2-40-NEG, FLOW-V2-41, FLOW-V2-41-NEG, FLOW-V2-42, FLOW-V2-42-NEG, FLOW-V2-43, FLOW-V2-43-NEG, FLOW-V2-44, FLOW-V2-44-NEG, FLOW-V2-45, FLOW-V2-45-NEG, FLOW-V2-46, FLOW-V2-46-NEG, FLOW-V2-47, FLOW-V2-47-NEG, FLOW-V2-48, FLOW-V2-48-NEG, FLOW-V2-49, FLOW-V2-50, FLOW-V2-50-NEG, FLOW-V2-51, FLOW-V2-51-NEG, FLOW-V2-52, FLOW-V2-52-NEG, FLOW-V2-53, FLOW-V2-53-NEG, FLOW-V2-54, FLOW-V2-54-NEG, FLOW-V2-55, FLOW-V2-55-NEG, FLOW-V2-56, FLOW-V2-56-NEG, FLOW-V2-57, FLOW-V2-57-NEG, FLOW-V2-58, FLOW-V2-58-NEG, FLOW-V2-59, FLOW-V2-59-NEG, FLOW-V2-60, FLOW-V2-60-NEG, FLOW-V2-61, FLOW-V2-61-NEG, FLOW-V2-62, FLOW-V2-62-NEG, FLOW-V2-63, FLOW-V2-63-NEG, FLOW-V2-64, FLOW-V2-64-NEG, FLOW-V2-65, FLOW-V2-65-NEG, FLOW-V2-66, FLOW-V2-66-NEG, FLOW-V2-67, FLOW-V2-67-NEG, FLOW-V2-68, FLOW-V2-68-NEG, FLOW-V2-69, FLOW-V2-69-NEG, FLOW-V2-70, FLOW-V2-70-NEG, FLOW-V2-71, FLOW-V2-71-NEG, FLOW-V2-72, FLOW-V2-72-NEG, FLOW-V2-73-NEG, FLOW-V2-74-NEG, FLOW-V2-76-NEG, FLOW-V2-77-NEG, FLOW-V2-78-NEG, FLOW-V2-79, FLOW-V2-79-NEG, FLOW-V2-80, FLOW-V2-80-NEG, FLOW-V2-81, FLOW-V2-81-NEG, FLOW-V2-82, FLOW-V2-82-NEG, FLOW-V2-83, FLOW-V2-83-NEG, FLOW-V2-84, FLOW-V2-84-NEG, FLOW-V2-85, FLOW-V2-85-NEG, FLOW-V2-86, FLOW-V2-86-NEG, FLOW-V2-87, FLOW-V2-87-NEG, FLOW-V2-88, FLOW-V2-88-NEG, FLOW-V2-89, FLOW-V2-89-NEG, FLOW-V2-90, FLOW-V2-90-NEG, FLOW-V2-91, FLOW-V2-91-NEG, FLOW-V2-92, FLOW-V2-92-NEG, FLOW-V2-93, FLOW-V2-93-NEG, FLOW-V2-94, FLOW-V2-94-NEG, FLOW-V2-95, FLOW-V2-95-NEG, FLOW-V2-96, FLOW-V2-96-NEG, FLOW-V2-97, FLOW-V2-98, FLOW-V2-98-NEG, FLOW-V2-99, FLOW-V2-100, FLOW-V2-100-NEG, FLOW-V2-101, FLOW-V2-101-NEG, FLOW-V2-102, FLOW-V2-102-NEG, FLOW-V2-103, FLOW-V2-103-NEG, FLOW-V2-104, FLOW-V2-104-NEG, FLOW-V2-105, FLOW-V2-105-NEG, FLOW-V2-106, FLOW-V2-106-NEG, FLOW-V2-107, FLOW-V2-107-NEG, FLOW-V2-108, FLOW-V2-108-NEG, FLOW-V2-109, FLOW-V2-109-NEG, FLOW-V2-110, FLOW-V2-110-NEG, FLOW-V2-111, FLOW-V2-111-NEG, FLOW-V2-112, FLOW-V2-112-NEG, FLOW-V2-113, FLOW-V2-113-NEG, FLOW-V2-114, FLOW-V2-114-NEG, FLOW-V2-115, FLOW-V2-115-NEG, FLOW-V2-116, FLOW-V2-116-NEG, FLOW-V2-117, FLOW-V2-117-NEG, FLOW-V2-118, FLOW-V2-118-NEG, FLOW-V2-119, FLOW-V2-119-NEG, FLOW-V2-120, FLOW-V2-120-NEG, TC-ANCILLARY-POS-01, TC-ANCILLARY-VAL-01, TC-ANCILLARY-BND-01, TC-SEATMAP-POS-01, TC-SEATMAP-VAL-01, TC-FARECHECK-POS-01, TC-FARECHECK-NEG-01, TC-FARECHECK-INT-01, TC-FARECHECK-BND-01, TC-BUNDLE-VAL-01
+
+## Test case results
+
+### FLOW-V2-25 — PASS
+
+- **Test Case:** [FC-NONE-A][Response] Verify Search -&gt; FareConfirm -&gt; AddPassenger -&gt; Book -&gt; Retrieve completes with a booked/confirmed bookingStatus at the final Retrieve, matching Book's selectedOffer/price.
+- **Category:** Flow - Positive
+- **Endpoint Name:** V2 FareConfirm flow - Family A (Book &gt; Retrieve)
+- **Request:** Search CAI-JED 2026-11-24 1 ADT &gt; FareConfirm &gt; AddPassenger &gt; Book &gt; Retrieve
+- **Response:** capability flags recorded: canBeHeld=true haveBundles=false offerHasAncillary=false isSeatMapRequired=false | Book price reconciliation (OK: all checks hold; total 13233.8 EGP): ok | Retrieve: bookingStatus "Booked", same as Book true, passenger true, price OK: all checks hold; total 13233.8 EGP
+- **Expected:** Per-family state check (SPEC.md 6.3, Family A): bookingStatus reads a booked/confirmed state at the final Retrieve, with selectedOffer.offerId/priceDetails.totalAmount matching between Book and Retrieve. Manual price-reconciliation requirement (V2 script coverage gap, SPEC.md 1.4/2.1/6.2/7.10): per passenger type, sum(taxesAndFees[].amount.amount) == paxTotalTaxAmount.amount, and totals reconcile per the Section 2.1 formula; this is enforced by script at Hold/FareConfirmAfterHold/BookAfterHold in V2, but NOT at Search/FareConfirm/Book/Retrieve -- the tester must supply this check manually at every Book/Retrieve step in this flow.
+- **Actual:** Flow completed; all checks hold. capability flags recorded: canBeHeld=true haveBundles=false offerHasAncillary=false isSeatMapRequired=false | Book price reconciliation (OK: all checks hold; total 13233.8 EGP): ok | Retrieve: bookingStatus "Booked", same as Book true, passenger true, price OK: all checks hold; total 13233.8 EGP
+- **Status:** PASS
+- **Evidence:** capability flags recorded: canBeHeld=true haveBundles=false offerHasAncillary=false isSeatMapRequired=false | Book price reconciliation (OK: all checks hold; total 13233.8 EGP): ok | Retrieve: bookingStatus "Booked", same as Book true, passenger true, price OK: all checks hold; total 13233.8 EGP | Round 1 verdict: PASS (unchanged)
+
+  - **Hop 1 &mdash; V2 Search (A):** PASS &mdash; 200 - 20 offers; picked offers[0] total 13233.8 EGP
+  - **Hop 2 &mdash; V2 FareConfirm (A):** PASS &mdash; 200 - total 13233.8 EGP; canBeHeld=true haveBundles=false offerHasAncillary=false isSeatMapRequired=false
+  - **Hop 3 &mdash; V2 AddPassenger (A):** PASS &mdash; 200 - offerId + responseId returned
+  - **Hop 4 &mdash; V2 Book (A):** PASS &mdash; 200 - pnr RRJHZI gdsPNR RRJHZI; voidCapability=FullVoidOnlyAllowed; tickets ["1572141592641"]
+  - **Hop 5 &mdash; V2 Retrieve (Retrieve):** PASS &mdash; 200 - pnr RRJHZI
+  - **Hop 6 &mdash; V2 Void (cleanup):** PASS &mdash; 200 {"voided":true,"voidedTickets":[{"ticketStatus":"Voided","ticketNumber":"1572141592641","carrierCode":"QR"}],"passengersVoidedAncillaries":{},"emdTickets":{}}
+
+### FLOW-V2-25-NEG — PASS
+
+- **Test Case:** [FC-NONE-A][Request] Validate that FareConfirm rejects an ID/context pair whose supplier or credentialsSelector does not match the one used earlier in the same chain.
+- **Category:** Flow - Negative
+- **Endpoint Name:** V2 flow - FareConfirm (CROSS ID)
+- **Request:** Search with SabreNdc/EGY, then FareConfirm reusing those ids with a different supplier / credentialsSelector (three variants)
+- **Response:** supplier switched to TravelportNdc/UAE: rejected 400 code=NDC-INT-TEC-A0001 msg="Invalid request. Please check the request parameters and try again." ctx=[{"Name":"SelectedOfferId","Value":"Failed to | credentialsSelector switched to KSA (SabreNdc): rejected 400 code=NDC-INT-TEC-A0001 msg="Invalid request. Please check the request parameters and try again." ctx=[{"Name":"PredicateValidator","Value":"The cr | supplier switched to AirArabia, selector EGY: rejected 400 code=NDC-INT-TEC-A0001 msg="Invalid request. Please check the request parameters and try again." ctx=[{"Name":"SelectedOfferId","Value":"Failed to
+- **Expected:** UNKNOWN exact status -- confirm live. SPEC.md 1.7/3.2 treats supplier/credentialsSelector as a stateless per-call re-check, so a chain that switches supplier/credentialsSelector mid-flow while reusing IDs from the original supplier is expected to be rejected, not silently honored.
+- **Actual:** supplier switched to TravelportNdc/UAE: rejected 400 code=NDC-INT-TEC-A0001 msg="Invalid request. Please check the request parameters and try again." ctx=[{"Name":"SelectedOfferId","Value":"Failed to | credentialsSelector switched to KSA (SabreNdc): rejected 400 code=NDC-INT-TEC-A0001 msg="Invalid request. Please check the request parameters and try again." ctx=[{"Name":"PredicateValidator","Value":"The cr | supplier switched to AirArabia, selector EGY: rejected 400 code=NDC-INT-TEC-A0001 msg="Invalid request. Please check the request parameters and try again." ctx=[{"Name":"SelectedOfferId","Value":"Failed to
+- **Status:** PASS
+- **Evidence:** supplier switched to TravelportNdc/UAE: rejected 400 code=NDC-INT-TEC-A0001 msg="Invalid request. Please check the request parameters and try again." ctx=[{"Name":"SelectedOfferId","Value":"Failed to | credentialsSelector switched to KSA (SabreNdc): rejected 400 code=NDC-INT-TEC-A0001 msg="Invalid request. Please check the request parameters and try again." ctx=[{"Name":"PredicateValidator","Value":"The cr | supplier switched to AirArabia, selector EGY: rejected 400 code=NDC-INT-TEC-A0001 msg="Invalid request. Please check the request parameters and try again." ctx=[{"Name":"SelectedOfferId","Value":"Failed to | Round 1 verdict: PASS (unchanged)
+
+  - **Hop 1 &mdash; V2 Search:** PASS &mdash; 200 - 20 offers
+  - **Hop 2 &mdash; V2 FareConfirm:** PASS &mdash; 400
+  - **Hop 3 &mdash; V2 FareConfirm:** PASS &mdash; 400
+  - **Hop 4 &mdash; V2 FareConfirm:** PASS &mdash; 400
+
+### FLOW-V2-26 — PASS
+
+- **Test Case:** [FC-NONE-B][Response] Verify Search -&gt; FareConfirm -&gt; AddPassenger -&gt; Hold -&gt; FareConfirmAfterHold -&gt; Retrieve completes with a held bookingStatus and a future holdExpirationDate at the final Retrieve (flow intentionally stops here -- dangling Held booking).
+- **Category:** Flow - Positive
+- **Endpoint Name:** V2 FareConfirm flow - Family B (Hold &gt; PnrReprice &gt; Retrieve)
+- **Request:** Search CAI-JED 2026-11-24 1 ADT &gt; FareConfirm &gt; AddPassenger &gt; Hold &gt; PnrReprice &gt; Retrieve
+- **Response:** Hold price reconciliation (OK: all checks hold; total 13233.8 EGP): ok | PnrReprice price equals Hold price and reconciles: ok | Retrieve shows a held state with a future holdExpirationDate (bookingStatus "OnHold", 2026-10-30T21:59:00+02:00): ok
+- **Expected:** Per-family state check (SPEC.md 6.3, Family B): bookingStatus reads a held (not yet ticketed) state with holdExpirationDate present and in the future at the final Retrieve -- the flow deliberately STOPS here (Family B, no BookAfterHold/CancelAfterHold), leaving a dangling Held booking; log the pnr for out-of-band cleanup/expiry tracking per SPEC.md Section 6.3. Manual price-reconciliation requirement (V2 script coverage gap, SPEC.md 1.4/2.1/6.2/7.10): per passenger type, sum(taxesAndFees[].amount.amount) == paxTotalTaxAmount.amount, and totals reconcile per the Section 2.1 formula; this is enforced by script at Hold/FareConfirmAfterHold/BookAfterHold in V2, but NOT at Search/FareConfirm/Book/Retrieve -- the tester must supply this check manually at every Book/Retrieve step in this flow.
+- **Actual:** Flow completed; all checks hold. capability flags recorded: canBeHeld=true haveBundles=false offerHasAncillary=false isSeatMapRequired=false | Hold price reconciliation (OK: all checks hold; total 13233.8 EGP): ok | PnrReprice price equals Hold price and reconciles: ok | Retrieve shows a held state with a future holdExpirationDate (bookingStatus "OnHold", 2026-10-30T21:59:00+02:00): ok
+- **Status:** PASS
+- **Evidence:** capability flags recorded: canBeHeld=true haveBundles=false offerHasAncillary=false isSeatMapRequired=false | Hold price reconciliation (OK: all checks hold; total 13233.8 EGP): ok | PnrReprice price equals Hold price and reconciles: ok | Retrieve shows a held state with a future holdExpirationDate (bookingStatus "OnHold", 2026-10-30T21:59:00+02:00): ok | Round 1 verdict: PASS (unchanged)
+
+  - **Hop 1 &mdash; V2 Search (B):** PASS &mdash; 200 - 20 offers; picked offers[0] total 13233.8 EGP
+  - **Hop 2 &mdash; V2 FareConfirm (B):** PASS &mdash; 200 - total 13233.8 EGP; canBeHeld=true haveBundles=false offerHasAncillary=false isSeatMapRequired=false
+  - **Hop 3 &mdash; V2 AddPassenger (B):** PASS &mdash; 200 - offerId + responseId returned
+  - **Hop 4 &mdash; V2 Hold (B):** PASS &mdash; 200 - pnr RYTJJQ gdsPNR RYTJJQ; voidCapability=VoidNotAllowed; tickets none; holdExpirationDate 2026-10-30T21:59:00+02:00
+  - **Hop 5 &mdash; V2 PnrReprice (FCAH):** PASS &mdash; 200
+  - **Hop 6 &mdash; V2 Retrieve (Retrieve-held):** PASS &mdash; 200 - pnr RYTJJQ
+  - **Hop 7 &mdash; V2 CancelAfterHold (cleanup):** PASS &mdash; 200 {"cancelled":true,"message":"Held Order Is Cancelled","passengersCancelledAncillaries":null}
+
+### FLOW-V2-26-NEG — FAIL
+
+- **Test Case:** [FC-NONE-B][Request] Validate that Hold rejects a stale/mismatched getAddPaxOfferId/getAddPaxResponceID pair.
+- **Category:** Flow - Negative
+- **Endpoint Name:** V2 flow - Hold (STALE ADDPAX)
+- **Request:** Two AddPassenger runs (A, B); Hold with A's responseId and B's offerId, and with a stale pre-AddPassenger pair; any hold created is cancelled
+- **Response:** AddPassenger-A responseId + AddPassenger-B offerId: ACCEPTED, hold SDKOXT | responseId of the pre-AddPassenger FareConfirm step + AddPassenger-A offerId (stale pair): ACCEPTED, hold RYFLLY
+- **Expected:** The request is rejected since the ID pair does not derive from this flow's own AddPassenger response. Exact rejection status is UNKNOWN -- confirm live per SPEC.md 2.5/3.2/3.3.
+- **Actual:** AddPassenger-A responseId + AddPassenger-B offerId: ACCEPTED, hold SDKOXT | responseId of the pre-AddPassenger FareConfirm step + AddPassenger-A offerId (stale pair): ACCEPTED, hold RYFLLY
+- **Status:** FAIL
+- **Evidence:** AddPassenger-A responseId + AddPassenger-B offerId: ACCEPTED, hold SDKOXT | responseId of the pre-AddPassenger FareConfirm step + AddPassenger-A offerId (stale pair): ACCEPTED, hold RYFLLY | Round 1 verdict: FAIL (unchanged)
+
+  - **Hop 1 &mdash; V2 Search (A):** PASS &mdash; 200 - 20 offers; picked offers[0] total 13233.8 EGP
+  - **Hop 2 &mdash; V2 FareConfirm (A):** PASS &mdash; 200 - total 13233.8 EGP; canBeHeld=true haveBundles=false offerHasAncillary=false isSeatMapRequired=false
+  - **Hop 3 &mdash; V2 AddPassenger (A):** PASS &mdash; 200 {"offerId":"c69d743f-781d-434e-8db1-bc5e1c3708d0&amp;lMCBpFBheDGaAZOnTW9zdGFmYaCnSWJyYWhpbdb/JdnxAAEBoTCak6dNb3N0YWZhoKdJYnJhaGltokVH1v9yQ8IA1v9m+zuAqEE3NjgzNzExAQGiRUfW/yXZ8QCiRUfAokVHokVHgaEwk7VuZGMucWE
+  - **Hop 4 &mdash; V2 Search (B):** PASS &mdash; 200 - 20 offers; picked offers[2] total 13233.8 EGP
+  - **Hop 5 &mdash; V2 FareConfirm (B):** PASS &mdash; 200 - total 13233.8 EGP; canBeHeld=true haveBundles=false offerHasAncillary=false isSeatMapRequired=false
+  - **Hop 6 &mdash; V2 AddPassenger (B):** PASS &mdash; 200 {"offerId":"782f5ad7-4658-4fe2-8a69-691fcdac65b3&amp;lMCBpFBheDGaAZOnTW9zdGFmYaCnSWJyYWhpbdb/JdnxAAEBoTCak6dNb3N0YWZhoKdJYnJhaGltokVH1v9yQ8IA1v9m+zuAqEE3OTg1NjQxAQGiRUfW/yXZ8QCiRUfAokVHokVHgaEwk7VuZGMucWE
+  - **Hop 7 &mdash; V2 Hold:** FAIL &mdash; 200 - pnr SDKOXT
+  - **Hop 8 &mdash; V2 CancelAfterHold (cleanup):** PASS &mdash; 200 {"cancelled":true,"message":"Held Order Is Cancelled","passengersCancelledAncillaries":null}
+  - **Hop 9 &mdash; V2 Hold:** FAIL &mdash; 200 - pnr RYFLLY
+  - **Hop 10 &mdash; V2 CancelAfterHold (cleanup):** PASS &mdash; 200 {"cancelled":true,"message":"Held Order Is Cancelled","passengersCancelledAncillaries":null}
+
+### FLOW-V2-27 — PASS
+
+- **Test Case:** [FC-NONE-C][Response] Verify Search -&gt; FareConfirm -&gt; AddPassenger -&gt; Book -&gt; Retrieve -&gt; Void completes with a booked bookingStatus at Retrieve followed by a successful Void (gated by voidCapability).
+- **Category:** Flow - Positive
+- **Endpoint Name:** V2 FareConfirm flow - Family C (Book &gt; Retrieve &gt; Void)
+- **Request:** Search CAI-JED 2026-11-24 1 ADT &gt; FareConfirm &gt; AddPassenger &gt; Book &gt; Retrieve &gt; Void &gt; Retrieve
+- **Response:** Retrieve: bookingStatus "Booked", same as Book true, passenger true, price OK: all checks hold; total 13233.8 EGP | Void: ok | follow-up Retrieve shows voided/cancelled: ok
+- **Expected:** Per-family state check (SPEC.md 6.3, Family C): bookingStatus reads booked at Retrieve, then Void succeeds (gated by voidCapability != VoidNotAllowed), and a follow-up manual Retrieve should show a voided/cancelled bookingStatus. Manual price-reconciliation requirement (V2 script coverage gap, SPEC.md 1.4/2.1/6.2/7.10): per passenger type, sum(taxesAndFees[].amount.amount) == paxTotalTaxAmount.amount, and totals reconcile per the Section 2.1 formula; this is enforced by script at Hold/FareConfirmAfterHold/BookAfterHold in V2, but NOT at Search/FareConfirm/Book/Retrieve -- the tester must supply this check manually at every Book/Retrieve step in this flow.
+- **Actual:** Flow completed; all checks hold. capability flags recorded: canBeHeld=true haveBundles=false offerHasAncillary=false isSeatMapRequired=false | Book price reconciliation (OK: all checks hold; total 13233.8 EGP): ok | Retrieve: bookingStatus "Booked", same as Book true, passenger true, price OK: all checks hold; total 13233.8 EGP | Void: ok | follow-up Retrieve shows voided/cancelled: ok
+- **Status:** PASS
+- **Evidence:** capability flags recorded: canBeHeld=true haveBundles=false offerHasAncillary=false isSeatMapRequired=false | Book price reconciliation (OK: all checks hold; total 13233.8 EGP): ok | Retrieve: bookingStatus "Booked", same as Book true, passenger true, price OK: all checks hold; total 13233.8 EGP | Void: ok | follow-up Retrieve shows voided/cancelled: ok | Round 1 verdict: PASS (unchanged)
+
+  - **Hop 1 &mdash; V2 Search (C):** PASS &mdash; 200 - 20 offers; picked offers[0] total 13233.8 EGP
+  - **Hop 2 &mdash; V2 FareConfirm (C):** PASS &mdash; 200 - total 13233.8 EGP; canBeHeld=true haveBundles=false offerHasAncillary=false isSeatMapRequired=false
+  - **Hop 3 &mdash; V2 AddPassenger (C):** PASS &mdash; 200 - offerId + responseId returned
+  - **Hop 4 &mdash; V2 Book (C):** PASS &mdash; 200 - pnr RQZKVK gdsPNR RQZKVK; voidCapability=FullVoidOnlyAllowed; tickets ["1572141592663"]
+  - **Hop 5 &mdash; V2 Retrieve (Retrieve):** PASS &mdash; 200 - pnr RQZKVK
+  - **Hop 6 &mdash; V2 Void (Void):** PASS &mdash; 200
+  - **Hop 7 &mdash; V2 Retrieve (after-void):** PASS &mdash; 400
+
+### FLOW-V2-27-NEG — BLOCKED
+
+- **Test Case:** [FC-NONE-C][Response] Verify that Void fails when the preceding Book/BookAfterHold response reported voidCapability=VoidNotAllowed.
+- **Category:** Flow - Negative
+- **Endpoint Name:** V2 flow
+- **Request:** Not sent - it needs a Book/BookAfterHold response with voidCapability=VoidNotAllowed. SabreNdc/EGY Book returns voidCapability=FullVoidOnlyAllowed (never VoidNotAllowed; only Hold carries VoidNotAllowed), and BookAfterHold/Retrieve return no voidCapability, so that state cannot be produced.
+- **Response:** No request sent
+- **Expected:** Void is expected to fail/be rejected. voidCapability is a live, per-booking flag (SPEC.md 2.9) that should be checked before attempting Void; exact rejection shape is UNKNOWN -- confirm live.
+- **Actual:** Blocked: it needs a Book/BookAfterHold response with voidCapability=VoidNotAllowed. SabreNdc/EGY Book returns voidCapability=FullVoidOnlyAllowed (never VoidNotAllowed; only Hold carries VoidNotAllowed), and BookAfterHold/Retrieve return no voidCapability, so that state cannot be produced.
+- **Status:** BLOCKED
+- **Evidence:** it needs a Book/BookAfterHold response with voidCapability=VoidNotAllowed. SabreNdc/EGY Book returns voidCapability=FullVoidOnlyAllowed (never VoidNotAllowed; only Hold carries VoidNotAllowed), and BookAfterHold/Retrieve return no voidCapability, so that state cannot be produced. | Round 1 verdict: BLOCKED (unchanged)
+
+### FLOW-V2-28 — PASS
+
+- **Test Case:** [FC-NONE-D][Response] Verify Search -&gt; FareConfirm -&gt; AddPassenger -&gt; Hold -&gt; FareConfirmAfterHold -&gt; Retrieve -&gt; BookAfterHold -&gt; Retrieve completes with bookingStatus transitioning held -&gt; booked via BookAfterHold, with pnr/bookingToken/gdsPNR unchanged from Hold.
+- **Category:** Flow - Positive
+- **Endpoint Name:** V2 FareConfirm flow - Family D (Hold &gt; BookAfterHold)
+- **Request:** Search CAI-JED 2026-11-24 1 ADT &gt; FareConfirm &gt; AddPassenger &gt; Hold &gt; PnrReprice &gt; Retrieve &gt; BookAfterHold &gt; Retrieve
+- **Response:** BookAfterHold keeps pnr/bookingToken/gdsPNR (same-PNR invariant): ok | BookAfterHold price reconciliation (OK: all checks hold; total 13233.8 EGP): ok | Retrieve after BookAfterHold shows booked (bookingStatus "Booked"): ok
+- **Expected:** Per-family state check (SPEC.md 6.3, Family D): bookingStatus transitions from held (after Hold/FareConfirmAfterHold) to booked/confirmed (after BookAfterHold), with pnr/bookingToken/gdsPNR identical to the values Hold produced (same-PNR invariant, SPEC.md Section 2.13). Manual price-reconciliation requirement (V2 script coverage gap, SPEC.md 1.4/2.1/6.2/7.10): per passenger type, sum(taxesAndFees[].amount.amount) == paxTotalTaxAmount.amount, and totals reconcile per the Section 2.1 formula; this is enforced by script at Hold/FareConfirmAfterHold/BookAfterHold in V2, but NOT at Search/FareConfirm/Book/Retrieve -- the tester must supply this check manually at every Book/Retrieve step in this flow.
+- **Actual:** Flow completed; all checks hold. capability flags recorded: canBeHeld=true haveBundles=false offerHasAncillary=false isSeatMapRequired=false | Hold price reconciliation (OK: all checks hold; total 13233.8 EGP): ok | PnrReprice price equals Hold price and reconciles: ok | Retrieve shows a held state with a future holdExpirationDate (bookingStatus "OnHold", 2026-10-30T21:59:00+02:00): ok | BookAfterHold keeps pnr/bookingToken/gdsPNR (same-PNR invariant): ok | BookAfterHold price reconciliation (OK: all checks hold; total 13233.8 EGP): ok | Retrieve after BookAfterHold shows booked (bookingStatus "Booked"): ok
+- **Status:** PASS
+- **Evidence:** capability flags recorded: canBeHeld=true haveBundles=false offerHasAncillary=false isSeatMapRequired=false | Hold price reconciliation (OK: all checks hold; total 13233.8 EGP): ok | PnrReprice price equals Hold price and reconciles: ok | Retrieve shows a held state with a future holdExpirationDate (bookingStatus "OnHold", 2026-10-30T21:59:00+02:00): ok | BookAfterHold keeps pnr/bookingToken/gdsPNR (same-PNR invariant): ok | BookAfterHold price reconciliation (OK: all checks hold; total 13233.8 EGP): ok | Retrieve after BookAfterHold shows booked (bookingStatus "Booked"): ok | Round 1 verdict: PASS (unchanged)
+
+  - **Hop 1 &mdash; V2 Search (D):** PASS &mdash; 200 - 20 offers; picked offers[0] total 13233.8 EGP
+  - **Hop 2 &mdash; V2 FareConfirm (D):** PASS &mdash; 200 - total 13233.8 EGP; canBeHeld=true haveBundles=false offerHasAncillary=false isSeatMapRequired=false
+  - **Hop 3 &mdash; V2 AddPassenger (D):** PASS &mdash; 200 - offerId + responseId returned
+  - **Hop 4 &mdash; V2 Hold (D):** PASS &mdash; 200 - pnr SHMUXL gdsPNR SHMUXL; voidCapability=VoidNotAllowed; tickets none; holdExpirationDate 2026-10-30T21:59:00+02:00
+  - **Hop 5 &mdash; V2 PnrReprice (FCAH):** PASS &mdash; 200
+  - **Hop 6 &mdash; V2 Retrieve (Retrieve-held):** PASS &mdash; 200 - pnr SHMUXL
+  - **Hop 7 &mdash; V2 BookAfterHold (BAH):** PASS &mdash; 200 - pnr SHMUXL
+  - **Hop 8 &mdash; V2 Retrieve (Retrieve-booked):** PASS &mdash; 200 - pnr SHMUXL
+  - **Hop 9 &mdash; V2 Void (cleanup):** PASS &mdash; 200 {"voided":true,"voidedTickets":[{"ticketStatus":"Voided","ticketNumber":"1572141592671","carrierCode":"QR"}],"passengersVoidedAncillaries":{},"emdTickets":{}}
+
+### FLOW-V2-28-NEG — BLOCKED
+
+- **Test Case:** [FC-NONE-D][Response] Verify the behavior of BookAfterHold when attempted after holdExpirationDate has already passed.
+- **Category:** Flow - Negative
+- **Endpoint Name:** V2 flow
+- **Request:** Not sent - the post-expiry state cannot be reached in a session: holds observed on SabreNdc/EGY expire about 5 days after creation (2026-10-30 for holds made on 2026-10-25), and the window cannot be shortened.
+- **Response:** No request sent
+- **Expected:** UNKNOWN exact status -- confirm live. SPEC.md 3.2/6.5 explicitly flags that no flow in flow.md exercises behavior past hold expiration; this is a high-value exploratory gap, not a documented failure mode. Do not assume a specific HTTP status without live confirmation.
+- **Actual:** Blocked: the post-expiry state cannot be reached in a session: holds observed on SabreNdc/EGY expire about 5 days after creation (2026-10-30 for holds made on 2026-10-25), and the window cannot be shortened.
+- **Status:** BLOCKED
+- **Evidence:** the post-expiry state cannot be reached in a session: holds observed on SabreNdc/EGY expire about 5 days after creation (2026-10-30 for holds made on 2026-10-25), and the window cannot be shortened. | Round 1 verdict: BLOCKED (unchanged)
+
+### FLOW-V2-29 — PASS
+
+- **Test Case:** [FC-NONE-E][Response] Verify Search -&gt; FareConfirm -&gt; AddPassenger -&gt; Hold -&gt; FareConfirmAfterHold -&gt; Retrieve -&gt; BookAfterHold -&gt; Retrieve -&gt; Void completes with bookingStatus transitioning held -&gt; booked via BookAfterHold and then a successful Void.
+- **Category:** Flow - Positive
+- **Endpoint Name:** V2 FareConfirm flow - Family E (Hold &gt; BookAfterHold &gt; Void)
+- **Request:** Search CAI-JED 2026-11-24 1 ADT &gt; FareConfirm &gt; AddPassenger &gt; Hold &gt; PnrReprice &gt; Retrieve &gt; BookAfterHold &gt; Retrieve &gt; Void &gt; Retrieve
+- **Response:** Retrieve after BookAfterHold shows booked (bookingStatus "Booked"): ok | Void: ok | follow-up Retrieve shows voided/cancelled: ok
+- **Expected:** Per-family state check (SPEC.md 6.3, Family E): bookingStatus transitions held -&gt; booked via BookAfterHold (same-PNR invariant holds) and then Void succeeds (gated by voidCapability), with a follow-up manual Retrieve expected to show voided/cancelled. Manual price-reconciliation requirement (V2 script coverage gap, SPEC.md 1.4/2.1/6.2/7.10): per passenger type, sum(taxesAndFees[].amount.amount) == paxTotalTaxAmount.amount, and totals reconcile per the Section 2.1 formula; this is enforced by script at Hold/FareConfirmAfterHold/BookAfterHold in V2, but NOT at Search/FareConfirm/Book/Retrieve -- the tester must supply this check manually at every Book/Retrieve step in this flow.
+- **Actual:** Flow completed; all checks hold. capability flags recorded: canBeHeld=true haveBundles=false offerHasAncillary=false isSeatMapRequired=false | Hold price reconciliation (OK: all checks hold; total 13233.8 EGP): ok | PnrReprice price equals Hold price and reconciles: ok | Retrieve shows a held state with a future holdExpirationDate (bookingStatus "OnHold", 2026-10-30T21:59:00+02:00): ok | BookAfterHold keeps pnr/bookingToken/gdsPNR (same-PNR invariant): ok | BookAfterHold price reconciliation (OK: all checks hold; total 13233.8 EGP): ok | Retrieve after BookAfterHold shows booked (bookingStatus "Booked"): ok | Void: ok | follow-up Retrieve shows voided/cancelled: ok
+- **Status:** PASS
+- **Evidence:** capability flags recorded: canBeHeld=true haveBundles=false offerHasAncillary=false isSeatMapRequired=false | Hold price reconciliation (OK: all checks hold; total 13233.8 EGP): ok | PnrReprice price equals Hold price and reconciles: ok | Retrieve shows a held state with a future holdExpirationDate (bookingStatus "OnHold", 2026-10-30T21:59:00+02:00): ok | BookAfterHold keeps pnr/bookingToken/gdsPNR (same-PNR invariant): ok | BookAfterHold price reconciliation (OK: all checks hold; total 13233.8 EGP): ok | Retrieve after BookAfterHold shows booked (bookingStatus "Booked"): ok | Void: ok | follow-up Retrieve shows voided/cancelled: ok | Round 1 verdict: PASS (unchanged)
+
+  - **Hop 1 &mdash; V2 Search (E):** PASS &mdash; 200 - 20 offers; picked offers[0] total 13233.8 EGP
+  - **Hop 2 &mdash; V2 FareConfirm (E):** PASS &mdash; 200 - total 13233.8 EGP; canBeHeld=true haveBundles=false offerHasAncillary=false isSeatMapRequired=false
+  - **Hop 3 &mdash; V2 AddPassenger (E):** PASS &mdash; 200 - offerId + responseId returned
+  - **Hop 4 &mdash; V2 Hold (E):** PASS &mdash; 200 - pnr SKHDAZ gdsPNR SKHDAZ; voidCapability=VoidNotAllowed; tickets none; holdExpirationDate 2026-10-30T21:59:00+02:00
+  - **Hop 5 &mdash; V2 PnrReprice (FCAH):** PASS &mdash; 200
+  - **Hop 6 &mdash; V2 Retrieve (Retrieve-held):** PASS &mdash; 200 - pnr SKHDAZ
+  - **Hop 7 &mdash; V2 BookAfterHold (BAH):** PASS &mdash; 200 - pnr SKHDAZ
+  - **Hop 8 &mdash; V2 Retrieve (Retrieve-booked):** PASS &mdash; 200 - pnr SKHDAZ
+  - **Hop 9 &mdash; V2 Void (Void):** PASS &mdash; 200
+  - **Hop 10 &mdash; V2 Retrieve (after-void):** PASS &mdash; 400
+
+### FLOW-V2-29-NEG — BLOCKED
+
+- **Test Case:** [FC-NONE-E][Response] Verify that Void fails when the preceding Book/BookAfterHold response reported voidCapability=VoidNotAllowed.
+- **Category:** Flow - Negative
+- **Endpoint Name:** V2 flow
+- **Request:** Not sent - it needs a Book/BookAfterHold response with voidCapability=VoidNotAllowed. SabreNdc/EGY Book returns voidCapability=FullVoidOnlyAllowed (never VoidNotAllowed; only Hold carries VoidNotAllowed), and BookAfterHold/Retrieve return no voidCapability, so that state cannot be produced.
+- **Response:** No request sent
+- **Expected:** Void is expected to fail/be rejected. voidCapability is a live, per-booking flag (SPEC.md 2.9) that should be checked before attempting Void; exact rejection shape is UNKNOWN -- confirm live.
+- **Actual:** Blocked: it needs a Book/BookAfterHold response with voidCapability=VoidNotAllowed. SabreNdc/EGY Book returns voidCapability=FullVoidOnlyAllowed (never VoidNotAllowed; only Hold carries VoidNotAllowed), and BookAfterHold/Retrieve return no voidCapability, so that state cannot be produced.
+- **Status:** BLOCKED
+- **Evidence:** it needs a Book/BookAfterHold response with voidCapability=VoidNotAllowed. SabreNdc/EGY Book returns voidCapability=FullVoidOnlyAllowed (never VoidNotAllowed; only Hold carries VoidNotAllowed), and BookAfterHold/Retrieve return no voidCapability, so that state cannot be produced. | Round 1 verdict: BLOCKED (unchanged)
+
+### FLOW-V2-30 — FAIL
+
+- **Test Case:** [FC-NONE-F][Response] Verify Search -&gt; FareConfirm -&gt; AddPassenger -&gt; Hold -&gt; FareConfirmAfterHold -&gt; Retrieve -&gt; CancelAfterHold completes with bookingStatus transitioning held -&gt; cancelled/terminated via CancelAfterHold.
+- **Category:** Flow - Positive
+- **Endpoint Name:** V2 FareConfirm flow - Family F (Hold &gt; CancelAfterHold)
+- **Request:** Search CAI-JED 2026-11-24 1 ADT &gt; FareConfirm &gt; AddPassenger &gt; Hold &gt; PnrReprice &gt; Retrieve &gt; CancelAfterHold &gt; Retrieve
+- **Response:** Retrieve shows a held state with a future holdExpirationDate (bookingStatus "OnHold", 2026-10-30T21:59:00+02:00): ok | CancelAfterHold returns cancelled:true: ok | Retrieve after CancelAfterHold shows a cancelled/terminated state (got "OnHold"): FAILED
+- **Expected:** Per-family state check (SPEC.md 6.3, Family F): bookingStatus transitions from held to a cancelled/terminated state after CancelAfterHold -- CancelAfterHold has zero script coverage and no genuine saved response example anywhere in the collections, so this is the weakest-validated end-state in the whole API; treat the post-CancelAfterHold Retrieve bookingStatus as the primary, entirely-manual success signal. Manual price-reconciliation requirement (V2 script coverage gap, SPEC.md 1.4/2.1/6.2/7.10): per passenger type, sum(taxesAndFees[].amount.amount) == paxTotalTaxAmount.amount, and totals reconcile per the Section 2.1 formula; this is enforced by script at Hold/FareConfirmAfterHold/BookAfterHold in V2, but NOT at Search/FareConfirm/Book/Retrieve -- the tester must supply this check manually at every Book/Retrieve step in this flow.
+- **Actual:** Failed checks: Retrieve after CancelAfterHold shows a cancelled/terminated state (got "OnHold"). capability flags recorded: canBeHeld=true haveBundles=false offerHasAncillary=false isSeatMapRequired=false | Hold price reconciliation (OK: all checks hold; total 13233.8 EGP): ok | PnrReprice price equals Hold price and reconciles: ok | Retrieve shows a held state with a future holdExpirationDate (bookingStatus "OnHold", 2026-10-30T21:59:00+02:00): ok | CancelAfterHold returns cancelled:true: ok | Retrieve after CancelAfterHold shows a cancelled/terminated state (got "OnHold"): FAILED
+- **Status:** FAIL
+- **Evidence:** capability flags recorded: canBeHeld=true haveBundles=false offerHasAncillary=false isSeatMapRequired=false | Hold price reconciliation (OK: all checks hold; total 13233.8 EGP): ok | PnrReprice price equals Hold price and reconciles: ok | Retrieve shows a held state with a future holdExpirationDate (bookingStatus "OnHold", 2026-10-30T21:59:00+02:00): ok | CancelAfterHold returns cancelled:true: ok | Retrieve after CancelAfterHold shows a cancelled/terminated state (got "OnHold"): FAILED | Round 1 verdict: FAIL (unchanged)
+
+  - **Hop 1 &mdash; V2 Search (F):** PASS &mdash; 200 - 20 offers; picked offers[0] total 13233.8 EGP
+  - **Hop 2 &mdash; V2 FareConfirm (F):** PASS &mdash; 200 - total 13233.8 EGP; canBeHeld=true haveBundles=false offerHasAncillary=false isSeatMapRequired=false
+  - **Hop 3 &mdash; V2 AddPassenger (F):** PASS &mdash; 200 - offerId + responseId returned
+  - **Hop 4 &mdash; V2 Hold (F):** PASS &mdash; 200 - pnr RVLVBV gdsPNR RVLVBV; voidCapability=VoidNotAllowed; tickets none; holdExpirationDate 2026-10-30T21:59:00+02:00
+  - **Hop 5 &mdash; V2 PnrReprice (FCAH):** PASS &mdash; 200
+  - **Hop 6 &mdash; V2 Retrieve (Retrieve-held):** PASS &mdash; 200 - pnr RVLVBV
+  - **Hop 7 &mdash; V2 CancelAfterHold (CAH):** PASS &mdash; 200
+  - **Hop 8 &mdash; V2 Retrieve (after-cancel):** FAIL &mdash; 200 - pnr RVLVBV
+
+### FLOW-V2-30-NEG — BLOCKED
+
+- **Test Case:** [FC-NONE-F][Response] Verify the behavior of CancelAfterHold when attempted after holdExpirationDate has already passed.
+- **Category:** Flow - Negative
+- **Endpoint Name:** V2 flow
+- **Request:** Not sent - the post-expiry state cannot be reached in a session: holds observed on SabreNdc/EGY expire about 5 days after creation (2026-10-30 for holds made on 2026-10-25), and the window cannot be shortened.
+- **Response:** No request sent
+- **Expected:** UNKNOWN exact status -- confirm live. SPEC.md 3.2/6.5 explicitly flags that no flow in flow.md exercises behavior past hold expiration; this is a high-value exploratory gap, not a documented failure mode. Do not assume a specific HTTP status without live confirmation.
+- **Actual:** Blocked: the post-expiry state cannot be reached in a session: holds observed on SabreNdc/EGY expire about 5 days after creation (2026-10-30 for holds made on 2026-10-25), and the window cannot be shortened.
+- **Status:** BLOCKED
+- **Evidence:** the post-expiry state cannot be reached in a session: holds observed on SabreNdc/EGY expire about 5 days after creation (2026-10-30 for holds made on 2026-10-25), and the window cannot be shortened. | Round 1 verdict: BLOCKED (unchanged)
+
+### FLOW-V2-31 — BLOCKED
+
+- **Test Case:** [FC-BDL-A][Response] Verify Search -&gt; FareConfirm -&gt; GetOfferBundles -&gt; AddPassenger -&gt; Book -&gt; Retrieve completes with a booked/confirmed bookingStatus at the final Retrieve, matching Book's selectedOffer/price; and bundle pricing correctly reflected without double-charging included services.
+- **Category:** Flow - Positive
+- **Endpoint Name:** V2 flow
+- **Request:** Not sent - Bundle enrichment is required by this flow, and SabreNdc/EGY does not support it: Bundles are not offered (haveBundles=false on all 91 offers (re-checked 2026-11-24); GetOfferBundles answers 409 OperationNotSupported - see TC-BUNDLE-NEG-01 in the Generic report and FLOW-V2-31-NEG).
+- **Response:** No request sent
+- **Expected:** Per-family state check (SPEC.md 6.3, Family A): bookingStatus reads a booked/confirmed state at the final Retrieve, with selectedOffer.offerId/priceDetails.totalAmount matching between Book and Retrieve. Per-enrichment state check(s) (SPEC.md 6.4): the booking's final priceDetails.totalAmount reflects the selected bundle's feePrice added to the base offer price, and any bundle-included service (baggage/seat/meal per includedServices tags) does NOT also appear as a separately-priced ancillary line. Manual price-reconciliation requirement (V2 script coverage gap, SPEC.md 1.4/2.1/6.2/7.10): per passenger type, sum(taxesAndFees[].amount.amount) == paxTotalTaxAmount.amount, and totals reconcile per the Section 2.1 formula; this is enforced by script at Hold/FareConfirmAfterHold/BookAfterHold in V2, but NOT at Search/FareConfirm/Book/Retrieve -- the tester must supply this check manually at every Book/Retrieve step in this flow.
+- **Actual:** Blocked: Bundle enrichment is required by this flow, and SabreNdc/EGY does not support it: Bundles are not offered (haveBundles=false on all 91 offers (re-checked 2026-11-24); GetOfferBundles answers 409 OperationNotSupported - see TC-BUNDLE-NEG-01 in the Generic report and FLOW-V2-31-NEG).
+- **Status:** BLOCKED
+- **Evidence:** Bundle enrichment is required by this flow, and SabreNdc/EGY does not support it: Bundles are not offered (haveBundles=false on all 91 offers (re-checked 2026-11-24); GetOfferBundles answers 409 OperationNotSupported - see TC-BUNDLE-NEG-01 in the Generic report and FLOW-V2-31-NEG). | Round 1 verdict: BLOCKED (unchanged)
+
+### FLOW-V2-31-NEG — PASS
+
+- **Test Case:** [FC-BDL-A][Request] Validate that GetOfferBundles is rejected (or otherwise correctly refused) when called against an offer whose FareConfirm response reported haveBundles=false.
+- **Category:** Flow - Negative
+- **Endpoint Name:** V2 flow - GetOfferBundles (CAP BDL)
+- **Request:** Search &gt; FareConfirm (haveBundles=false) &gt; GetOfferBundles
+- **Response:** 409 code=OperationNotSupported msg="This action is not currently supported by the selected supplier." ctx=[{"Name":"OperationNotSupported","Value":"SabreNdc does not exists"}]
+- **Expected:** Request is rejected or returns an empty/error bundleChoices; exact rejection shape is UNKNOWN per SPEC.md 2.4/3.2 -- confirm live. Calling a capability-gated step when the live gating flag is false must not silently succeed as if the offer were bundle-capable.
+- **Actual:** FareConfirm haveBundles=false; GetOfferBundles -&gt; 409 code=OperationNotSupported msg="This action is not currently supported by the selected supplier." ctx=[{"Name":"OperationNotSupported","Value":"SabreNdc does not exists"}]. Rejected with the uniform OperationNotSupported envelope (SPEC 2.4 recorded the same for TravelportNdc); the call does not silently succeed.
+- **Status:** PASS
+- **Evidence:** 409 code=OperationNotSupported msg="This action is not currently supported by the selected supplier." ctx=[{"Name":"OperationNotSupported","Value":"SabreNdc does not exists"}] | Round 1 verdict: PASS (unchanged)
+
+  - **Hop 1 &mdash; V2 Search:** PASS &mdash; 200 - 20 offers; picked offers[0] total 13233.8 EGP
+  - **Hop 2 &mdash; V2 FareConfirm:** PASS &mdash; 200 - total 13233.8 EGP; canBeHeld=true haveBundles=false offerHasAncillary=false isSeatMapRequired=false
+  - **Hop 3 &mdash; V2 Bundles:** PASS &mdash; 409
+
+### FLOW-V2-32 — BLOCKED
+
+- **Test Case:** [FC-BDL-B][Response] Verify Search -&gt; FareConfirm -&gt; GetOfferBundles -&gt; AddPassenger -&gt; Hold -&gt; FareConfirmAfterHold -&gt; Retrieve completes with a held bookingStatus and a future holdExpirationDate at the final Retrieve (flow intentionally stops here -- dangling Held booking); and bundle pricing correctly reflected without double-charging included services.
+- **Category:** Flow - Positive
+- **Endpoint Name:** V2 flow
+- **Request:** Not sent - Bundle enrichment is required by this flow, and SabreNdc/EGY does not support it: Bundles are not offered (haveBundles=false on all 91 offers (re-checked 2026-11-24); GetOfferBundles answers 409 OperationNotSupported - see TC-BUNDLE-NEG-01 in the Generic report and FLOW-V2-31-NEG).
+- **Response:** No request sent
+- **Expected:** Per-family state check (SPEC.md 6.3, Family B): bookingStatus reads a held (not yet ticketed) state with holdExpirationDate present and in the future at the final Retrieve -- the flow deliberately STOPS here (Family B, no BookAfterHold/CancelAfterHold), leaving a dangling Held booking; log the pnr for out-of-band cleanup/expiry tracking per SPEC.md Section 6.3. Per-enrichment state check(s) (SPEC.md 6.4): the booking's final priceDetails.totalAmount reflects the selected bundle's feePrice added to the base offer price, and any bundle-included service (baggage/seat/meal per includedServices tags) does NOT also appear as a separately-priced ancillary line. Manual price-reconciliation requirement (V2 script coverage gap, SPEC.md 1.4/2.1/6.2/7.10): per passenger type, sum(taxesAndFees[].amount.amount) == paxTotalTaxAmount.amount, and totals reconcile per the Section 2.1 formula; this is enforced by script at Hold/FareConfirmAfterHold/BookAfterHold in V2, but NOT at Search/FareConfirm/Book/Retrieve -- the tester must supply this check manually at every Book/Retrieve step in this flow.
+- **Actual:** Blocked: Bundle enrichment is required by this flow, and SabreNdc/EGY does not support it: Bundles are not offered (haveBundles=false on all 91 offers (re-checked 2026-11-24); GetOfferBundles answers 409 OperationNotSupported - see TC-BUNDLE-NEG-01 in the Generic report and FLOW-V2-31-NEG).
+- **Status:** BLOCKED
+- **Evidence:** Bundle enrichment is required by this flow, and SabreNdc/EGY does not support it: Bundles are not offered (haveBundles=false on all 91 offers (re-checked 2026-11-24); GetOfferBundles answers 409 OperationNotSupported - see TC-BUNDLE-NEG-01 in the Generic report and FLOW-V2-31-NEG). | Round 1 verdict: BLOCKED (unchanged)
+
+### FLOW-V2-32-NEG — BLOCKED
+
+- **Test Case:** [FC-BDL-B][Response] Verify that Hold fails for a canBeHeld=false / confirmed-not-holdable supplier.
+- **Category:** Flow - Negative
+- **Endpoint Name:** V2 flow
+- **Request:** Not sent - it needs a canBeHeld=false supplier (FlyNas/GLC); every SabreNdc/EGY offer is canBeHeld=true.
+- **Response:** No request sent
+- **Expected:** Hold is expected to fail (e.g. FlyNas is cross-validated Hold=Not Supported per SPEC.md 4.6; GLC is Not Supported by both sources). Exact rejection shape is UNKNOWN -- confirm live. The live canBeHeld flag (2.1/2.2) takes precedence over the static matrix when they disagree.
+- **Actual:** Blocked: it needs a canBeHeld=false supplier (FlyNas/GLC); every SabreNdc/EGY offer is canBeHeld=true.
+- **Status:** BLOCKED
+- **Evidence:** it needs a canBeHeld=false supplier (FlyNas/GLC); every SabreNdc/EGY offer is canBeHeld=true. | Round 1 verdict: BLOCKED (unchanged)
+
+### FLOW-V2-33 — BLOCKED
+
+- **Test Case:** [FC-BDL-C][Response] Verify Search -&gt; FareConfirm -&gt; GetOfferBundles -&gt; AddPassenger -&gt; Book -&gt; Retrieve -&gt; Void completes with a booked bookingStatus at Retrieve followed by a successful Void (gated by voidCapability); and bundle pricing correctly reflected without double-charging included services.
+- **Category:** Flow - Positive
+- **Endpoint Name:** V2 flow
+- **Request:** Not sent - Bundle enrichment is required by this flow, and SabreNdc/EGY does not support it: Bundles are not offered (haveBundles=false on all 91 offers (re-checked 2026-11-24); GetOfferBundles answers 409 OperationNotSupported - see TC-BUNDLE-NEG-01 in the Generic report and FLOW-V2-31-NEG).
+- **Response:** No request sent
+- **Expected:** Per-family state check (SPEC.md 6.3, Family C): bookingStatus reads booked at Retrieve, then Void succeeds (gated by voidCapability != VoidNotAllowed), and a follow-up manual Retrieve should show a voided/cancelled bookingStatus. Per-enrichment state check(s) (SPEC.md 6.4): the booking's final priceDetails.totalAmount reflects the selected bundle's feePrice added to the base offer price, and any bundle-included service (baggage/seat/meal per includedServices tags) does NOT also appear as a separately-priced ancillary line. Manual price-reconciliation requirement (V2 script coverage gap, SPEC.md 1.4/2.1/6.2/7.10): per passenger type, sum(taxesAndFees[].amount.amount) == paxTotalTaxAmount.amount, and totals reconcile per the Section 2.1 formula; this is enforced by script at Hold/FareConfirmAfterHold/BookAfterHold in V2, but NOT at Search/FareConfirm/Book/Retrieve -- the tester must supply this check manually at every Book/Retrieve step in this flow.
+- **Actual:** Blocked: Bundle enrichment is required by this flow, and SabreNdc/EGY does not support it: Bundles are not offered (haveBundles=false on all 91 offers (re-checked 2026-11-24); GetOfferBundles answers 409 OperationNotSupported - see TC-BUNDLE-NEG-01 in the Generic report and FLOW-V2-31-NEG).
+- **Status:** BLOCKED
+- **Evidence:** Bundle enrichment is required by this flow, and SabreNdc/EGY does not support it: Bundles are not offered (haveBundles=false on all 91 offers (re-checked 2026-11-24); GetOfferBundles answers 409 OperationNotSupported - see TC-BUNDLE-NEG-01 in the Generic report and FLOW-V2-31-NEG). | Round 1 verdict: BLOCKED (unchanged)
+
+### FLOW-V2-33-NEG — BLOCKED
+
+- **Test Case:** [FC-BDL-C][Response] Verify the result of calling Book twice in succession on the same offer/booking (Book called twice with the same offer/ID pair).
+- **Category:** Flow - Negative
+- **Endpoint Name:** V2 flow
+- **Request:** Not sent - the positive chain up to the fault hop includes Bundle enrichment hop(s), which SabreNdc/EGY cannot execute (Bundles are not offered). The same fault on the supported chain is covered by: TC-BOOK-NEG-04 in the Generic report.
+- **Response:** No request sent
+- **Expected:** UNKNOWN whether the second call is idempotently rejected, silently no-ops, or produces a duplicate/erroneous state -- confirm live. SPEC.md flags double-booking/double-action as an explicit negative case with unresolved behavior (2.9/2.13/2.14).
+- **Actual:** Blocked: the positive chain up to the fault hop includes Bundle enrichment hop(s), which SabreNdc/EGY cannot execute (Bundles are not offered). The same fault on the supported chain is covered by: TC-BOOK-NEG-04 in the Generic report.
+- **Status:** BLOCKED
+- **Evidence:** the positive chain up to the fault hop includes Bundle enrichment hop(s), which SabreNdc/EGY cannot execute (Bundles are not offered). The same fault on the supported chain is covered by: TC-BOOK-NEG-04 in the Generic report. | Round 1 verdict: BLOCKED (unchanged)
+
+### FLOW-V2-34 — BLOCKED
+
+- **Test Case:** [FC-BDL-D][Response] Verify Search -&gt; FareConfirm -&gt; GetOfferBundles -&gt; AddPassenger -&gt; Hold -&gt; FareConfirmAfterHold -&gt; Retrieve -&gt; BookAfterHold -&gt; Retrieve completes with bookingStatus transitioning held -&gt; booked via BookAfterHold, with pnr/bookingToken/gdsPNR unchanged from Hold; and bundle pricing correctly reflected without double-charging included services.
+- **Category:** Flow - Positive
+- **Endpoint Name:** V2 flow
+- **Request:** Not sent - Bundle enrichment is required by this flow, and SabreNdc/EGY does not support it: Bundles are not offered (haveBundles=false on all 91 offers (re-checked 2026-11-24); GetOfferBundles answers 409 OperationNotSupported - see TC-BUNDLE-NEG-01 in the Generic report and FLOW-V2-31-NEG).
+- **Response:** No request sent
+- **Expected:** Per-family state check (SPEC.md 6.3, Family D): bookingStatus transitions from held (after Hold/FareConfirmAfterHold) to booked/confirmed (after BookAfterHold), with pnr/bookingToken/gdsPNR identical to the values Hold produced (same-PNR invariant, SPEC.md Section 2.13). Per-enrichment state check(s) (SPEC.md 6.4): the booking's final priceDetails.totalAmount reflects the selected bundle's feePrice added to the base offer price, and any bundle-included service (baggage/seat/meal per includedServices tags) does NOT also appear as a separately-priced ancillary line. Manual price-reconciliation requirement (V2 script coverage gap, SPEC.md 1.4/2.1/6.2/7.10): per passenger type, sum(taxesAndFees[].amount.amount) == paxTotalTaxAmount.amount, and totals reconcile per the Section 2.1 formula; this is enforced by script at Hold/FareConfirmAfterHold/BookAfterHold in V2, but NOT at Search/FareConfirm/Book/Retrieve -- the tester must supply this check manually at every Book/Retrieve step in this flow.
+- **Actual:** Blocked: Bundle enrichment is required by this flow, and SabreNdc/EGY does not support it: Bundles are not offered (haveBundles=false on all 91 offers (re-checked 2026-11-24); GetOfferBundles answers 409 OperationNotSupported - see TC-BUNDLE-NEG-01 in the Generic report and FLOW-V2-31-NEG).
+- **Status:** BLOCKED
+- **Evidence:** Bundle enrichment is required by this flow, and SabreNdc/EGY does not support it: Bundles are not offered (haveBundles=false on all 91 offers (re-checked 2026-11-24); GetOfferBundles answers 409 OperationNotSupported - see TC-BUNDLE-NEG-01 in the Generic report and FLOW-V2-31-NEG). | Round 1 verdict: BLOCKED (unchanged)
+
+### FLOW-V2-34-NEG — BLOCKED
+
+- **Test Case:** [FC-BDL-D][Request] Validate that BookAfterHold rejects a pnr/bookingToken/gdsPNR triplet where one field does not match the other two (sourced from a different booking) (bookingToken sourced from a different Hold session than the supplied pnr/gdsPNR).
+- **Category:** Flow - Negative
+- **Endpoint Name:** V2 flow
+- **Request:** Not sent - the positive chain up to the fault hop includes Bundle enrichment hop(s), which SabreNdc/EGY cannot execute (Bundles are not offered). The same fault on the supported chain is covered by: no executed equivalent (not covered by any runnable row).
+- **Response:** No request sent
+- **Expected:** UNKNOWN exact status -- confirm live. The pnr/bookingToken/gdsPNR trio should be internally consistent for a single booking throughout Retrieve/BookAfterHold/Void (SPEC.md 2.11/2.13); a deliberately broken triplet is expected to be rejected, not partially honored.
+- **Actual:** Blocked: the positive chain up to the fault hop includes Bundle enrichment hop(s), which SabreNdc/EGY cannot execute (Bundles are not offered). The same fault on the supported chain is covered by: no executed equivalent (not covered by any runnable row).
+- **Status:** BLOCKED
+- **Evidence:** the positive chain up to the fault hop includes Bundle enrichment hop(s), which SabreNdc/EGY cannot execute (Bundles are not offered). The same fault on the supported chain is covered by: no executed equivalent (not covered by any runnable row). | Round 1 verdict: BLOCKED (unchanged)
+
+### FLOW-V2-35 — BLOCKED
+
+- **Test Case:** [FC-BDL-E][Response] Verify Search -&gt; FareConfirm -&gt; GetOfferBundles -&gt; AddPassenger -&gt; Hold -&gt; FareConfirmAfterHold -&gt; Retrieve -&gt; BookAfterHold -&gt; Retrieve -&gt; Void completes with bookingStatus transitioning held -&gt; booked via BookAfterHold and then a successful Void; and bundle pricing correctly reflected without double-charging included services.
+- **Category:** Flow - Positive
+- **Endpoint Name:** V2 flow
+- **Request:** Not sent - Bundle enrichment is required by this flow, and SabreNdc/EGY does not support it: Bundles are not offered (haveBundles=false on all 91 offers (re-checked 2026-11-24); GetOfferBundles answers 409 OperationNotSupported - see TC-BUNDLE-NEG-01 in the Generic report and FLOW-V2-31-NEG).
+- **Response:** No request sent
+- **Expected:** Per-family state check (SPEC.md 6.3, Family E): bookingStatus transitions held -&gt; booked via BookAfterHold (same-PNR invariant holds) and then Void succeeds (gated by voidCapability), with a follow-up manual Retrieve expected to show voided/cancelled. Per-enrichment state check(s) (SPEC.md 6.4): the booking's final priceDetails.totalAmount reflects the selected bundle's feePrice added to the base offer price, and any bundle-included service (baggage/seat/meal per includedServices tags) does NOT also appear as a separately-priced ancillary line. Manual price-reconciliation requirement (V2 script coverage gap, SPEC.md 1.4/2.1/6.2/7.10): per passenger type, sum(taxesAndFees[].amount.amount) == paxTotalTaxAmount.amount, and totals reconcile per the Section 2.1 formula; this is enforced by script at Hold/FareConfirmAfterHold/BookAfterHold in V2, but NOT at Search/FareConfirm/Book/Retrieve -- the tester must supply this check manually at every Book/Retrieve step in this flow.
+- **Actual:** Blocked: Bundle enrichment is required by this flow, and SabreNdc/EGY does not support it: Bundles are not offered (haveBundles=false on all 91 offers (re-checked 2026-11-24); GetOfferBundles answers 409 OperationNotSupported - see TC-BUNDLE-NEG-01 in the Generic report and FLOW-V2-31-NEG).
+- **Status:** BLOCKED
+- **Evidence:** Bundle enrichment is required by this flow, and SabreNdc/EGY does not support it: Bundles are not offered (haveBundles=false on all 91 offers (re-checked 2026-11-24); GetOfferBundles answers 409 OperationNotSupported - see TC-BUNDLE-NEG-01 in the Generic report and FLOW-V2-31-NEG). | Round 1 verdict: BLOCKED (unchanged)
+
+### FLOW-V2-35-NEG — BLOCKED
+
+- **Test Case:** [FC-BDL-E][Response] Verify the result of calling Void twice in succession on the same offer/booking (Void called twice on the finalized ex-Held booking).
+- **Category:** Flow - Negative
+- **Endpoint Name:** V2 flow
+- **Request:** Not sent - the positive chain up to the fault hop includes Bundle enrichment hop(s), which SabreNdc/EGY cannot execute (Bundles are not offered). The same fault on the supported chain is covered by: TC-BOOK-NEG-04 in the Generic report.
+- **Response:** No request sent
+- **Expected:** UNKNOWN whether the second call is idempotently rejected, silently no-ops, or produces a duplicate/erroneous state -- confirm live. SPEC.md flags double-booking/double-action as an explicit negative case with unresolved behavior (2.9/2.13/2.14).
+- **Actual:** Blocked: the positive chain up to the fault hop includes Bundle enrichment hop(s), which SabreNdc/EGY cannot execute (Bundles are not offered). The same fault on the supported chain is covered by: TC-BOOK-NEG-04 in the Generic report.
+- **Status:** BLOCKED
+- **Evidence:** the positive chain up to the fault hop includes Bundle enrichment hop(s), which SabreNdc/EGY cannot execute (Bundles are not offered). The same fault on the supported chain is covered by: TC-BOOK-NEG-04 in the Generic report. | Round 1 verdict: BLOCKED (unchanged)
+
+### FLOW-V2-36 — BLOCKED
+
+- **Test Case:** [FC-BDL-F][Response] Verify Search -&gt; FareConfirm -&gt; GetOfferBundles -&gt; AddPassenger -&gt; Hold -&gt; FareConfirmAfterHold -&gt; Retrieve -&gt; CancelAfterHold completes with bookingStatus transitioning held -&gt; cancelled/terminated via CancelAfterHold; and bundle pricing correctly reflected without double-charging included services.
+- **Category:** Flow - Positive
+- **Endpoint Name:** V2 flow
+- **Request:** Not sent - Bundle enrichment is required by this flow, and SabreNdc/EGY does not support it: Bundles are not offered (haveBundles=false on all 91 offers (re-checked 2026-11-24); GetOfferBundles answers 409 OperationNotSupported - see TC-BUNDLE-NEG-01 in the Generic report and FLOW-V2-31-NEG).
+- **Response:** No request sent
+- **Expected:** Per-family state check (SPEC.md 6.3, Family F): bookingStatus transitions from held to a cancelled/terminated state after CancelAfterHold -- CancelAfterHold has zero script coverage and no genuine saved response example anywhere in the collections, so this is the weakest-validated end-state in the whole API; treat the post-CancelAfterHold Retrieve bookingStatus as the primary, entirely-manual success signal. Per-enrichment state check(s) (SPEC.md 6.4): the booking's final priceDetails.totalAmount reflects the selected bundle's feePrice added to the base offer price, and any bundle-included service (baggage/seat/meal per includedServices tags) does NOT also appear as a separately-priced ancillary line. Manual price-reconciliation requirement (V2 script coverage gap, SPEC.md 1.4/2.1/6.2/7.10): per passenger type, sum(taxesAndFees[].amount.amount) == paxTotalTaxAmount.amount, and totals reconcile per the Section 2.1 formula; this is enforced by script at Hold/FareConfirmAfterHold/BookAfterHold in V2, but NOT at Search/FareConfirm/Book/Retrieve -- the tester must supply this check manually at every Book/Retrieve step in this flow.
+- **Actual:** Blocked: Bundle enrichment is required by this flow, and SabreNdc/EGY does not support it: Bundles are not offered (haveBundles=false on all 91 offers (re-checked 2026-11-24); GetOfferBundles answers 409 OperationNotSupported - see TC-BUNDLE-NEG-01 in the Generic report and FLOW-V2-31-NEG).
+- **Status:** BLOCKED
+- **Evidence:** Bundle enrichment is required by this flow, and SabreNdc/EGY does not support it: Bundles are not offered (haveBundles=false on all 91 offers (re-checked 2026-11-24); GetOfferBundles answers 409 OperationNotSupported - see TC-BUNDLE-NEG-01 in the Generic report and FLOW-V2-31-NEG). | Round 1 verdict: BLOCKED (unchanged)
+
+### FLOW-V2-36-NEG — BLOCKED
+
+- **Test Case:** [FC-BDL-F][Request] Validate the documented V2 CancelAfterHold unquoted {{Credentials_Selector}} request-body defect.
+- **Category:** Flow - Negative
+- **Endpoint Name:** V2 flow
+- **Request:** Not sent - the positive chain up to the fault hop includes Bundle enrichment hop(s), which SabreNdc/EGY cannot execute (Bundles are not offered). The same fault on the supported chain is covered by: TC-CANCELHOLD-NEG-01.
+- **Response:** No request sent
+- **Expected:** Once the placeholder is substituted, the raw body becomes invalid JSON (e.g. "credentialsSelector" : UAE, with no quotes). Confirm live whether this produces a 400/parse error or is somehow tolerated. This is a literal, evidenced syntax bug in the saved request body (SPEC.md 2.14), not a hypothesis.
+- **Actual:** Blocked: the positive chain up to the fault hop includes Bundle enrichment hop(s), which SabreNdc/EGY cannot execute (Bundles are not offered). The same fault on the supported chain is covered by: TC-CANCELHOLD-NEG-01.
+- **Status:** BLOCKED
+- **Evidence:** the positive chain up to the fault hop includes Bundle enrichment hop(s), which SabreNdc/EGY cannot execute (Bundles are not offered). The same fault on the supported chain is covered by: TC-CANCELHOLD-NEG-01. | Round 1 verdict: BLOCKED (unchanged)
+
+### FLOW-V2-37 — BLOCKED
+
+- **Test Case:** [FC-ANC-A][Response] Verify Search -&gt; FareConfirm -&gt; AddPassenger -&gt; GetAncillary -&gt; FareCheck* -&gt; Book -&gt; Retrieve completes with a booked/confirmed bookingStatus at the final Retrieve, matching Book's selectedOffer/price; and selected ancillaries correctly reflected in passengersSelectedAncillaries/paxTotalAncillaryAmount.
+- **Category:** Flow - Positive
+- **Endpoint Name:** V2 flow
+- **Request:** Not sent - Ancillary enrichment is required by this flow, and SabreNdc/EGY does not support it: Ancillaries are not offered (offerHasAncillary=false on all 91 offers (re-checked 2026-11-24); GetAncillary and FareCheck answer 409 OperationNotSupported - see TC-ANCILLARY-NEG-01, TC-FARECHECK-NEG-01).
+- **Response:** No request sent
+- **Expected:** Per-family state check (SPEC.md 6.3, Family A): bookingStatus reads a booked/confirmed state at the final Retrieve, with selectedOffer.offerId/priceDetails.totalAmount matching between Book and Retrieve. Per-enrichment state check(s) (SPEC.md 6.4): passengersSelectedAncillaries on Book/Hold/Retrieve lists exactly the ancillary codes selected at GetAncillary/FareCheck time with matching AdditionalServiceCategory/quantity, and paxTotalAncillaryAmount equals the sum of the selected ancillaries' prices; the final booking price equals FareCheck's re-priced total (not the pre-ancillary FareConfirm/AddPassenger-era total) -- the highest-value price-integrity assertion for this enrichment. FareCheck conditionality: FareCheck must actually run only if the immediately-preceding GetAncillary/GetSeatMap response reported isFareCheckRequired=true; do not treat FareCheck as unconditionally present, and if it is required, the price delta between the pre-FareCheck and post-FareCheck totals should equal the sum of the selected ancillary/seat prices (2.8). Manual price-reconciliation requirement (V2 script coverage gap, SPEC.md 1.4/2.1/6.2/7.10): per passenger type, sum(taxesAndFees[].amount.amount) == paxTotalTaxAmount.amount, and totals reconcile per the Section 2.1 formula; this is enforced by script at Hold/FareConfirmAfterHold/BookAfterHold in V2, but NOT at Search/FareConfirm/Book/Retrieve -- the tester must supply this check manually at every Book/Retrieve step in this flow. Assert passengersAncillariesAvailabilty (GetAncillary response) is spelled exactly as the live API returns it -- missing the second "i" -- since this is a genuine API field-name defect, not a documentation typo.
+- **Actual:** Blocked: Ancillary enrichment is required by this flow, and SabreNdc/EGY does not support it: Ancillaries are not offered (offerHasAncillary=false on all 91 offers (re-checked 2026-11-24); GetAncillary and FareCheck answer 409 OperationNotSupported - see TC-ANCILLARY-NEG-01, TC-FARECHECK-NEG-01).
+- **Status:** BLOCKED
+- **Evidence:** Ancillary enrichment is required by this flow, and SabreNdc/EGY does not support it: Ancillaries are not offered (offerHasAncillary=false on all 91 offers (re-checked 2026-11-24); GetAncillary and FareCheck answer 409 OperationNotSupported - see TC-ANCILLARY-NEG-01, TC-FARECHECK-NEG-01). | Round 1 verdict: BLOCKED (unchanged)
+
+### FLOW-V2-37-NEG — BLOCKED
+
+- **Test Case:** [FC-ANC-A][Request] Validate that FareCheck rejects a hand-constructed AncillaryCode instead of one copied verbatim from GetAncillary's segmentsAncillariesDetails[].code.
+- **Category:** Flow - Negative
+- **Endpoint Name:** V2 flow
+- **Request:** Not sent - it needs GetAncillary codes and a working FareCheck; both answer 409 OperationNotSupported for SabreNdc, so neither the code nor the quantity can ever be validated (see TC-FARECHECK-NEG-01).
+- **Response:** No request sent
+- **Expected:** FareCheck rejects the fabricated code; valid AncillaryCode values are opaque gzip+base64 tokens that must originate from GetAncillary and must never be hand-built. Exact rejection shape is UNKNOWN -- confirm live per SPEC.md 2.8.
+- **Actual:** Blocked: it needs GetAncillary codes and a working FareCheck; both answer 409 OperationNotSupported for SabreNdc, so neither the code nor the quantity can ever be validated (see TC-FARECHECK-NEG-01).
+- **Status:** BLOCKED
+- **Evidence:** it needs GetAncillary codes and a working FareCheck; both answer 409 OperationNotSupported for SabreNdc, so neither the code nor the quantity can ever be validated (see TC-FARECHECK-NEG-01). | Round 1 verdict: BLOCKED (unchanged)
+
+### FLOW-V2-38 — BLOCKED
+
+- **Test Case:** [FC-ANC-B][Response] Verify Search -&gt; FareConfirm -&gt; AddPassenger -&gt; GetAncillary -&gt; FareCheck* -&gt; Hold -&gt; FareConfirmAfterHold -&gt; Retrieve completes with a held bookingStatus and a future holdExpirationDate at the final Retrieve (flow intentionally stops here -- dangling Held booking); and selected ancillaries correctly reflected in passengersSelectedAncillaries/paxTotalAncillaryAmount.
+- **Category:** Flow - Positive
+- **Endpoint Name:** V2 flow
+- **Request:** Not sent - Ancillary enrichment is required by this flow, and SabreNdc/EGY does not support it: Ancillaries are not offered (offerHasAncillary=false on all 91 offers (re-checked 2026-11-24); GetAncillary and FareCheck answer 409 OperationNotSupported - see TC-ANCILLARY-NEG-01, TC-FARECHECK-NEG-01).
+- **Response:** No request sent
+- **Expected:** Per-family state check (SPEC.md 6.3, Family B): bookingStatus reads a held (not yet ticketed) state with holdExpirationDate present and in the future at the final Retrieve -- the flow deliberately STOPS here (Family B, no BookAfterHold/CancelAfterHold), leaving a dangling Held booking; log the pnr for out-of-band cleanup/expiry tracking per SPEC.md Section 6.3. Per-enrichment state check(s) (SPEC.md 6.4): passengersSelectedAncillaries on Book/Hold/Retrieve lists exactly the ancillary codes selected at GetAncillary/FareCheck time with matching AdditionalServiceCategory/quantity, and paxTotalAncillaryAmount equals the sum of the selected ancillaries' prices; the final booking price equals FareCheck's re-priced total (not the pre-ancillary FareConfirm/AddPassenger-era total) -- the highest-value price-integrity assertion for this enrichment. FareCheck conditionality: FareCheck must actually run only if the immediately-preceding GetAncillary/GetSeatMap response reported isFareCheckRequired=true; do not treat FareCheck as unconditionally present, and if it is required, the price delta between the pre-FareCheck and post-FareCheck totals should equal the sum of the selected ancillary/seat prices (2.8). Manual price-reconciliation requirement (V2 script coverage gap, SPEC.md 1.4/2.1/6.2/7.10): per passenger type, sum(taxesAndFees[].amount.amount) == paxTotalTaxAmount.amount, and totals reconcile per the Section 2.1 formula; this is enforced by script at Hold/FareConfirmAfterHold/BookAfterHold in V2, but NOT at Search/FareConfirm/Book/Retrieve -- the tester must supply this check manually at every Book/Retrieve step in this flow. Assert passengersAncillariesAvailabilty (GetAncillary response) is spelled exactly as the live API returns it -- missing the second "i" -- since this is a genuine API field-name defect, not a documentation typo.
+- **Actual:** Blocked: Ancillary enrichment is required by this flow, and SabreNdc/EGY does not support it: Ancillaries are not offered (offerHasAncillary=false on all 91 offers (re-checked 2026-11-24); GetAncillary and FareCheck answer 409 OperationNotSupported - see TC-ANCILLARY-NEG-01, TC-FARECHECK-NEG-01).
+- **Status:** BLOCKED
+- **Evidence:** Ancillary enrichment is required by this flow, and SabreNdc/EGY does not support it: Ancillaries are not offered (offerHasAncillary=false on all 91 offers (re-checked 2026-11-24); GetAncillary and FareCheck answer 409 OperationNotSupported - see TC-ANCILLARY-NEG-01, TC-FARECHECK-NEG-01). | Round 1 verdict: BLOCKED (unchanged)
+
+### FLOW-V2-38-NEG — BLOCKED
+
+- **Test Case:** [FC-ANC-B][Request] Validate the documented V2 Hold {{credentialsSelector}} (lowercase-first placeholder) vs. environment's actual {{Credentials_Selector}} casing-mismatch defect.
+- **Category:** Flow - Negative
+- **Endpoint Name:** V2 flow
+- **Request:** Not sent - the positive chain up to the fault hop includes Ancillary enrichment hop(s), which SabreNdc/EGY cannot execute (Ancillaries are not offered). The same fault on the supported chain is covered by: TC-HOLD-NEG-01.
+- **Response:** No request sent
+- **Expected:** Confirm live whether this collection defect causes Hold to silently send an empty credentialsSelector, or whether the request is rejected outright for a missing/empty field. This is a documented, not merely hypothesized, collection bug (SPEC.md 2.10).
+- **Actual:** Blocked: the positive chain up to the fault hop includes Ancillary enrichment hop(s), which SabreNdc/EGY cannot execute (Ancillaries are not offered). The same fault on the supported chain is covered by: TC-HOLD-NEG-01.
+- **Status:** BLOCKED
+- **Evidence:** the positive chain up to the fault hop includes Ancillary enrichment hop(s), which SabreNdc/EGY cannot execute (Ancillaries are not offered). The same fault on the supported chain is covered by: TC-HOLD-NEG-01. | Round 1 verdict: BLOCKED (unchanged)
+
+### FLOW-V2-39 — BLOCKED
+
+- **Test Case:** [FC-ANC-C][Response] Verify Search -&gt; FareConfirm -&gt; AddPassenger -&gt; GetAncillary -&gt; FareCheck* -&gt; Book -&gt; Retrieve -&gt; Void completes with a booked bookingStatus at Retrieve followed by a successful Void (gated by voidCapability); and selected ancillaries correctly reflected in passengersSelectedAncillaries/paxTotalAncillaryAmount.
+- **Category:** Flow - Positive
+- **Endpoint Name:** V2 flow
+- **Request:** Not sent - Ancillary enrichment is required by this flow, and SabreNdc/EGY does not support it: Ancillaries are not offered (offerHasAncillary=false on all 91 offers (re-checked 2026-11-24); GetAncillary and FareCheck answer 409 OperationNotSupported - see TC-ANCILLARY-NEG-01, TC-FARECHECK-NEG-01).
+- **Response:** No request sent
+- **Expected:** Per-family state check (SPEC.md 6.3, Family C): bookingStatus reads booked at Retrieve, then Void succeeds (gated by voidCapability != VoidNotAllowed), and a follow-up manual Retrieve should show a voided/cancelled bookingStatus. Per-enrichment state check(s) (SPEC.md 6.4): passengersSelectedAncillaries on Book/Hold/Retrieve lists exactly the ancillary codes selected at GetAncillary/FareCheck time with matching AdditionalServiceCategory/quantity, and paxTotalAncillaryAmount equals the sum of the selected ancillaries' prices; the final booking price equals FareCheck's re-priced total (not the pre-ancillary FareConfirm/AddPassenger-era total) -- the highest-value price-integrity assertion for this enrichment. FareCheck conditionality: FareCheck must actually run only if the immediately-preceding GetAncillary/GetSeatMap response reported isFareCheckRequired=true; do not treat FareCheck as unconditionally present, and if it is required, the price delta between the pre-FareCheck and post-FareCheck totals should equal the sum of the selected ancillary/seat prices (2.8). Manual price-reconciliation requirement (V2 script coverage gap, SPEC.md 1.4/2.1/6.2/7.10): per passenger type, sum(taxesAndFees[].amount.amount) == paxTotalTaxAmount.amount, and totals reconcile per the Section 2.1 formula; this is enforced by script at Hold/FareConfirmAfterHold/BookAfterHold in V2, but NOT at Search/FareConfirm/Book/Retrieve -- the tester must supply this check manually at every Book/Retrieve step in this flow. Assert passengersAncillariesAvailabilty (GetAncillary response) is spelled exactly as the live API returns it -- missing the second "i" -- since this is a genuine API field-name defect, not a documentation typo.
+- **Actual:** Blocked: Ancillary enrichment is required by this flow, and SabreNdc/EGY does not support it: Ancillaries are not offered (offerHasAncillary=false on all 91 offers (re-checked 2026-11-24); GetAncillary and FareCheck answer 409 OperationNotSupported - see TC-ANCILLARY-NEG-01, TC-FARECHECK-NEG-01).
+- **Status:** BLOCKED
+- **Evidence:** Ancillary enrichment is required by this flow, and SabreNdc/EGY does not support it: Ancillaries are not offered (offerHasAncillary=false on all 91 offers (re-checked 2026-11-24); GetAncillary and FareCheck answer 409 OperationNotSupported - see TC-ANCILLARY-NEG-01, TC-FARECHECK-NEG-01). | Round 1 verdict: BLOCKED (unchanged)
+
+### FLOW-V2-39-NEG — BLOCKED
+
+- **Test Case:** [FC-ANC-C][Request] Validate that FareCheck rejects a PassengersSelectedAncillaries Quantity greater than GetAncillary's reported availableCount for that code (carried through to Book, Void still attempted).
+- **Category:** Flow - Negative
+- **Endpoint Name:** V2 flow
+- **Request:** Not sent - it needs GetAncillary codes and a working FareCheck; both answer 409 OperationNotSupported for SabreNdc, so neither the code nor the quantity can ever be validated (see TC-FARECHECK-NEG-01).
+- **Response:** No request sent
+- **Expected:** FareCheck rejects (or otherwise flags) the over-quantity selection. Exact rejection shape is UNKNOWN -- confirm live per SPEC.md 2.8.
+- **Actual:** Blocked: it needs GetAncillary codes and a working FareCheck; both answer 409 OperationNotSupported for SabreNdc, so neither the code nor the quantity can ever be validated (see TC-FARECHECK-NEG-01).
+- **Status:** BLOCKED
+- **Evidence:** it needs GetAncillary codes and a working FareCheck; both answer 409 OperationNotSupported for SabreNdc, so neither the code nor the quantity can ever be validated (see TC-FARECHECK-NEG-01). | Round 1 verdict: BLOCKED (unchanged)
+
+### FLOW-V2-40 — BLOCKED
+
+- **Test Case:** [FC-ANC-D][Response] Verify Search -&gt; FareConfirm -&gt; AddPassenger -&gt; GetAncillary -&gt; FareCheck* -&gt; Hold -&gt; FareConfirmAfterHold -&gt; Retrieve -&gt; BookAfterHold -&gt; Retrieve completes with bookingStatus transitioning held -&gt; booked via BookAfterHold, with pnr/bookingToken/gdsPNR unchanged from Hold; and selected ancillaries correctly reflected in passengersSelectedAncillaries/paxTotalAncillaryAmount.
+- **Category:** Flow - Positive
+- **Endpoint Name:** V2 flow
+- **Request:** Not sent - Ancillary enrichment is required by this flow, and SabreNdc/EGY does not support it: Ancillaries are not offered (offerHasAncillary=false on all 91 offers (re-checked 2026-11-24); GetAncillary and FareCheck answer 409 OperationNotSupported - see TC-ANCILLARY-NEG-01, TC-FARECHECK-NEG-01).
+- **Response:** No request sent
+- **Expected:** Per-family state check (SPEC.md 6.3, Family D): bookingStatus transitions from held (after Hold/FareConfirmAfterHold) to booked/confirmed (after BookAfterHold), with pnr/bookingToken/gdsPNR identical to the values Hold produced (same-PNR invariant, SPEC.md Section 2.13). Per-enrichment state check(s) (SPEC.md 6.4): passengersSelectedAncillaries on Book/Hold/Retrieve lists exactly the ancillary codes selected at GetAncillary/FareCheck time with matching AdditionalServiceCategory/quantity, and paxTotalAncillaryAmount equals the sum of the selected ancillaries' prices; the final booking price equals FareCheck's re-priced total (not the pre-ancillary FareConfirm/AddPassenger-era total) -- the highest-value price-integrity assertion for this enrichment. FareCheck conditionality: FareCheck must actually run only if the immediately-preceding GetAncillary/GetSeatMap response reported isFareCheckRequired=true; do not treat FareCheck as unconditionally present, and if it is required, the price delta between the pre-FareCheck and post-FareCheck totals should equal the sum of the selected ancillary/seat prices (2.8). Manual price-reconciliation requirement (V2 script coverage gap, SPEC.md 1.4/2.1/6.2/7.10): per passenger type, sum(taxesAndFees[].amount.amount) == paxTotalTaxAmount.amount, and totals reconcile per the Section 2.1 formula; this is enforced by script at Hold/FareConfirmAfterHold/BookAfterHold in V2, but NOT at Search/FareConfirm/Book/Retrieve -- the tester must supply this check manually at every Book/Retrieve step in this flow. Assert passengersAncillariesAvailabilty (GetAncillary response) is spelled exactly as the live API returns it -- missing the second "i" -- since this is a genuine API field-name defect, not a documentation typo.
+- **Actual:** Blocked: Ancillary enrichment is required by this flow, and SabreNdc/EGY does not support it: Ancillaries are not offered (offerHasAncillary=false on all 91 offers (re-checked 2026-11-24); GetAncillary and FareCheck answer 409 OperationNotSupported - see TC-ANCILLARY-NEG-01, TC-FARECHECK-NEG-01).
+- **Status:** BLOCKED
+- **Evidence:** Ancillary enrichment is required by this flow, and SabreNdc/EGY does not support it: Ancillaries are not offered (offerHasAncillary=false on all 91 offers (re-checked 2026-11-24); GetAncillary and FareCheck answer 409 OperationNotSupported - see TC-ANCILLARY-NEG-01, TC-FARECHECK-NEG-01). | Round 1 verdict: BLOCKED (unchanged)
+
+### FLOW-V2-40-NEG — BLOCKED
+
+- **Test Case:** [FC-ANC-D][Response] Verify the result of calling BookAfterHold twice in succession on the same offer/booking (BookAfterHold called twice on the same Held pnr).
+- **Category:** Flow - Negative
+- **Endpoint Name:** V2 flow
+- **Request:** Not sent - the positive chain up to the fault hop includes Ancillary enrichment hop(s), which SabreNdc/EGY cannot execute (Ancillaries are not offered). The same fault on the supported chain is covered by: TC-BOOK-NEG-04 in the Generic report.
+- **Response:** No request sent
+- **Expected:** UNKNOWN whether the second call is idempotently rejected, silently no-ops, or produces a duplicate/erroneous state -- confirm live. SPEC.md flags double-booking/double-action as an explicit negative case with unresolved behavior (2.9/2.13/2.14).
+- **Actual:** Blocked: the positive chain up to the fault hop includes Ancillary enrichment hop(s), which SabreNdc/EGY cannot execute (Ancillaries are not offered). The same fault on the supported chain is covered by: TC-BOOK-NEG-04 in the Generic report.
+- **Status:** BLOCKED
+- **Evidence:** the positive chain up to the fault hop includes Ancillary enrichment hop(s), which SabreNdc/EGY cannot execute (Ancillaries are not offered). The same fault on the supported chain is covered by: TC-BOOK-NEG-04 in the Generic report. | Round 1 verdict: BLOCKED (unchanged)
+
+### FLOW-V2-41 — BLOCKED
+
+- **Test Case:** [FC-ANC-E][Response] Verify Search -&gt; FareConfirm -&gt; AddPassenger -&gt; GetAncillary -&gt; FareCheck* -&gt; Hold -&gt; FareConfirmAfterHold -&gt; Retrieve -&gt; BookAfterHold -&gt; Retrieve -&gt; Void completes with bookingStatus transitioning held -&gt; booked via BookAfterHold and then a successful Void; and selected ancillaries correctly reflected in passengersSelectedAncillaries/paxTotalAncillaryAmount.
+- **Category:** Flow - Positive
+- **Endpoint Name:** V2 flow
+- **Request:** Not sent - Ancillary enrichment is required by this flow, and SabreNdc/EGY does not support it: Ancillaries are not offered (offerHasAncillary=false on all 91 offers (re-checked 2026-11-24); GetAncillary and FareCheck answer 409 OperationNotSupported - see TC-ANCILLARY-NEG-01, TC-FARECHECK-NEG-01).
+- **Response:** No request sent
+- **Expected:** Per-family state check (SPEC.md 6.3, Family E): bookingStatus transitions held -&gt; booked via BookAfterHold (same-PNR invariant holds) and then Void succeeds (gated by voidCapability), with a follow-up manual Retrieve expected to show voided/cancelled. Per-enrichment state check(s) (SPEC.md 6.4): passengersSelectedAncillaries on Book/Hold/Retrieve lists exactly the ancillary codes selected at GetAncillary/FareCheck time with matching AdditionalServiceCategory/quantity, and paxTotalAncillaryAmount equals the sum of the selected ancillaries' prices; the final booking price equals FareCheck's re-priced total (not the pre-ancillary FareConfirm/AddPassenger-era total) -- the highest-value price-integrity assertion for this enrichment. FareCheck conditionality: FareCheck must actually run only if the immediately-preceding GetAncillary/GetSeatMap response reported isFareCheckRequired=true; do not treat FareCheck as unconditionally present, and if it is required, the price delta between the pre-FareCheck and post-FareCheck totals should equal the sum of the selected ancillary/seat prices (2.8). Manual price-reconciliation requirement (V2 script coverage gap, SPEC.md 1.4/2.1/6.2/7.10): per passenger type, sum(taxesAndFees[].amount.amount) == paxTotalTaxAmount.amount, and totals reconcile per the Section 2.1 formula; this is enforced by script at Hold/FareConfirmAfterHold/BookAfterHold in V2, but NOT at Search/FareConfirm/Book/Retrieve -- the tester must supply this check manually at every Book/Retrieve step in this flow. Assert passengersAncillariesAvailabilty (GetAncillary response) is spelled exactly as the live API returns it -- missing the second "i" -- since this is a genuine API field-name defect, not a documentation typo.
+- **Actual:** Blocked: Ancillary enrichment is required by this flow, and SabreNdc/EGY does not support it: Ancillaries are not offered (offerHasAncillary=false on all 91 offers (re-checked 2026-11-24); GetAncillary and FareCheck answer 409 OperationNotSupported - see TC-ANCILLARY-NEG-01, TC-FARECHECK-NEG-01).
+- **Status:** BLOCKED
+- **Evidence:** Ancillary enrichment is required by this flow, and SabreNdc/EGY does not support it: Ancillaries are not offered (offerHasAncillary=false on all 91 offers (re-checked 2026-11-24); GetAncillary and FareCheck answer 409 OperationNotSupported - see TC-ANCILLARY-NEG-01, TC-FARECHECK-NEG-01). | Round 1 verdict: BLOCKED (unchanged)
+
+### FLOW-V2-41-NEG — BLOCKED
+
+- **Test Case:** [FC-ANC-E][Request] Validate that Void rejects a pnr/bookingToken/gdsPNR triplet where one field does not match the other two (sourced from a different booking).
+- **Category:** Flow - Negative
+- **Endpoint Name:** V2 flow
+- **Request:** Not sent - the positive chain up to the fault hop includes Ancillary enrichment hop(s), which SabreNdc/EGY cannot execute (Ancillaries are not offered). The same fault on the supported chain is covered by: no executed equivalent (not covered by any runnable row).
+- **Response:** No request sent
+- **Expected:** UNKNOWN exact status -- confirm live. The pnr/bookingToken/gdsPNR trio should be internally consistent for a single booking throughout Retrieve/BookAfterHold/Void (SPEC.md 2.11/2.13); a deliberately broken triplet is expected to be rejected, not partially honored.
+- **Actual:** Blocked: the positive chain up to the fault hop includes Ancillary enrichment hop(s), which SabreNdc/EGY cannot execute (Ancillaries are not offered). The same fault on the supported chain is covered by: no executed equivalent (not covered by any runnable row).
+- **Status:** BLOCKED
+- **Evidence:** the positive chain up to the fault hop includes Ancillary enrichment hop(s), which SabreNdc/EGY cannot execute (Ancillaries are not offered). The same fault on the supported chain is covered by: no executed equivalent (not covered by any runnable row). | Round 1 verdict: BLOCKED (unchanged)
+
+### FLOW-V2-42 — BLOCKED
+
+- **Test Case:** [FC-ANC-F][Response] Verify Search -&gt; FareConfirm -&gt; AddPassenger -&gt; GetAncillary -&gt; FareCheck* -&gt; Hold -&gt; FareConfirmAfterHold -&gt; Retrieve -&gt; CancelAfterHold completes with bookingStatus transitioning held -&gt; cancelled/terminated via CancelAfterHold; and selected ancillaries correctly reflected in passengersSelectedAncillaries/paxTotalAncillaryAmount.
+- **Category:** Flow - Positive
+- **Endpoint Name:** V2 flow
+- **Request:** Not sent - Ancillary enrichment is required by this flow, and SabreNdc/EGY does not support it: Ancillaries are not offered (offerHasAncillary=false on all 91 offers (re-checked 2026-11-24); GetAncillary and FareCheck answer 409 OperationNotSupported - see TC-ANCILLARY-NEG-01, TC-FARECHECK-NEG-01).
+- **Response:** No request sent
+- **Expected:** Per-family state check (SPEC.md 6.3, Family F): bookingStatus transitions from held to a cancelled/terminated state after CancelAfterHold -- CancelAfterHold has zero script coverage and no genuine saved response example anywhere in the collections, so this is the weakest-validated end-state in the whole API; treat the post-CancelAfterHold Retrieve bookingStatus as the primary, entirely-manual success signal. Per-enrichment state check(s) (SPEC.md 6.4): passengersSelectedAncillaries on Book/Hold/Retrieve lists exactly the ancillary codes selected at GetAncillary/FareCheck time with matching AdditionalServiceCategory/quantity, and paxTotalAncillaryAmount equals the sum of the selected ancillaries' prices; the final booking price equals FareCheck's re-priced total (not the pre-ancillary FareConfirm/AddPassenger-era total) -- the highest-value price-integrity assertion for this enrichment. FareCheck conditionality: FareCheck must actually run only if the immediately-preceding GetAncillary/GetSeatMap response reported isFareCheckRequired=true; do not treat FareCheck as unconditionally present, and if it is required, the price delta between the pre-FareCheck and post-FareCheck totals should equal the sum of the selected ancillary/seat prices (2.8). Manual price-reconciliation requirement (V2 script coverage gap, SPEC.md 1.4/2.1/6.2/7.10): per passenger type, sum(taxesAndFees[].amount.amount) == paxTotalTaxAmount.amount, and totals reconcile per the Section 2.1 formula; this is enforced by script at Hold/FareConfirmAfterHold/BookAfterHold in V2, but NOT at Search/FareConfirm/Book/Retrieve -- the tester must supply this check manually at every Book/Retrieve step in this flow. Assert passengersAncillariesAvailabilty (GetAncillary response) is spelled exactly as the live API returns it -- missing the second "i" -- since this is a genuine API field-name defect, not a documentation typo.
+- **Actual:** Blocked: Ancillary enrichment is required by this flow, and SabreNdc/EGY does not support it: Ancillaries are not offered (offerHasAncillary=false on all 91 offers (re-checked 2026-11-24); GetAncillary and FareCheck answer 409 OperationNotSupported - see TC-ANCILLARY-NEG-01, TC-FARECHECK-NEG-01).
+- **Status:** BLOCKED
+- **Evidence:** Ancillary enrichment is required by this flow, and SabreNdc/EGY does not support it: Ancillaries are not offered (offerHasAncillary=false on all 91 offers (re-checked 2026-11-24); GetAncillary and FareCheck answer 409 OperationNotSupported - see TC-ANCILLARY-NEG-01, TC-FARECHECK-NEG-01). | Round 1 verdict: BLOCKED (unchanged)
+
+### FLOW-V2-42-NEG — BLOCKED
+
+- **Test Case:** [FC-ANC-F][Response] Verify the result of calling CancelAfterHold twice in succession on the same offer/booking (CancelAfterHold called twice on the same Held pnr).
+- **Category:** Flow - Negative
+- **Endpoint Name:** V2 flow
+- **Request:** Not sent - the positive chain up to the fault hop includes Ancillary enrichment hop(s), which SabreNdc/EGY cannot execute (Ancillaries are not offered). The same fault on the supported chain is covered by: TC-BOOK-NEG-04 in the Generic report.
+- **Response:** No request sent
+- **Expected:** UNKNOWN whether the second call is idempotently rejected, silently no-ops, or produces a duplicate/erroneous state -- confirm live. SPEC.md flags double-booking/double-action as an explicit negative case with unresolved behavior (2.9/2.13/2.14).
+- **Actual:** Blocked: the positive chain up to the fault hop includes Ancillary enrichment hop(s), which SabreNdc/EGY cannot execute (Ancillaries are not offered). The same fault on the supported chain is covered by: TC-BOOK-NEG-04 in the Generic report.
+- **Status:** BLOCKED
+- **Evidence:** the positive chain up to the fault hop includes Ancillary enrichment hop(s), which SabreNdc/EGY cannot execute (Ancillaries are not offered). The same fault on the supported chain is covered by: TC-BOOK-NEG-04 in the Generic report. | Round 1 verdict: BLOCKED (unchanged)
+
+### FLOW-V2-43 — BLOCKED
+
+- **Test Case:** [FC-BDL+ANC-A][Response] Verify Search -&gt; FareConfirm -&gt; GetOfferBundles -&gt; AddPassenger -&gt; GetAncillary -&gt; FareCheck* -&gt; Book -&gt; Retrieve completes with a booked/confirmed bookingStatus at the final Retrieve, matching Book's selectedOffer/price; and bundle pricing correctly reflected without double-charging included services; selected ancillaries correctly reflected in passengersSelectedAncillaries/paxTotalAncillaryAmount.
+- **Category:** Flow - Positive
+- **Endpoint Name:** V2 flow
+- **Request:** Not sent - Bundle + Ancillary enrichment is required by this flow, and SabreNdc/EGY does not support it: Bundles are not offered (haveBundles=false on all 91 offers (re-checked 2026-11-24); GetOfferBundles answers 409 OperationNotSupported - see TC-BUNDLE-NEG-01 in the Generic report and FLOW-V2-31-NEG); Ancillaries are not offered (offerHasAncillary=false on all 91 offers (re-checked 2026-11-24); GetAncillary and FareCheck answer 409 OperationNotSupported - see TC-ANCILLARY-NEG-01, TC-FARECHECK-NEG-01).
+- **Response:** No request sent
+- **Expected:** Per-family state check (SPEC.md 6.3, Family A): bookingStatus reads a booked/confirmed state at the final Retrieve, with selectedOffer.offerId/priceDetails.totalAmount matching between Book and Retrieve. Per-enrichment state check(s) (SPEC.md 6.4): the booking's final priceDetails.totalAmount reflects the selected bundle's feePrice added to the base offer price, and any bundle-included service (baggage/seat/meal per includedServices tags) does NOT also appear as a separately-priced ancillary line; passengersSelectedAncillaries on Book/Hold/Retrieve lists exactly the ancillary codes selected at GetAncillary/FareCheck time with matching AdditionalServiceCategory/quantity, and paxTotalAncillaryAmount equals the sum of the selected ancillaries' prices; the final booking price equals FareCheck's re-priced total (not the pre-ancillary FareConfirm/AddPassenger-era total) -- the highest-value price-integrity assertion for this enrichment. FareCheck conditionality: FareCheck must actually run only if the immediately-preceding GetAncillary/GetSeatMap response reported isFareCheckRequired=true; do not treat FareCheck as unconditionally present, and if it is required, the price delta between the pre-FareCheck and post-FareCheck totals should equal the sum of the selected ancillary/seat prices (2.8). Manual price-reconciliation requirement (V2 script coverage gap, SPEC.md 1.4/2.1/6.2/7.10): per passenger type, sum(taxesAndFees[].amount.amount) == paxTotalTaxAmount.amount, and totals reconcile per the Section 2.1 formula; this is enforced by script at Hold/FareConfirmAfterHold/BookAfterHold in V2, but NOT at Search/FareConfirm/Book/Retrieve -- the tester must supply this check manually at every Book/Retrieve step in this flow. Assert passengersAncillariesAvailabilty (GetAncillary response) is spelled exactly as the live API returns it -- missing the second "i" -- since this is a genuine API field-name defect, not a documentation typo.
+- **Actual:** Blocked: Bundle + Ancillary enrichment is required by this flow, and SabreNdc/EGY does not support it: Bundles are not offered (haveBundles=false on all 91 offers (re-checked 2026-11-24); GetOfferBundles answers 409 OperationNotSupported - see TC-BUNDLE-NEG-01 in the Generic report and FLOW-V2-31-NEG); Ancillaries are not offered (offerHasAncillary=false on all 91 offers (re-checked 2026-11-24); GetAncillary and FareCheck answer 409 OperationNotSupported - see TC-ANCILLARY-NEG-01, TC-FARECHECK-NEG-01).
+- **Status:** BLOCKED
+- **Evidence:** Bundle + Ancillary enrichment is required by this flow, and SabreNdc/EGY does not support it: Bundles are not offered (haveBundles=false on all 91 offers (re-checked 2026-11-24); GetOfferBundles answers 409 OperationNotSupported - see TC-BUNDLE-NEG-01 in the Generic report and FLOW-V2-31-NEG); Ancillaries are not offered (offerHasAncillary=false on all 91 offers (re-checked 2026-11-24); GetAncillary and FareCheck answer 409 OperationNotSupported - see TC-ANCILLARY-NEG-01, TC-FARECHECK-NEG-01). | Round 1 verdict: BLOCKED (unchanged)
+
+### FLOW-V2-43-NEG — BLOCKED
+
+- **Test Case:** [FC-BDL+ANC-A][Request] Validate that GetAncillary is rejected (or otherwise correctly refused) when called against an offer whose FareConfirm response reported offerHasAncillary=false / isAncillaryRequired=false.
+- **Category:** Flow - Negative
+- **Endpoint Name:** V2 flow
+- **Request:** Not sent - the positive chain up to the fault hop includes Bundle + Ancillary enrichment hop(s), which SabreNdc/EGY cannot execute (Bundles are not offered; Ancillaries are not offered). The same fault on the supported chain is covered by: TC-ANCILLARY-NEG-01.
+- **Response:** No request sent
+- **Expected:** Request is rejected or returns an empty ancillary catalog; exact rejection shape is UNKNOWN per SPEC.md 2.6/3.2 -- confirm live.
+- **Actual:** Blocked: the positive chain up to the fault hop includes Bundle + Ancillary enrichment hop(s), which SabreNdc/EGY cannot execute (Bundles are not offered; Ancillaries are not offered). The same fault on the supported chain is covered by: TC-ANCILLARY-NEG-01.
+- **Status:** BLOCKED
+- **Evidence:** the positive chain up to the fault hop includes Bundle + Ancillary enrichment hop(s), which SabreNdc/EGY cannot execute (Bundles are not offered; Ancillaries are not offered). The same fault on the supported chain is covered by: TC-ANCILLARY-NEG-01. | Round 1 verdict: BLOCKED (unchanged)
+
+### FLOW-V2-44 — BLOCKED
+
+- **Test Case:** [FC-BDL+ANC-B][Response] Verify Search -&gt; FareConfirm -&gt; GetOfferBundles -&gt; AddPassenger -&gt; GetAncillary -&gt; FareCheck* -&gt; Hold -&gt; FareConfirmAfterHold -&gt; Retrieve completes with a held bookingStatus and a future holdExpirationDate at the final Retrieve (flow intentionally stops here -- dangling Held booking); and bundle pricing correctly reflected without double-charging included services; selected ancillaries correctly reflected in passengersSelectedAncillaries/paxTotalAncillaryAmount.
+- **Category:** Flow - Positive
+- **Endpoint Name:** V2 flow
+- **Request:** Not sent - Bundle + Ancillary enrichment is required by this flow, and SabreNdc/EGY does not support it: Bundles are not offered (haveBundles=false on all 91 offers (re-checked 2026-11-24); GetOfferBundles answers 409 OperationNotSupported - see TC-BUNDLE-NEG-01 in the Generic report and FLOW-V2-31-NEG); Ancillaries are not offered (offerHasAncillary=false on all 91 offers (re-checked 2026-11-24); GetAncillary and FareCheck answer 409 OperationNotSupported - see TC-ANCILLARY-NEG-01, TC-FARECHECK-NEG-01).
+- **Response:** No request sent
+- **Expected:** Per-family state check (SPEC.md 6.3, Family B): bookingStatus reads a held (not yet ticketed) state with holdExpirationDate present and in the future at the final Retrieve -- the flow deliberately STOPS here (Family B, no BookAfterHold/CancelAfterHold), leaving a dangling Held booking; log the pnr for out-of-band cleanup/expiry tracking per SPEC.md Section 6.3. Per-enrichment state check(s) (SPEC.md 6.4): the booking's final priceDetails.totalAmount reflects the selected bundle's feePrice added to the base offer price, and any bundle-included service (baggage/seat/meal per includedServices tags) does NOT also appear as a separately-priced ancillary line; passengersSelectedAncillaries on Book/Hold/Retrieve lists exactly the ancillary codes selected at GetAncillary/FareCheck time with matching AdditionalServiceCategory/quantity, and paxTotalAncillaryAmount equals the sum of the selected ancillaries' prices; the final booking price equals FareCheck's re-priced total (not the pre-ancillary FareConfirm/AddPassenger-era total) -- the highest-value price-integrity assertion for this enrichment. FareCheck conditionality: FareCheck must actually run only if the immediately-preceding GetAncillary/GetSeatMap response reported isFareCheckRequired=true; do not treat FareCheck as unconditionally present, and if it is required, the price delta between the pre-FareCheck and post-FareCheck totals should equal the sum of the selected ancillary/seat prices (2.8). Manual price-reconciliation requirement (V2 script coverage gap, SPEC.md 1.4/2.1/6.2/7.10): per passenger type, sum(taxesAndFees[].amount.amount) == paxTotalTaxAmount.amount, and totals reconcile per the Section 2.1 formula; this is enforced by script at Hold/FareConfirmAfterHold/BookAfterHold in V2, but NOT at Search/FareConfirm/Book/Retrieve -- the tester must supply this check manually at every Book/Retrieve step in this flow. Assert passengersAncillariesAvailabilty (GetAncillary response) is spelled exactly as the live API returns it -- missing the second "i" -- since this is a genuine API field-name defect, not a documentation typo.
+- **Actual:** Blocked: Bundle + Ancillary enrichment is required by this flow, and SabreNdc/EGY does not support it: Bundles are not offered (haveBundles=false on all 91 offers (re-checked 2026-11-24); GetOfferBundles answers 409 OperationNotSupported - see TC-BUNDLE-NEG-01 in the Generic report and FLOW-V2-31-NEG); Ancillaries are not offered (offerHasAncillary=false on all 91 offers (re-checked 2026-11-24); GetAncillary and FareCheck answer 409 OperationNotSupported - see TC-ANCILLARY-NEG-01, TC-FARECHECK-NEG-01).
+- **Status:** BLOCKED
+- **Evidence:** Bundle + Ancillary enrichment is required by this flow, and SabreNdc/EGY does not support it: Bundles are not offered (haveBundles=false on all 91 offers (re-checked 2026-11-24); GetOfferBundles answers 409 OperationNotSupported - see TC-BUNDLE-NEG-01 in the Generic report and FLOW-V2-31-NEG); Ancillaries are not offered (offerHasAncillary=false on all 91 offers (re-checked 2026-11-24); GetAncillary and FareCheck answer 409 OperationNotSupported - see TC-ANCILLARY-NEG-01, TC-FARECHECK-NEG-01). | Round 1 verdict: BLOCKED (unchanged)
+
+### FLOW-V2-44-NEG — BLOCKED
+
+- **Test Case:** [FC-BDL+ANC-B][Request] Validate that Hold rejects a stale/mismatched getAddPaxOfferId/getAddPaxResponceID pair (partial (only responseId stale, offerId correct)).
+- **Category:** Flow - Negative
+- **Endpoint Name:** V2 flow
+- **Request:** Not sent - the positive chain up to the fault hop includes Bundle + Ancillary enrichment hop(s), which SabreNdc/EGY cannot execute (Bundles are not offered; Ancillaries are not offered). The same fault on the supported chain is covered by: FLOW-V2-26-NEG.
+- **Response:** No request sent
+- **Expected:** The request is rejected since the ID pair does not derive from this flow's own AddPassenger response. Exact rejection status is UNKNOWN -- confirm live per SPEC.md 2.5/3.2/3.3.
+- **Actual:** Blocked: the positive chain up to the fault hop includes Bundle + Ancillary enrichment hop(s), which SabreNdc/EGY cannot execute (Bundles are not offered; Ancillaries are not offered). The same fault on the supported chain is covered by: FLOW-V2-26-NEG.
+- **Status:** BLOCKED
+- **Evidence:** the positive chain up to the fault hop includes Bundle + Ancillary enrichment hop(s), which SabreNdc/EGY cannot execute (Bundles are not offered; Ancillaries are not offered). The same fault on the supported chain is covered by: FLOW-V2-26-NEG. | Round 1 verdict: BLOCKED (unchanged)
+
+### FLOW-V2-45 — BLOCKED
+
+- **Test Case:** [FC-BDL+ANC-C][Response] Verify Search -&gt; FareConfirm -&gt; GetOfferBundles -&gt; AddPassenger -&gt; GetAncillary -&gt; FareCheck* -&gt; Book -&gt; Retrieve -&gt; Void completes with a booked bookingStatus at Retrieve followed by a successful Void (gated by voidCapability); and bundle pricing correctly reflected without double-charging included services; selected ancillaries correctly reflected in passengersSelectedAncillaries/paxTotalAncillaryAmount.
+- **Category:** Flow - Positive
+- **Endpoint Name:** V2 flow
+- **Request:** Not sent - Bundle + Ancillary enrichment is required by this flow, and SabreNdc/EGY does not support it: Bundles are not offered (haveBundles=false on all 91 offers (re-checked 2026-11-24); GetOfferBundles answers 409 OperationNotSupported - see TC-BUNDLE-NEG-01 in the Generic report and FLOW-V2-31-NEG); Ancillaries are not offered (offerHasAncillary=false on all 91 offers (re-checked 2026-11-24); GetAncillary and FareCheck answer 409 OperationNotSupported - see TC-ANCILLARY-NEG-01, TC-FARECHECK-NEG-01).
+- **Response:** No request sent
+- **Expected:** Per-family state check (SPEC.md 6.3, Family C): bookingStatus reads booked at Retrieve, then Void succeeds (gated by voidCapability != VoidNotAllowed), and a follow-up manual Retrieve should show a voided/cancelled bookingStatus. Per-enrichment state check(s) (SPEC.md 6.4): the booking's final priceDetails.totalAmount reflects the selected bundle's feePrice added to the base offer price, and any bundle-included service (baggage/seat/meal per includedServices tags) does NOT also appear as a separately-priced ancillary line; passengersSelectedAncillaries on Book/Hold/Retrieve lists exactly the ancillary codes selected at GetAncillary/FareCheck time with matching AdditionalServiceCategory/quantity, and paxTotalAncillaryAmount equals the sum of the selected ancillaries' prices; the final booking price equals FareCheck's re-priced total (not the pre-ancillary FareConfirm/AddPassenger-era total) -- the highest-value price-integrity assertion for this enrichment. FareCheck conditionality: FareCheck must actually run only if the immediately-preceding GetAncillary/GetSeatMap response reported isFareCheckRequired=true; do not treat FareCheck as unconditionally present, and if it is required, the price delta between the pre-FareCheck and post-FareCheck totals should equal the sum of the selected ancillary/seat prices (2.8). Manual price-reconciliation requirement (V2 script coverage gap, SPEC.md 1.4/2.1/6.2/7.10): per passenger type, sum(taxesAndFees[].amount.amount) == paxTotalTaxAmount.amount, and totals reconcile per the Section 2.1 formula; this is enforced by script at Hold/FareConfirmAfterHold/BookAfterHold in V2, but NOT at Search/FareConfirm/Book/Retrieve -- the tester must supply this check manually at every Book/Retrieve step in this flow. Assert passengersAncillariesAvailabilty (GetAncillary response) is spelled exactly as the live API returns it -- missing the second "i" -- since this is a genuine API field-name defect, not a documentation typo.
+- **Actual:** Blocked: Bundle + Ancillary enrichment is required by this flow, and SabreNdc/EGY does not support it: Bundles are not offered (haveBundles=false on all 91 offers (re-checked 2026-11-24); GetOfferBundles answers 409 OperationNotSupported - see TC-BUNDLE-NEG-01 in the Generic report and FLOW-V2-31-NEG); Ancillaries are not offered (offerHasAncillary=false on all 91 offers (re-checked 2026-11-24); GetAncillary and FareCheck answer 409 OperationNotSupported - see TC-ANCILLARY-NEG-01, TC-FARECHECK-NEG-01).
+- **Status:** BLOCKED
+- **Evidence:** Bundle + Ancillary enrichment is required by this flow, and SabreNdc/EGY does not support it: Bundles are not offered (haveBundles=false on all 91 offers (re-checked 2026-11-24); GetOfferBundles answers 409 OperationNotSupported - see TC-BUNDLE-NEG-01 in the Generic report and FLOW-V2-31-NEG); Ancillaries are not offered (offerHasAncillary=false on all 91 offers (re-checked 2026-11-24); GetAncillary and FareCheck answer 409 OperationNotSupported - see TC-ANCILLARY-NEG-01, TC-FARECHECK-NEG-01). | Round 1 verdict: BLOCKED (unchanged)
+
+### FLOW-V2-45-NEG — BLOCKED
+
+- **Test Case:** [FC-BDL+ANC-C][Response] Verify whether Void requires gdsPNR for a GDS-routed supplier, given the V2 collection's one saved Void example hardcodes gdsPNR as a literal empty string.
+- **Category:** Flow - Negative
+- **Endpoint Name:** V2 flow
+- **Request:** Not sent - the positive chain up to the fault hop includes Bundle + Ancillary enrichment hop(s), which SabreNdc/EGY cannot execute (Bundles are not offered; Ancillaries are not offered). The same fault on the supported chain is covered by: TC-VOID-NEG-01.
+- **Response:** No request sent
+- **Expected:** UNKNOWN -- confirm live whether a GDS-routed supplier (Amadeus/Sabre/Galileo/TravelportNDC) rejects Void with an empty gdsPNR even though the LCC example (AirArabia) apparently did not need it (SPEC.md 2.15).
+- **Actual:** Blocked: the positive chain up to the fault hop includes Bundle + Ancillary enrichment hop(s), which SabreNdc/EGY cannot execute (Bundles are not offered; Ancillaries are not offered). The same fault on the supported chain is covered by: TC-VOID-NEG-01.
+- **Status:** BLOCKED
+- **Evidence:** the positive chain up to the fault hop includes Bundle + Ancillary enrichment hop(s), which SabreNdc/EGY cannot execute (Bundles are not offered; Ancillaries are not offered). The same fault on the supported chain is covered by: TC-VOID-NEG-01. | Round 1 verdict: BLOCKED (unchanged)
+
+### FLOW-V2-46 — BLOCKED
+
+- **Test Case:** [FC-BDL+ANC-D][Response] Verify Search -&gt; FareConfirm -&gt; GetOfferBundles -&gt; AddPassenger -&gt; GetAncillary -&gt; FareCheck* -&gt; Hold -&gt; FareConfirmAfterHold -&gt; Retrieve -&gt; BookAfterHold -&gt; Retrieve completes with bookingStatus transitioning held -&gt; booked via BookAfterHold, with pnr/bookingToken/gdsPNR unchanged from Hold; and bundle pricing correctly reflected without double-charging included services; selected ancillaries correctly reflected in passengersSelectedAncillaries/paxTotalAncillaryAmount.
+- **Category:** Flow - Positive
+- **Endpoint Name:** V2 flow
+- **Request:** Not sent - Bundle + Ancillary enrichment is required by this flow, and SabreNdc/EGY does not support it: Bundles are not offered (haveBundles=false on all 91 offers (re-checked 2026-11-24); GetOfferBundles answers 409 OperationNotSupported - see TC-BUNDLE-NEG-01 in the Generic report and FLOW-V2-31-NEG); Ancillaries are not offered (offerHasAncillary=false on all 91 offers (re-checked 2026-11-24); GetAncillary and FareCheck answer 409 OperationNotSupported - see TC-ANCILLARY-NEG-01, TC-FARECHECK-NEG-01).
+- **Response:** No request sent
+- **Expected:** Per-family state check (SPEC.md 6.3, Family D): bookingStatus transitions from held (after Hold/FareConfirmAfterHold) to booked/confirmed (after BookAfterHold), with pnr/bookingToken/gdsPNR identical to the values Hold produced (same-PNR invariant, SPEC.md Section 2.13). Per-enrichment state check(s) (SPEC.md 6.4): the booking's final priceDetails.totalAmount reflects the selected bundle's feePrice added to the base offer price, and any bundle-included service (baggage/seat/meal per includedServices tags) does NOT also appear as a separately-priced ancillary line; passengersSelectedAncillaries on Book/Hold/Retrieve lists exactly the ancillary codes selected at GetAncillary/FareCheck time with matching AdditionalServiceCategory/quantity, and paxTotalAncillaryAmount equals the sum of the selected ancillaries' prices; the final booking price equals FareCheck's re-priced total (not the pre-ancillary FareConfirm/AddPassenger-era total) -- the highest-value price-integrity assertion for this enrichment. FareCheck conditionality: FareCheck must actually run only if the immediately-preceding GetAncillary/GetSeatMap response reported isFareCheckRequired=true; do not treat FareCheck as unconditionally present, and if it is required, the price delta between the pre-FareCheck and post-FareCheck totals should equal the sum of the selected ancillary/seat prices (2.8). Manual price-reconciliation requirement (V2 script coverage gap, SPEC.md 1.4/2.1/6.2/7.10): per passenger type, sum(taxesAndFees[].amount.amount) == paxTotalTaxAmount.amount, and totals reconcile per the Section 2.1 formula; this is enforced by script at Hold/FareConfirmAfterHold/BookAfterHold in V2, but NOT at Search/FareConfirm/Book/Retrieve -- the tester must supply this check manually at every Book/Retrieve step in this flow. Assert passengersAncillariesAvailabilty (GetAncillary response) is spelled exactly as the live API returns it -- missing the second "i" -- since this is a genuine API field-name defect, not a documentation typo.
+- **Actual:** Blocked: Bundle + Ancillary enrichment is required by this flow, and SabreNdc/EGY does not support it: Bundles are not offered (haveBundles=false on all 91 offers (re-checked 2026-11-24); GetOfferBundles answers 409 OperationNotSupported - see TC-BUNDLE-NEG-01 in the Generic report and FLOW-V2-31-NEG); Ancillaries are not offered (offerHasAncillary=false on all 91 offers (re-checked 2026-11-24); GetAncillary and FareCheck answer 409 OperationNotSupported - see TC-ANCILLARY-NEG-01, TC-FARECHECK-NEG-01).
+- **Status:** BLOCKED
+- **Evidence:** Bundle + Ancillary enrichment is required by this flow, and SabreNdc/EGY does not support it: Bundles are not offered (haveBundles=false on all 91 offers (re-checked 2026-11-24); GetOfferBundles answers 409 OperationNotSupported - see TC-BUNDLE-NEG-01 in the Generic report and FLOW-V2-31-NEG); Ancillaries are not offered (offerHasAncillary=false on all 91 offers (re-checked 2026-11-24); GetAncillary and FareCheck answer 409 OperationNotSupported - see TC-ANCILLARY-NEG-01, TC-FARECHECK-NEG-01). | Round 1 verdict: BLOCKED (unchanged)
+
+### FLOW-V2-46-NEG — BLOCKED
+
+- **Test Case:** [FC-BDL+ANC-D][Response] Verify the behavior of FareConfirmAfterHold when attempted after holdExpirationDate has already passed.
+- **Category:** Flow - Negative
+- **Endpoint Name:** V2 flow
+- **Request:** Not sent - the post-expiry state cannot be reached in a session: holds observed on SabreNdc/EGY expire about 5 days after creation (2026-10-30 for holds made on 2026-10-25), and the window cannot be shortened.
+- **Response:** No request sent
+- **Expected:** UNKNOWN exact status -- confirm live. SPEC.md 3.2/6.5 explicitly flags that no flow in flow.md exercises behavior past hold expiration; this is a high-value exploratory gap, not a documented failure mode. Do not assume a specific HTTP status without live confirmation.
+- **Actual:** Blocked: the post-expiry state cannot be reached in a session: holds observed on SabreNdc/EGY expire about 5 days after creation (2026-10-30 for holds made on 2026-10-25), and the window cannot be shortened.
+- **Status:** BLOCKED
+- **Evidence:** the post-expiry state cannot be reached in a session: holds observed on SabreNdc/EGY expire about 5 days after creation (2026-10-30 for holds made on 2026-10-25), and the window cannot be shortened. | Round 1 verdict: BLOCKED (unchanged)
+
+### FLOW-V2-47 — BLOCKED
+
+- **Test Case:** [FC-BDL+ANC-E][Response] Verify Search -&gt; FareConfirm -&gt; GetOfferBundles -&gt; AddPassenger -&gt; GetAncillary -&gt; FareCheck* -&gt; Hold -&gt; FareConfirmAfterHold -&gt; Retrieve -&gt; BookAfterHold -&gt; Retrieve -&gt; Void completes with bookingStatus transitioning held -&gt; booked via BookAfterHold and then a successful Void; and bundle pricing correctly reflected without double-charging included services; selected ancillaries correctly reflected in passengersSelectedAncillaries/paxTotalAncillaryAmount.
+- **Category:** Flow - Positive
+- **Endpoint Name:** V2 flow
+- **Request:** Not sent - Bundle + Ancillary enrichment is required by this flow, and SabreNdc/EGY does not support it: Bundles are not offered (haveBundles=false on all 91 offers (re-checked 2026-11-24); GetOfferBundles answers 409 OperationNotSupported - see TC-BUNDLE-NEG-01 in the Generic report and FLOW-V2-31-NEG); Ancillaries are not offered (offerHasAncillary=false on all 91 offers (re-checked 2026-11-24); GetAncillary and FareCheck answer 409 OperationNotSupported - see TC-ANCILLARY-NEG-01, TC-FARECHECK-NEG-01).
+- **Response:** No request sent
+- **Expected:** Per-family state check (SPEC.md 6.3, Family E): bookingStatus transitions held -&gt; booked via BookAfterHold (same-PNR invariant holds) and then Void succeeds (gated by voidCapability), with a follow-up manual Retrieve expected to show voided/cancelled. Per-enrichment state check(s) (SPEC.md 6.4): the booking's final priceDetails.totalAmount reflects the selected bundle's feePrice added to the base offer price, and any bundle-included service (baggage/seat/meal per includedServices tags) does NOT also appear as a separately-priced ancillary line; passengersSelectedAncillaries on Book/Hold/Retrieve lists exactly the ancillary codes selected at GetAncillary/FareCheck time with matching AdditionalServiceCategory/quantity, and paxTotalAncillaryAmount equals the sum of the selected ancillaries' prices; the final booking price equals FareCheck's re-priced total (not the pre-ancillary FareConfirm/AddPassenger-era total) -- the highest-value price-integrity assertion for this enrichment. FareCheck conditionality: FareCheck must actually run only if the immediately-preceding GetAncillary/GetSeatMap response reported isFareCheckRequired=true; do not treat FareCheck as unconditionally present, and if it is required, the price delta between the pre-FareCheck and post-FareCheck totals should equal the sum of the selected ancillary/seat prices (2.8). Manual price-reconciliation requirement (V2 script coverage gap, SPEC.md 1.4/2.1/6.2/7.10): per passenger type, sum(taxesAndFees[].amount.amount) == paxTotalTaxAmount.amount, and totals reconcile per the Section 2.1 formula; this is enforced by script at Hold/FareConfirmAfterHold/BookAfterHold in V2, but NOT at Search/FareConfirm/Book/Retrieve -- the tester must supply this check manually at every Book/Retrieve step in this flow. Assert passengersAncillariesAvailabilty (GetAncillary response) is spelled exactly as the live API returns it -- missing the second "i" -- since this is a genuine API field-name defect, not a documentation typo.
+- **Actual:** Blocked: Bundle + Ancillary enrichment is required by this flow, and SabreNdc/EGY does not support it: Bundles are not offered (haveBundles=false on all 91 offers (re-checked 2026-11-24); GetOfferBundles answers 409 OperationNotSupported - see TC-BUNDLE-NEG-01 in the Generic report and FLOW-V2-31-NEG); Ancillaries are not offered (offerHasAncillary=false on all 91 offers (re-checked 2026-11-24); GetAncillary and FareCheck answer 409 OperationNotSupported - see TC-ANCILLARY-NEG-01, TC-FARECHECK-NEG-01).
+- **Status:** BLOCKED
+- **Evidence:** Bundle + Ancillary enrichment is required by this flow, and SabreNdc/EGY does not support it: Bundles are not offered (haveBundles=false on all 91 offers (re-checked 2026-11-24); GetOfferBundles answers 409 OperationNotSupported - see TC-BUNDLE-NEG-01 in the Generic report and FLOW-V2-31-NEG); Ancillaries are not offered (offerHasAncillary=false on all 91 offers (re-checked 2026-11-24); GetAncillary and FareCheck answer 409 OperationNotSupported - see TC-ANCILLARY-NEG-01, TC-FARECHECK-NEG-01). | Round 1 verdict: BLOCKED (unchanged)
+
+### FLOW-V2-47-NEG — BLOCKED
+
+- **Test Case:** [FC-BDL+ANC-E][Response] Verify that Void fails when the preceding Book/BookAfterHold response reported voidCapability=VoidNotAllowed (surName mismatch).
+- **Category:** Flow - Negative
+- **Endpoint Name:** V2 flow
+- **Request:** Not sent - it needs a Book/BookAfterHold response with voidCapability=VoidNotAllowed. SabreNdc/EGY Book returns voidCapability=FullVoidOnlyAllowed (never VoidNotAllowed; only Hold carries VoidNotAllowed), and BookAfterHold/Retrieve return no voidCapability, so that state cannot be produced.
+- **Response:** No request sent
+- **Expected:** Void is expected to fail/be rejected. voidCapability is a live, per-booking flag (SPEC.md 2.9) that should be checked before attempting Void; exact rejection shape is UNKNOWN -- confirm live.
+- **Actual:** Blocked: it needs a Book/BookAfterHold response with voidCapability=VoidNotAllowed. SabreNdc/EGY Book returns voidCapability=FullVoidOnlyAllowed (never VoidNotAllowed; only Hold carries VoidNotAllowed), and BookAfterHold/Retrieve return no voidCapability, so that state cannot be produced.
+- **Status:** BLOCKED
+- **Evidence:** it needs a Book/BookAfterHold response with voidCapability=VoidNotAllowed. SabreNdc/EGY Book returns voidCapability=FullVoidOnlyAllowed (never VoidNotAllowed; only Hold carries VoidNotAllowed), and BookAfterHold/Retrieve return no voidCapability, so that state cannot be produced. | Round 1 verdict: BLOCKED (unchanged)
+
+### FLOW-V2-48 — BLOCKED
+
+- **Test Case:** [FC-BDL+ANC-F][Response] Verify Search -&gt; FareConfirm -&gt; GetOfferBundles -&gt; AddPassenger -&gt; GetAncillary -&gt; FareCheck* -&gt; Hold -&gt; FareConfirmAfterHold -&gt; Retrieve -&gt; CancelAfterHold completes with bookingStatus transitioning held -&gt; cancelled/terminated via CancelAfterHold; and bundle pricing correctly reflected without double-charging included services; selected ancillaries correctly reflected in passengersSelectedAncillaries/paxTotalAncillaryAmount.
+- **Category:** Flow - Positive
+- **Endpoint Name:** V2 flow
+- **Request:** Not sent - Bundle + Ancillary enrichment is required by this flow, and SabreNdc/EGY does not support it: Bundles are not offered (haveBundles=false on all 91 offers (re-checked 2026-11-24); GetOfferBundles answers 409 OperationNotSupported - see TC-BUNDLE-NEG-01 in the Generic report and FLOW-V2-31-NEG); Ancillaries are not offered (offerHasAncillary=false on all 91 offers (re-checked 2026-11-24); GetAncillary and FareCheck answer 409 OperationNotSupported - see TC-ANCILLARY-NEG-01, TC-FARECHECK-NEG-01).
+- **Response:** No request sent
+- **Expected:** Per-family state check (SPEC.md 6.3, Family F): bookingStatus transitions from held to a cancelled/terminated state after CancelAfterHold -- CancelAfterHold has zero script coverage and no genuine saved response example anywhere in the collections, so this is the weakest-validated end-state in the whole API; treat the post-CancelAfterHold Retrieve bookingStatus as the primary, entirely-manual success signal. Per-enrichment state check(s) (SPEC.md 6.4): the booking's final priceDetails.totalAmount reflects the selected bundle's feePrice added to the base offer price, and any bundle-included service (baggage/seat/meal per includedServices tags) does NOT also appear as a separately-priced ancillary line; passengersSelectedAncillaries on Book/Hold/Retrieve lists exactly the ancillary codes selected at GetAncillary/FareCheck time with matching AdditionalServiceCategory/quantity, and paxTotalAncillaryAmount equals the sum of the selected ancillaries' prices; the final booking price equals FareCheck's re-priced total (not the pre-ancillary FareConfirm/AddPassenger-era total) -- the highest-value price-integrity assertion for this enrichment. FareCheck conditionality: FareCheck must actually run only if the immediately-preceding GetAncillary/GetSeatMap response reported isFareCheckRequired=true; do not treat FareCheck as unconditionally present, and if it is required, the price delta between the pre-FareCheck and post-FareCheck totals should equal the sum of the selected ancillary/seat prices (2.8). Manual price-reconciliation requirement (V2 script coverage gap, SPEC.md 1.4/2.1/6.2/7.10): per passenger type, sum(taxesAndFees[].amount.amount) == paxTotalTaxAmount.amount, and totals reconcile per the Section 2.1 formula; this is enforced by script at Hold/FareConfirmAfterHold/BookAfterHold in V2, but NOT at Search/FareConfirm/Book/Retrieve -- the tester must supply this check manually at every Book/Retrieve step in this flow. Assert passengersAncillariesAvailabilty (GetAncillary response) is spelled exactly as the live API returns it -- missing the second "i" -- since this is a genuine API field-name defect, not a documentation typo.
+- **Actual:** Blocked: Bundle + Ancillary enrichment is required by this flow, and SabreNdc/EGY does not support it: Bundles are not offered (haveBundles=false on all 91 offers (re-checked 2026-11-24); GetOfferBundles answers 409 OperationNotSupported - see TC-BUNDLE-NEG-01 in the Generic report and FLOW-V2-31-NEG); Ancillaries are not offered (offerHasAncillary=false on all 91 offers (re-checked 2026-11-24); GetAncillary and FareCheck answer 409 OperationNotSupported - see TC-ANCILLARY-NEG-01, TC-FARECHECK-NEG-01).
+- **Status:** BLOCKED
+- **Evidence:** Bundle + Ancillary enrichment is required by this flow, and SabreNdc/EGY does not support it: Bundles are not offered (haveBundles=false on all 91 offers (re-checked 2026-11-24); GetOfferBundles answers 409 OperationNotSupported - see TC-BUNDLE-NEG-01 in the Generic report and FLOW-V2-31-NEG); Ancillaries are not offered (offerHasAncillary=false on all 91 offers (re-checked 2026-11-24); GetAncillary and FareCheck answer 409 OperationNotSupported - see TC-ANCILLARY-NEG-01, TC-FARECHECK-NEG-01). | Round 1 verdict: BLOCKED (unchanged)
+
+### FLOW-V2-48-NEG — BLOCKED
+
+- **Test Case:** [FC-BDL+ANC-F][Response] Verify the behavior of CancelAfterHold when attempted after holdExpirationDate has already passed (attempted just after holdExpirationDate with Bundle+Ancillary in scope).
+- **Category:** Flow - Negative
+- **Endpoint Name:** V2 flow
+- **Request:** Not sent - the post-expiry state cannot be reached in a session: holds observed on SabreNdc/EGY expire about 5 days after creation (2026-10-30 for holds made on 2026-10-25), and the window cannot be shortened.
+- **Response:** No request sent
+- **Expected:** UNKNOWN exact status -- confirm live. SPEC.md 3.2/6.5 explicitly flags that no flow in flow.md exercises behavior past hold expiration; this is a high-value exploratory gap, not a documented failure mode. Do not assume a specific HTTP status without live confirmation.
+- **Actual:** Blocked: the post-expiry state cannot be reached in a session: holds observed on SabreNdc/EGY expire about 5 days after creation (2026-10-30 for holds made on 2026-10-25), and the window cannot be shortened.
+- **Status:** BLOCKED
+- **Evidence:** the post-expiry state cannot be reached in a session: holds observed on SabreNdc/EGY expire about 5 days after creation (2026-10-30 for holds made on 2026-10-25), and the window cannot be shortened. | Round 1 verdict: BLOCKED (unchanged)
+
+### FLOW-V2-49 — BLOCKED
+
+- **Test Case:** [FC-SM-A][Response] Verify Search -&gt; FareConfirm -&gt; AddPassenger -&gt; GetSeatMap -&gt; FareCheck* -&gt; Book -&gt; Retrieve completes with a booked/confirmed bookingStatus at the final Retrieve, matching Book's selectedOffer/price; and the chosen seat cellCode correctly reflected as a priced Seat-category line.
+- **Category:** Flow - Positive
+- **Endpoint Name:** V2 flow
+- **Request:** Not sent - SeatMap enrichment is required by this flow, and SabreNdc/EGY does not support it: Seat maps are not offered (isSeatMapRequired=false and offerHasSeat=false on all 91 offers (re-checked 2026-11-24); GetSeatMap and FareCheck answer 409 OperationNotSupported - see TC-SEATMAP-NEG-01, FLOW-V2-49-NEG).
+- **Response:** No request sent
+- **Expected:** Per-family state check (SPEC.md 6.3, Family A): bookingStatus reads a booked/confirmed state at the final Retrieve, with selectedOffer.offerId/priceDetails.totalAmount matching between Book and Retrieve. Per-enrichment state check(s) (SPEC.md 6.4): the chosen GetSeatMap cellCode appears as a Seat-category entry in passengersSelectedAncillaries, priced per what GetSeatMap/FareCheck reported for that cell; the final booking price equals FareCheck's re-priced total (not the pre-ancillary FareConfirm/AddPassenger-era total) -- the highest-value price-integrity assertion for this enrichment. FareCheck conditionality: FareCheck must actually run only if the immediately-preceding GetAncillary/GetSeatMap response reported isFareCheckRequired=true; do not treat FareCheck as unconditionally present, and if it is required, the price delta between the pre-FareCheck and post-FareCheck totals should equal the sum of the selected ancillary/seat prices (2.8). Manual price-reconciliation requirement (V2 script coverage gap, SPEC.md 1.4/2.1/6.2/7.10): per passenger type, sum(taxesAndFees[].amount.amount) == paxTotalTaxAmount.amount, and totals reconcile per the Section 2.1 formula; this is enforced by script at Hold/FareConfirmAfterHold/BookAfterHold in V2, but NOT at Search/FareConfirm/Book/Retrieve -- the tester must supply this check manually at every Book/Retrieve step in this flow. Assert the GetSeatMap-selected cellCode was correctly hand-carried into Book/Hold's PassengersSelectedAncillaries; a mismatched or omitted cellCode is the single most likely manual-execution error in flows 49-72.
+- **Actual:** Blocked: SeatMap enrichment is required by this flow, and SabreNdc/EGY does not support it: Seat maps are not offered (isSeatMapRequired=false and offerHasSeat=false on all 91 offers (re-checked 2026-11-24); GetSeatMap and FareCheck answer 409 OperationNotSupported - see TC-SEATMAP-NEG-01, FLOW-V2-49-NEG).
+- **Status:** BLOCKED
+- **Evidence:** SeatMap enrichment is required by this flow, and SabreNdc/EGY does not support it: Seat maps are not offered (isSeatMapRequired=false and offerHasSeat=false on all 91 offers (re-checked 2026-11-24); GetSeatMap and FareCheck answer 409 OperationNotSupported - see TC-SEATMAP-NEG-01, FLOW-V2-49-NEG). | Round 1 verdict: BLOCKED (unchanged)
+
+### FLOW-V2-49-NEG — PASS
+
+- **Test Case:** [FC-SM-A][Request] Validate that GetSeatMap is rejected (or otherwise correctly refused) when called against an offer whose FareConfirm response reported isSeatMapRequired=false.
+- **Category:** Flow - Negative
+- **Endpoint Name:** V2 flow - GetSeatMap (CAP SM)
+- **Request:** Search &gt; FareConfirm (isSeatMapRequired=false) &gt; AddPassenger &gt; GetSeatMap
+- **Response:** 409 code=OperationNotSupported msg="This action is not currently supported by the selected supplier." ctx=[{"Name":"OperationNotSupported","Value":"SabreNdc does not exists"}]
+- **Expected:** Request is rejected or returns an empty seatMapDetails; exact rejection shape is UNKNOWN per SPEC.md 2.7/3.2 -- confirm live.
+- **Actual:** isSeatMapRequired=false; GetSeatMap -&gt; 409 code=OperationNotSupported msg="This action is not currently supported by the selected supplier." ctx=[{"Name":"OperationNotSupported","Value":"SabreNdc does not exists"}]
+- **Status:** PASS
+- **Evidence:** 409 code=OperationNotSupported msg="This action is not currently supported by the selected supplier." ctx=[{"Name":"OperationNotSupported","Value":"SabreNdc does not exists"}] | Round 1 verdict: PASS (unchanged)
+
+  - **Hop 1 &mdash; V2 Search:** PASS &mdash; 200 - 20 offers; picked offers[0] total 13233.8 EGP
+  - **Hop 2 &mdash; V2 FareConfirm:** PASS &mdash; 200 - total 13233.8 EGP; canBeHeld=true haveBundles=false offerHasAncillary=false isSeatMapRequired=false
+  - **Hop 3 &mdash; V2 AddPassenger:** PASS &mdash; 200 {"offerId":"aa41ed5e-a2ae-44ab-803f-35fec355a917&amp;lMCBpFBheDGaAZOnTW9zdGFmYaCnSWJyYWhpbdb/JdnxAAEBoTCak6dNb3N0YWZhoKdJYnJhaGltokVH1v9yQ8IA1v9m+zuAqEE3Mzc5MTMyAQGiRUfW/yXZ8QCiRUfAokVHokVHgaEwk7VuZGMucWE
+  - **Hop 4 &mdash; V2 SeatMap:** PASS &mdash; 409
+
+### FLOW-V2-50 — BLOCKED
+
+- **Test Case:** [FC-SM-B][Response] Verify Search -&gt; FareConfirm -&gt; AddPassenger -&gt; GetSeatMap -&gt; FareCheck* -&gt; Hold -&gt; FareConfirmAfterHold -&gt; Retrieve completes with a held bookingStatus and a future holdExpirationDate at the final Retrieve (flow intentionally stops here -- dangling Held booking); and the chosen seat cellCode correctly reflected as a priced Seat-category line.
+- **Category:** Flow - Positive
+- **Endpoint Name:** V2 flow
+- **Request:** Not sent - SeatMap enrichment is required by this flow, and SabreNdc/EGY does not support it: Seat maps are not offered (isSeatMapRequired=false and offerHasSeat=false on all 91 offers (re-checked 2026-11-24); GetSeatMap and FareCheck answer 409 OperationNotSupported - see TC-SEATMAP-NEG-01, FLOW-V2-49-NEG).
+- **Response:** No request sent
+- **Expected:** Per-family state check (SPEC.md 6.3, Family B): bookingStatus reads a held (not yet ticketed) state with holdExpirationDate present and in the future at the final Retrieve -- the flow deliberately STOPS here (Family B, no BookAfterHold/CancelAfterHold), leaving a dangling Held booking; log the pnr for out-of-band cleanup/expiry tracking per SPEC.md Section 6.3. Per-enrichment state check(s) (SPEC.md 6.4): the chosen GetSeatMap cellCode appears as a Seat-category entry in passengersSelectedAncillaries, priced per what GetSeatMap/FareCheck reported for that cell; the final booking price equals FareCheck's re-priced total (not the pre-ancillary FareConfirm/AddPassenger-era total) -- the highest-value price-integrity assertion for this enrichment. FareCheck conditionality: FareCheck must actually run only if the immediately-preceding GetAncillary/GetSeatMap response reported isFareCheckRequired=true; do not treat FareCheck as unconditionally present, and if it is required, the price delta between the pre-FareCheck and post-FareCheck totals should equal the sum of the selected ancillary/seat prices (2.8). Manual price-reconciliation requirement (V2 script coverage gap, SPEC.md 1.4/2.1/6.2/7.10): per passenger type, sum(taxesAndFees[].amount.amount) == paxTotalTaxAmount.amount, and totals reconcile per the Section 2.1 formula; this is enforced by script at Hold/FareConfirmAfterHold/BookAfterHold in V2, but NOT at Search/FareConfirm/Book/Retrieve -- the tester must supply this check manually at every Book/Retrieve step in this flow. Assert the GetSeatMap-selected cellCode was correctly hand-carried into Book/Hold's PassengersSelectedAncillaries; a mismatched or omitted cellCode is the single most likely manual-execution error in flows 49-72.
+- **Actual:** Blocked: SeatMap enrichment is required by this flow, and SabreNdc/EGY does not support it: Seat maps are not offered (isSeatMapRequired=false and offerHasSeat=false on all 91 offers (re-checked 2026-11-24); GetSeatMap and FareCheck answer 409 OperationNotSupported - see TC-SEATMAP-NEG-01, FLOW-V2-49-NEG).
+- **Status:** BLOCKED
+- **Evidence:** SeatMap enrichment is required by this flow, and SabreNdc/EGY does not support it: Seat maps are not offered (isSeatMapRequired=false and offerHasSeat=false on all 91 offers (re-checked 2026-11-24); GetSeatMap and FareCheck answer 409 OperationNotSupported - see TC-SEATMAP-NEG-01, FLOW-V2-49-NEG). | Round 1 verdict: BLOCKED (unchanged)
+
+### FLOW-V2-50-NEG — BLOCKED
+
+- **Test Case:** [FC-SM-B][Response] Verify that Hold fails for a canBeHeld=false / confirmed-not-holdable supplier (live canBeHeld=false flag overriding an optimistic static-matrix read).
+- **Category:** Flow - Negative
+- **Endpoint Name:** V2 flow
+- **Request:** Not sent - it needs a canBeHeld=false supplier (FlyNas/GLC); every SabreNdc/EGY offer is canBeHeld=true.
+- **Response:** No request sent
+- **Expected:** Hold is expected to fail (e.g. FlyNas is cross-validated Hold=Not Supported per SPEC.md 4.6; GLC is Not Supported by both sources). Exact rejection shape is UNKNOWN -- confirm live. The live canBeHeld flag (2.1/2.2) takes precedence over the static matrix when they disagree.
+- **Actual:** Blocked: it needs a canBeHeld=false supplier (FlyNas/GLC); every SabreNdc/EGY offer is canBeHeld=true.
+- **Status:** BLOCKED
+- **Evidence:** it needs a canBeHeld=false supplier (FlyNas/GLC); every SabreNdc/EGY offer is canBeHeld=true. | Round 1 verdict: BLOCKED (unchanged)
+
+### FLOW-V2-51 — BLOCKED
+
+- **Test Case:** [FC-SM-C][Response] Verify Search -&gt; FareConfirm -&gt; AddPassenger -&gt; GetSeatMap -&gt; FareCheck* -&gt; Book -&gt; Retrieve -&gt; Void completes with a booked bookingStatus at Retrieve followed by a successful Void (gated by voidCapability); and the chosen seat cellCode correctly reflected as a priced Seat-category line.
+- **Category:** Flow - Positive
+- **Endpoint Name:** V2 flow
+- **Request:** Not sent - SeatMap enrichment is required by this flow, and SabreNdc/EGY does not support it: Seat maps are not offered (isSeatMapRequired=false and offerHasSeat=false on all 91 offers (re-checked 2026-11-24); GetSeatMap and FareCheck answer 409 OperationNotSupported - see TC-SEATMAP-NEG-01, FLOW-V2-49-NEG).
+- **Response:** No request sent
+- **Expected:** Per-family state check (SPEC.md 6.3, Family C): bookingStatus reads booked at Retrieve, then Void succeeds (gated by voidCapability != VoidNotAllowed), and a follow-up manual Retrieve should show a voided/cancelled bookingStatus. Per-enrichment state check(s) (SPEC.md 6.4): the chosen GetSeatMap cellCode appears as a Seat-category entry in passengersSelectedAncillaries, priced per what GetSeatMap/FareCheck reported for that cell; the final booking price equals FareCheck's re-priced total (not the pre-ancillary FareConfirm/AddPassenger-era total) -- the highest-value price-integrity assertion for this enrichment. FareCheck conditionality: FareCheck must actually run only if the immediately-preceding GetAncillary/GetSeatMap response reported isFareCheckRequired=true; do not treat FareCheck as unconditionally present, and if it is required, the price delta between the pre-FareCheck and post-FareCheck totals should equal the sum of the selected ancillary/seat prices (2.8). Manual price-reconciliation requirement (V2 script coverage gap, SPEC.md 1.4/2.1/6.2/7.10): per passenger type, sum(taxesAndFees[].amount.amount) == paxTotalTaxAmount.amount, and totals reconcile per the Section 2.1 formula; this is enforced by script at Hold/FareConfirmAfterHold/BookAfterHold in V2, but NOT at Search/FareConfirm/Book/Retrieve -- the tester must supply this check manually at every Book/Retrieve step in this flow. Assert the GetSeatMap-selected cellCode was correctly hand-carried into Book/Hold's PassengersSelectedAncillaries; a mismatched or omitted cellCode is the single most likely manual-execution error in flows 49-72.
+- **Actual:** Blocked: SeatMap enrichment is required by this flow, and SabreNdc/EGY does not support it: Seat maps are not offered (isSeatMapRequired=false and offerHasSeat=false on all 91 offers (re-checked 2026-11-24); GetSeatMap and FareCheck answer 409 OperationNotSupported - see TC-SEATMAP-NEG-01, FLOW-V2-49-NEG).
+- **Status:** BLOCKED
+- **Evidence:** SeatMap enrichment is required by this flow, and SabreNdc/EGY does not support it: Seat maps are not offered (isSeatMapRequired=false and offerHasSeat=false on all 91 offers (re-checked 2026-11-24); GetSeatMap and FareCheck answer 409 OperationNotSupported - see TC-SEATMAP-NEG-01, FLOW-V2-49-NEG). | Round 1 verdict: BLOCKED (unchanged)
+
+### FLOW-V2-51-NEG — BLOCKED
+
+- **Test Case:** [FC-SM-C][Response] Verify the result of calling Void twice in succession on the same offer/booking (Void called twice on the same ticket).
+- **Category:** Flow - Negative
+- **Endpoint Name:** V2 flow
+- **Request:** Not sent - the positive chain up to the fault hop includes SeatMap enrichment hop(s), which SabreNdc/EGY cannot execute (Seat maps are not offered). The same fault on the supported chain is covered by: TC-BOOK-NEG-04 in the Generic report.
+- **Response:** No request sent
+- **Expected:** UNKNOWN whether the second call is idempotently rejected, silently no-ops, or produces a duplicate/erroneous state -- confirm live. SPEC.md flags double-booking/double-action as an explicit negative case with unresolved behavior (2.9/2.13/2.14).
+- **Actual:** Blocked: the positive chain up to the fault hop includes SeatMap enrichment hop(s), which SabreNdc/EGY cannot execute (Seat maps are not offered). The same fault on the supported chain is covered by: TC-BOOK-NEG-04 in the Generic report.
+- **Status:** BLOCKED
+- **Evidence:** the positive chain up to the fault hop includes SeatMap enrichment hop(s), which SabreNdc/EGY cannot execute (Seat maps are not offered). The same fault on the supported chain is covered by: TC-BOOK-NEG-04 in the Generic report. | Round 1 verdict: BLOCKED (unchanged)
+
+### FLOW-V2-52 — BLOCKED
+
+- **Test Case:** [FC-SM-D][Response] Verify Search -&gt; FareConfirm -&gt; AddPassenger -&gt; GetSeatMap -&gt; FareCheck* -&gt; Hold -&gt; FareConfirmAfterHold -&gt; Retrieve -&gt; BookAfterHold -&gt; Retrieve completes with bookingStatus transitioning held -&gt; booked via BookAfterHold, with pnr/bookingToken/gdsPNR unchanged from Hold; and the chosen seat cellCode correctly reflected as a priced Seat-category line.
+- **Category:** Flow - Positive
+- **Endpoint Name:** V2 flow
+- **Request:** Not sent - SeatMap enrichment is required by this flow, and SabreNdc/EGY does not support it: Seat maps are not offered (isSeatMapRequired=false and offerHasSeat=false on all 91 offers (re-checked 2026-11-24); GetSeatMap and FareCheck answer 409 OperationNotSupported - see TC-SEATMAP-NEG-01, FLOW-V2-49-NEG).
+- **Response:** No request sent
+- **Expected:** Per-family state check (SPEC.md 6.3, Family D): bookingStatus transitions from held (after Hold/FareConfirmAfterHold) to booked/confirmed (after BookAfterHold), with pnr/bookingToken/gdsPNR identical to the values Hold produced (same-PNR invariant, SPEC.md Section 2.13). Per-enrichment state check(s) (SPEC.md 6.4): the chosen GetSeatMap cellCode appears as a Seat-category entry in passengersSelectedAncillaries, priced per what GetSeatMap/FareCheck reported for that cell; the final booking price equals FareCheck's re-priced total (not the pre-ancillary FareConfirm/AddPassenger-era total) -- the highest-value price-integrity assertion for this enrichment. FareCheck conditionality: FareCheck must actually run only if the immediately-preceding GetAncillary/GetSeatMap response reported isFareCheckRequired=true; do not treat FareCheck as unconditionally present, and if it is required, the price delta between the pre-FareCheck and post-FareCheck totals should equal the sum of the selected ancillary/seat prices (2.8). Manual price-reconciliation requirement (V2 script coverage gap, SPEC.md 1.4/2.1/6.2/7.10): per passenger type, sum(taxesAndFees[].amount.amount) == paxTotalTaxAmount.amount, and totals reconcile per the Section 2.1 formula; this is enforced by script at Hold/FareConfirmAfterHold/BookAfterHold in V2, but NOT at Search/FareConfirm/Book/Retrieve -- the tester must supply this check manually at every Book/Retrieve step in this flow. Assert the GetSeatMap-selected cellCode was correctly hand-carried into Book/Hold's PassengersSelectedAncillaries; a mismatched or omitted cellCode is the single most likely manual-execution error in flows 49-72.
+- **Actual:** Blocked: SeatMap enrichment is required by this flow, and SabreNdc/EGY does not support it: Seat maps are not offered (isSeatMapRequired=false and offerHasSeat=false on all 91 offers (re-checked 2026-11-24); GetSeatMap and FareCheck answer 409 OperationNotSupported - see TC-SEATMAP-NEG-01, FLOW-V2-49-NEG).
+- **Status:** BLOCKED
+- **Evidence:** SeatMap enrichment is required by this flow, and SabreNdc/EGY does not support it: Seat maps are not offered (isSeatMapRequired=false and offerHasSeat=false on all 91 offers (re-checked 2026-11-24); GetSeatMap and FareCheck answer 409 OperationNotSupported - see TC-SEATMAP-NEG-01, FLOW-V2-49-NEG). | Round 1 verdict: BLOCKED (unchanged)
+
+### FLOW-V2-52-NEG — BLOCKED
+
+- **Test Case:** [FC-SM-D][Request] Validate that BookAfterHold rejects a pnr/bookingToken/gdsPNR triplet where one field does not match the other two (sourced from a different booking) (gdsPNR mismatched against pnr/bookingToken).
+- **Category:** Flow - Negative
+- **Endpoint Name:** V2 flow
+- **Request:** Not sent - the positive chain up to the fault hop includes SeatMap enrichment hop(s), which SabreNdc/EGY cannot execute (Seat maps are not offered). The same fault on the supported chain is covered by: no executed equivalent (not covered by any runnable row).
+- **Response:** No request sent
+- **Expected:** UNKNOWN exact status -- confirm live. The pnr/bookingToken/gdsPNR trio should be internally consistent for a single booking throughout Retrieve/BookAfterHold/Void (SPEC.md 2.11/2.13); a deliberately broken triplet is expected to be rejected, not partially honored.
+- **Actual:** Blocked: the positive chain up to the fault hop includes SeatMap enrichment hop(s), which SabreNdc/EGY cannot execute (Seat maps are not offered). The same fault on the supported chain is covered by: no executed equivalent (not covered by any runnable row).
+- **Status:** BLOCKED
+- **Evidence:** the positive chain up to the fault hop includes SeatMap enrichment hop(s), which SabreNdc/EGY cannot execute (Seat maps are not offered). The same fault on the supported chain is covered by: no executed equivalent (not covered by any runnable row). | Round 1 verdict: BLOCKED (unchanged)
+
+### FLOW-V2-53 — BLOCKED
+
+- **Test Case:** [FC-SM-E][Response] Verify Search -&gt; FareConfirm -&gt; AddPassenger -&gt; GetSeatMap -&gt; FareCheck* -&gt; Hold -&gt; FareConfirmAfterHold -&gt; Retrieve -&gt; BookAfterHold -&gt; Retrieve -&gt; Void completes with bookingStatus transitioning held -&gt; booked via BookAfterHold and then a successful Void; and the chosen seat cellCode correctly reflected as a priced Seat-category line.
+- **Category:** Flow - Positive
+- **Endpoint Name:** V2 flow
+- **Request:** Not sent - SeatMap enrichment is required by this flow, and SabreNdc/EGY does not support it: Seat maps are not offered (isSeatMapRequired=false and offerHasSeat=false on all 91 offers (re-checked 2026-11-24); GetSeatMap and FareCheck answer 409 OperationNotSupported - see TC-SEATMAP-NEG-01, FLOW-V2-49-NEG).
+- **Response:** No request sent
+- **Expected:** Per-family state check (SPEC.md 6.3, Family E): bookingStatus transitions held -&gt; booked via BookAfterHold (same-PNR invariant holds) and then Void succeeds (gated by voidCapability), with a follow-up manual Retrieve expected to show voided/cancelled. Per-enrichment state check(s) (SPEC.md 6.4): the chosen GetSeatMap cellCode appears as a Seat-category entry in passengersSelectedAncillaries, priced per what GetSeatMap/FareCheck reported for that cell; the final booking price equals FareCheck's re-priced total (not the pre-ancillary FareConfirm/AddPassenger-era total) -- the highest-value price-integrity assertion for this enrichment. FareCheck conditionality: FareCheck must actually run only if the immediately-preceding GetAncillary/GetSeatMap response reported isFareCheckRequired=true; do not treat FareCheck as unconditionally present, and if it is required, the price delta between the pre-FareCheck and post-FareCheck totals should equal the sum of the selected ancillary/seat prices (2.8). Manual price-reconciliation requirement (V2 script coverage gap, SPEC.md 1.4/2.1/6.2/7.10): per passenger type, sum(taxesAndFees[].amount.amount) == paxTotalTaxAmount.amount, and totals reconcile per the Section 2.1 formula; this is enforced by script at Hold/FareConfirmAfterHold/BookAfterHold in V2, but NOT at Search/FareConfirm/Book/Retrieve -- the tester must supply this check manually at every Book/Retrieve step in this flow. Assert the GetSeatMap-selected cellCode was correctly hand-carried into Book/Hold's PassengersSelectedAncillaries; a mismatched or omitted cellCode is the single most likely manual-execution error in flows 49-72.
+- **Actual:** Blocked: SeatMap enrichment is required by this flow, and SabreNdc/EGY does not support it: Seat maps are not offered (isSeatMapRequired=false and offerHasSeat=false on all 91 offers (re-checked 2026-11-24); GetSeatMap and FareCheck answer 409 OperationNotSupported - see TC-SEATMAP-NEG-01, FLOW-V2-49-NEG).
+- **Status:** BLOCKED
+- **Evidence:** SeatMap enrichment is required by this flow, and SabreNdc/EGY does not support it: Seat maps are not offered (isSeatMapRequired=false and offerHasSeat=false on all 91 offers (re-checked 2026-11-24); GetSeatMap and FareCheck answer 409 OperationNotSupported - see TC-SEATMAP-NEG-01, FLOW-V2-49-NEG). | Round 1 verdict: BLOCKED (unchanged)
+
+### FLOW-V2-53-NEG — BLOCKED
+
+- **Test Case:** [FC-SM-E][Response] Verify the result of attempting Void outside the (undocumented) void window, after a deliberate delay past Book/BookAfterHold.
+- **Category:** Flow - Negative
+- **Endpoint Name:** V2 flow
+- **Request:** Not sent - it needs a Void attempted after the (undocumented) void window, i.e. a booking aged past the same-day boundary; not reachable in one session (see TC-VOID-BIZ-01 / BND-01 in the SabreNdc Void suite).
+- **Response:** No request sent
+- **Expected:** UNKNOWN exact window and exact rejection shape -- confirm live per SPEC.md 3.2/6.5; the void window is presumed same-day/24-hour by real-world airline convention but is not evidenced in either collection.
+- **Actual:** Blocked: it needs a Void attempted after the (undocumented) void window, i.e. a booking aged past the same-day boundary; not reachable in one session (see TC-VOID-BIZ-01 / BND-01 in the SabreNdc Void suite).
+- **Status:** BLOCKED
+- **Evidence:** it needs a Void attempted after the (undocumented) void window, i.e. a booking aged past the same-day boundary; not reachable in one session (see TC-VOID-BIZ-01 / BND-01 in the SabreNdc Void suite). | Round 1 verdict: BLOCKED (unchanged)
+
+### FLOW-V2-54 — BLOCKED
+
+- **Test Case:** [FC-SM-F][Response] Verify Search -&gt; FareConfirm -&gt; AddPassenger -&gt; GetSeatMap -&gt; FareCheck* -&gt; Hold -&gt; FareConfirmAfterHold -&gt; Retrieve -&gt; CancelAfterHold completes with bookingStatus transitioning held -&gt; cancelled/terminated via CancelAfterHold; and the chosen seat cellCode correctly reflected as a priced Seat-category line.
+- **Category:** Flow - Positive
+- **Endpoint Name:** V2 flow
+- **Request:** Not sent - SeatMap enrichment is required by this flow, and SabreNdc/EGY does not support it: Seat maps are not offered (isSeatMapRequired=false and offerHasSeat=false on all 91 offers (re-checked 2026-11-24); GetSeatMap and FareCheck answer 409 OperationNotSupported - see TC-SEATMAP-NEG-01, FLOW-V2-49-NEG).
+- **Response:** No request sent
+- **Expected:** Per-family state check (SPEC.md 6.3, Family F): bookingStatus transitions from held to a cancelled/terminated state after CancelAfterHold -- CancelAfterHold has zero script coverage and no genuine saved response example anywhere in the collections, so this is the weakest-validated end-state in the whole API; treat the post-CancelAfterHold Retrieve bookingStatus as the primary, entirely-manual success signal. Per-enrichment state check(s) (SPEC.md 6.4): the chosen GetSeatMap cellCode appears as a Seat-category entry in passengersSelectedAncillaries, priced per what GetSeatMap/FareCheck reported for that cell; the final booking price equals FareCheck's re-priced total (not the pre-ancillary FareConfirm/AddPassenger-era total) -- the highest-value price-integrity assertion for this enrichment. FareCheck conditionality: FareCheck must actually run only if the immediately-preceding GetAncillary/GetSeatMap response reported isFareCheckRequired=true; do not treat FareCheck as unconditionally present, and if it is required, the price delta between the pre-FareCheck and post-FareCheck totals should equal the sum of the selected ancillary/seat prices (2.8). Manual price-reconciliation requirement (V2 script coverage gap, SPEC.md 1.4/2.1/6.2/7.10): per passenger type, sum(taxesAndFees[].amount.amount) == paxTotalTaxAmount.amount, and totals reconcile per the Section 2.1 formula; this is enforced by script at Hold/FareConfirmAfterHold/BookAfterHold in V2, but NOT at Search/FareConfirm/Book/Retrieve -- the tester must supply this check manually at every Book/Retrieve step in this flow. Assert the GetSeatMap-selected cellCode was correctly hand-carried into Book/Hold's PassengersSelectedAncillaries; a mismatched or omitted cellCode is the single most likely manual-execution error in flows 49-72.
+- **Actual:** Blocked: SeatMap enrichment is required by this flow, and SabreNdc/EGY does not support it: Seat maps are not offered (isSeatMapRequired=false and offerHasSeat=false on all 91 offers (re-checked 2026-11-24); GetSeatMap and FareCheck answer 409 OperationNotSupported - see TC-SEATMAP-NEG-01, FLOW-V2-49-NEG).
+- **Status:** BLOCKED
+- **Evidence:** SeatMap enrichment is required by this flow, and SabreNdc/EGY does not support it: Seat maps are not offered (isSeatMapRequired=false and offerHasSeat=false on all 91 offers (re-checked 2026-11-24); GetSeatMap and FareCheck answer 409 OperationNotSupported - see TC-SEATMAP-NEG-01, FLOW-V2-49-NEG). | Round 1 verdict: BLOCKED (unchanged)
+
+### FLOW-V2-54-NEG — BLOCKED
+
+- **Test Case:** [FC-SM-F][Request] Validate the documented V2 CancelAfterHold unquoted {{Credentials_Selector}} request-body defect (reproduced against a SeatMap-enriched Held booking).
+- **Category:** Flow - Negative
+- **Endpoint Name:** V2 flow
+- **Request:** Not sent - the positive chain up to the fault hop includes SeatMap enrichment hop(s), which SabreNdc/EGY cannot execute (Seat maps are not offered). The same fault on the supported chain is covered by: TC-CANCELHOLD-NEG-01.
+- **Response:** No request sent
+- **Expected:** Once the placeholder is substituted, the raw body becomes invalid JSON (e.g. "credentialsSelector" : UAE, with no quotes). Confirm live whether this produces a 400/parse error or is somehow tolerated. This is a literal, evidenced syntax bug in the saved request body (SPEC.md 2.14), not a hypothesis.
+- **Actual:** Blocked: the positive chain up to the fault hop includes SeatMap enrichment hop(s), which SabreNdc/EGY cannot execute (Seat maps are not offered). The same fault on the supported chain is covered by: TC-CANCELHOLD-NEG-01.
+- **Status:** BLOCKED
+- **Evidence:** the positive chain up to the fault hop includes SeatMap enrichment hop(s), which SabreNdc/EGY cannot execute (Seat maps are not offered). The same fault on the supported chain is covered by: TC-CANCELHOLD-NEG-01. | Round 1 verdict: BLOCKED (unchanged)
+
+### FLOW-V2-55 — BLOCKED
+
+- **Test Case:** [FC-BDL+SM-A][Response] Verify Search -&gt; FareConfirm -&gt; GetOfferBundles -&gt; AddPassenger -&gt; GetSeatMap -&gt; FareCheck* -&gt; Book -&gt; Retrieve completes with a booked/confirmed bookingStatus at the final Retrieve, matching Book's selectedOffer/price; and bundle pricing correctly reflected without double-charging included services; the chosen seat cellCode correctly reflected as a priced Seat-category line.
+- **Category:** Flow - Positive
+- **Endpoint Name:** V2 flow
+- **Request:** Not sent - Bundle + SeatMap enrichment is required by this flow, and SabreNdc/EGY does not support it: Bundles are not offered (haveBundles=false on all 91 offers (re-checked 2026-11-24); GetOfferBundles answers 409 OperationNotSupported - see TC-BUNDLE-NEG-01 in the Generic report and FLOW-V2-31-NEG); Seat maps are not offered (isSeatMapRequired=false and offerHasSeat=false on all 91 offers (re-checked 2026-11-24); GetSeatMap and FareCheck answer 409 OperationNotSupported - see TC-SEATMAP-NEG-01, FLOW-V2-49-NEG).
+- **Response:** No request sent
+- **Expected:** Per-family state check (SPEC.md 6.3, Family A): bookingStatus reads a booked/confirmed state at the final Retrieve, with selectedOffer.offerId/priceDetails.totalAmount matching between Book and Retrieve. Per-enrichment state check(s) (SPEC.md 6.4): the booking's final priceDetails.totalAmount reflects the selected bundle's feePrice added to the base offer price, and any bundle-included service (baggage/seat/meal per includedServices tags) does NOT also appear as a separately-priced ancillary line; the chosen GetSeatMap cellCode appears as a Seat-category entry in passengersSelectedAncillaries, priced per what GetSeatMap/FareCheck reported for that cell; the final booking price equals FareCheck's re-priced total (not the pre-ancillary FareConfirm/AddPassenger-era total) -- the highest-value price-integrity assertion for this enrichment. FareCheck conditionality: FareCheck must actually run only if the immediately-preceding GetAncillary/GetSeatMap response reported isFareCheckRequired=true; do not treat FareCheck as unconditionally present, and if it is required, the price delta between the pre-FareCheck and post-FareCheck totals should equal the sum of the selected ancillary/seat prices (2.8). Manual price-reconciliation requirement (V2 script coverage gap, SPEC.md 1.4/2.1/6.2/7.10): per passenger type, sum(taxesAndFees[].amount.amount) == paxTotalTaxAmount.amount, and totals reconcile per the Section 2.1 formula; this is enforced by script at Hold/FareConfirmAfterHold/BookAfterHold in V2, but NOT at Search/FareConfirm/Book/Retrieve -- the tester must supply this check manually at every Book/Retrieve step in this flow. Assert the GetSeatMap-selected cellCode was correctly hand-carried into Book/Hold's PassengersSelectedAncillaries; a mismatched or omitted cellCode is the single most likely manual-execution error in flows 49-72.
+- **Actual:** Blocked: Bundle + SeatMap enrichment is required by this flow, and SabreNdc/EGY does not support it: Bundles are not offered (haveBundles=false on all 91 offers (re-checked 2026-11-24); GetOfferBundles answers 409 OperationNotSupported - see TC-BUNDLE-NEG-01 in the Generic report and FLOW-V2-31-NEG); Seat maps are not offered (isSeatMapRequired=false and offerHasSeat=false on all 91 offers (re-checked 2026-11-24); GetSeatMap and FareCheck answer 409 OperationNotSupported - see TC-SEATMAP-NEG-01, FLOW-V2-49-NEG).
+- **Status:** BLOCKED
+- **Evidence:** Bundle + SeatMap enrichment is required by this flow, and SabreNdc/EGY does not support it: Bundles are not offered (haveBundles=false on all 91 offers (re-checked 2026-11-24); GetOfferBundles answers 409 OperationNotSupported - see TC-BUNDLE-NEG-01 in the Generic report and FLOW-V2-31-NEG); Seat maps are not offered (isSeatMapRequired=false and offerHasSeat=false on all 91 offers (re-checked 2026-11-24); GetSeatMap and FareCheck answer 409 OperationNotSupported - see TC-SEATMAP-NEG-01, FLOW-V2-49-NEG). | Round 1 verdict: BLOCKED (unchanged)
+
+### FLOW-V2-55-NEG — BLOCKED
+
+- **Test Case:** [FC-BDL+SM-A][Request] Validate that AddPassenger rejects an INF passenger whose ParentPaxRefId does not resolve to any ADT passenger in the same passengersList.
+- **Category:** Flow - Negative
+- **Endpoint Name:** V2 flow
+- **Request:** Not sent - the positive chain up to the fault hop includes Bundle + SeatMap enrichment hop(s), which SabreNdc/EGY cannot execute (Bundles are not offered; Seat maps are not offered). The same fault on the supported chain is covered by: TC-ADDPAX-NEG-01.
+- **Response:** No request sent
+- **Expected:** AddPassenger rejects the request; every INF passenger must carry a ParentPaxRefId resolving to an ADT entry present in the same request (SPEC.md 2.5). Exact rejection shape is UNKNOWN -- confirm live.
+- **Actual:** Blocked: the positive chain up to the fault hop includes Bundle + SeatMap enrichment hop(s), which SabreNdc/EGY cannot execute (Bundles are not offered; Seat maps are not offered). The same fault on the supported chain is covered by: TC-ADDPAX-NEG-01.
+- **Status:** BLOCKED
+- **Evidence:** the positive chain up to the fault hop includes Bundle + SeatMap enrichment hop(s), which SabreNdc/EGY cannot execute (Bundles are not offered; Seat maps are not offered). The same fault on the supported chain is covered by: TC-ADDPAX-NEG-01. | Round 1 verdict: BLOCKED (unchanged)
+
+### FLOW-V2-56 — BLOCKED
+
+- **Test Case:** [FC-BDL+SM-B][Response] Verify Search -&gt; FareConfirm -&gt; GetOfferBundles -&gt; AddPassenger -&gt; GetSeatMap -&gt; FareCheck* -&gt; Hold -&gt; FareConfirmAfterHold -&gt; Retrieve completes with a held bookingStatus and a future holdExpirationDate at the final Retrieve (flow intentionally stops here -- dangling Held booking); and bundle pricing correctly reflected without double-charging included services; the chosen seat cellCode correctly reflected as a priced Seat-category line.
+- **Category:** Flow - Positive
+- **Endpoint Name:** V2 flow
+- **Request:** Not sent - Bundle + SeatMap enrichment is required by this flow, and SabreNdc/EGY does not support it: Bundles are not offered (haveBundles=false on all 91 offers (re-checked 2026-11-24); GetOfferBundles answers 409 OperationNotSupported - see TC-BUNDLE-NEG-01 in the Generic report and FLOW-V2-31-NEG); Seat maps are not offered (isSeatMapRequired=false and offerHasSeat=false on all 91 offers (re-checked 2026-11-24); GetSeatMap and FareCheck answer 409 OperationNotSupported - see TC-SEATMAP-NEG-01, FLOW-V2-49-NEG).
+- **Response:** No request sent
+- **Expected:** Per-family state check (SPEC.md 6.3, Family B): bookingStatus reads a held (not yet ticketed) state with holdExpirationDate present and in the future at the final Retrieve -- the flow deliberately STOPS here (Family B, no BookAfterHold/CancelAfterHold), leaving a dangling Held booking; log the pnr for out-of-band cleanup/expiry tracking per SPEC.md Section 6.3. Per-enrichment state check(s) (SPEC.md 6.4): the booking's final priceDetails.totalAmount reflects the selected bundle's feePrice added to the base offer price, and any bundle-included service (baggage/seat/meal per includedServices tags) does NOT also appear as a separately-priced ancillary line; the chosen GetSeatMap cellCode appears as a Seat-category entry in passengersSelectedAncillaries, priced per what GetSeatMap/FareCheck reported for that cell; the final booking price equals FareCheck's re-priced total (not the pre-ancillary FareConfirm/AddPassenger-era total) -- the highest-value price-integrity assertion for this enrichment. FareCheck conditionality: FareCheck must actually run only if the immediately-preceding GetAncillary/GetSeatMap response reported isFareCheckRequired=true; do not treat FareCheck as unconditionally present, and if it is required, the price delta between the pre-FareCheck and post-FareCheck totals should equal the sum of the selected ancillary/seat prices (2.8). Manual price-reconciliation requirement (V2 script coverage gap, SPEC.md 1.4/2.1/6.2/7.10): per passenger type, sum(taxesAndFees[].amount.amount) == paxTotalTaxAmount.amount, and totals reconcile per the Section 2.1 formula; this is enforced by script at Hold/FareConfirmAfterHold/BookAfterHold in V2, but NOT at Search/FareConfirm/Book/Retrieve -- the tester must supply this check manually at every Book/Retrieve step in this flow. Assert the GetSeatMap-selected cellCode was correctly hand-carried into Book/Hold's PassengersSelectedAncillaries; a mismatched or omitted cellCode is the single most likely manual-execution error in flows 49-72.
+- **Actual:** Blocked: Bundle + SeatMap enrichment is required by this flow, and SabreNdc/EGY does not support it: Bundles are not offered (haveBundles=false on all 91 offers (re-checked 2026-11-24); GetOfferBundles answers 409 OperationNotSupported - see TC-BUNDLE-NEG-01 in the Generic report and FLOW-V2-31-NEG); Seat maps are not offered (isSeatMapRequired=false and offerHasSeat=false on all 91 offers (re-checked 2026-11-24); GetSeatMap and FareCheck answer 409 OperationNotSupported - see TC-SEATMAP-NEG-01, FLOW-V2-49-NEG).
+- **Status:** BLOCKED
+- **Evidence:** Bundle + SeatMap enrichment is required by this flow, and SabreNdc/EGY does not support it: Bundles are not offered (haveBundles=false on all 91 offers (re-checked 2026-11-24); GetOfferBundles answers 409 OperationNotSupported - see TC-BUNDLE-NEG-01 in the Generic report and FLOW-V2-31-NEG); Seat maps are not offered (isSeatMapRequired=false and offerHasSeat=false on all 91 offers (re-checked 2026-11-24); GetSeatMap and FareCheck answer 409 OperationNotSupported - see TC-SEATMAP-NEG-01, FLOW-V2-49-NEG). | Round 1 verdict: BLOCKED (unchanged)
+
+### FLOW-V2-56-NEG — BLOCKED
+
+- **Test Case:** [FC-BDL+SM-B][Request] Validate that a passengersList submitted at AddPassenger whose count/type mix does not match what was declared at Search time is rejected or flagged (mismatch established at AddPassenger, undetected until Hold).
+- **Category:** Flow - Negative
+- **Endpoint Name:** V2 flow
+- **Request:** Not sent - the positive chain up to the fault hop includes Bundle + SeatMap enrichment hop(s), which SabreNdc/EGY cannot execute (Bundles are not offered; Seat maps are not offered). The same fault on the supported chain is covered by: TC-ADDPAX-VAL-01.
+- **Response:** No request sent
+- **Expected:** UNKNOWN exact behavior -- not verified by any script per SPEC.md 2.5; confirm live whether the supplier/adapter rejects the mismatch or silently accepts it.
+- **Actual:** Blocked: the positive chain up to the fault hop includes Bundle + SeatMap enrichment hop(s), which SabreNdc/EGY cannot execute (Bundles are not offered; Seat maps are not offered). The same fault on the supported chain is covered by: TC-ADDPAX-VAL-01.
+- **Status:** BLOCKED
+- **Evidence:** the positive chain up to the fault hop includes Bundle + SeatMap enrichment hop(s), which SabreNdc/EGY cannot execute (Bundles are not offered; Seat maps are not offered). The same fault on the supported chain is covered by: TC-ADDPAX-VAL-01. | Round 1 verdict: BLOCKED (unchanged)
+
+### FLOW-V2-57 — BLOCKED
+
+- **Test Case:** [FC-BDL+SM-C][Response] Verify Search -&gt; FareConfirm -&gt; GetOfferBundles -&gt; AddPassenger -&gt; GetSeatMap -&gt; FareCheck* -&gt; Book -&gt; Retrieve -&gt; Void completes with a booked bookingStatus at Retrieve followed by a successful Void (gated by voidCapability); and bundle pricing correctly reflected without double-charging included services; the chosen seat cellCode correctly reflected as a priced Seat-category line.
+- **Category:** Flow - Positive
+- **Endpoint Name:** V2 flow
+- **Request:** Not sent - Bundle + SeatMap enrichment is required by this flow, and SabreNdc/EGY does not support it: Bundles are not offered (haveBundles=false on all 91 offers (re-checked 2026-11-24); GetOfferBundles answers 409 OperationNotSupported - see TC-BUNDLE-NEG-01 in the Generic report and FLOW-V2-31-NEG); Seat maps are not offered (isSeatMapRequired=false and offerHasSeat=false on all 91 offers (re-checked 2026-11-24); GetSeatMap and FareCheck answer 409 OperationNotSupported - see TC-SEATMAP-NEG-01, FLOW-V2-49-NEG).
+- **Response:** No request sent
+- **Expected:** Per-family state check (SPEC.md 6.3, Family C): bookingStatus reads booked at Retrieve, then Void succeeds (gated by voidCapability != VoidNotAllowed), and a follow-up manual Retrieve should show a voided/cancelled bookingStatus. Per-enrichment state check(s) (SPEC.md 6.4): the booking's final priceDetails.totalAmount reflects the selected bundle's feePrice added to the base offer price, and any bundle-included service (baggage/seat/meal per includedServices tags) does NOT also appear as a separately-priced ancillary line; the chosen GetSeatMap cellCode appears as a Seat-category entry in passengersSelectedAncillaries, priced per what GetSeatMap/FareCheck reported for that cell; the final booking price equals FareCheck's re-priced total (not the pre-ancillary FareConfirm/AddPassenger-era total) -- the highest-value price-integrity assertion for this enrichment. FareCheck conditionality: FareCheck must actually run only if the immediately-preceding GetAncillary/GetSeatMap response reported isFareCheckRequired=true; do not treat FareCheck as unconditionally present, and if it is required, the price delta between the pre-FareCheck and post-FareCheck totals should equal the sum of the selected ancillary/seat prices (2.8). Manual price-reconciliation requirement (V2 script coverage gap, SPEC.md 1.4/2.1/6.2/7.10): per passenger type, sum(taxesAndFees[].amount.amount) == paxTotalTaxAmount.amount, and totals reconcile per the Section 2.1 formula; this is enforced by script at Hold/FareConfirmAfterHold/BookAfterHold in V2, but NOT at Search/FareConfirm/Book/Retrieve -- the tester must supply this check manually at every Book/Retrieve step in this flow. Assert the GetSeatMap-selected cellCode was correctly hand-carried into Book/Hold's PassengersSelectedAncillaries; a mismatched or omitted cellCode is the single most likely manual-execution error in flows 49-72.
+- **Actual:** Blocked: Bundle + SeatMap enrichment is required by this flow, and SabreNdc/EGY does not support it: Bundles are not offered (haveBundles=false on all 91 offers (re-checked 2026-11-24); GetOfferBundles answers 409 OperationNotSupported - see TC-BUNDLE-NEG-01 in the Generic report and FLOW-V2-31-NEG); Seat maps are not offered (isSeatMapRequired=false and offerHasSeat=false on all 91 offers (re-checked 2026-11-24); GetSeatMap and FareCheck answer 409 OperationNotSupported - see TC-SEATMAP-NEG-01, FLOW-V2-49-NEG).
+- **Status:** BLOCKED
+- **Evidence:** Bundle + SeatMap enrichment is required by this flow, and SabreNdc/EGY does not support it: Bundles are not offered (haveBundles=false on all 91 offers (re-checked 2026-11-24); GetOfferBundles answers 409 OperationNotSupported - see TC-BUNDLE-NEG-01 in the Generic report and FLOW-V2-31-NEG); Seat maps are not offered (isSeatMapRequired=false and offerHasSeat=false on all 91 offers (re-checked 2026-11-24); GetSeatMap and FareCheck answer 409 OperationNotSupported - see TC-SEATMAP-NEG-01, FLOW-V2-49-NEG). | Round 1 verdict: BLOCKED (unchanged)
+
+### FLOW-V2-57-NEG — BLOCKED
+
+- **Test Case:** [FC-BDL+SM-C][Response] Verify that Void fails when the preceding Book/BookAfterHold response reported voidCapability=VoidNotAllowed (incorrect surName supplied).
+- **Category:** Flow - Negative
+- **Endpoint Name:** V2 flow
+- **Request:** Not sent - it needs a Book/BookAfterHold response with voidCapability=VoidNotAllowed. SabreNdc/EGY Book returns voidCapability=FullVoidOnlyAllowed (never VoidNotAllowed; only Hold carries VoidNotAllowed), and BookAfterHold/Retrieve return no voidCapability, so that state cannot be produced.
+- **Response:** No request sent
+- **Expected:** Void is expected to fail/be rejected. voidCapability is a live, per-booking flag (SPEC.md 2.9) that should be checked before attempting Void; exact rejection shape is UNKNOWN -- confirm live.
+- **Actual:** Blocked: it needs a Book/BookAfterHold response with voidCapability=VoidNotAllowed. SabreNdc/EGY Book returns voidCapability=FullVoidOnlyAllowed (never VoidNotAllowed; only Hold carries VoidNotAllowed), and BookAfterHold/Retrieve return no voidCapability, so that state cannot be produced.
+- **Status:** BLOCKED
+- **Evidence:** it needs a Book/BookAfterHold response with voidCapability=VoidNotAllowed. SabreNdc/EGY Book returns voidCapability=FullVoidOnlyAllowed (never VoidNotAllowed; only Hold carries VoidNotAllowed), and BookAfterHold/Retrieve return no voidCapability, so that state cannot be produced. | Round 1 verdict: BLOCKED (unchanged)
+
+### FLOW-V2-58 — BLOCKED
+
+- **Test Case:** [FC-BDL+SM-D][Response] Verify Search -&gt; FareConfirm -&gt; GetOfferBundles -&gt; AddPassenger -&gt; GetSeatMap -&gt; FareCheck* -&gt; Hold -&gt; FareConfirmAfterHold -&gt; Retrieve -&gt; BookAfterHold -&gt; Retrieve completes with bookingStatus transitioning held -&gt; booked via BookAfterHold, with pnr/bookingToken/gdsPNR unchanged from Hold; and bundle pricing correctly reflected without double-charging included services; the chosen seat cellCode correctly reflected as a priced Seat-category line.
+- **Category:** Flow - Positive
+- **Endpoint Name:** V2 flow
+- **Request:** Not sent - Bundle + SeatMap enrichment is required by this flow, and SabreNdc/EGY does not support it: Bundles are not offered (haveBundles=false on all 91 offers (re-checked 2026-11-24); GetOfferBundles answers 409 OperationNotSupported - see TC-BUNDLE-NEG-01 in the Generic report and FLOW-V2-31-NEG); Seat maps are not offered (isSeatMapRequired=false and offerHasSeat=false on all 91 offers (re-checked 2026-11-24); GetSeatMap and FareCheck answer 409 OperationNotSupported - see TC-SEATMAP-NEG-01, FLOW-V2-49-NEG).
+- **Response:** No request sent
+- **Expected:** Per-family state check (SPEC.md 6.3, Family D): bookingStatus transitions from held (after Hold/FareConfirmAfterHold) to booked/confirmed (after BookAfterHold), with pnr/bookingToken/gdsPNR identical to the values Hold produced (same-PNR invariant, SPEC.md Section 2.13). Per-enrichment state check(s) (SPEC.md 6.4): the booking's final priceDetails.totalAmount reflects the selected bundle's feePrice added to the base offer price, and any bundle-included service (baggage/seat/meal per includedServices tags) does NOT also appear as a separately-priced ancillary line; the chosen GetSeatMap cellCode appears as a Seat-category entry in passengersSelectedAncillaries, priced per what GetSeatMap/FareCheck reported for that cell; the final booking price equals FareCheck's re-priced total (not the pre-ancillary FareConfirm/AddPassenger-era total) -- the highest-value price-integrity assertion for this enrichment. FareCheck conditionality: FareCheck must actually run only if the immediately-preceding GetAncillary/GetSeatMap response reported isFareCheckRequired=true; do not treat FareCheck as unconditionally present, and if it is required, the price delta between the pre-FareCheck and post-FareCheck totals should equal the sum of the selected ancillary/seat prices (2.8). Manual price-reconciliation requirement (V2 script coverage gap, SPEC.md 1.4/2.1/6.2/7.10): per passenger type, sum(taxesAndFees[].amount.amount) == paxTotalTaxAmount.amount, and totals reconcile per the Section 2.1 formula; this is enforced by script at Hold/FareConfirmAfterHold/BookAfterHold in V2, but NOT at Search/FareConfirm/Book/Retrieve -- the tester must supply this check manually at every Book/Retrieve step in this flow. Assert the GetSeatMap-selected cellCode was correctly hand-carried into Book/Hold's PassengersSelectedAncillaries; a mismatched or omitted cellCode is the single most likely manual-execution error in flows 49-72.
+- **Actual:** Blocked: Bundle + SeatMap enrichment is required by this flow, and SabreNdc/EGY does not support it: Bundles are not offered (haveBundles=false on all 91 offers (re-checked 2026-11-24); GetOfferBundles answers 409 OperationNotSupported - see TC-BUNDLE-NEG-01 in the Generic report and FLOW-V2-31-NEG); Seat maps are not offered (isSeatMapRequired=false and offerHasSeat=false on all 91 offers (re-checked 2026-11-24); GetSeatMap and FareCheck answer 409 OperationNotSupported - see TC-SEATMAP-NEG-01, FLOW-V2-49-NEG).
+- **Status:** BLOCKED
+- **Evidence:** Bundle + SeatMap enrichment is required by this flow, and SabreNdc/EGY does not support it: Bundles are not offered (haveBundles=false on all 91 offers (re-checked 2026-11-24); GetOfferBundles answers 409 OperationNotSupported - see TC-BUNDLE-NEG-01 in the Generic report and FLOW-V2-31-NEG); Seat maps are not offered (isSeatMapRequired=false and offerHasSeat=false on all 91 offers (re-checked 2026-11-24); GetSeatMap and FareCheck answer 409 OperationNotSupported - see TC-SEATMAP-NEG-01, FLOW-V2-49-NEG). | Round 1 verdict: BLOCKED (unchanged)
+
+### FLOW-V2-58-NEG — BLOCKED
+
+- **Test Case:** [FC-BDL+SM-D][Request] Validate that AddPassenger rejects an INF passenger whose ParentPaxRefId does not resolve to any ADT passenger in the same passengersList (undetected until carried through Hold-&gt;BookAfterHold).
+- **Category:** Flow - Negative
+- **Endpoint Name:** V2 flow
+- **Request:** Not sent - the positive chain up to the fault hop includes Bundle + SeatMap enrichment hop(s), which SabreNdc/EGY cannot execute (Bundles are not offered; Seat maps are not offered). The same fault on the supported chain is covered by: TC-ADDPAX-NEG-01.
+- **Response:** No request sent
+- **Expected:** AddPassenger rejects the request; every INF passenger must carry a ParentPaxRefId resolving to an ADT entry present in the same request (SPEC.md 2.5). Exact rejection shape is UNKNOWN -- confirm live.
+- **Actual:** Blocked: the positive chain up to the fault hop includes Bundle + SeatMap enrichment hop(s), which SabreNdc/EGY cannot execute (Bundles are not offered; Seat maps are not offered). The same fault on the supported chain is covered by: TC-ADDPAX-NEG-01.
+- **Status:** BLOCKED
+- **Evidence:** the positive chain up to the fault hop includes Bundle + SeatMap enrichment hop(s), which SabreNdc/EGY cannot execute (Bundles are not offered; Seat maps are not offered). The same fault on the supported chain is covered by: TC-ADDPAX-NEG-01. | Round 1 verdict: BLOCKED (unchanged)
+
+### FLOW-V2-59 — BLOCKED
+
+- **Test Case:** [FC-BDL+SM-E][Response] Verify Search -&gt; FareConfirm -&gt; GetOfferBundles -&gt; AddPassenger -&gt; GetSeatMap -&gt; FareCheck* -&gt; Hold -&gt; FareConfirmAfterHold -&gt; Retrieve -&gt; BookAfterHold -&gt; Retrieve -&gt; Void completes with bookingStatus transitioning held -&gt; booked via BookAfterHold and then a successful Void; and bundle pricing correctly reflected without double-charging included services; the chosen seat cellCode correctly reflected as a priced Seat-category line.
+- **Category:** Flow - Positive
+- **Endpoint Name:** V2 flow
+- **Request:** Not sent - Bundle + SeatMap enrichment is required by this flow, and SabreNdc/EGY does not support it: Bundles are not offered (haveBundles=false on all 91 offers (re-checked 2026-11-24); GetOfferBundles answers 409 OperationNotSupported - see TC-BUNDLE-NEG-01 in the Generic report and FLOW-V2-31-NEG); Seat maps are not offered (isSeatMapRequired=false and offerHasSeat=false on all 91 offers (re-checked 2026-11-24); GetSeatMap and FareCheck answer 409 OperationNotSupported - see TC-SEATMAP-NEG-01, FLOW-V2-49-NEG).
+- **Response:** No request sent
+- **Expected:** Per-family state check (SPEC.md 6.3, Family E): bookingStatus transitions held -&gt; booked via BookAfterHold (same-PNR invariant holds) and then Void succeeds (gated by voidCapability), with a follow-up manual Retrieve expected to show voided/cancelled. Per-enrichment state check(s) (SPEC.md 6.4): the booking's final priceDetails.totalAmount reflects the selected bundle's feePrice added to the base offer price, and any bundle-included service (baggage/seat/meal per includedServices tags) does NOT also appear as a separately-priced ancillary line; the chosen GetSeatMap cellCode appears as a Seat-category entry in passengersSelectedAncillaries, priced per what GetSeatMap/FareCheck reported for that cell; the final booking price equals FareCheck's re-priced total (not the pre-ancillary FareConfirm/AddPassenger-era total) -- the highest-value price-integrity assertion for this enrichment. FareCheck conditionality: FareCheck must actually run only if the immediately-preceding GetAncillary/GetSeatMap response reported isFareCheckRequired=true; do not treat FareCheck as unconditionally present, and if it is required, the price delta between the pre-FareCheck and post-FareCheck totals should equal the sum of the selected ancillary/seat prices (2.8). Manual price-reconciliation requirement (V2 script coverage gap, SPEC.md 1.4/2.1/6.2/7.10): per passenger type, sum(taxesAndFees[].amount.amount) == paxTotalTaxAmount.amount, and totals reconcile per the Section 2.1 formula; this is enforced by script at Hold/FareConfirmAfterHold/BookAfterHold in V2, but NOT at Search/FareConfirm/Book/Retrieve -- the tester must supply this check manually at every Book/Retrieve step in this flow. Assert the GetSeatMap-selected cellCode was correctly hand-carried into Book/Hold's PassengersSelectedAncillaries; a mismatched or omitted cellCode is the single most likely manual-execution error in flows 49-72.
+- **Actual:** Blocked: Bundle + SeatMap enrichment is required by this flow, and SabreNdc/EGY does not support it: Bundles are not offered (haveBundles=false on all 91 offers (re-checked 2026-11-24); GetOfferBundles answers 409 OperationNotSupported - see TC-BUNDLE-NEG-01 in the Generic report and FLOW-V2-31-NEG); Seat maps are not offered (isSeatMapRequired=false and offerHasSeat=false on all 91 offers (re-checked 2026-11-24); GetSeatMap and FareCheck answer 409 OperationNotSupported - see TC-SEATMAP-NEG-01, FLOW-V2-49-NEG).
+- **Status:** BLOCKED
+- **Evidence:** Bundle + SeatMap enrichment is required by this flow, and SabreNdc/EGY does not support it: Bundles are not offered (haveBundles=false on all 91 offers (re-checked 2026-11-24); GetOfferBundles answers 409 OperationNotSupported - see TC-BUNDLE-NEG-01 in the Generic report and FLOW-V2-31-NEG); Seat maps are not offered (isSeatMapRequired=false and offerHasSeat=false on all 91 offers (re-checked 2026-11-24); GetSeatMap and FareCheck answer 409 OperationNotSupported - see TC-SEATMAP-NEG-01, FLOW-V2-49-NEG). | Round 1 verdict: BLOCKED (unchanged)
+
+### FLOW-V2-59-NEG — BLOCKED
+
+- **Test Case:** [FC-BDL+SM-E][Request] Validate that Void rejects a stale/mismatched getAddPaxOfferId/getAddPaxResponceID pair (bookingToken carried from the original Hold rather than BookAfterHold's re-confirmed value).
+- **Category:** Flow - Negative
+- **Endpoint Name:** V2 flow
+- **Request:** Not sent - the positive chain up to the fault hop includes Bundle + SeatMap enrichment hop(s), which SabreNdc/EGY cannot execute (Bundles are not offered; Seat maps are not offered). The same fault on the supported chain is covered by: FLOW-V2-26-NEG.
+- **Response:** No request sent
+- **Expected:** The request is rejected since the ID pair does not derive from this flow's own AddPassenger response. Exact rejection status is UNKNOWN -- confirm live per SPEC.md 2.5/3.2/3.3.
+- **Actual:** Blocked: the positive chain up to the fault hop includes Bundle + SeatMap enrichment hop(s), which SabreNdc/EGY cannot execute (Bundles are not offered; Seat maps are not offered). The same fault on the supported chain is covered by: FLOW-V2-26-NEG.
+- **Status:** BLOCKED
+- **Evidence:** the positive chain up to the fault hop includes Bundle + SeatMap enrichment hop(s), which SabreNdc/EGY cannot execute (Bundles are not offered; Seat maps are not offered). The same fault on the supported chain is covered by: FLOW-V2-26-NEG. | Round 1 verdict: BLOCKED (unchanged)
+
+### FLOW-V2-60 — BLOCKED
+
+- **Test Case:** [FC-BDL+SM-F][Response] Verify Search -&gt; FareConfirm -&gt; GetOfferBundles -&gt; AddPassenger -&gt; GetSeatMap -&gt; FareCheck* -&gt; Hold -&gt; FareConfirmAfterHold -&gt; Retrieve -&gt; CancelAfterHold completes with bookingStatus transitioning held -&gt; cancelled/terminated via CancelAfterHold; and bundle pricing correctly reflected without double-charging included services; the chosen seat cellCode correctly reflected as a priced Seat-category line.
+- **Category:** Flow - Positive
+- **Endpoint Name:** V2 flow
+- **Request:** Not sent - Bundle + SeatMap enrichment is required by this flow, and SabreNdc/EGY does not support it: Bundles are not offered (haveBundles=false on all 91 offers (re-checked 2026-11-24); GetOfferBundles answers 409 OperationNotSupported - see TC-BUNDLE-NEG-01 in the Generic report and FLOW-V2-31-NEG); Seat maps are not offered (isSeatMapRequired=false and offerHasSeat=false on all 91 offers (re-checked 2026-11-24); GetSeatMap and FareCheck answer 409 OperationNotSupported - see TC-SEATMAP-NEG-01, FLOW-V2-49-NEG).
+- **Response:** No request sent
+- **Expected:** Per-family state check (SPEC.md 6.3, Family F): bookingStatus transitions from held to a cancelled/terminated state after CancelAfterHold -- CancelAfterHold has zero script coverage and no genuine saved response example anywhere in the collections, so this is the weakest-validated end-state in the whole API; treat the post-CancelAfterHold Retrieve bookingStatus as the primary, entirely-manual success signal. Per-enrichment state check(s) (SPEC.md 6.4): the booking's final priceDetails.totalAmount reflects the selected bundle's feePrice added to the base offer price, and any bundle-included service (baggage/seat/meal per includedServices tags) does NOT also appear as a separately-priced ancillary line; the chosen GetSeatMap cellCode appears as a Seat-category entry in passengersSelectedAncillaries, priced per what GetSeatMap/FareCheck reported for that cell; the final booking price equals FareCheck's re-priced total (not the pre-ancillary FareConfirm/AddPassenger-era total) -- the highest-value price-integrity assertion for this enrichment. FareCheck conditionality: FareCheck must actually run only if the immediately-preceding GetAncillary/GetSeatMap response reported isFareCheckRequired=true; do not treat FareCheck as unconditionally present, and if it is required, the price delta between the pre-FareCheck and post-FareCheck totals should equal the sum of the selected ancillary/seat prices (2.8). Manual price-reconciliation requirement (V2 script coverage gap, SPEC.md 1.4/2.1/6.2/7.10): per passenger type, sum(taxesAndFees[].amount.amount) == paxTotalTaxAmount.amount, and totals reconcile per the Section 2.1 formula; this is enforced by script at Hold/FareConfirmAfterHold/BookAfterHold in V2, but NOT at Search/FareConfirm/Book/Retrieve -- the tester must supply this check manually at every Book/Retrieve step in this flow. Assert the GetSeatMap-selected cellCode was correctly hand-carried into Book/Hold's PassengersSelectedAncillaries; a mismatched or omitted cellCode is the single most likely manual-execution error in flows 49-72.
+- **Actual:** Blocked: Bundle + SeatMap enrichment is required by this flow, and SabreNdc/EGY does not support it: Bundles are not offered (haveBundles=false on all 91 offers (re-checked 2026-11-24); GetOfferBundles answers 409 OperationNotSupported - see TC-BUNDLE-NEG-01 in the Generic report and FLOW-V2-31-NEG); Seat maps are not offered (isSeatMapRequired=false and offerHasSeat=false on all 91 offers (re-checked 2026-11-24); GetSeatMap and FareCheck answer 409 OperationNotSupported - see TC-SEATMAP-NEG-01, FLOW-V2-49-NEG).
+- **Status:** BLOCKED
+- **Evidence:** Bundle + SeatMap enrichment is required by this flow, and SabreNdc/EGY does not support it: Bundles are not offered (haveBundles=false on all 91 offers (re-checked 2026-11-24); GetOfferBundles answers 409 OperationNotSupported - see TC-BUNDLE-NEG-01 in the Generic report and FLOW-V2-31-NEG); Seat maps are not offered (isSeatMapRequired=false and offerHasSeat=false on all 91 offers (re-checked 2026-11-24); GetSeatMap and FareCheck answer 409 OperationNotSupported - see TC-SEATMAP-NEG-01, FLOW-V2-49-NEG). | Round 1 verdict: BLOCKED (unchanged)
+
+### FLOW-V2-60-NEG — BLOCKED
+
+- **Test Case:** [FC-BDL+SM-F][Response] Verify the result of calling CancelAfterHold twice in succession on the same offer/booking (second call issued immediately after the first succeeds).
+- **Category:** Flow - Negative
+- **Endpoint Name:** V2 flow
+- **Request:** Not sent - the positive chain up to the fault hop includes Bundle + SeatMap enrichment hop(s), which SabreNdc/EGY cannot execute (Bundles are not offered; Seat maps are not offered). The same fault on the supported chain is covered by: TC-BOOK-NEG-04 in the Generic report.
+- **Response:** No request sent
+- **Expected:** UNKNOWN whether the second call is idempotently rejected, silently no-ops, or produces a duplicate/erroneous state -- confirm live. SPEC.md flags double-booking/double-action as an explicit negative case with unresolved behavior (2.9/2.13/2.14).
+- **Actual:** Blocked: the positive chain up to the fault hop includes Bundle + SeatMap enrichment hop(s), which SabreNdc/EGY cannot execute (Bundles are not offered; Seat maps are not offered). The same fault on the supported chain is covered by: TC-BOOK-NEG-04 in the Generic report.
+- **Status:** BLOCKED
+- **Evidence:** the positive chain up to the fault hop includes Bundle + SeatMap enrichment hop(s), which SabreNdc/EGY cannot execute (Bundles are not offered; Seat maps are not offered). The same fault on the supported chain is covered by: TC-BOOK-NEG-04 in the Generic report. | Round 1 verdict: BLOCKED (unchanged)
+
+### FLOW-V2-61 — BLOCKED
+
+- **Test Case:** [FC-ANC+SM-A][Response] Verify Search -&gt; FareConfirm -&gt; AddPassenger -&gt; GetAncillary -&gt; GetSeatMap -&gt; FareCheck* -&gt; Book -&gt; Retrieve completes with a booked/confirmed bookingStatus at the final Retrieve, matching Book's selectedOffer/price; and selected ancillaries correctly reflected in passengersSelectedAncillaries/paxTotalAncillaryAmount; the chosen seat cellCode correctly reflected as a priced Seat-category line.
+- **Category:** Flow - Positive
+- **Endpoint Name:** V2 flow
+- **Request:** Not sent - Ancillary + SeatMap enrichment is required by this flow, and SabreNdc/EGY does not support it: Ancillaries are not offered (offerHasAncillary=false on all 91 offers (re-checked 2026-11-24); GetAncillary and FareCheck answer 409 OperationNotSupported - see TC-ANCILLARY-NEG-01, TC-FARECHECK-NEG-01); Seat maps are not offered (isSeatMapRequired=false and offerHasSeat=false on all 91 offers (re-checked 2026-11-24); GetSeatMap and FareCheck answer 409 OperationNotSupported - see TC-SEATMAP-NEG-01, FLOW-V2-49-NEG).
+- **Response:** No request sent
+- **Expected:** Per-family state check (SPEC.md 6.3, Family A): bookingStatus reads a booked/confirmed state at the final Retrieve, with selectedOffer.offerId/priceDetails.totalAmount matching between Book and Retrieve. Per-enrichment state check(s) (SPEC.md 6.4): passengersSelectedAncillaries on Book/Hold/Retrieve lists exactly the ancillary codes selected at GetAncillary/FareCheck time with matching AdditionalServiceCategory/quantity, and paxTotalAncillaryAmount equals the sum of the selected ancillaries' prices; the chosen GetSeatMap cellCode appears as a Seat-category entry in passengersSelectedAncillaries, priced per what GetSeatMap/FareCheck reported for that cell; the final booking price equals FareCheck's re-priced total (not the pre-ancillary FareConfirm/AddPassenger-era total) -- the highest-value price-integrity assertion for this enrichment. FareCheck conditionality: FareCheck must actually run only if the immediately-preceding GetAncillary/GetSeatMap response reported isFareCheckRequired=true; do not treat FareCheck as unconditionally present, and if it is required, the price delta between the pre-FareCheck and post-FareCheck totals should equal the sum of the selected ancillary/seat prices (2.8). Manual price-reconciliation requirement (V2 script coverage gap, SPEC.md 1.4/2.1/6.2/7.10): per passenger type, sum(taxesAndFees[].amount.amount) == paxTotalTaxAmount.amount, and totals reconcile per the Section 2.1 formula; this is enforced by script at Hold/FareConfirmAfterHold/BookAfterHold in V2, but NOT at Search/FareConfirm/Book/Retrieve -- the tester must supply this check manually at every Book/Retrieve step in this flow. Assert passengersAncillariesAvailabilty (GetAncillary response) is spelled exactly as the live API returns it -- missing the second "i" -- since this is a genuine API field-name defect, not a documentation typo. Assert the GetSeatMap-selected cellCode was correctly hand-carried into Book/Hold's PassengersSelectedAncillaries; a mismatched or omitted cellCode is the single most likely manual-execution error in flows 49-72.
+- **Actual:** Blocked: Ancillary + SeatMap enrichment is required by this flow, and SabreNdc/EGY does not support it: Ancillaries are not offered (offerHasAncillary=false on all 91 offers (re-checked 2026-11-24); GetAncillary and FareCheck answer 409 OperationNotSupported - see TC-ANCILLARY-NEG-01, TC-FARECHECK-NEG-01); Seat maps are not offered (isSeatMapRequired=false and offerHasSeat=false on all 91 offers (re-checked 2026-11-24); GetSeatMap and FareCheck answer 409 OperationNotSupported - see TC-SEATMAP-NEG-01, FLOW-V2-49-NEG).
+- **Status:** BLOCKED
+- **Evidence:** Ancillary + SeatMap enrichment is required by this flow, and SabreNdc/EGY does not support it: Ancillaries are not offered (offerHasAncillary=false on all 91 offers (re-checked 2026-11-24); GetAncillary and FareCheck answer 409 OperationNotSupported - see TC-ANCILLARY-NEG-01, TC-FARECHECK-NEG-01); Seat maps are not offered (isSeatMapRequired=false and offerHasSeat=false on all 91 offers (re-checked 2026-11-24); GetSeatMap and FareCheck answer 409 OperationNotSupported - see TC-SEATMAP-NEG-01, FLOW-V2-49-NEG). | Round 1 verdict: BLOCKED (unchanged)
+
+### FLOW-V2-61-NEG — BLOCKED
+
+- **Test Case:** [FC-ANC+SM-A][Request] Validate that FareCheck rejects a PassengersSelectedAncillaries Quantity greater than GetAncillary's reported availableCount for that code.
+- **Category:** Flow - Negative
+- **Endpoint Name:** V2 flow
+- **Request:** Not sent - it needs GetAncillary codes and a working FareCheck; both answer 409 OperationNotSupported for SabreNdc, so neither the code nor the quantity can ever be validated (see TC-FARECHECK-NEG-01).
+- **Response:** No request sent
+- **Expected:** FareCheck rejects (or otherwise flags) the over-quantity selection. Exact rejection shape is UNKNOWN -- confirm live per SPEC.md 2.8.
+- **Actual:** Blocked: it needs GetAncillary codes and a working FareCheck; both answer 409 OperationNotSupported for SabreNdc, so neither the code nor the quantity can ever be validated (see TC-FARECHECK-NEG-01).
+- **Status:** BLOCKED
+- **Evidence:** it needs GetAncillary codes and a working FareCheck; both answer 409 OperationNotSupported for SabreNdc, so neither the code nor the quantity can ever be validated (see TC-FARECHECK-NEG-01). | Round 1 verdict: BLOCKED (unchanged)
+
+### FLOW-V2-62 — BLOCKED
+
+- **Test Case:** [FC-ANC+SM-B][Response] Verify Search -&gt; FareConfirm -&gt; AddPassenger -&gt; GetAncillary -&gt; GetSeatMap -&gt; FareCheck* -&gt; Hold -&gt; FareConfirmAfterHold -&gt; Retrieve completes with a held bookingStatus and a future holdExpirationDate at the final Retrieve (flow intentionally stops here -- dangling Held booking); and selected ancillaries correctly reflected in passengersSelectedAncillaries/paxTotalAncillaryAmount; the chosen seat cellCode correctly reflected as a priced Seat-category line.
+- **Category:** Flow - Positive
+- **Endpoint Name:** V2 flow
+- **Request:** Not sent - Ancillary + SeatMap enrichment is required by this flow, and SabreNdc/EGY does not support it: Ancillaries are not offered (offerHasAncillary=false on all 91 offers (re-checked 2026-11-24); GetAncillary and FareCheck answer 409 OperationNotSupported - see TC-ANCILLARY-NEG-01, TC-FARECHECK-NEG-01); Seat maps are not offered (isSeatMapRequired=false and offerHasSeat=false on all 91 offers (re-checked 2026-11-24); GetSeatMap and FareCheck answer 409 OperationNotSupported - see TC-SEATMAP-NEG-01, FLOW-V2-49-NEG).
+- **Response:** No request sent
+- **Expected:** Per-family state check (SPEC.md 6.3, Family B): bookingStatus reads a held (not yet ticketed) state with holdExpirationDate present and in the future at the final Retrieve -- the flow deliberately STOPS here (Family B, no BookAfterHold/CancelAfterHold), leaving a dangling Held booking; log the pnr for out-of-band cleanup/expiry tracking per SPEC.md Section 6.3. Per-enrichment state check(s) (SPEC.md 6.4): passengersSelectedAncillaries on Book/Hold/Retrieve lists exactly the ancillary codes selected at GetAncillary/FareCheck time with matching AdditionalServiceCategory/quantity, and paxTotalAncillaryAmount equals the sum of the selected ancillaries' prices; the chosen GetSeatMap cellCode appears as a Seat-category entry in passengersSelectedAncillaries, priced per what GetSeatMap/FareCheck reported for that cell; the final booking price equals FareCheck's re-priced total (not the pre-ancillary FareConfirm/AddPassenger-era total) -- the highest-value price-integrity assertion for this enrichment. FareCheck conditionality: FareCheck must actually run only if the immediately-preceding GetAncillary/GetSeatMap response reported isFareCheckRequired=true; do not treat FareCheck as unconditionally present, and if it is required, the price delta between the pre-FareCheck and post-FareCheck totals should equal the sum of the selected ancillary/seat prices (2.8). Manual price-reconciliation requirement (V2 script coverage gap, SPEC.md 1.4/2.1/6.2/7.10): per passenger type, sum(taxesAndFees[].amount.amount) == paxTotalTaxAmount.amount, and totals reconcile per the Section 2.1 formula; this is enforced by script at Hold/FareConfirmAfterHold/BookAfterHold in V2, but NOT at Search/FareConfirm/Book/Retrieve -- the tester must supply this check manually at every Book/Retrieve step in this flow. Assert passengersAncillariesAvailabilty (GetAncillary response) is spelled exactly as the live API returns it -- missing the second "i" -- since this is a genuine API field-name defect, not a documentation typo. Assert the GetSeatMap-selected cellCode was correctly hand-carried into Book/Hold's PassengersSelectedAncillaries; a mismatched or omitted cellCode is the single most likely manual-execution error in flows 49-72.
+- **Actual:** Blocked: Ancillary + SeatMap enrichment is required by this flow, and SabreNdc/EGY does not support it: Ancillaries are not offered (offerHasAncillary=false on all 91 offers (re-checked 2026-11-24); GetAncillary and FareCheck answer 409 OperationNotSupported - see TC-ANCILLARY-NEG-01, TC-FARECHECK-NEG-01); Seat maps are not offered (isSeatMapRequired=false and offerHasSeat=false on all 91 offers (re-checked 2026-11-24); GetSeatMap and FareCheck answer 409 OperationNotSupported - see TC-SEATMAP-NEG-01, FLOW-V2-49-NEG).
+- **Status:** BLOCKED
+- **Evidence:** Ancillary + SeatMap enrichment is required by this flow, and SabreNdc/EGY does not support it: Ancillaries are not offered (offerHasAncillary=false on all 91 offers (re-checked 2026-11-24); GetAncillary and FareCheck answer 409 OperationNotSupported - see TC-ANCILLARY-NEG-01, TC-FARECHECK-NEG-01); Seat maps are not offered (isSeatMapRequired=false and offerHasSeat=false on all 91 offers (re-checked 2026-11-24); GetSeatMap and FareCheck answer 409 OperationNotSupported - see TC-SEATMAP-NEG-01, FLOW-V2-49-NEG). | Round 1 verdict: BLOCKED (unchanged)
+
+### FLOW-V2-62-NEG — BLOCKED
+
+- **Test Case:** [FC-ANC+SM-B][Request] Validate that Hold rejects an ID/context pair whose supplier or credentialsSelector does not match the one used earlier in the same chain (supplier/credentialsSelector switched mid-flow before Hold).
+- **Category:** Flow - Negative
+- **Endpoint Name:** V2 flow
+- **Request:** Not sent - the positive chain up to the fault hop includes Ancillary + SeatMap enrichment hop(s), which SabreNdc/EGY cannot execute (Ancillaries are not offered; Seat maps are not offered). The same fault on the supported chain is covered by: FLOW-V2-25-NEG.
+- **Response:** No request sent
+- **Expected:** UNKNOWN exact status -- confirm live. SPEC.md 1.7/3.2 treats supplier/credentialsSelector as a stateless per-call re-check, so a chain that switches supplier/credentialsSelector mid-flow while reusing IDs from the original supplier is expected to be rejected, not silently honored.
+- **Actual:** Blocked: the positive chain up to the fault hop includes Ancillary + SeatMap enrichment hop(s), which SabreNdc/EGY cannot execute (Ancillaries are not offered; Seat maps are not offered). The same fault on the supported chain is covered by: FLOW-V2-25-NEG.
+- **Status:** BLOCKED
+- **Evidence:** the positive chain up to the fault hop includes Ancillary + SeatMap enrichment hop(s), which SabreNdc/EGY cannot execute (Ancillaries are not offered; Seat maps are not offered). The same fault on the supported chain is covered by: FLOW-V2-25-NEG. | Round 1 verdict: BLOCKED (unchanged)
+
+### FLOW-V2-63 — BLOCKED
+
+- **Test Case:** [FC-ANC+SM-C][Response] Verify Search -&gt; FareConfirm -&gt; AddPassenger -&gt; GetAncillary -&gt; GetSeatMap -&gt; FareCheck* -&gt; Book -&gt; Retrieve -&gt; Void completes with a booked bookingStatus at Retrieve followed by a successful Void (gated by voidCapability); and selected ancillaries correctly reflected in passengersSelectedAncillaries/paxTotalAncillaryAmount; the chosen seat cellCode correctly reflected as a priced Seat-category line.
+- **Category:** Flow - Positive
+- **Endpoint Name:** V2 flow
+- **Request:** Not sent - Ancillary + SeatMap enrichment is required by this flow, and SabreNdc/EGY does not support it: Ancillaries are not offered (offerHasAncillary=false on all 91 offers (re-checked 2026-11-24); GetAncillary and FareCheck answer 409 OperationNotSupported - see TC-ANCILLARY-NEG-01, TC-FARECHECK-NEG-01); Seat maps are not offered (isSeatMapRequired=false and offerHasSeat=false on all 91 offers (re-checked 2026-11-24); GetSeatMap and FareCheck answer 409 OperationNotSupported - see TC-SEATMAP-NEG-01, FLOW-V2-49-NEG).
+- **Response:** No request sent
+- **Expected:** Per-family state check (SPEC.md 6.3, Family C): bookingStatus reads booked at Retrieve, then Void succeeds (gated by voidCapability != VoidNotAllowed), and a follow-up manual Retrieve should show a voided/cancelled bookingStatus. Per-enrichment state check(s) (SPEC.md 6.4): passengersSelectedAncillaries on Book/Hold/Retrieve lists exactly the ancillary codes selected at GetAncillary/FareCheck time with matching AdditionalServiceCategory/quantity, and paxTotalAncillaryAmount equals the sum of the selected ancillaries' prices; the chosen GetSeatMap cellCode appears as a Seat-category entry in passengersSelectedAncillaries, priced per what GetSeatMap/FareCheck reported for that cell; the final booking price equals FareCheck's re-priced total (not the pre-ancillary FareConfirm/AddPassenger-era total) -- the highest-value price-integrity assertion for this enrichment. FareCheck conditionality: FareCheck must actually run only if the immediately-preceding GetAncillary/GetSeatMap response reported isFareCheckRequired=true; do not treat FareCheck as unconditionally present, and if it is required, the price delta between the pre-FareCheck and post-FareCheck totals should equal the sum of the selected ancillary/seat prices (2.8). Manual price-reconciliation requirement (V2 script coverage gap, SPEC.md 1.4/2.1/6.2/7.10): per passenger type, sum(taxesAndFees[].amount.amount) == paxTotalTaxAmount.amount, and totals reconcile per the Section 2.1 formula; this is enforced by script at Hold/FareConfirmAfterHold/BookAfterHold in V2, but NOT at Search/FareConfirm/Book/Retrieve -- the tester must supply this check manually at every Book/Retrieve step in this flow. Assert passengersAncillariesAvailabilty (GetAncillary response) is spelled exactly as the live API returns it -- missing the second "i" -- since this is a genuine API field-name defect, not a documentation typo. Assert the GetSeatMap-selected cellCode was correctly hand-carried into Book/Hold's PassengersSelectedAncillaries; a mismatched or omitted cellCode is the single most likely manual-execution error in flows 49-72.
+- **Actual:** Blocked: Ancillary + SeatMap enrichment is required by this flow, and SabreNdc/EGY does not support it: Ancillaries are not offered (offerHasAncillary=false on all 91 offers (re-checked 2026-11-24); GetAncillary and FareCheck answer 409 OperationNotSupported - see TC-ANCILLARY-NEG-01, TC-FARECHECK-NEG-01); Seat maps are not offered (isSeatMapRequired=false and offerHasSeat=false on all 91 offers (re-checked 2026-11-24); GetSeatMap and FareCheck answer 409 OperationNotSupported - see TC-SEATMAP-NEG-01, FLOW-V2-49-NEG).
+- **Status:** BLOCKED
+- **Evidence:** Ancillary + SeatMap enrichment is required by this flow, and SabreNdc/EGY does not support it: Ancillaries are not offered (offerHasAncillary=false on all 91 offers (re-checked 2026-11-24); GetAncillary and FareCheck answer 409 OperationNotSupported - see TC-ANCILLARY-NEG-01, TC-FARECHECK-NEG-01); Seat maps are not offered (isSeatMapRequired=false and offerHasSeat=false on all 91 offers (re-checked 2026-11-24); GetSeatMap and FareCheck answer 409 OperationNotSupported - see TC-SEATMAP-NEG-01, FLOW-V2-49-NEG). | Round 1 verdict: BLOCKED (unchanged)
+
+### FLOW-V2-63-NEG — BLOCKED
+
+- **Test Case:** [FC-ANC+SM-C][Request] Validate that Retrieve rejects a pnr/bookingToken/gdsPNR triplet where one field does not match the other two (sourced from a different booking).
+- **Category:** Flow - Negative
+- **Endpoint Name:** V2 flow
+- **Request:** Not sent - the positive chain up to the fault hop includes Ancillary + SeatMap enrichment hop(s), which SabreNdc/EGY cannot execute (Ancillaries are not offered; Seat maps are not offered). The same fault on the supported chain is covered by: no executed equivalent (not covered by any runnable row).
+- **Response:** No request sent
+- **Expected:** UNKNOWN exact status -- confirm live. The pnr/bookingToken/gdsPNR trio should be internally consistent for a single booking throughout Retrieve/BookAfterHold/Void (SPEC.md 2.11/2.13); a deliberately broken triplet is expected to be rejected, not partially honored.
+- **Actual:** Blocked: the positive chain up to the fault hop includes Ancillary + SeatMap enrichment hop(s), which SabreNdc/EGY cannot execute (Ancillaries are not offered; Seat maps are not offered). The same fault on the supported chain is covered by: no executed equivalent (not covered by any runnable row).
+- **Status:** BLOCKED
+- **Evidence:** the positive chain up to the fault hop includes Ancillary + SeatMap enrichment hop(s), which SabreNdc/EGY cannot execute (Ancillaries are not offered; Seat maps are not offered). The same fault on the supported chain is covered by: no executed equivalent (not covered by any runnable row). | Round 1 verdict: BLOCKED (unchanged)
+
+### FLOW-V2-64 — BLOCKED
+
+- **Test Case:** [FC-ANC+SM-D][Response] Verify Search -&gt; FareConfirm -&gt; AddPassenger -&gt; GetAncillary -&gt; GetSeatMap -&gt; FareCheck* -&gt; Hold -&gt; FareConfirmAfterHold -&gt; Retrieve -&gt; BookAfterHold -&gt; Retrieve completes with bookingStatus transitioning held -&gt; booked via BookAfterHold, with pnr/bookingToken/gdsPNR unchanged from Hold; and selected ancillaries correctly reflected in passengersSelectedAncillaries/paxTotalAncillaryAmount; the chosen seat cellCode correctly reflected as a priced Seat-category line.
+- **Category:** Flow - Positive
+- **Endpoint Name:** V2 flow
+- **Request:** Not sent - Ancillary + SeatMap enrichment is required by this flow, and SabreNdc/EGY does not support it: Ancillaries are not offered (offerHasAncillary=false on all 91 offers (re-checked 2026-11-24); GetAncillary and FareCheck answer 409 OperationNotSupported - see TC-ANCILLARY-NEG-01, TC-FARECHECK-NEG-01); Seat maps are not offered (isSeatMapRequired=false and offerHasSeat=false on all 91 offers (re-checked 2026-11-24); GetSeatMap and FareCheck answer 409 OperationNotSupported - see TC-SEATMAP-NEG-01, FLOW-V2-49-NEG).
+- **Response:** No request sent
+- **Expected:** Per-family state check (SPEC.md 6.3, Family D): bookingStatus transitions from held (after Hold/FareConfirmAfterHold) to booked/confirmed (after BookAfterHold), with pnr/bookingToken/gdsPNR identical to the values Hold produced (same-PNR invariant, SPEC.md Section 2.13). Per-enrichment state check(s) (SPEC.md 6.4): passengersSelectedAncillaries on Book/Hold/Retrieve lists exactly the ancillary codes selected at GetAncillary/FareCheck time with matching AdditionalServiceCategory/quantity, and paxTotalAncillaryAmount equals the sum of the selected ancillaries' prices; the chosen GetSeatMap cellCode appears as a Seat-category entry in passengersSelectedAncillaries, priced per what GetSeatMap/FareCheck reported for that cell; the final booking price equals FareCheck's re-priced total (not the pre-ancillary FareConfirm/AddPassenger-era total) -- the highest-value price-integrity assertion for this enrichment. FareCheck conditionality: FareCheck must actually run only if the immediately-preceding GetAncillary/GetSeatMap response reported isFareCheckRequired=true; do not treat FareCheck as unconditionally present, and if it is required, the price delta between the pre-FareCheck and post-FareCheck totals should equal the sum of the selected ancillary/seat prices (2.8). Manual price-reconciliation requirement (V2 script coverage gap, SPEC.md 1.4/2.1/6.2/7.10): per passenger type, sum(taxesAndFees[].amount.amount) == paxTotalTaxAmount.amount, and totals reconcile per the Section 2.1 formula; this is enforced by script at Hold/FareConfirmAfterHold/BookAfterHold in V2, but NOT at Search/FareConfirm/Book/Retrieve -- the tester must supply this check manually at every Book/Retrieve step in this flow. Assert passengersAncillariesAvailabilty (GetAncillary response) is spelled exactly as the live API returns it -- missing the second "i" -- since this is a genuine API field-name defect, not a documentation typo. Assert the GetSeatMap-selected cellCode was correctly hand-carried into Book/Hold's PassengersSelectedAncillaries; a mismatched or omitted cellCode is the single most likely manual-execution error in flows 49-72.
+- **Actual:** Blocked: Ancillary + SeatMap enrichment is required by this flow, and SabreNdc/EGY does not support it: Ancillaries are not offered (offerHasAncillary=false on all 91 offers (re-checked 2026-11-24); GetAncillary and FareCheck answer 409 OperationNotSupported - see TC-ANCILLARY-NEG-01, TC-FARECHECK-NEG-01); Seat maps are not offered (isSeatMapRequired=false and offerHasSeat=false on all 91 offers (re-checked 2026-11-24); GetSeatMap and FareCheck answer 409 OperationNotSupported - see TC-SEATMAP-NEG-01, FLOW-V2-49-NEG).
+- **Status:** BLOCKED
+- **Evidence:** Ancillary + SeatMap enrichment is required by this flow, and SabreNdc/EGY does not support it: Ancillaries are not offered (offerHasAncillary=false on all 91 offers (re-checked 2026-11-24); GetAncillary and FareCheck answer 409 OperationNotSupported - see TC-ANCILLARY-NEG-01, TC-FARECHECK-NEG-01); Seat maps are not offered (isSeatMapRequired=false and offerHasSeat=false on all 91 offers (re-checked 2026-11-24); GetSeatMap and FareCheck answer 409 OperationNotSupported - see TC-SEATMAP-NEG-01, FLOW-V2-49-NEG). | Round 1 verdict: BLOCKED (unchanged)
+
+### FLOW-V2-64-NEG — BLOCKED
+
+- **Test Case:** [FC-ANC+SM-D][Request] Validate that BookAfterHold rejects a stale/mismatched getAddPaxOfferId/getAddPaxResponceID pair (stale getAddPaxResponceID reused from a previous flow run).
+- **Category:** Flow - Negative
+- **Endpoint Name:** V2 flow
+- **Request:** Not sent - the positive chain up to the fault hop includes Ancillary + SeatMap enrichment hop(s), which SabreNdc/EGY cannot execute (Ancillaries are not offered; Seat maps are not offered). The same fault on the supported chain is covered by: FLOW-V2-26-NEG.
+- **Response:** No request sent
+- **Expected:** The request is rejected since the ID pair does not derive from this flow's own AddPassenger response. Exact rejection status is UNKNOWN -- confirm live per SPEC.md 2.5/3.2/3.3.
+- **Actual:** Blocked: the positive chain up to the fault hop includes Ancillary + SeatMap enrichment hop(s), which SabreNdc/EGY cannot execute (Ancillaries are not offered; Seat maps are not offered). The same fault on the supported chain is covered by: FLOW-V2-26-NEG.
+- **Status:** BLOCKED
+- **Evidence:** the positive chain up to the fault hop includes Ancillary + SeatMap enrichment hop(s), which SabreNdc/EGY cannot execute (Ancillaries are not offered; Seat maps are not offered). The same fault on the supported chain is covered by: FLOW-V2-26-NEG. | Round 1 verdict: BLOCKED (unchanged)
+
+### FLOW-V2-65 — BLOCKED
+
+- **Test Case:** [FC-ANC+SM-E][Response] Verify Search -&gt; FareConfirm -&gt; AddPassenger -&gt; GetAncillary -&gt; GetSeatMap -&gt; FareCheck* -&gt; Hold -&gt; FareConfirmAfterHold -&gt; Retrieve -&gt; BookAfterHold -&gt; Retrieve -&gt; Void completes with bookingStatus transitioning held -&gt; booked via BookAfterHold and then a successful Void; and selected ancillaries correctly reflected in passengersSelectedAncillaries/paxTotalAncillaryAmount; the chosen seat cellCode correctly reflected as a priced Seat-category line.
+- **Category:** Flow - Positive
+- **Endpoint Name:** V2 flow
+- **Request:** Not sent - Ancillary + SeatMap enrichment is required by this flow, and SabreNdc/EGY does not support it: Ancillaries are not offered (offerHasAncillary=false on all 91 offers (re-checked 2026-11-24); GetAncillary and FareCheck answer 409 OperationNotSupported - see TC-ANCILLARY-NEG-01, TC-FARECHECK-NEG-01); Seat maps are not offered (isSeatMapRequired=false and offerHasSeat=false on all 91 offers (re-checked 2026-11-24); GetSeatMap and FareCheck answer 409 OperationNotSupported - see TC-SEATMAP-NEG-01, FLOW-V2-49-NEG).
+- **Response:** No request sent
+- **Expected:** Per-family state check (SPEC.md 6.3, Family E): bookingStatus transitions held -&gt; booked via BookAfterHold (same-PNR invariant holds) and then Void succeeds (gated by voidCapability), with a follow-up manual Retrieve expected to show voided/cancelled. Per-enrichment state check(s) (SPEC.md 6.4): passengersSelectedAncillaries on Book/Hold/Retrieve lists exactly the ancillary codes selected at GetAncillary/FareCheck time with matching AdditionalServiceCategory/quantity, and paxTotalAncillaryAmount equals the sum of the selected ancillaries' prices; the chosen GetSeatMap cellCode appears as a Seat-category entry in passengersSelectedAncillaries, priced per what GetSeatMap/FareCheck reported for that cell; the final booking price equals FareCheck's re-priced total (not the pre-ancillary FareConfirm/AddPassenger-era total) -- the highest-value price-integrity assertion for this enrichment. FareCheck conditionality: FareCheck must actually run only if the immediately-preceding GetAncillary/GetSeatMap response reported isFareCheckRequired=true; do not treat FareCheck as unconditionally present, and if it is required, the price delta between the pre-FareCheck and post-FareCheck totals should equal the sum of the selected ancillary/seat prices (2.8). Manual price-reconciliation requirement (V2 script coverage gap, SPEC.md 1.4/2.1/6.2/7.10): per passenger type, sum(taxesAndFees[].amount.amount) == paxTotalTaxAmount.amount, and totals reconcile per the Section 2.1 formula; this is enforced by script at Hold/FareConfirmAfterHold/BookAfterHold in V2, but NOT at Search/FareConfirm/Book/Retrieve -- the tester must supply this check manually at every Book/Retrieve step in this flow. Assert passengersAncillariesAvailabilty (GetAncillary response) is spelled exactly as the live API returns it -- missing the second "i" -- since this is a genuine API field-name defect, not a documentation typo. Assert the GetSeatMap-selected cellCode was correctly hand-carried into Book/Hold's PassengersSelectedAncillaries; a mismatched or omitted cellCode is the single most likely manual-execution error in flows 49-72.
+- **Actual:** Blocked: Ancillary + SeatMap enrichment is required by this flow, and SabreNdc/EGY does not support it: Ancillaries are not offered (offerHasAncillary=false on all 91 offers (re-checked 2026-11-24); GetAncillary and FareCheck answer 409 OperationNotSupported - see TC-ANCILLARY-NEG-01, TC-FARECHECK-NEG-01); Seat maps are not offered (isSeatMapRequired=false and offerHasSeat=false on all 91 offers (re-checked 2026-11-24); GetSeatMap and FareCheck answer 409 OperationNotSupported - see TC-SEATMAP-NEG-01, FLOW-V2-49-NEG).
+- **Status:** BLOCKED
+- **Evidence:** Ancillary + SeatMap enrichment is required by this flow, and SabreNdc/EGY does not support it: Ancillaries are not offered (offerHasAncillary=false on all 91 offers (re-checked 2026-11-24); GetAncillary and FareCheck answer 409 OperationNotSupported - see TC-ANCILLARY-NEG-01, TC-FARECHECK-NEG-01); Seat maps are not offered (isSeatMapRequired=false and offerHasSeat=false on all 91 offers (re-checked 2026-11-24); GetSeatMap and FareCheck answer 409 OperationNotSupported - see TC-SEATMAP-NEG-01, FLOW-V2-49-NEG). | Round 1 verdict: BLOCKED (unchanged)
+
+### FLOW-V2-65-NEG — BLOCKED
+
+- **Test Case:** [FC-ANC+SM-E][Request] Validate that FareCheck rejects a PassengersSelectedAncillaries Quantity greater than GetAncillary's reported availableCount for that code (carried all the way through to the final Void-eligible booking).
+- **Category:** Flow - Negative
+- **Endpoint Name:** V2 flow
+- **Request:** Not sent - it needs GetAncillary codes and a working FareCheck; both answer 409 OperationNotSupported for SabreNdc, so neither the code nor the quantity can ever be validated (see TC-FARECHECK-NEG-01).
+- **Response:** No request sent
+- **Expected:** FareCheck rejects (or otherwise flags) the over-quantity selection. Exact rejection shape is UNKNOWN -- confirm live per SPEC.md 2.8.
+- **Actual:** Blocked: it needs GetAncillary codes and a working FareCheck; both answer 409 OperationNotSupported for SabreNdc, so neither the code nor the quantity can ever be validated (see TC-FARECHECK-NEG-01).
+- **Status:** BLOCKED
+- **Evidence:** it needs GetAncillary codes and a working FareCheck; both answer 409 OperationNotSupported for SabreNdc, so neither the code nor the quantity can ever be validated (see TC-FARECHECK-NEG-01). | Round 1 verdict: BLOCKED (unchanged)
+
+### FLOW-V2-66 — BLOCKED
+
+- **Test Case:** [FC-ANC+SM-F][Response] Verify Search -&gt; FareConfirm -&gt; AddPassenger -&gt; GetAncillary -&gt; GetSeatMap -&gt; FareCheck* -&gt; Hold -&gt; FareConfirmAfterHold -&gt; Retrieve -&gt; CancelAfterHold completes with bookingStatus transitioning held -&gt; cancelled/terminated via CancelAfterHold; and selected ancillaries correctly reflected in passengersSelectedAncillaries/paxTotalAncillaryAmount; the chosen seat cellCode correctly reflected as a priced Seat-category line.
+- **Category:** Flow - Positive
+- **Endpoint Name:** V2 flow
+- **Request:** Not sent - Ancillary + SeatMap enrichment is required by this flow, and SabreNdc/EGY does not support it: Ancillaries are not offered (offerHasAncillary=false on all 91 offers (re-checked 2026-11-24); GetAncillary and FareCheck answer 409 OperationNotSupported - see TC-ANCILLARY-NEG-01, TC-FARECHECK-NEG-01); Seat maps are not offered (isSeatMapRequired=false and offerHasSeat=false on all 91 offers (re-checked 2026-11-24); GetSeatMap and FareCheck answer 409 OperationNotSupported - see TC-SEATMAP-NEG-01, FLOW-V2-49-NEG).
+- **Response:** No request sent
+- **Expected:** Per-family state check (SPEC.md 6.3, Family F): bookingStatus transitions from held to a cancelled/terminated state after CancelAfterHold -- CancelAfterHold has zero script coverage and no genuine saved response example anywhere in the collections, so this is the weakest-validated end-state in the whole API; treat the post-CancelAfterHold Retrieve bookingStatus as the primary, entirely-manual success signal. Per-enrichment state check(s) (SPEC.md 6.4): passengersSelectedAncillaries on Book/Hold/Retrieve lists exactly the ancillary codes selected at GetAncillary/FareCheck time with matching AdditionalServiceCategory/quantity, and paxTotalAncillaryAmount equals the sum of the selected ancillaries' prices; the chosen GetSeatMap cellCode appears as a Seat-category entry in passengersSelectedAncillaries, priced per what GetSeatMap/FareCheck reported for that cell; the final booking price equals FareCheck's re-priced total (not the pre-ancillary FareConfirm/AddPassenger-era total) -- the highest-value price-integrity assertion for this enrichment. FareCheck conditionality: FareCheck must actually run only if the immediately-preceding GetAncillary/GetSeatMap response reported isFareCheckRequired=true; do not treat FareCheck as unconditionally present, and if it is required, the price delta between the pre-FareCheck and post-FareCheck totals should equal the sum of the selected ancillary/seat prices (2.8). Manual price-reconciliation requirement (V2 script coverage gap, SPEC.md 1.4/2.1/6.2/7.10): per passenger type, sum(taxesAndFees[].amount.amount) == paxTotalTaxAmount.amount, and totals reconcile per the Section 2.1 formula; this is enforced by script at Hold/FareConfirmAfterHold/BookAfterHold in V2, but NOT at Search/FareConfirm/Book/Retrieve -- the tester must supply this check manually at every Book/Retrieve step in this flow. Assert passengersAncillariesAvailabilty (GetAncillary response) is spelled exactly as the live API returns it -- missing the second "i" -- since this is a genuine API field-name defect, not a documentation typo. Assert the GetSeatMap-selected cellCode was correctly hand-carried into Book/Hold's PassengersSelectedAncillaries; a mismatched or omitted cellCode is the single most likely manual-execution error in flows 49-72.
+- **Actual:** Blocked: Ancillary + SeatMap enrichment is required by this flow, and SabreNdc/EGY does not support it: Ancillaries are not offered (offerHasAncillary=false on all 91 offers (re-checked 2026-11-24); GetAncillary and FareCheck answer 409 OperationNotSupported - see TC-ANCILLARY-NEG-01, TC-FARECHECK-NEG-01); Seat maps are not offered (isSeatMapRequired=false and offerHasSeat=false on all 91 offers (re-checked 2026-11-24); GetSeatMap and FareCheck answer 409 OperationNotSupported - see TC-SEATMAP-NEG-01, FLOW-V2-49-NEG).
+- **Status:** BLOCKED
+- **Evidence:** Ancillary + SeatMap enrichment is required by this flow, and SabreNdc/EGY does not support it: Ancillaries are not offered (offerHasAncillary=false on all 91 offers (re-checked 2026-11-24); GetAncillary and FareCheck answer 409 OperationNotSupported - see TC-ANCILLARY-NEG-01, TC-FARECHECK-NEG-01); Seat maps are not offered (isSeatMapRequired=false and offerHasSeat=false on all 91 offers (re-checked 2026-11-24); GetSeatMap and FareCheck answer 409 OperationNotSupported - see TC-SEATMAP-NEG-01, FLOW-V2-49-NEG). | Round 1 verdict: BLOCKED (unchanged)
+
+### FLOW-V2-66-NEG — BLOCKED
+
+- **Test Case:** [FC-ANC+SM-F][Response] Verify the behavior of CancelAfterHold when attempted after holdExpirationDate has already passed (attempted against an Ancillary+SeatMap-enriched Held booking).
+- **Category:** Flow - Negative
+- **Endpoint Name:** V2 flow
+- **Request:** Not sent - the post-expiry state cannot be reached in a session: holds observed on SabreNdc/EGY expire about 5 days after creation (2026-10-30 for holds made on 2026-10-25), and the window cannot be shortened.
+- **Response:** No request sent
+- **Expected:** UNKNOWN exact status -- confirm live. SPEC.md 3.2/6.5 explicitly flags that no flow in flow.md exercises behavior past hold expiration; this is a high-value exploratory gap, not a documented failure mode. Do not assume a specific HTTP status without live confirmation.
+- **Actual:** Blocked: the post-expiry state cannot be reached in a session: holds observed on SabreNdc/EGY expire about 5 days after creation (2026-10-30 for holds made on 2026-10-25), and the window cannot be shortened.
+- **Status:** BLOCKED
+- **Evidence:** the post-expiry state cannot be reached in a session: holds observed on SabreNdc/EGY expire about 5 days after creation (2026-10-30 for holds made on 2026-10-25), and the window cannot be shortened. | Round 1 verdict: BLOCKED (unchanged)
+
+### FLOW-V2-67 — BLOCKED
+
+- **Test Case:** [FC-BDL+ANC+SM-A][Response] Verify Search -&gt; FareConfirm -&gt; GetOfferBundles -&gt; AddPassenger -&gt; GetAncillary -&gt; GetSeatMap -&gt; FareCheck* -&gt; Book -&gt; Retrieve completes with a booked/confirmed bookingStatus at the final Retrieve, matching Book's selectedOffer/price; and bundle pricing correctly reflected without double-charging included services; selected ancillaries correctly reflected in passengersSelectedAncillaries/paxTotalAncillaryAmount; the chosen seat cellCode correctly reflected as a priced Seat-category line.
+- **Category:** Flow - Positive
+- **Endpoint Name:** V2 flow
+- **Request:** Not sent - Bundle + Ancillary + SeatMap enrichment is required by this flow, and SabreNdc/EGY does not support it: Bundles are not offered (haveBundles=false on all 91 offers (re-checked 2026-11-24); GetOfferBundles answers 409 OperationNotSupported - see TC-BUNDLE-NEG-01 in the Generic report and FLOW-V2-31-NEG); Ancillaries are not offered (offerHasAncillary=false on all 91 offers (re-checked 2026-11-24); GetAncillary and FareCheck answer 409 OperationNotSupported - see TC-ANCILLARY-NEG-01, TC-FARECHECK-NEG-01); Seat maps are not offered (isSeatMapRequired=false and offerHasSeat=false on all 91 offers (re-checked 2026-11-24); GetSeatMap and FareCheck answer 409 OperationNotSupported - see TC-SEATMAP-NEG-01, FLOW-V2-49-NEG).
+- **Response:** No request sent
+- **Expected:** Per-family state check (SPEC.md 6.3, Family A): bookingStatus reads a booked/confirmed state at the final Retrieve, with selectedOffer.offerId/priceDetails.totalAmount matching between Book and Retrieve. Per-enrichment state check(s) (SPEC.md 6.4): the booking's final priceDetails.totalAmount reflects the selected bundle's feePrice added to the base offer price, and any bundle-included service (baggage/seat/meal per includedServices tags) does NOT also appear as a separately-priced ancillary line; passengersSelectedAncillaries on Book/Hold/Retrieve lists exactly the ancillary codes selected at GetAncillary/FareCheck time with matching AdditionalServiceCategory/quantity, and paxTotalAncillaryAmount equals the sum of the selected ancillaries' prices; the chosen GetSeatMap cellCode appears as a Seat-category entry in passengersSelectedAncillaries, priced per what GetSeatMap/FareCheck reported for that cell; the final booking price equals FareCheck's re-priced total (not the pre-ancillary FareConfirm/AddPassenger-era total) -- the highest-value price-integrity assertion for this enrichment. FareCheck conditionality: FareCheck must actually run only if the immediately-preceding GetAncillary/GetSeatMap response reported isFareCheckRequired=true; do not treat FareCheck as unconditionally present, and if it is required, the price delta between the pre-FareCheck and post-FareCheck totals should equal the sum of the selected ancillary/seat prices (2.8). Manual price-reconciliation requirement (V2 script coverage gap, SPEC.md 1.4/2.1/6.2/7.10): per passenger type, sum(taxesAndFees[].amount.amount) == paxTotalTaxAmount.amount, and totals reconcile per the Section 2.1 formula; this is enforced by script at Hold/FareConfirmAfterHold/BookAfterHold in V2, but NOT at Search/FareConfirm/Book/Retrieve -- the tester must supply this check manually at every Book/Retrieve step in this flow. Assert passengersAncillariesAvailabilty (GetAncillary response) is spelled exactly as the live API returns it -- missing the second "i" -- since this is a genuine API field-name defect, not a documentation typo. Assert the GetSeatMap-selected cellCode was correctly hand-carried into Book/Hold's PassengersSelectedAncillaries; a mismatched or omitted cellCode is the single most likely manual-execution error in flows 49-72.
+- **Actual:** Blocked: Bundle + Ancillary + SeatMap enrichment is required by this flow, and SabreNdc/EGY does not support it: Bundles are not offered (haveBundles=false on all 91 offers (re-checked 2026-11-24); GetOfferBundles answers 409 OperationNotSupported - see TC-BUNDLE-NEG-01 in the Generic report and FLOW-V2-31-NEG); Ancillaries are not offered (offerHasAncillary=false on all 91 offers (re-checked 2026-11-24); GetAncillary and FareCheck answer 409 OperationNotSupported - see TC-ANCILLARY-NEG-01, TC-FARECHECK-NEG-01); Seat maps are not offered (isSeatMapRequired=false and offerHasSeat=false on all 91 offers (re-checked 2026-11-24); GetSeatMap and FareCheck answer 409 OperationNotSupported - see TC-SEATMAP-NEG-01, FLOW-V2-49-NEG).
+- **Status:** BLOCKED
+- **Evidence:** Bundle + Ancillary + SeatMap enrichment is required by this flow, and SabreNdc/EGY does not support it: Bundles are not offered (haveBundles=false on all 91 offers (re-checked 2026-11-24); GetOfferBundles answers 409 OperationNotSupported - see TC-BUNDLE-NEG-01 in the Generic report and FLOW-V2-31-NEG); Ancillaries are not offered (offerHasAncillary=false on all 91 offers (re-checked 2026-11-24); GetAncillary and FareCheck answer 409 OperationNotSupported - see TC-ANCILLARY-NEG-01, TC-FARECHECK-NEG-01); Seat maps are not offered (isSeatMapRequired=false and offerHasSeat=false on all 91 offers (re-checked 2026-11-24); GetSeatMap and FareCheck answer 409 OperationNotSupported - see TC-SEATMAP-NEG-01, FLOW-V2-49-NEG). | Round 1 verdict: BLOCKED (unchanged)
+
+### FLOW-V2-67-NEG — BLOCKED
+
+- **Test Case:** [FC-BDL+ANC+SM-A][Request] Validate that a passengersList submitted at AddPassenger whose count/type mix does not match what was declared at Search time is rejected or flagged.
+- **Category:** Flow - Negative
+- **Endpoint Name:** V2 flow
+- **Request:** Not sent - the positive chain up to the fault hop includes Bundle + Ancillary + SeatMap enrichment hop(s), which SabreNdc/EGY cannot execute (Bundles are not offered; Ancillaries are not offered; Seat maps are not offered). The same fault on the supported chain is covered by: TC-ADDPAX-VAL-01.
+- **Response:** No request sent
+- **Expected:** UNKNOWN exact behavior -- not verified by any script per SPEC.md 2.5; confirm live whether the supplier/adapter rejects the mismatch or silently accepts it.
+- **Actual:** Blocked: the positive chain up to the fault hop includes Bundle + Ancillary + SeatMap enrichment hop(s), which SabreNdc/EGY cannot execute (Bundles are not offered; Ancillaries are not offered; Seat maps are not offered). The same fault on the supported chain is covered by: TC-ADDPAX-VAL-01.
+- **Status:** BLOCKED
+- **Evidence:** the positive chain up to the fault hop includes Bundle + Ancillary + SeatMap enrichment hop(s), which SabreNdc/EGY cannot execute (Bundles are not offered; Ancillaries are not offered; Seat maps are not offered). The same fault on the supported chain is covered by: TC-ADDPAX-VAL-01. | Round 1 verdict: BLOCKED (unchanged)
+
+### FLOW-V2-68 — BLOCKED
+
+- **Test Case:** [FC-BDL+ANC+SM-B][Response] Verify Search -&gt; FareConfirm -&gt; GetOfferBundles -&gt; AddPassenger -&gt; GetAncillary -&gt; GetSeatMap -&gt; FareCheck* -&gt; Hold -&gt; FareConfirmAfterHold -&gt; Retrieve completes with a held bookingStatus and a future holdExpirationDate at the final Retrieve (flow intentionally stops here -- dangling Held booking); and bundle pricing correctly reflected without double-charging included services; selected ancillaries correctly reflected in passengersSelectedAncillaries/paxTotalAncillaryAmount; the chosen seat cellCode correctly reflected as a priced Seat-category line.
+- **Category:** Flow - Positive
+- **Endpoint Name:** V2 flow
+- **Request:** Not sent - Bundle + Ancillary + SeatMap enrichment is required by this flow, and SabreNdc/EGY does not support it: Bundles are not offered (haveBundles=false on all 91 offers (re-checked 2026-11-24); GetOfferBundles answers 409 OperationNotSupported - see TC-BUNDLE-NEG-01 in the Generic report and FLOW-V2-31-NEG); Ancillaries are not offered (offerHasAncillary=false on all 91 offers (re-checked 2026-11-24); GetAncillary and FareCheck answer 409 OperationNotSupported - see TC-ANCILLARY-NEG-01, TC-FARECHECK-NEG-01); Seat maps are not offered (isSeatMapRequired=false and offerHasSeat=false on all 91 offers (re-checked 2026-11-24); GetSeatMap and FareCheck answer 409 OperationNotSupported - see TC-SEATMAP-NEG-01, FLOW-V2-49-NEG).
+- **Response:** No request sent
+- **Expected:** Per-family state check (SPEC.md 6.3, Family B): bookingStatus reads a held (not yet ticketed) state with holdExpirationDate present and in the future at the final Retrieve -- the flow deliberately STOPS here (Family B, no BookAfterHold/CancelAfterHold), leaving a dangling Held booking; log the pnr for out-of-band cleanup/expiry tracking per SPEC.md Section 6.3. Per-enrichment state check(s) (SPEC.md 6.4): the booking's final priceDetails.totalAmount reflects the selected bundle's feePrice added to the base offer price, and any bundle-included service (baggage/seat/meal per includedServices tags) does NOT also appear as a separately-priced ancillary line; passengersSelectedAncillaries on Book/Hold/Retrieve lists exactly the ancillary codes selected at GetAncillary/FareCheck time with matching AdditionalServiceCategory/quantity, and paxTotalAncillaryAmount equals the sum of the selected ancillaries' prices; the chosen GetSeatMap cellCode appears as a Seat-category entry in passengersSelectedAncillaries, priced per what GetSeatMap/FareCheck reported for that cell; the final booking price equals FareCheck's re-priced total (not the pre-ancillary FareConfirm/AddPassenger-era total) -- the highest-value price-integrity assertion for this enrichment. FareCheck conditionality: FareCheck must actually run only if the immediately-preceding GetAncillary/GetSeatMap response reported isFareCheckRequired=true; do not treat FareCheck as unconditionally present, and if it is required, the price delta between the pre-FareCheck and post-FareCheck totals should equal the sum of the selected ancillary/seat prices (2.8). Manual price-reconciliation requirement (V2 script coverage gap, SPEC.md 1.4/2.1/6.2/7.10): per passenger type, sum(taxesAndFees[].amount.amount) == paxTotalTaxAmount.amount, and totals reconcile per the Section 2.1 formula; this is enforced by script at Hold/FareConfirmAfterHold/BookAfterHold in V2, but NOT at Search/FareConfirm/Book/Retrieve -- the tester must supply this check manually at every Book/Retrieve step in this flow. Assert passengersAncillariesAvailabilty (GetAncillary response) is spelled exactly as the live API returns it -- missing the second "i" -- since this is a genuine API field-name defect, not a documentation typo. Assert the GetSeatMap-selected cellCode was correctly hand-carried into Book/Hold's PassengersSelectedAncillaries; a mismatched or omitted cellCode is the single most likely manual-execution error in flows 49-72.
+- **Actual:** Blocked: Bundle + Ancillary + SeatMap enrichment is required by this flow, and SabreNdc/EGY does not support it: Bundles are not offered (haveBundles=false on all 91 offers (re-checked 2026-11-24); GetOfferBundles answers 409 OperationNotSupported - see TC-BUNDLE-NEG-01 in the Generic report and FLOW-V2-31-NEG); Ancillaries are not offered (offerHasAncillary=false on all 91 offers (re-checked 2026-11-24); GetAncillary and FareCheck answer 409 OperationNotSupported - see TC-ANCILLARY-NEG-01, TC-FARECHECK-NEG-01); Seat maps are not offered (isSeatMapRequired=false and offerHasSeat=false on all 91 offers (re-checked 2026-11-24); GetSeatMap and FareCheck answer 409 OperationNotSupported - see TC-SEATMAP-NEG-01, FLOW-V2-49-NEG).
+- **Status:** BLOCKED
+- **Evidence:** Bundle + Ancillary + SeatMap enrichment is required by this flow, and SabreNdc/EGY does not support it: Bundles are not offered (haveBundles=false on all 91 offers (re-checked 2026-11-24); GetOfferBundles answers 409 OperationNotSupported - see TC-BUNDLE-NEG-01 in the Generic report and FLOW-V2-31-NEG); Ancillaries are not offered (offerHasAncillary=false on all 91 offers (re-checked 2026-11-24); GetAncillary and FareCheck answer 409 OperationNotSupported - see TC-ANCILLARY-NEG-01, TC-FARECHECK-NEG-01); Seat maps are not offered (isSeatMapRequired=false and offerHasSeat=false on all 91 offers (re-checked 2026-11-24); GetSeatMap and FareCheck answer 409 OperationNotSupported - see TC-SEATMAP-NEG-01, FLOW-V2-49-NEG). | Round 1 verdict: BLOCKED (unchanged)
+
+### FLOW-V2-68-NEG — BLOCKED
+
+- **Test Case:** [FC-BDL+ANC+SM-B][Response] Verify the behavior of FareConfirmAfterHold when attempted after holdExpirationDate has already passed.
+- **Category:** Flow - Negative
+- **Endpoint Name:** V2 flow
+- **Request:** Not sent - the post-expiry state cannot be reached in a session: holds observed on SabreNdc/EGY expire about 5 days after creation (2026-10-30 for holds made on 2026-10-25), and the window cannot be shortened.
+- **Response:** No request sent
+- **Expected:** UNKNOWN exact status -- confirm live. SPEC.md 3.2/6.5 explicitly flags that no flow in flow.md exercises behavior past hold expiration; this is a high-value exploratory gap, not a documented failure mode. Do not assume a specific HTTP status without live confirmation.
+- **Actual:** Blocked: the post-expiry state cannot be reached in a session: holds observed on SabreNdc/EGY expire about 5 days after creation (2026-10-30 for holds made on 2026-10-25), and the window cannot be shortened.
+- **Status:** BLOCKED
+- **Evidence:** the post-expiry state cannot be reached in a session: holds observed on SabreNdc/EGY expire about 5 days after creation (2026-10-30 for holds made on 2026-10-25), and the window cannot be shortened. | Round 1 verdict: BLOCKED (unchanged)
+
+### FLOW-V2-69 — BLOCKED
+
+- **Test Case:** [FC-BDL+ANC+SM-C][Response] Verify Search -&gt; FareConfirm -&gt; GetOfferBundles -&gt; AddPassenger -&gt; GetAncillary -&gt; GetSeatMap -&gt; FareCheck* -&gt; Book -&gt; Retrieve -&gt; Void completes with a booked bookingStatus at Retrieve followed by a successful Void (gated by voidCapability); and bundle pricing correctly reflected without double-charging included services; selected ancillaries correctly reflected in passengersSelectedAncillaries/paxTotalAncillaryAmount; the chosen seat cellCode correctly reflected as a priced Seat-category line.
+- **Category:** Flow - Positive
+- **Endpoint Name:** V2 flow
+- **Request:** Not sent - Bundle + Ancillary + SeatMap enrichment is required by this flow, and SabreNdc/EGY does not support it: Bundles are not offered (haveBundles=false on all 91 offers (re-checked 2026-11-24); GetOfferBundles answers 409 OperationNotSupported - see TC-BUNDLE-NEG-01 in the Generic report and FLOW-V2-31-NEG); Ancillaries are not offered (offerHasAncillary=false on all 91 offers (re-checked 2026-11-24); GetAncillary and FareCheck answer 409 OperationNotSupported - see TC-ANCILLARY-NEG-01, TC-FARECHECK-NEG-01); Seat maps are not offered (isSeatMapRequired=false and offerHasSeat=false on all 91 offers (re-checked 2026-11-24); GetSeatMap and FareCheck answer 409 OperationNotSupported - see TC-SEATMAP-NEG-01, FLOW-V2-49-NEG).
+- **Response:** No request sent
+- **Expected:** Per-family state check (SPEC.md 6.3, Family C): bookingStatus reads booked at Retrieve, then Void succeeds (gated by voidCapability != VoidNotAllowed), and a follow-up manual Retrieve should show a voided/cancelled bookingStatus. Per-enrichment state check(s) (SPEC.md 6.4): the booking's final priceDetails.totalAmount reflects the selected bundle's feePrice added to the base offer price, and any bundle-included service (baggage/seat/meal per includedServices tags) does NOT also appear as a separately-priced ancillary line; passengersSelectedAncillaries on Book/Hold/Retrieve lists exactly the ancillary codes selected at GetAncillary/FareCheck time with matching AdditionalServiceCategory/quantity, and paxTotalAncillaryAmount equals the sum of the selected ancillaries' prices; the chosen GetSeatMap cellCode appears as a Seat-category entry in passengersSelectedAncillaries, priced per what GetSeatMap/FareCheck reported for that cell; the final booking price equals FareCheck's re-priced total (not the pre-ancillary FareConfirm/AddPassenger-era total) -- the highest-value price-integrity assertion for this enrichment. FareCheck conditionality: FareCheck must actually run only if the immediately-preceding GetAncillary/GetSeatMap response reported isFareCheckRequired=true; do not treat FareCheck as unconditionally present, and if it is required, the price delta between the pre-FareCheck and post-FareCheck totals should equal the sum of the selected ancillary/seat prices (2.8). Manual price-reconciliation requirement (V2 script coverage gap, SPEC.md 1.4/2.1/6.2/7.10): per passenger type, sum(taxesAndFees[].amount.amount) == paxTotalTaxAmount.amount, and totals reconcile per the Section 2.1 formula; this is enforced by script at Hold/FareConfirmAfterHold/BookAfterHold in V2, but NOT at Search/FareConfirm/Book/Retrieve -- the tester must supply this check manually at every Book/Retrieve step in this flow. Assert passengersAncillariesAvailabilty (GetAncillary response) is spelled exactly as the live API returns it -- missing the second "i" -- since this is a genuine API field-name defect, not a documentation typo. Assert the GetSeatMap-selected cellCode was correctly hand-carried into Book/Hold's PassengersSelectedAncillaries; a mismatched or omitted cellCode is the single most likely manual-execution error in flows 49-72.
+- **Actual:** Blocked: Bundle + Ancillary + SeatMap enrichment is required by this flow, and SabreNdc/EGY does not support it: Bundles are not offered (haveBundles=false on all 91 offers (re-checked 2026-11-24); GetOfferBundles answers 409 OperationNotSupported - see TC-BUNDLE-NEG-01 in the Generic report and FLOW-V2-31-NEG); Ancillaries are not offered (offerHasAncillary=false on all 91 offers (re-checked 2026-11-24); GetAncillary and FareCheck answer 409 OperationNotSupported - see TC-ANCILLARY-NEG-01, TC-FARECHECK-NEG-01); Seat maps are not offered (isSeatMapRequired=false and offerHasSeat=false on all 91 offers (re-checked 2026-11-24); GetSeatMap and FareCheck answer 409 OperationNotSupported - see TC-SEATMAP-NEG-01, FLOW-V2-49-NEG).
+- **Status:** BLOCKED
+- **Evidence:** Bundle + Ancillary + SeatMap enrichment is required by this flow, and SabreNdc/EGY does not support it: Bundles are not offered (haveBundles=false on all 91 offers (re-checked 2026-11-24); GetOfferBundles answers 409 OperationNotSupported - see TC-BUNDLE-NEG-01 in the Generic report and FLOW-V2-31-NEG); Ancillaries are not offered (offerHasAncillary=false on all 91 offers (re-checked 2026-11-24); GetAncillary and FareCheck answer 409 OperationNotSupported - see TC-ANCILLARY-NEG-01, TC-FARECHECK-NEG-01); Seat maps are not offered (isSeatMapRequired=false and offerHasSeat=false on all 91 offers (re-checked 2026-11-24); GetSeatMap and FareCheck answer 409 OperationNotSupported - see TC-SEATMAP-NEG-01, FLOW-V2-49-NEG). | Round 1 verdict: BLOCKED (unchanged)
+
+### FLOW-V2-69-NEG — BLOCKED
+
+- **Test Case:** [FC-BDL+ANC+SM-C][Response] Verify that the commercial whitelist/blacklist business gate blocks Void for a commercially blacklisted supplier/airline even when the technical voidCapability would otherwise allow it.
+- **Category:** Flow - Negative
+- **Endpoint Name:** V2 flow
+- **Request:** Not sent - it needs a commercially blacklisted supplier/airline; SabreNdc (Qatar Airways / American Airlines content) is not on the blacklist (SPEC 4.3) and this run is scoped to SabreNdc/EGY.
+- **Response:** No request sent
+- **Expected:** UNKNOWN exact rejection point -- confirm live whether this is blocked at the business layer before reaching the supplier, or left to fail downstream. SPEC.md 1.8/4.3 treats commercial blacklisting as independent from technical capability.
+- **Actual:** Blocked: it needs a commercially blacklisted supplier/airline; SabreNdc (Qatar Airways / American Airlines content) is not on the blacklist (SPEC 4.3) and this run is scoped to SabreNdc/EGY.
+- **Status:** BLOCKED
+- **Evidence:** it needs a commercially blacklisted supplier/airline; SabreNdc (Qatar Airways / American Airlines content) is not on the blacklist (SPEC 4.3) and this run is scoped to SabreNdc/EGY. | Round 1 verdict: BLOCKED (unchanged)
+
+### FLOW-V2-70 — BLOCKED
+
+- **Test Case:** [FC-BDL+ANC+SM-D][Response] Verify Search -&gt; FareConfirm -&gt; GetOfferBundles -&gt; AddPassenger -&gt; GetAncillary -&gt; GetSeatMap -&gt; FareCheck* -&gt; Hold -&gt; FareConfirmAfterHold -&gt; Retrieve -&gt; BookAfterHold -&gt; Retrieve completes with bookingStatus transitioning held -&gt; booked via BookAfterHold, with pnr/bookingToken/gdsPNR unchanged from Hold; and bundle pricing correctly reflected without double-charging included services; selected ancillaries correctly reflected in passengersSelectedAncillaries/paxTotalAncillaryAmount; the chosen seat cellCode correctly reflected as a priced Seat-category line.
+- **Category:** Flow - Positive
+- **Endpoint Name:** V2 flow
+- **Request:** Not sent - Bundle + Ancillary + SeatMap enrichment is required by this flow, and SabreNdc/EGY does not support it: Bundles are not offered (haveBundles=false on all 91 offers (re-checked 2026-11-24); GetOfferBundles answers 409 OperationNotSupported - see TC-BUNDLE-NEG-01 in the Generic report and FLOW-V2-31-NEG); Ancillaries are not offered (offerHasAncillary=false on all 91 offers (re-checked 2026-11-24); GetAncillary and FareCheck answer 409 OperationNotSupported - see TC-ANCILLARY-NEG-01, TC-FARECHECK-NEG-01); Seat maps are not offered (isSeatMapRequired=false and offerHasSeat=false on all 91 offers (re-checked 2026-11-24); GetSeatMap and FareCheck answer 409 OperationNotSupported - see TC-SEATMAP-NEG-01, FLOW-V2-49-NEG).
+- **Response:** No request sent
+- **Expected:** Per-family state check (SPEC.md 6.3, Family D): bookingStatus transitions from held (after Hold/FareConfirmAfterHold) to booked/confirmed (after BookAfterHold), with pnr/bookingToken/gdsPNR identical to the values Hold produced (same-PNR invariant, SPEC.md Section 2.13). Per-enrichment state check(s) (SPEC.md 6.4): the booking's final priceDetails.totalAmount reflects the selected bundle's feePrice added to the base offer price, and any bundle-included service (baggage/seat/meal per includedServices tags) does NOT also appear as a separately-priced ancillary line; passengersSelectedAncillaries on Book/Hold/Retrieve lists exactly the ancillary codes selected at GetAncillary/FareCheck time with matching AdditionalServiceCategory/quantity, and paxTotalAncillaryAmount equals the sum of the selected ancillaries' prices; the chosen GetSeatMap cellCode appears as a Seat-category entry in passengersSelectedAncillaries, priced per what GetSeatMap/FareCheck reported for that cell; the final booking price equals FareCheck's re-priced total (not the pre-ancillary FareConfirm/AddPassenger-era total) -- the highest-value price-integrity assertion for this enrichment. FareCheck conditionality: FareCheck must actually run only if the immediately-preceding GetAncillary/GetSeatMap response reported isFareCheckRequired=true; do not treat FareCheck as unconditionally present, and if it is required, the price delta between the pre-FareCheck and post-FareCheck totals should equal the sum of the selected ancillary/seat prices (2.8). Manual price-reconciliation requirement (V2 script coverage gap, SPEC.md 1.4/2.1/6.2/7.10): per passenger type, sum(taxesAndFees[].amount.amount) == paxTotalTaxAmount.amount, and totals reconcile per the Section 2.1 formula; this is enforced by script at Hold/FareConfirmAfterHold/BookAfterHold in V2, but NOT at Search/FareConfirm/Book/Retrieve -- the tester must supply this check manually at every Book/Retrieve step in this flow. Assert passengersAncillariesAvailabilty (GetAncillary response) is spelled exactly as the live API returns it -- missing the second "i" -- since this is a genuine API field-name defect, not a documentation typo. Assert the GetSeatMap-selected cellCode was correctly hand-carried into Book/Hold's PassengersSelectedAncillaries; a mismatched or omitted cellCode is the single most likely manual-execution error in flows 49-72.
+- **Actual:** Blocked: Bundle + Ancillary + SeatMap enrichment is required by this flow, and SabreNdc/EGY does not support it: Bundles are not offered (haveBundles=false on all 91 offers (re-checked 2026-11-24); GetOfferBundles answers 409 OperationNotSupported - see TC-BUNDLE-NEG-01 in the Generic report and FLOW-V2-31-NEG); Ancillaries are not offered (offerHasAncillary=false on all 91 offers (re-checked 2026-11-24); GetAncillary and FareCheck answer 409 OperationNotSupported - see TC-ANCILLARY-NEG-01, TC-FARECHECK-NEG-01); Seat maps are not offered (isSeatMapRequired=false and offerHasSeat=false on all 91 offers (re-checked 2026-11-24); GetSeatMap and FareCheck answer 409 OperationNotSupported - see TC-SEATMAP-NEG-01, FLOW-V2-49-NEG).
+- **Status:** BLOCKED
+- **Evidence:** Bundle + Ancillary + SeatMap enrichment is required by this flow, and SabreNdc/EGY does not support it: Bundles are not offered (haveBundles=false on all 91 offers (re-checked 2026-11-24); GetOfferBundles answers 409 OperationNotSupported - see TC-BUNDLE-NEG-01 in the Generic report and FLOW-V2-31-NEG); Ancillaries are not offered (offerHasAncillary=false on all 91 offers (re-checked 2026-11-24); GetAncillary and FareCheck answer 409 OperationNotSupported - see TC-ANCILLARY-NEG-01, TC-FARECHECK-NEG-01); Seat maps are not offered (isSeatMapRequired=false and offerHasSeat=false on all 91 offers (re-checked 2026-11-24); GetSeatMap and FareCheck answer 409 OperationNotSupported - see TC-SEATMAP-NEG-01, FLOW-V2-49-NEG). | Round 1 verdict: BLOCKED (unchanged)
+
+### FLOW-V2-70-NEG — BLOCKED
+
+- **Test Case:** [FC-BDL+ANC+SM-D][Response] Verify the behavior of BookAfterHold when attempted after holdExpirationDate has already passed (attempted just after holdExpirationDate on the richest enrichment combination).
+- **Category:** Flow - Negative
+- **Endpoint Name:** V2 flow
+- **Request:** Not sent - the post-expiry state cannot be reached in a session: holds observed on SabreNdc/EGY expire about 5 days after creation (2026-10-30 for holds made on 2026-10-25), and the window cannot be shortened.
+- **Response:** No request sent
+- **Expected:** UNKNOWN exact status -- confirm live. SPEC.md 3.2/6.5 explicitly flags that no flow in flow.md exercises behavior past hold expiration; this is a high-value exploratory gap, not a documented failure mode. Do not assume a specific HTTP status without live confirmation.
+- **Actual:** Blocked: the post-expiry state cannot be reached in a session: holds observed on SabreNdc/EGY expire about 5 days after creation (2026-10-30 for holds made on 2026-10-25), and the window cannot be shortened.
+- **Status:** BLOCKED
+- **Evidence:** the post-expiry state cannot be reached in a session: holds observed on SabreNdc/EGY expire about 5 days after creation (2026-10-30 for holds made on 2026-10-25), and the window cannot be shortened. | Round 1 verdict: BLOCKED (unchanged)
+
+### FLOW-V2-71 — BLOCKED
+
+- **Test Case:** [FC-BDL+ANC+SM-E][Response] Verify Search -&gt; FareConfirm -&gt; GetOfferBundles -&gt; AddPassenger -&gt; GetAncillary -&gt; GetSeatMap -&gt; FareCheck* -&gt; Hold -&gt; FareConfirmAfterHold -&gt; Retrieve -&gt; BookAfterHold -&gt; Retrieve -&gt; Void completes with bookingStatus transitioning held -&gt; booked via BookAfterHold and then a successful Void; and bundle pricing correctly reflected without double-charging included services; selected ancillaries correctly reflected in passengersSelectedAncillaries/paxTotalAncillaryAmount; the chosen seat cellCode correctly reflected as a priced Seat-category line.
+- **Category:** Flow - Positive
+- **Endpoint Name:** V2 flow
+- **Request:** Not sent - Bundle + Ancillary + SeatMap enrichment is required by this flow, and SabreNdc/EGY does not support it: Bundles are not offered (haveBundles=false on all 91 offers (re-checked 2026-11-24); GetOfferBundles answers 409 OperationNotSupported - see TC-BUNDLE-NEG-01 in the Generic report and FLOW-V2-31-NEG); Ancillaries are not offered (offerHasAncillary=false on all 91 offers (re-checked 2026-11-24); GetAncillary and FareCheck answer 409 OperationNotSupported - see TC-ANCILLARY-NEG-01, TC-FARECHECK-NEG-01); Seat maps are not offered (isSeatMapRequired=false and offerHasSeat=false on all 91 offers (re-checked 2026-11-24); GetSeatMap and FareCheck answer 409 OperationNotSupported - see TC-SEATMAP-NEG-01, FLOW-V2-49-NEG).
+- **Response:** No request sent
+- **Expected:** Per-family state check (SPEC.md 6.3, Family E): bookingStatus transitions held -&gt; booked via BookAfterHold (same-PNR invariant holds) and then Void succeeds (gated by voidCapability), with a follow-up manual Retrieve expected to show voided/cancelled. Per-enrichment state check(s) (SPEC.md 6.4): the booking's final priceDetails.totalAmount reflects the selected bundle's feePrice added to the base offer price, and any bundle-included service (baggage/seat/meal per includedServices tags) does NOT also appear as a separately-priced ancillary line; passengersSelectedAncillaries on Book/Hold/Retrieve lists exactly the ancillary codes selected at GetAncillary/FareCheck time with matching AdditionalServiceCategory/quantity, and paxTotalAncillaryAmount equals the sum of the selected ancillaries' prices; the chosen GetSeatMap cellCode appears as a Seat-category entry in passengersSelectedAncillaries, priced per what GetSeatMap/FareCheck reported for that cell; the final booking price equals FareCheck's re-priced total (not the pre-ancillary FareConfirm/AddPassenger-era total) -- the highest-value price-integrity assertion for this enrichment. FareCheck conditionality: FareCheck must actually run only if the immediately-preceding GetAncillary/GetSeatMap response reported isFareCheckRequired=true; do not treat FareCheck as unconditionally present, and if it is required, the price delta between the pre-FareCheck and post-FareCheck totals should equal the sum of the selected ancillary/seat prices (2.8). Manual price-reconciliation requirement (V2 script coverage gap, SPEC.md 1.4/2.1/6.2/7.10): per passenger type, sum(taxesAndFees[].amount.amount) == paxTotalTaxAmount.amount, and totals reconcile per the Section 2.1 formula; this is enforced by script at Hold/FareConfirmAfterHold/BookAfterHold in V2, but NOT at Search/FareConfirm/Book/Retrieve -- the tester must supply this check manually at every Book/Retrieve step in this flow. Assert passengersAncillariesAvailabilty (GetAncillary response) is spelled exactly as the live API returns it -- missing the second "i" -- since this is a genuine API field-name defect, not a documentation typo. Assert the GetSeatMap-selected cellCode was correctly hand-carried into Book/Hold's PassengersSelectedAncillaries; a mismatched or omitted cellCode is the single most likely manual-execution error in flows 49-72.
+- **Actual:** Blocked: Bundle + Ancillary + SeatMap enrichment is required by this flow, and SabreNdc/EGY does not support it: Bundles are not offered (haveBundles=false on all 91 offers (re-checked 2026-11-24); GetOfferBundles answers 409 OperationNotSupported - see TC-BUNDLE-NEG-01 in the Generic report and FLOW-V2-31-NEG); Ancillaries are not offered (offerHasAncillary=false on all 91 offers (re-checked 2026-11-24); GetAncillary and FareCheck answer 409 OperationNotSupported - see TC-ANCILLARY-NEG-01, TC-FARECHECK-NEG-01); Seat maps are not offered (isSeatMapRequired=false and offerHasSeat=false on all 91 offers (re-checked 2026-11-24); GetSeatMap and FareCheck answer 409 OperationNotSupported - see TC-SEATMAP-NEG-01, FLOW-V2-49-NEG).
+- **Status:** BLOCKED
+- **Evidence:** Bundle + Ancillary + SeatMap enrichment is required by this flow, and SabreNdc/EGY does not support it: Bundles are not offered (haveBundles=false on all 91 offers (re-checked 2026-11-24); GetOfferBundles answers 409 OperationNotSupported - see TC-BUNDLE-NEG-01 in the Generic report and FLOW-V2-31-NEG); Ancillaries are not offered (offerHasAncillary=false on all 91 offers (re-checked 2026-11-24); GetAncillary and FareCheck answer 409 OperationNotSupported - see TC-ANCILLARY-NEG-01, TC-FARECHECK-NEG-01); Seat maps are not offered (isSeatMapRequired=false and offerHasSeat=false on all 91 offers (re-checked 2026-11-24); GetSeatMap and FareCheck answer 409 OperationNotSupported - see TC-SEATMAP-NEG-01, FLOW-V2-49-NEG). | Round 1 verdict: BLOCKED (unchanged)
+
+### FLOW-V2-71-NEG — BLOCKED
+
+- **Test Case:** [FC-BDL+ANC+SM-E][Response] Verify that the commercial whitelist/blacklist business gate blocks Void for a commercially blacklisted supplier/airline even when the technical voidCapability would otherwise allow it (commercially blacklisted supplier/airline despite technical voidCapability allowing it).
+- **Category:** Flow - Negative
+- **Endpoint Name:** V2 flow
+- **Request:** Not sent - it needs a commercially blacklisted supplier/airline; SabreNdc (Qatar Airways / American Airlines content) is not on the blacklist (SPEC 4.3) and this run is scoped to SabreNdc/EGY.
+- **Response:** No request sent
+- **Expected:** UNKNOWN exact rejection point -- confirm live whether this is blocked at the business layer before reaching the supplier, or left to fail downstream. SPEC.md 1.8/4.3 treats commercial blacklisting as independent from technical capability.
+- **Actual:** Blocked: it needs a commercially blacklisted supplier/airline; SabreNdc (Qatar Airways / American Airlines content) is not on the blacklist (SPEC 4.3) and this run is scoped to SabreNdc/EGY.
+- **Status:** BLOCKED
+- **Evidence:** it needs a commercially blacklisted supplier/airline; SabreNdc (Qatar Airways / American Airlines content) is not on the blacklist (SPEC 4.3) and this run is scoped to SabreNdc/EGY. | Round 1 verdict: BLOCKED (unchanged)
+
+### FLOW-V2-72 — BLOCKED
+
+- **Test Case:** [FC-BDL+ANC+SM-F][Response] Verify Search -&gt; FareConfirm -&gt; GetOfferBundles -&gt; AddPassenger -&gt; GetAncillary -&gt; GetSeatMap -&gt; FareCheck* -&gt; Hold -&gt; FareConfirmAfterHold -&gt; Retrieve -&gt; CancelAfterHold completes with bookingStatus transitioning held -&gt; cancelled/terminated via CancelAfterHold; and bundle pricing correctly reflected without double-charging included services; selected ancillaries correctly reflected in passengersSelectedAncillaries/paxTotalAncillaryAmount; the chosen seat cellCode correctly reflected as a priced Seat-category line.
+- **Category:** Flow - Positive
+- **Endpoint Name:** V2 flow
+- **Request:** Not sent - Bundle + Ancillary + SeatMap enrichment is required by this flow, and SabreNdc/EGY does not support it: Bundles are not offered (haveBundles=false on all 91 offers (re-checked 2026-11-24); GetOfferBundles answers 409 OperationNotSupported - see TC-BUNDLE-NEG-01 in the Generic report and FLOW-V2-31-NEG); Ancillaries are not offered (offerHasAncillary=false on all 91 offers (re-checked 2026-11-24); GetAncillary and FareCheck answer 409 OperationNotSupported - see TC-ANCILLARY-NEG-01, TC-FARECHECK-NEG-01); Seat maps are not offered (isSeatMapRequired=false and offerHasSeat=false on all 91 offers (re-checked 2026-11-24); GetSeatMap and FareCheck answer 409 OperationNotSupported - see TC-SEATMAP-NEG-01, FLOW-V2-49-NEG).
+- **Response:** No request sent
+- **Expected:** Per-family state check (SPEC.md 6.3, Family F): bookingStatus transitions from held to a cancelled/terminated state after CancelAfterHold -- CancelAfterHold has zero script coverage and no genuine saved response example anywhere in the collections, so this is the weakest-validated end-state in the whole API; treat the post-CancelAfterHold Retrieve bookingStatus as the primary, entirely-manual success signal. Per-enrichment state check(s) (SPEC.md 6.4): the booking's final priceDetails.totalAmount reflects the selected bundle's feePrice added to the base offer price, and any bundle-included service (baggage/seat/meal per includedServices tags) does NOT also appear as a separately-priced ancillary line; passengersSelectedAncillaries on Book/Hold/Retrieve lists exactly the ancillary codes selected at GetAncillary/FareCheck time with matching AdditionalServiceCategory/quantity, and paxTotalAncillaryAmount equals the sum of the selected ancillaries' prices; the chosen GetSeatMap cellCode appears as a Seat-category entry in passengersSelectedAncillaries, priced per what GetSeatMap/FareCheck reported for that cell; the final booking price equals FareCheck's re-priced total (not the pre-ancillary FareConfirm/AddPassenger-era total) -- the highest-value price-integrity assertion for this enrichment. FareCheck conditionality: FareCheck must actually run only if the immediately-preceding GetAncillary/GetSeatMap response reported isFareCheckRequired=true; do not treat FareCheck as unconditionally present, and if it is required, the price delta between the pre-FareCheck and post-FareCheck totals should equal the sum of the selected ancillary/seat prices (2.8). Manual price-reconciliation requirement (V2 script coverage gap, SPEC.md 1.4/2.1/6.2/7.10): per passenger type, sum(taxesAndFees[].amount.amount) == paxTotalTaxAmount.amount, and totals reconcile per the Section 2.1 formula; this is enforced by script at Hold/FareConfirmAfterHold/BookAfterHold in V2, but NOT at Search/FareConfirm/Book/Retrieve -- the tester must supply this check manually at every Book/Retrieve step in this flow. Assert passengersAncillariesAvailabilty (GetAncillary response) is spelled exactly as the live API returns it -- missing the second "i" -- since this is a genuine API field-name defect, not a documentation typo. Assert the GetSeatMap-selected cellCode was correctly hand-carried into Book/Hold's PassengersSelectedAncillaries; a mismatched or omitted cellCode is the single most likely manual-execution error in flows 49-72.
+- **Actual:** Blocked: Bundle + Ancillary + SeatMap enrichment is required by this flow, and SabreNdc/EGY does not support it: Bundles are not offered (haveBundles=false on all 91 offers (re-checked 2026-11-24); GetOfferBundles answers 409 OperationNotSupported - see TC-BUNDLE-NEG-01 in the Generic report and FLOW-V2-31-NEG); Ancillaries are not offered (offerHasAncillary=false on all 91 offers (re-checked 2026-11-24); GetAncillary and FareCheck answer 409 OperationNotSupported - see TC-ANCILLARY-NEG-01, TC-FARECHECK-NEG-01); Seat maps are not offered (isSeatMapRequired=false and offerHasSeat=false on all 91 offers (re-checked 2026-11-24); GetSeatMap and FareCheck answer 409 OperationNotSupported - see TC-SEATMAP-NEG-01, FLOW-V2-49-NEG).
+- **Status:** BLOCKED
+- **Evidence:** Bundle + Ancillary + SeatMap enrichment is required by this flow, and SabreNdc/EGY does not support it: Bundles are not offered (haveBundles=false on all 91 offers (re-checked 2026-11-24); GetOfferBundles answers 409 OperationNotSupported - see TC-BUNDLE-NEG-01 in the Generic report and FLOW-V2-31-NEG); Ancillaries are not offered (offerHasAncillary=false on all 91 offers (re-checked 2026-11-24); GetAncillary and FareCheck answer 409 OperationNotSupported - see TC-ANCILLARY-NEG-01, TC-FARECHECK-NEG-01); Seat maps are not offered (isSeatMapRequired=false and offerHasSeat=false on all 91 offers (re-checked 2026-11-24); GetSeatMap and FareCheck answer 409 OperationNotSupported - see TC-SEATMAP-NEG-01, FLOW-V2-49-NEG). | Round 1 verdict: BLOCKED (unchanged)
+
+### FLOW-V2-72-NEG — BLOCKED
+
+- **Test Case:** [FC-BDL+ANC+SM-F][Request] Validate the documented V2 CancelAfterHold unquoted {{Credentials_Selector}} request-body defect (reproduced against the richest (Bundle+Ancillary+SeatMap) enrichment combination -- CancelAfterHold remains the least-validated endpoint in the API regardless of enrichment).
+- **Category:** Flow - Negative
+- **Endpoint Name:** V2 flow
+- **Request:** Not sent - the positive chain up to the fault hop includes Bundle + Ancillary + SeatMap enrichment hop(s), which SabreNdc/EGY cannot execute (Bundles are not offered; Ancillaries are not offered; Seat maps are not offered). The same fault on the supported chain is covered by: TC-CANCELHOLD-NEG-01.
+- **Response:** No request sent
+- **Expected:** Once the placeholder is substituted, the raw body becomes invalid JSON (e.g. "credentialsSelector" : UAE, with no quotes). Confirm live whether this produces a 400/parse error or is somehow tolerated. This is a literal, evidenced syntax bug in the saved request body (SPEC.md 2.14), not a hypothesis.
+- **Actual:** Blocked: the positive chain up to the fault hop includes Bundle + Ancillary + SeatMap enrichment hop(s), which SabreNdc/EGY cannot execute (Bundles are not offered; Ancillaries are not offered; Seat maps are not offered). The same fault on the supported chain is covered by: TC-CANCELHOLD-NEG-01.
+- **Status:** BLOCKED
+- **Evidence:** the positive chain up to the fault hop includes Bundle + Ancillary + SeatMap enrichment hop(s), which SabreNdc/EGY cannot execute (Bundles are not offered; Ancillaries are not offered; Seat maps are not offered). The same fault on the supported chain is covered by: TC-CANCELHOLD-NEG-01. | Round 1 verdict: BLOCKED (unchanged)
+
+### FLOW-V2-73 — PASS
+
+- **Test Case:** [Upselling-Base][Response] Verify Family-A flow completes end-to-end via the Upselling fare-selection path.
+- **Category:** Flow - Positive
+- **Endpoint Name:** V2 Upselling flow - Family A (Book &gt; Retrieve)
+- **Request:** Search CAI-JED 2026-11-24 1 ADT &gt; Upselling &gt; AddPassenger &gt; Book &gt; Retrieve
+- **Response:** capability flags recorded: canBeHeld=true haveBundles=false offerHasAncillary=false isSeatMapRequired=false | Book price reconciliation (OK: all checks hold; total 13233.8 EGP): ok | Retrieve: bookingStatus "Booked", same as Book true, passenger true, price OK: all checks hold; total 13233.8 EGP
+- **Expected:** Booking confirmed: bookingStatus on Retrieve reflects a booked/confirmed state; selectedOffer.offerId and priceDetails.totalAmount match between Book and Retrieve; passengersList on Retrieve matches the AddPassenger submission. Manual price-reconciliation must be supplied at Hold/FareConfirmAfterHold/BookAfterHold (V2 enforces this by script only there) and additionally checked by hand at Search/Upselling/Book/Retrieve since no script covers those in V2.
+- **Actual:** Flow completed; all checks hold. capability flags recorded: canBeHeld=true haveBundles=false offerHasAncillary=false isSeatMapRequired=false | Book price reconciliation (OK: all checks hold; total 13233.8 EGP): ok | Retrieve: bookingStatus "Booked", same as Book true, passenger true, price OK: all checks hold; total 13233.8 EGP
+- **Status:** PASS
+- **Evidence:** capability flags recorded: canBeHeld=true haveBundles=false offerHasAncillary=false isSeatMapRequired=false | Book price reconciliation (OK: all checks hold; total 13233.8 EGP): ok | Retrieve: bookingStatus "Booked", same as Book true, passenger true, price OK: all checks hold; total 13233.8 EGP | Round 1 verdict: PASS (unchanged)
+
+  - **Hop 1 &mdash; V2 Search (A):** PASS &mdash; 200 - 20 offers; picked offers[0] total 13233.8 EGP
+  - **Hop 2 &mdash; V2 Upselling (A):** PASS &mdash; 200 - 6 upsell offer(s); using [0] total 13233.8 EGP; keys: responseId,supplier,journeys,flightSegments,priceClasses,baggageDetails,upsellOffers
+  - **Hop 3 &mdash; V2 AddPassenger (A):** PASS &mdash; 200 - offerId + responseId returned
+  - **Hop 4 &mdash; V2 Book (A):** PASS &mdash; 200 - pnr SDCFWD gdsPNR SDCFWD; voidCapability=FullVoidOnlyAllowed; tickets ["1572141592694"]
+  - **Hop 5 &mdash; V2 Retrieve (Retrieve):** PASS &mdash; 200 - pnr SDCFWD
+  - **Hop 6 &mdash; V2 Void (cleanup):** PASS &mdash; 200 {"voided":true,"voidedTickets":[{"ticketStatus":"Voided","ticketNumber":"1572141592694","carrierCode":"QR"}],"passengersVoidedAncillaries":{},"emdTickets":{}}
+
+### FLOW-V2-73-NEG — BLOCKED
+
+- **Test Case:** [Upselling][Request] Validate Upselling is rejected for FlyCham (Upsell capability not supported).
+- **Category:** Flow - Negative
+- **Endpoint Name:** V2 flow
+- **Request:** Not sent - it is defined for supplier FlyCham (Upsell Not Supported); this run is scoped to SabreNdc/EGY, where Upselling works (see FLOW-V2-73).
+- **Response:** No request sent
+- **Expected:** Upselling against FlyCham is rejected/fails, since FlyCham has no confirmed Upsell support (§4.2 explicit NO, §4.6) - expect a 4xx or a supplier-level "not supported" error, not a silent empty upsellOffers[] pass-through that lets the flow continue.
+- **Actual:** Blocked: it is defined for supplier FlyCham (Upsell Not Supported); this run is scoped to SabreNdc/EGY, where Upselling works (see FLOW-V2-73).
+- **Status:** BLOCKED
+- **Evidence:** it is defined for supplier FlyCham (Upsell Not Supported); this run is scoped to SabreNdc/EGY, where Upselling works (see FLOW-V2-73). | Round 1 verdict: BLOCKED (unchanged)
+
+### FLOW-V2-74 — PASS
+
+- **Test Case:** [Upselling-Base][Response] Verify Family-B flow completes end-to-end via the Upselling fare-selection path.
+- **Category:** Flow - Positive
+- **Endpoint Name:** V2 Upselling flow - Family B (Hold &gt; PnrReprice &gt; Retrieve)
+- **Request:** Search CAI-JED 2026-11-24 1 ADT &gt; Upselling &gt; AddPassenger &gt; Hold &gt; PnrReprice &gt; Retrieve
+- **Response:** Hold price reconciliation (OK: all checks hold; total 13233.8 EGP): ok | PnrReprice price equals Hold price and reconciles: ok | Retrieve shows a held state with a future holdExpirationDate (bookingStatus "OnHold", 2026-10-30T21:59:00+02:00): ok
+- **Expected:** Booking held (not finalized): bookingStatus on Retrieve reflects a held state; holdExpirationDate present and still in the future at Retrieve time; FareConfirmAfterHold price matches Hold's original price (no drift) in the common case. This flow STOPS here and leaves a dangling Held booking with no cleanup step - log the pnr for out-of-band tracking/eventual CancelAfterHold. Manual price-reconciliation must be supplied at Hold/FareConfirmAfterHold/BookAfterHold (V2 enforces this by script only there) and additionally checked by hand at Search/Upselling/Book/Retrieve since no script covers those in V2.
+- **Actual:** Flow completed; all checks hold. capability flags recorded: canBeHeld=true haveBundles=false offerHasAncillary=false isSeatMapRequired=false | Hold price reconciliation (OK: all checks hold; total 13233.8 EGP): ok | PnrReprice price equals Hold price and reconciles: ok | Retrieve shows a held state with a future holdExpirationDate (bookingStatus "OnHold", 2026-10-30T21:59:00+02:00): ok
+- **Status:** PASS
+- **Evidence:** capability flags recorded: canBeHeld=true haveBundles=false offerHasAncillary=false isSeatMapRequired=false | Hold price reconciliation (OK: all checks hold; total 13233.8 EGP): ok | PnrReprice price equals Hold price and reconciles: ok | Retrieve shows a held state with a future holdExpirationDate (bookingStatus "OnHold", 2026-10-30T21:59:00+02:00): ok | Round 1 verdict: PASS (unchanged)
+
+  - **Hop 1 &mdash; V2 Search (B):** PASS &mdash; 200 - 20 offers; picked offers[0] total 13233.8 EGP
+  - **Hop 2 &mdash; V2 Upselling (B):** PASS &mdash; 200 - 6 upsell offer(s); using [0] total 13233.8 EGP; keys: responseId,supplier,journeys,flightSegments,priceClasses,baggageDetails,upsellOffers
+  - **Hop 3 &mdash; V2 AddPassenger (B):** PASS &mdash; 200 - offerId + responseId returned
+  - **Hop 4 &mdash; V2 Hold (B):** PASS &mdash; 200 - pnr SJMEQW gdsPNR SJMEQW; voidCapability=VoidNotAllowed; tickets none; holdExpirationDate 2026-10-30T21:59:00+02:00
+  - **Hop 5 &mdash; V2 PnrReprice (FCAH):** PASS &mdash; 200
+  - **Hop 6 &mdash; V2 Retrieve (Retrieve-held):** PASS &mdash; 200 - pnr SJMEQW
+  - **Hop 7 &mdash; V2 CancelAfterHold (cleanup):** PASS &mdash; 200 {"cancelled":true,"message":"Held Order Is Cancelled","passengersCancelledAncillaries":null}
+
+### FLOW-V2-74-NEG — BLOCKED
+
+- **Test Case:** [Hold][Request] Validate Hold is rejected for a supplier without confirmed Hold support (FlyNas).
+- **Category:** Flow - Negative
+- **Endpoint Name:** V2 flow
+- **Request:** Not sent - it is defined for supplier FlyNas (Hold Not Supported); this run is scoped to SabreNdc/EGY, where every offer is canBeHeld=true.
+- **Response:** No request sent
+- **Expected:** Hold against FlyNas is rejected outright - the flow must not proceed to FareConfirmAfterHold/Retrieve; confirms live capability enforcement matches the documented (cross-validated, high-confidence) Hold=Not Supported gap rather than being silently accepted.
+- **Actual:** Blocked: it is defined for supplier FlyNas (Hold Not Supported); this run is scoped to SabreNdc/EGY, where every offer is canBeHeld=true.
+- **Status:** BLOCKED
+- **Evidence:** it is defined for supplier FlyNas (Hold Not Supported); this run is scoped to SabreNdc/EGY, where every offer is canBeHeld=true. | Round 1 verdict: BLOCKED (unchanged)
+
+### FLOW-V2-75 — PASS
+
+- **Test Case:** [Upselling-Base][Response] Verify Family-C flow completes end-to-end via the Upselling fare-selection path.
+- **Category:** Flow - Positive
+- **Endpoint Name:** V2 Upselling flow - Family C (Book &gt; Retrieve &gt; Void)
+- **Request:** Search CAI-JED 2026-11-24 1 ADT &gt; Upselling &gt; AddPassenger &gt; Book &gt; Retrieve &gt; Void &gt; Retrieve
+- **Response:** Retrieve: bookingStatus "Booked", same as Book true, passenger true, price OK: all checks hold; total 13233.8 EGP | Void: ok | follow-up Retrieve shows voided/cancelled: ok
+- **Expected:** Family-A checks apply through Retrieve, plus: Void succeeds only if the booking's voidCapability allowed it; a follow-up manual Retrieve shows a voided bookingStatus. Manual price-reconciliation must be supplied at Hold/FareConfirmAfterHold/BookAfterHold (V2 enforces this by script only there) and additionally checked by hand at Search/Upselling/Book/Retrieve since no script covers those in V2.
+- **Actual:** Flow completed; all checks hold. capability flags recorded: canBeHeld=true haveBundles=false offerHasAncillary=false isSeatMapRequired=false | Book price reconciliation (OK: all checks hold; total 13233.8 EGP): ok | Retrieve: bookingStatus "Booked", same as Book true, passenger true, price OK: all checks hold; total 13233.8 EGP | Void: ok | follow-up Retrieve shows voided/cancelled: ok
+- **Status:** PASS
+- **Evidence:** capability flags recorded: canBeHeld=true haveBundles=false offerHasAncillary=false isSeatMapRequired=false | Book price reconciliation (OK: all checks hold; total 13233.8 EGP): ok | Retrieve: bookingStatus "Booked", same as Book true, passenger true, price OK: all checks hold; total 13233.8 EGP | Void: ok | follow-up Retrieve shows voided/cancelled: ok | Round 1 verdict: PASS (unchanged)
+
+  - **Hop 1 &mdash; V2 Search (C):** PASS &mdash; 200 - 20 offers; picked offers[0] total 13233.8 EGP
+  - **Hop 2 &mdash; V2 Upselling (C):** PASS &mdash; 200 - 6 upsell offer(s); using [0] total 13233.8 EGP; keys: responseId,supplier,journeys,flightSegments,priceClasses,baggageDetails,upsellOffers
+  - **Hop 3 &mdash; V2 AddPassenger (C):** PASS &mdash; 200 - offerId + responseId returned
+  - **Hop 4 &mdash; V2 Book (C):** PASS &mdash; 200 - pnr RNBTEB gdsPNR RNBTEB; voidCapability=FullVoidOnlyAllowed; tickets ["1572141592701"]
+  - **Hop 5 &mdash; V2 Retrieve (Retrieve):** PASS &mdash; 200 - pnr RNBTEB
+  - **Hop 6 &mdash; V2 Void (Void):** PASS &mdash; 200
+  - **Hop 7 &mdash; V2 Retrieve (after-void):** PASS &mdash; 400
+
+### FLOW-V2-75-NEG — PASS
+
+- **Test Case:** [AddPassenger][Request] Validate AddPassenger rejects un-substituted upSellingResponseId/upSellingSelectedOfferId.
+- **Category:** Flow - Negative
+- **Endpoint Name:** V2 flow - AddPassenger (un-substituted Upselling ids)
+- **Request:** Search &gt; Upselling &gt; AddPassenger using the Search-era ResponseId/selectedOfferId instead of upSellingResponseId/upSellingSelectedOfferId
+- **Response:** un-substituted Search-era ids: rejected 400 code=NDC-INT-TEC-A0001 msg="Invalid request. Please check the request parameters and try again." ctx=[{"Name":"SelectedOfferId","Value":"The selec | Search responseId + upsell offerId: ACCEPTED
+- **Expected:** AddPassenger called with the un-substituted (stale) ID pair is expected to be rejected as a mismatched/expired offer reference rather than silently succeed - exact rejection shape UNKNOWN, confirm live; this exercises the manual-substitution-omission error that is unique to the Upselling path (§2.3, §3.2 ID-substitution note).
+- **Actual:** un-substituted Search-era ids: rejected 400 code=NDC-INT-TEC-A0001 msg="Invalid request. Please check the request parameters and try again." ctx=[{"Name":"SelectedOfferId","Value":"The selec | Search responseId + upsell offerId: ACCEPTED
+- **Status:** PASS
+- **Evidence:** un-substituted Search-era ids: rejected 400 code=NDC-INT-TEC-A0001 msg="Invalid request. Please check the request parameters and try again." ctx=[{"Name":"SelectedOfferId","Value":"The selec | Search responseId + upsell offerId: ACCEPTED | Round 1 verdict: PASS (unchanged)
+
+  - **Hop 1 &mdash; V2 Search:** PASS &mdash; 200
+  - **Hop 2 &mdash; V2 Upselling:** PASS &mdash; 200
+  - **Hop 3 &mdash; V2 AddPassenger:** PASS &mdash; 400
+  - **Hop 4 &mdash; V2 AddPassenger:** PASS &mdash; 200
+
+### FLOW-V2-76 — PASS
+
+- **Test Case:** [Upselling-Base][Response] Verify Family-D flow completes end-to-end via the Upselling fare-selection path.
+- **Category:** Flow - Positive
+- **Endpoint Name:** V2 Upselling flow - Family D (Hold &gt; BookAfterHold)
+- **Request:** Search CAI-JED 2026-11-24 1 ADT &gt; Upselling &gt; AddPassenger &gt; Hold &gt; PnrReprice &gt; Retrieve &gt; BookAfterHold &gt; Retrieve
+- **Response:** BookAfterHold keeps pnr/bookingToken/gdsPNR (same-PNR invariant): ok | BookAfterHold price reconciliation (OK: all checks hold; total 13233.8 EGP): ok | Retrieve after BookAfterHold shows booked (bookingStatus "Booked"): ok
+- **Expected:** Family-B checks apply through the first Retrieve, plus: BookAfterHold transitions bookingStatus from held to booked/confirmed; pnr/bookingToken/gdsPNR are unchanged from Hold (same-PNR invariant); the final Retrieve confirms the booked state. Manual price-reconciliation must be supplied at Hold/FareConfirmAfterHold/BookAfterHold (V2 enforces this by script only there) and additionally checked by hand at Search/Upselling/Book/Retrieve since no script covers those in V2.
+- **Actual:** Flow completed; all checks hold. capability flags recorded: canBeHeld=true haveBundles=false offerHasAncillary=false isSeatMapRequired=false | Hold price reconciliation (OK: all checks hold; total 13233.8 EGP): ok | PnrReprice price equals Hold price and reconciles: ok | Retrieve shows a held state with a future holdExpirationDate (bookingStatus "OnHold", 2026-10-30T21:59:00+02:00): ok | BookAfterHold keeps pnr/bookingToken/gdsPNR (same-PNR invariant): ok | BookAfterHold price reconciliation (OK: all checks hold; total 13233.8 EGP): ok | Retrieve after BookAfterHold shows booked (bookingStatus "Booked"): ok
+- **Status:** PASS
+- **Evidence:** capability flags recorded: canBeHeld=true haveBundles=false offerHasAncillary=false isSeatMapRequired=false | Hold price reconciliation (OK: all checks hold; total 13233.8 EGP): ok | PnrReprice price equals Hold price and reconciles: ok | Retrieve shows a held state with a future holdExpirationDate (bookingStatus "OnHold", 2026-10-30T21:59:00+02:00): ok | BookAfterHold keeps pnr/bookingToken/gdsPNR (same-PNR invariant): ok | BookAfterHold price reconciliation (OK: all checks hold; total 13233.8 EGP): ok | Retrieve after BookAfterHold shows booked (bookingStatus "Booked"): ok | Round 1 verdict: PASS (unchanged)
+
+  - **Hop 1 &mdash; V2 Search (D):** PASS &mdash; 200 - 20 offers; picked offers[0] total 13233.8 EGP
+  - **Hop 2 &mdash; V2 Upselling (D):** PASS &mdash; 200 - 6 upsell offer(s); using [0] total 13233.8 EGP; keys: responseId,supplier,journeys,flightSegments,priceClasses,baggageDetails,upsellOffers
+  - **Hop 3 &mdash; V2 AddPassenger (D):** PASS &mdash; 200 - offerId + responseId returned
+  - **Hop 4 &mdash; V2 Hold (D):** PASS &mdash; 200 - pnr RPFCVM gdsPNR RPFCVM; voidCapability=VoidNotAllowed; tickets none; holdExpirationDate 2026-10-30T21:59:00+02:00
+  - **Hop 5 &mdash; V2 PnrReprice (FCAH):** PASS &mdash; 200
+  - **Hop 6 &mdash; V2 Retrieve (Retrieve-held):** PASS &mdash; 200 - pnr RPFCVM
+  - **Hop 7 &mdash; V2 BookAfterHold (BAH):** PASS &mdash; 200 - pnr RPFCVM
+  - **Hop 8 &mdash; V2 Retrieve (Retrieve-booked):** PASS &mdash; 200 - pnr RPFCVM
+  - **Hop 9 &mdash; V2 Void (cleanup):** PASS &mdash; 200 {"voided":true,"voidedTickets":[{"ticketStatus":"Voided","ticketNumber":"1572141592704","carrierCode":"QR"}],"passengersVoidedAncillaries":{},"emdTickets":{}}
+
+### FLOW-V2-76-NEG — BLOCKED
+
+- **Test Case:** [BookAfterHold][Response] Verify behavior of BookAfterHold attempted after holdExpirationDate has passed.
+- **Category:** Flow - Negative
+- **Endpoint Name:** V2 flow
+- **Request:** Not sent - the post-expiry state cannot be reached in a session: holds observed on SabreNdc/EGY expire about 5 days after creation (2026-10-30 for holds made on 2026-10-25), and the window cannot be shortened.
+- **Response:** No request sent
+- **Expected:** Exact resulting status is UNKNOWN - confirm live per §2.12/§6.5. Expected candidates are an explicit expiration/price-change rejection or a supplier-level "offer no longer available" error, not a silent success reusing stale Hold-era pricing.
+- **Actual:** Blocked: the post-expiry state cannot be reached in a session: holds observed on SabreNdc/EGY expire about 5 days after creation (2026-10-30 for holds made on 2026-10-25), and the window cannot be shortened.
+- **Status:** BLOCKED
+- **Evidence:** the post-expiry state cannot be reached in a session: holds observed on SabreNdc/EGY expire about 5 days after creation (2026-10-30 for holds made on 2026-10-25), and the window cannot be shortened. | Round 1 verdict: BLOCKED (unchanged)
+
+### FLOW-V2-77 — PASS
+
+- **Test Case:** [Upselling-Base][Response] Verify Family-E flow completes end-to-end via the Upselling fare-selection path.
+- **Category:** Flow - Positive
+- **Endpoint Name:** V2 Upselling flow - Family E (Hold &gt; BookAfterHold &gt; Void)
+- **Request:** Search CAI-JED 2026-11-24 1 ADT &gt; Upselling &gt; AddPassenger &gt; Hold &gt; PnrReprice &gt; Retrieve &gt; BookAfterHold &gt; Retrieve &gt; Void &gt; Retrieve
+- **Response:** Retrieve after BookAfterHold shows booked (bookingStatus "Booked"): ok | Void: ok | follow-up Retrieve shows voided/cancelled: ok
+- **Expected:** Family-D checks apply, plus Family-C's Void checks applied to the now-finalized (ex-Held) booking. Manual price-reconciliation must be supplied at Hold/FareConfirmAfterHold/BookAfterHold (V2 enforces this by script only there) and additionally checked by hand at Search/Upselling/Book/Retrieve since no script covers those in V2.
+- **Actual:** Flow completed; all checks hold. capability flags recorded: canBeHeld=true haveBundles=false offerHasAncillary=false isSeatMapRequired=false | Hold price reconciliation (OK: all checks hold; total 13233.8 EGP): ok | PnrReprice price equals Hold price and reconciles: ok | Retrieve shows a held state with a future holdExpirationDate (bookingStatus "OnHold", 2026-10-30T21:59:00+02:00): ok | BookAfterHold keeps pnr/bookingToken/gdsPNR (same-PNR invariant): ok | BookAfterHold price reconciliation (OK: all checks hold; total 13233.8 EGP): ok | Retrieve after BookAfterHold shows booked (bookingStatus "Booked"): ok | Void: ok | follow-up Retrieve shows voided/cancelled: ok
+- **Status:** PASS
+- **Evidence:** capability flags recorded: canBeHeld=true haveBundles=false offerHasAncillary=false isSeatMapRequired=false | Hold price reconciliation (OK: all checks hold; total 13233.8 EGP): ok | PnrReprice price equals Hold price and reconciles: ok | Retrieve shows a held state with a future holdExpirationDate (bookingStatus "OnHold", 2026-10-30T21:59:00+02:00): ok | BookAfterHold keeps pnr/bookingToken/gdsPNR (same-PNR invariant): ok | BookAfterHold price reconciliation (OK: all checks hold; total 13233.8 EGP): ok | Retrieve after BookAfterHold shows booked (bookingStatus "Booked"): ok | Void: ok | follow-up Retrieve shows voided/cancelled: ok | Round 1 verdict: PASS (unchanged)
+
+  - **Hop 1 &mdash; V2 Search (E):** PASS &mdash; 200 - 20 offers; picked offers[0] total 13233.8 EGP
+  - **Hop 2 &mdash; V2 Upselling (E):** PASS &mdash; 200 - 6 upsell offer(s); using [0] total 13233.8 EGP; keys: responseId,supplier,journeys,flightSegments,priceClasses,baggageDetails,upsellOffers
+  - **Hop 3 &mdash; V2 AddPassenger (E):** PASS &mdash; 200 - offerId + responseId returned
+  - **Hop 4 &mdash; V2 Hold (E):** PASS &mdash; 200 - pnr RRRDJA gdsPNR RRRDJA; voidCapability=VoidNotAllowed; tickets none; holdExpirationDate 2026-10-30T21:59:00+02:00
+  - **Hop 5 &mdash; V2 PnrReprice (FCAH):** PASS &mdash; 200
+  - **Hop 6 &mdash; V2 Retrieve (Retrieve-held):** PASS &mdash; 200 - pnr RRRDJA
+  - **Hop 7 &mdash; V2 BookAfterHold (BAH):** PASS &mdash; 200 - pnr RRRDJA
+  - **Hop 8 &mdash; V2 Retrieve (Retrieve-booked):** PASS &mdash; 200 - pnr RRRDJA
+  - **Hop 9 &mdash; V2 Void (Void):** PASS &mdash; 200
+  - **Hop 10 &mdash; V2 Retrieve (after-void):** PASS &mdash; 400
+
+### FLOW-V2-77-NEG — BLOCKED
+
+- **Test Case:** [Hold][Request] Validate Hold is rejected for a supplier without confirmed Hold support (FlyNas).
+- **Category:** Flow - Negative
+- **Endpoint Name:** V2 flow
+- **Request:** Not sent - it is defined for supplier FlyNas (Hold Not Supported); this run is scoped to SabreNdc/EGY, where every offer is canBeHeld=true.
+- **Response:** No request sent
+- **Expected:** Hold against FlyNas is rejected outright - the flow must not proceed to FareConfirmAfterHold/Retrieve; confirms live capability enforcement matches the documented (cross-validated, high-confidence) Hold=Not Supported gap rather than being silently accepted.
+- **Actual:** Blocked: it is defined for supplier FlyNas (Hold Not Supported); this run is scoped to SabreNdc/EGY, where every offer is canBeHeld=true.
+- **Status:** BLOCKED
+- **Evidence:** it is defined for supplier FlyNas (Hold Not Supported); this run is scoped to SabreNdc/EGY, where every offer is canBeHeld=true. | Round 1 verdict: BLOCKED (unchanged)
+
+### FLOW-V2-78 — FAIL
+
+- **Test Case:** [Upselling-Base][Response] Verify Family-F flow completes end-to-end via the Upselling fare-selection path.
+- **Category:** Flow - Positive
+- **Endpoint Name:** V2 Upselling flow - Family F (Hold &gt; CancelAfterHold)
+- **Request:** Search CAI-JED 2026-11-24 1 ADT &gt; Upselling &gt; AddPassenger &gt; Hold &gt; PnrReprice &gt; Retrieve &gt; CancelAfterHold &gt; Retrieve
+- **Response:** Retrieve shows a held state with a future holdExpirationDate (bookingStatus "OnHold", 2026-10-30T21:59:00+02:00): ok | CancelAfterHold returns cancelled:true: ok | Retrieve after CancelAfterHold shows a cancelled/terminated state (got "OnHold"): FAILED
+- **Expected:** Family-B checks apply through the first Retrieve, plus: CancelAfterHold has zero script coverage and no genuine saved example (UNKNOWN exact response); a follow-up manual Retrieve is expected to show a cancelled/terminated bookingStatus, distinct from both held and booked states - this is the weakest-validated end-state in the flow catalog, confirm live and record as the regression baseline. Manual price-reconciliation must be supplied at Hold/FareConfirmAfterHold/BookAfterHold (V2 enforces this by script only there) and additionally checked by hand at Search/Upselling/Book/Retrieve since no script covers those in V2.
+- **Actual:** Failed checks: Retrieve after CancelAfterHold shows a cancelled/terminated state (got "OnHold"). capability flags recorded: canBeHeld=true haveBundles=false offerHasAncillary=false isSeatMapRequired=false | Hold price reconciliation (OK: all checks hold; total 13233.8 EGP): ok | PnrReprice price equals Hold price and reconciles: ok | Retrieve shows a held state with a future holdExpirationDate (bookingStatus "OnHold", 2026-10-30T21:59:00+02:00): ok | CancelAfterHold returns cancelled:true: ok | Retrieve after CancelAfterHold shows a cancelled/terminated state (got "OnHold"): FAILED
+- **Status:** FAIL
+- **Evidence:** capability flags recorded: canBeHeld=true haveBundles=false offerHasAncillary=false isSeatMapRequired=false | Hold price reconciliation (OK: all checks hold; total 13233.8 EGP): ok | PnrReprice price equals Hold price and reconciles: ok | Retrieve shows a held state with a future holdExpirationDate (bookingStatus "OnHold", 2026-10-30T21:59:00+02:00): ok | CancelAfterHold returns cancelled:true: ok | Retrieve after CancelAfterHold shows a cancelled/terminated state (got "OnHold"): FAILED | Round 1 verdict: FAIL (unchanged)
+
+  - **Hop 1 &mdash; V2 Search (F):** PASS &mdash; 200 - 20 offers; picked offers[0] total 13233.8 EGP
+  - **Hop 2 &mdash; V2 Upselling (F):** PASS &mdash; 200 - 6 upsell offer(s); using [0] total 13233.8 EGP; keys: responseId,supplier,journeys,flightSegments,priceClasses,baggageDetails,upsellOffers
+  - **Hop 3 &mdash; V2 AddPassenger (F):** PASS &mdash; 200 - offerId + responseId returned
+  - **Hop 4 &mdash; V2 Hold (F):** PASS &mdash; 200 - pnr SHXETT gdsPNR SHXETT; voidCapability=VoidNotAllowed; tickets none; holdExpirationDate 2026-10-30T21:59:00+02:00
+  - **Hop 5 &mdash; V2 PnrReprice (FCAH):** PASS &mdash; 200
+  - **Hop 6 &mdash; V2 Retrieve (Retrieve-held):** PASS &mdash; 200 - pnr SHXETT
+  - **Hop 7 &mdash; V2 CancelAfterHold (CAH):** PASS &mdash; 200
+  - **Hop 8 &mdash; V2 Retrieve (after-cancel):** FAIL &mdash; 200 - pnr SHXETT
+
+### FLOW-V2-78-NEG — BLOCKED
+
+- **Test Case:** [CancelAfterHold][Response] Verify behavior of CancelAfterHold attempted after holdExpirationDate has passed.
+- **Category:** Flow - Negative
+- **Endpoint Name:** V2 flow
+- **Request:** Not sent - the post-expiry state cannot be reached in a session: holds observed on SabreNdc/EGY expire about 5 days after creation (2026-10-30 for holds made on 2026-10-25), and the window cannot be shortened.
+- **Response:** No request sent
+- **Expected:** Exact resulting status is UNKNOWN - confirm live per §2.12/§6.5. Expected candidates are an explicit expiration/price-change rejection or a supplier-level "offer no longer available" error, not a silent success reusing stale Hold-era pricing.
+- **Actual:** Blocked: the post-expiry state cannot be reached in a session: holds observed on SabreNdc/EGY expire about 5 days after creation (2026-10-30 for holds made on 2026-10-25), and the window cannot be shortened.
+- **Status:** BLOCKED
+- **Evidence:** the post-expiry state cannot be reached in a session: holds observed on SabreNdc/EGY expire about 5 days after creation (2026-10-30 for holds made on 2026-10-25), and the window cannot be shortened. | Round 1 verdict: BLOCKED (unchanged)
+
+### FLOW-V2-79 — BLOCKED
+
+- **Test Case:** [Upselling-Bundle][Response] Verify Family-A flow completes end-to-end via the Upselling fare-selection path.
+- **Category:** Flow - Positive
+- **Endpoint Name:** V2 flow
+- **Request:** Not sent - Bundle enrichment is required by this flow, and SabreNdc/EGY does not support it: Bundles are not offered (haveBundles=false on all 91 offers (re-checked 2026-11-24); GetOfferBundles answers 409 OperationNotSupported - see TC-BUNDLE-NEG-01 in the Generic report and FLOW-V2-31-NEG).
+- **Response:** No request sent
+- **Expected:** Booking confirmed: bookingStatus on Retrieve reflects a booked/confirmed state; selectedOffer.offerId and priceDetails.totalAmount match between Book and Retrieve; passengersList on Retrieve matches the AddPassenger submission. Bundle check: final priceDetails.totalAmount reflects the chosen bundle's feePrice; bundle-included services are not also charged as separate ancillary lines. Manual price-reconciliation must be supplied at Hold/FareConfirmAfterHold/BookAfterHold (V2 enforces this by script only there) and additionally checked by hand at Search/Upselling/Book/Retrieve since no script covers those in V2.
+- **Actual:** Blocked: Bundle enrichment is required by this flow, and SabreNdc/EGY does not support it: Bundles are not offered (haveBundles=false on all 91 offers (re-checked 2026-11-24); GetOfferBundles answers 409 OperationNotSupported - see TC-BUNDLE-NEG-01 in the Generic report and FLOW-V2-31-NEG).
+- **Status:** BLOCKED
+- **Evidence:** Bundle enrichment is required by this flow, and SabreNdc/EGY does not support it: Bundles are not offered (haveBundles=false on all 91 offers (re-checked 2026-11-24); GetOfferBundles answers 409 OperationNotSupported - see TC-BUNDLE-NEG-01 in the Generic report and FLOW-V2-31-NEG). | Round 1 verdict: BLOCKED (unchanged)
+
+### FLOW-V2-79-NEG — BLOCKED
+
+- **Test Case:** [AddPassenger][Request] Validate AddPassenger rejects un-substituted upSellingResponseId/upSellingSelectedOfferId.
+- **Category:** Flow - Negative
+- **Endpoint Name:** V2 flow
+- **Request:** Not sent - the positive chain up to the fault hop includes an unsupported enrichment hop(s), which SabreNdc/EGY cannot execute (). The same fault on the supported chain is covered by: FLOW-V2-75-NEG.
+- **Response:** No request sent
+- **Expected:** AddPassenger called with the un-substituted (stale) ID pair is expected to be rejected as a mismatched/expired offer reference rather than silently succeed - exact rejection shape UNKNOWN, confirm live; this exercises the manual-substitution-omission error that is unique to the Upselling path (§2.3, §3.2 ID-substitution note).
+- **Actual:** Blocked: the positive chain up to the fault hop includes an unsupported enrichment hop(s), which SabreNdc/EGY cannot execute (). The same fault on the supported chain is covered by: FLOW-V2-75-NEG.
+- **Status:** BLOCKED
+- **Evidence:** the positive chain up to the fault hop includes an unsupported enrichment hop(s), which SabreNdc/EGY cannot execute (). The same fault on the supported chain is covered by: FLOW-V2-75-NEG. | Round 1 verdict: BLOCKED (unchanged)
+
+### FLOW-V2-80 — BLOCKED
+
+- **Test Case:** [Upselling-Bundle][Response] Verify Family-B flow completes end-to-end via the Upselling fare-selection path.
+- **Category:** Flow - Positive
+- **Endpoint Name:** V2 flow
+- **Request:** Not sent - Bundle enrichment is required by this flow, and SabreNdc/EGY does not support it: Bundles are not offered (haveBundles=false on all 91 offers (re-checked 2026-11-24); GetOfferBundles answers 409 OperationNotSupported - see TC-BUNDLE-NEG-01 in the Generic report and FLOW-V2-31-NEG).
+- **Response:** No request sent
+- **Expected:** Booking held (not finalized): bookingStatus on Retrieve reflects a held state; holdExpirationDate present and still in the future at Retrieve time; FareConfirmAfterHold price matches Hold's original price (no drift) in the common case. This flow STOPS here and leaves a dangling Held booking with no cleanup step - log the pnr for out-of-band tracking/eventual CancelAfterHold. Bundle check: final priceDetails.totalAmount reflects the chosen bundle's feePrice; bundle-included services are not also charged as separate ancillary lines. Manual price-reconciliation must be supplied at Hold/FareConfirmAfterHold/BookAfterHold (V2 enforces this by script only there) and additionally checked by hand at Search/Upselling/Book/Retrieve since no script covers those in V2.
+- **Actual:** Blocked: Bundle enrichment is required by this flow, and SabreNdc/EGY does not support it: Bundles are not offered (haveBundles=false on all 91 offers (re-checked 2026-11-24); GetOfferBundles answers 409 OperationNotSupported - see TC-BUNDLE-NEG-01 in the Generic report and FLOW-V2-31-NEG).
+- **Status:** BLOCKED
+- **Evidence:** Bundle enrichment is required by this flow, and SabreNdc/EGY does not support it: Bundles are not offered (haveBundles=false on all 91 offers (re-checked 2026-11-24); GetOfferBundles answers 409 OperationNotSupported - see TC-BUNDLE-NEG-01 in the Generic report and FLOW-V2-31-NEG). | Round 1 verdict: BLOCKED (unchanged)
+
+### FLOW-V2-80-NEG — BLOCKED
+
+- **Test Case:** [Hold][Request] Validate Hold is rejected for a supplier without confirmed Hold support (FlyNas).
+- **Category:** Flow - Negative
+- **Endpoint Name:** V2 flow
+- **Request:** Not sent - it is defined for supplier FlyNas (Hold Not Supported); this run is scoped to SabreNdc/EGY, where every offer is canBeHeld=true.
+- **Response:** No request sent
+- **Expected:** Hold against FlyNas is rejected outright - the flow must not proceed to FareConfirmAfterHold/Retrieve; confirms live capability enforcement matches the documented (cross-validated, high-confidence) Hold=Not Supported gap rather than being silently accepted.
+- **Actual:** Blocked: it is defined for supplier FlyNas (Hold Not Supported); this run is scoped to SabreNdc/EGY, where every offer is canBeHeld=true.
+- **Status:** BLOCKED
+- **Evidence:** it is defined for supplier FlyNas (Hold Not Supported); this run is scoped to SabreNdc/EGY, where every offer is canBeHeld=true. | Round 1 verdict: BLOCKED (unchanged)
+
+### FLOW-V2-81 — BLOCKED
+
+- **Test Case:** [Upselling-Bundle][Response] Verify Family-C flow completes end-to-end via the Upselling fare-selection path.
+- **Category:** Flow - Positive
+- **Endpoint Name:** V2 flow
+- **Request:** Not sent - Bundle enrichment is required by this flow, and SabreNdc/EGY does not support it: Bundles are not offered (haveBundles=false on all 91 offers (re-checked 2026-11-24); GetOfferBundles answers 409 OperationNotSupported - see TC-BUNDLE-NEG-01 in the Generic report and FLOW-V2-31-NEG).
+- **Response:** No request sent
+- **Expected:** Family-A checks apply through Retrieve, plus: Void succeeds only if the booking's voidCapability allowed it; a follow-up manual Retrieve shows a voided bookingStatus. Bundle check: final priceDetails.totalAmount reflects the chosen bundle's feePrice; bundle-included services are not also charged as separate ancillary lines. Manual price-reconciliation must be supplied at Hold/FareConfirmAfterHold/BookAfterHold (V2 enforces this by script only there) and additionally checked by hand at Search/Upselling/Book/Retrieve since no script covers those in V2.
+- **Actual:** Blocked: Bundle enrichment is required by this flow, and SabreNdc/EGY does not support it: Bundles are not offered (haveBundles=false on all 91 offers (re-checked 2026-11-24); GetOfferBundles answers 409 OperationNotSupported - see TC-BUNDLE-NEG-01 in the Generic report and FLOW-V2-31-NEG).
+- **Status:** BLOCKED
+- **Evidence:** Bundle enrichment is required by this flow, and SabreNdc/EGY does not support it: Bundles are not offered (haveBundles=false on all 91 offers (re-checked 2026-11-24); GetOfferBundles answers 409 OperationNotSupported - see TC-BUNDLE-NEG-01 in the Generic report and FLOW-V2-31-NEG). | Round 1 verdict: BLOCKED (unchanged)
+
+### FLOW-V2-81-NEG — BLOCKED
+
+- **Test Case:** [AddPassenger][Request] Validate AddPassenger rejects un-substituted upSellingResponseId/upSellingSelectedOfferId.
+- **Category:** Flow - Negative
+- **Endpoint Name:** V2 flow
+- **Request:** Not sent - the positive chain up to the fault hop includes an unsupported enrichment hop(s), which SabreNdc/EGY cannot execute (). The same fault on the supported chain is covered by: FLOW-V2-75-NEG.
+- **Response:** No request sent
+- **Expected:** AddPassenger called with the un-substituted (stale) ID pair is expected to be rejected as a mismatched/expired offer reference rather than silently succeed - exact rejection shape UNKNOWN, confirm live; this exercises the manual-substitution-omission error that is unique to the Upselling path (§2.3, §3.2 ID-substitution note).
+- **Actual:** Blocked: the positive chain up to the fault hop includes an unsupported enrichment hop(s), which SabreNdc/EGY cannot execute (). The same fault on the supported chain is covered by: FLOW-V2-75-NEG.
+- **Status:** BLOCKED
+- **Evidence:** the positive chain up to the fault hop includes an unsupported enrichment hop(s), which SabreNdc/EGY cannot execute (). The same fault on the supported chain is covered by: FLOW-V2-75-NEG. | Round 1 verdict: BLOCKED (unchanged)
+
+### FLOW-V2-82 — BLOCKED
+
+- **Test Case:** [Upselling-Bundle][Response] Verify Family-D flow completes end-to-end via the Upselling fare-selection path.
+- **Category:** Flow - Positive
+- **Endpoint Name:** V2 flow
+- **Request:** Not sent - Bundle enrichment is required by this flow, and SabreNdc/EGY does not support it: Bundles are not offered (haveBundles=false on all 91 offers (re-checked 2026-11-24); GetOfferBundles answers 409 OperationNotSupported - see TC-BUNDLE-NEG-01 in the Generic report and FLOW-V2-31-NEG).
+- **Response:** No request sent
+- **Expected:** Family-B checks apply through the first Retrieve, plus: BookAfterHold transitions bookingStatus from held to booked/confirmed; pnr/bookingToken/gdsPNR are unchanged from Hold (same-PNR invariant); the final Retrieve confirms the booked state. Bundle check: final priceDetails.totalAmount reflects the chosen bundle's feePrice; bundle-included services are not also charged as separate ancillary lines. Manual price-reconciliation must be supplied at Hold/FareConfirmAfterHold/BookAfterHold (V2 enforces this by script only there) and additionally checked by hand at Search/Upselling/Book/Retrieve since no script covers those in V2.
+- **Actual:** Blocked: Bundle enrichment is required by this flow, and SabreNdc/EGY does not support it: Bundles are not offered (haveBundles=false on all 91 offers (re-checked 2026-11-24); GetOfferBundles answers 409 OperationNotSupported - see TC-BUNDLE-NEG-01 in the Generic report and FLOW-V2-31-NEG).
+- **Status:** BLOCKED
+- **Evidence:** Bundle enrichment is required by this flow, and SabreNdc/EGY does not support it: Bundles are not offered (haveBundles=false on all 91 offers (re-checked 2026-11-24); GetOfferBundles answers 409 OperationNotSupported - see TC-BUNDLE-NEG-01 in the Generic report and FLOW-V2-31-NEG). | Round 1 verdict: BLOCKED (unchanged)
+
+### FLOW-V2-82-NEG — BLOCKED
+
+- **Test Case:** [Hold][Request] Validate Hold is rejected for a supplier without confirmed Hold support (FlyNas).
+- **Category:** Flow - Negative
+- **Endpoint Name:** V2 flow
+- **Request:** Not sent - it is defined for supplier FlyNas (Hold Not Supported); this run is scoped to SabreNdc/EGY, where every offer is canBeHeld=true.
+- **Response:** No request sent
+- **Expected:** Hold against FlyNas is rejected outright - the flow must not proceed to FareConfirmAfterHold/Retrieve; confirms live capability enforcement matches the documented (cross-validated, high-confidence) Hold=Not Supported gap rather than being silently accepted.
+- **Actual:** Blocked: it is defined for supplier FlyNas (Hold Not Supported); this run is scoped to SabreNdc/EGY, where every offer is canBeHeld=true.
+- **Status:** BLOCKED
+- **Evidence:** it is defined for supplier FlyNas (Hold Not Supported); this run is scoped to SabreNdc/EGY, where every offer is canBeHeld=true. | Round 1 verdict: BLOCKED (unchanged)
+
+### FLOW-V2-83 — BLOCKED
+
+- **Test Case:** [Upselling-Bundle][Response] Verify Family-E flow completes end-to-end via the Upselling fare-selection path.
+- **Category:** Flow - Positive
+- **Endpoint Name:** V2 flow
+- **Request:** Not sent - Bundle enrichment is required by this flow, and SabreNdc/EGY does not support it: Bundles are not offered (haveBundles=false on all 91 offers (re-checked 2026-11-24); GetOfferBundles answers 409 OperationNotSupported - see TC-BUNDLE-NEG-01 in the Generic report and FLOW-V2-31-NEG).
+- **Response:** No request sent
+- **Expected:** Family-D checks apply, plus Family-C's Void checks applied to the now-finalized (ex-Held) booking. Bundle check: final priceDetails.totalAmount reflects the chosen bundle's feePrice; bundle-included services are not also charged as separate ancillary lines. Manual price-reconciliation must be supplied at Hold/FareConfirmAfterHold/BookAfterHold (V2 enforces this by script only there) and additionally checked by hand at Search/Upselling/Book/Retrieve since no script covers those in V2.
+- **Actual:** Blocked: Bundle enrichment is required by this flow, and SabreNdc/EGY does not support it: Bundles are not offered (haveBundles=false on all 91 offers (re-checked 2026-11-24); GetOfferBundles answers 409 OperationNotSupported - see TC-BUNDLE-NEG-01 in the Generic report and FLOW-V2-31-NEG).
+- **Status:** BLOCKED
+- **Evidence:** Bundle enrichment is required by this flow, and SabreNdc/EGY does not support it: Bundles are not offered (haveBundles=false on all 91 offers (re-checked 2026-11-24); GetOfferBundles answers 409 OperationNotSupported - see TC-BUNDLE-NEG-01 in the Generic report and FLOW-V2-31-NEG). | Round 1 verdict: BLOCKED (unchanged)
+
+### FLOW-V2-83-NEG — BLOCKED
+
+- **Test Case:** [BookAfterHold][Response] Verify behavior of BookAfterHold attempted after holdExpirationDate has passed.
+- **Category:** Flow - Negative
+- **Endpoint Name:** V2 flow
+- **Request:** Not sent - the post-expiry state cannot be reached in a session: holds observed on SabreNdc/EGY expire about 5 days after creation (2026-10-30 for holds made on 2026-10-25), and the window cannot be shortened.
+- **Response:** No request sent
+- **Expected:** Exact resulting status is UNKNOWN - confirm live per §2.12/§6.5. Expected candidates are an explicit expiration/price-change rejection or a supplier-level "offer no longer available" error, not a silent success reusing stale Hold-era pricing.
+- **Actual:** Blocked: the post-expiry state cannot be reached in a session: holds observed on SabreNdc/EGY expire about 5 days after creation (2026-10-30 for holds made on 2026-10-25), and the window cannot be shortened.
+- **Status:** BLOCKED
+- **Evidence:** the post-expiry state cannot be reached in a session: holds observed on SabreNdc/EGY expire about 5 days after creation (2026-10-30 for holds made on 2026-10-25), and the window cannot be shortened. | Round 1 verdict: BLOCKED (unchanged)
+
+### FLOW-V2-84 — BLOCKED
+
+- **Test Case:** [Upselling-Bundle][Response] Verify Family-F flow completes end-to-end via the Upselling fare-selection path.
+- **Category:** Flow - Positive
+- **Endpoint Name:** V2 flow
+- **Request:** Not sent - Bundle enrichment is required by this flow, and SabreNdc/EGY does not support it: Bundles are not offered (haveBundles=false on all 91 offers (re-checked 2026-11-24); GetOfferBundles answers 409 OperationNotSupported - see TC-BUNDLE-NEG-01 in the Generic report and FLOW-V2-31-NEG).
+- **Response:** No request sent
+- **Expected:** Family-B checks apply through the first Retrieve, plus: CancelAfterHold has zero script coverage and no genuine saved example (UNKNOWN exact response); a follow-up manual Retrieve is expected to show a cancelled/terminated bookingStatus, distinct from both held and booked states - this is the weakest-validated end-state in the flow catalog, confirm live and record as the regression baseline. Bundle check: final priceDetails.totalAmount reflects the chosen bundle's feePrice; bundle-included services are not also charged as separate ancillary lines. Manual price-reconciliation must be supplied at Hold/FareConfirmAfterHold/BookAfterHold (V2 enforces this by script only there) and additionally checked by hand at Search/Upselling/Book/Retrieve since no script covers those in V2.
+- **Actual:** Blocked: Bundle enrichment is required by this flow, and SabreNdc/EGY does not support it: Bundles are not offered (haveBundles=false on all 91 offers (re-checked 2026-11-24); GetOfferBundles answers 409 OperationNotSupported - see TC-BUNDLE-NEG-01 in the Generic report and FLOW-V2-31-NEG).
+- **Status:** BLOCKED
+- **Evidence:** Bundle enrichment is required by this flow, and SabreNdc/EGY does not support it: Bundles are not offered (haveBundles=false on all 91 offers (re-checked 2026-11-24); GetOfferBundles answers 409 OperationNotSupported - see TC-BUNDLE-NEG-01 in the Generic report and FLOW-V2-31-NEG). | Round 1 verdict: BLOCKED (unchanged)
+
+### FLOW-V2-84-NEG — BLOCKED
+
+- **Test Case:** [CancelAfterHold][Response] Verify behavior of CancelAfterHold attempted after holdExpirationDate has passed.
+- **Category:** Flow - Negative
+- **Endpoint Name:** V2 flow
+- **Request:** Not sent - the post-expiry state cannot be reached in a session: holds observed on SabreNdc/EGY expire about 5 days after creation (2026-10-30 for holds made on 2026-10-25), and the window cannot be shortened.
+- **Response:** No request sent
+- **Expected:** Exact resulting status is UNKNOWN - confirm live per §2.12/§6.5. Expected candidates are an explicit expiration/price-change rejection or a supplier-level "offer no longer available" error, not a silent success reusing stale Hold-era pricing.
+- **Actual:** Blocked: the post-expiry state cannot be reached in a session: holds observed on SabreNdc/EGY expire about 5 days after creation (2026-10-30 for holds made on 2026-10-25), and the window cannot be shortened.
+- **Status:** BLOCKED
+- **Evidence:** the post-expiry state cannot be reached in a session: holds observed on SabreNdc/EGY expire about 5 days after creation (2026-10-30 for holds made on 2026-10-25), and the window cannot be shortened. | Round 1 verdict: BLOCKED (unchanged)
+
+### FLOW-V2-85 — BLOCKED
+
+- **Test Case:** [Upselling-Ancillary][Response] Verify Family-A flow completes end-to-end via the Upselling fare-selection path.
+- **Category:** Flow - Positive
+- **Endpoint Name:** V2 flow
+- **Request:** Not sent - Ancillary enrichment is required by this flow, and SabreNdc/EGY does not support it: Ancillaries are not offered (offerHasAncillary=false on all 91 offers (re-checked 2026-11-24); GetAncillary and FareCheck answer 409 OperationNotSupported - see TC-ANCILLARY-NEG-01, TC-FARECHECK-NEG-01).
+- **Response:** No request sent
+- **Expected:** Booking confirmed: bookingStatus on Retrieve reflects a booked/confirmed state; selectedOffer.offerId and priceDetails.totalAmount match between Book and Retrieve; passengersList on Retrieve matches the AddPassenger submission. Ancillary check: passengersSelectedAncillaries lists exactly the codes selected at GetAncillary/FareCheck with matching AdditionalServiceCategory/quantity; paxTotalAncillaryAmount equals the sum of selected ancillary prices. FareCheck check: final booking price equals FareCheck's re-priced total, not the pre-ancillary FareConfirm/AddPassenger-era total. Manual price-reconciliation must be supplied at Hold/FareConfirmAfterHold/BookAfterHold (V2 enforces this by script only there) and additionally checked by hand at Search/Upselling/Book/Retrieve since no script covers those in V2.
+- **Actual:** Blocked: Ancillary enrichment is required by this flow, and SabreNdc/EGY does not support it: Ancillaries are not offered (offerHasAncillary=false on all 91 offers (re-checked 2026-11-24); GetAncillary and FareCheck answer 409 OperationNotSupported - see TC-ANCILLARY-NEG-01, TC-FARECHECK-NEG-01).
+- **Status:** BLOCKED
+- **Evidence:** Ancillary enrichment is required by this flow, and SabreNdc/EGY does not support it: Ancillaries are not offered (offerHasAncillary=false on all 91 offers (re-checked 2026-11-24); GetAncillary and FareCheck answer 409 OperationNotSupported - see TC-ANCILLARY-NEG-01, TC-FARECHECK-NEG-01). | Round 1 verdict: BLOCKED (unchanged)
+
+### FLOW-V2-85-NEG — BLOCKED
+
+- **Test Case:** [FareCheck][Request] Validate FareCheck rejects a hand-constructed AncillaryCode not sourced from GetAncillary.
+- **Category:** Flow - Negative
+- **Endpoint Name:** V2 flow
+- **Request:** Not sent - it needs GetAncillary codes and a working FareCheck; both answer 409 OperationNotSupported for SabreNdc, so neither the code nor the quantity can ever be validated (see TC-FARECHECK-NEG-01).
+- **Response:** No request sent
+- **Expected:** FareCheck rejects the hand-constructed AncillaryCode - expect a 4xx/validation error, not a silently-accepted re-price; confirms AncillaryCode must be the opaque gzip+base64 token copied verbatim from GetAncillary, never hand-built (§2.8).
+- **Actual:** Blocked: it needs GetAncillary codes and a working FareCheck; both answer 409 OperationNotSupported for SabreNdc, so neither the code nor the quantity can ever be validated (see TC-FARECHECK-NEG-01).
+- **Status:** BLOCKED
+- **Evidence:** it needs GetAncillary codes and a working FareCheck; both answer 409 OperationNotSupported for SabreNdc, so neither the code nor the quantity can ever be validated (see TC-FARECHECK-NEG-01). | Round 1 verdict: BLOCKED (unchanged)
+
+### FLOW-V2-86 — BLOCKED
+
+- **Test Case:** [Upselling-Ancillary][Response] Verify Family-B flow completes end-to-end via the Upselling fare-selection path.
+- **Category:** Flow - Positive
+- **Endpoint Name:** V2 flow
+- **Request:** Not sent - Ancillary enrichment is required by this flow, and SabreNdc/EGY does not support it: Ancillaries are not offered (offerHasAncillary=false on all 91 offers (re-checked 2026-11-24); GetAncillary and FareCheck answer 409 OperationNotSupported - see TC-ANCILLARY-NEG-01, TC-FARECHECK-NEG-01).
+- **Response:** No request sent
+- **Expected:** Booking held (not finalized): bookingStatus on Retrieve reflects a held state; holdExpirationDate present and still in the future at Retrieve time; FareConfirmAfterHold price matches Hold's original price (no drift) in the common case. This flow STOPS here and leaves a dangling Held booking with no cleanup step - log the pnr for out-of-band tracking/eventual CancelAfterHold. Ancillary check: passengersSelectedAncillaries lists exactly the codes selected at GetAncillary/FareCheck with matching AdditionalServiceCategory/quantity; paxTotalAncillaryAmount equals the sum of selected ancillary prices. FareCheck check: final booking price equals FareCheck's re-priced total, not the pre-ancillary FareConfirm/AddPassenger-era total. Manual price-reconciliation must be supplied at Hold/FareConfirmAfterHold/BookAfterHold (V2 enforces this by script only there) and additionally checked by hand at Search/Upselling/Book/Retrieve since no script covers those in V2.
+- **Actual:** Blocked: Ancillary enrichment is required by this flow, and SabreNdc/EGY does not support it: Ancillaries are not offered (offerHasAncillary=false on all 91 offers (re-checked 2026-11-24); GetAncillary and FareCheck answer 409 OperationNotSupported - see TC-ANCILLARY-NEG-01, TC-FARECHECK-NEG-01).
+- **Status:** BLOCKED
+- **Evidence:** Ancillary enrichment is required by this flow, and SabreNdc/EGY does not support it: Ancillaries are not offered (offerHasAncillary=false on all 91 offers (re-checked 2026-11-24); GetAncillary and FareCheck answer 409 OperationNotSupported - see TC-ANCILLARY-NEG-01, TC-FARECHECK-NEG-01). | Round 1 verdict: BLOCKED (unchanged)
+
+### FLOW-V2-86-NEG — BLOCKED
+
+- **Test Case:** [FareConfirmAfterHold][Response] Verify behavior of FareConfirmAfterHold attempted after holdExpirationDate has passed.
+- **Category:** Flow - Negative
+- **Endpoint Name:** V2 flow
+- **Request:** Not sent - the post-expiry state cannot be reached in a session: holds observed on SabreNdc/EGY expire about 5 days after creation (2026-10-30 for holds made on 2026-10-25), and the window cannot be shortened.
+- **Response:** No request sent
+- **Expected:** Exact resulting status is UNKNOWN - confirm live per §2.12/§6.5. Expected candidates are an explicit expiration/price-change rejection or a supplier-level "offer no longer available" error, not a silent success reusing stale Hold-era pricing.
+- **Actual:** Blocked: the post-expiry state cannot be reached in a session: holds observed on SabreNdc/EGY expire about 5 days after creation (2026-10-30 for holds made on 2026-10-25), and the window cannot be shortened.
+- **Status:** BLOCKED
+- **Evidence:** the post-expiry state cannot be reached in a session: holds observed on SabreNdc/EGY expire about 5 days after creation (2026-10-30 for holds made on 2026-10-25), and the window cannot be shortened. | Round 1 verdict: BLOCKED (unchanged)
+
+### FLOW-V2-87 — BLOCKED
+
+- **Test Case:** [Upselling-Ancillary][Response] Verify Family-C flow completes end-to-end via the Upselling fare-selection path.
+- **Category:** Flow - Positive
+- **Endpoint Name:** V2 flow
+- **Request:** Not sent - Ancillary enrichment is required by this flow, and SabreNdc/EGY does not support it: Ancillaries are not offered (offerHasAncillary=false on all 91 offers (re-checked 2026-11-24); GetAncillary and FareCheck answer 409 OperationNotSupported - see TC-ANCILLARY-NEG-01, TC-FARECHECK-NEG-01).
+- **Response:** No request sent
+- **Expected:** Family-A checks apply through Retrieve, plus: Void succeeds only if the booking's voidCapability allowed it; a follow-up manual Retrieve shows a voided bookingStatus. Ancillary check: passengersSelectedAncillaries lists exactly the codes selected at GetAncillary/FareCheck with matching AdditionalServiceCategory/quantity; paxTotalAncillaryAmount equals the sum of selected ancillary prices. FareCheck check: final booking price equals FareCheck's re-priced total, not the pre-ancillary FareConfirm/AddPassenger-era total. Manual price-reconciliation must be supplied at Hold/FareConfirmAfterHold/BookAfterHold (V2 enforces this by script only there) and additionally checked by hand at Search/Upselling/Book/Retrieve since no script covers those in V2.
+- **Actual:** Blocked: Ancillary enrichment is required by this flow, and SabreNdc/EGY does not support it: Ancillaries are not offered (offerHasAncillary=false on all 91 offers (re-checked 2026-11-24); GetAncillary and FareCheck answer 409 OperationNotSupported - see TC-ANCILLARY-NEG-01, TC-FARECHECK-NEG-01).
+- **Status:** BLOCKED
+- **Evidence:** Ancillary enrichment is required by this flow, and SabreNdc/EGY does not support it: Ancillaries are not offered (offerHasAncillary=false on all 91 offers (re-checked 2026-11-24); GetAncillary and FareCheck answer 409 OperationNotSupported - see TC-ANCILLARY-NEG-01, TC-FARECHECK-NEG-01). | Round 1 verdict: BLOCKED (unchanged)
+
+### FLOW-V2-87-NEG — BLOCKED
+
+- **Test Case:** [FareCheck][Request] Validate FareCheck rejects a hand-constructed AncillaryCode not sourced from GetAncillary.
+- **Category:** Flow - Negative
+- **Endpoint Name:** V2 flow
+- **Request:** Not sent - it needs GetAncillary codes and a working FareCheck; both answer 409 OperationNotSupported for SabreNdc, so neither the code nor the quantity can ever be validated (see TC-FARECHECK-NEG-01).
+- **Response:** No request sent
+- **Expected:** FareCheck rejects the hand-constructed AncillaryCode - expect a 4xx/validation error, not a silently-accepted re-price; confirms AncillaryCode must be the opaque gzip+base64 token copied verbatim from GetAncillary, never hand-built (§2.8).
+- **Actual:** Blocked: it needs GetAncillary codes and a working FareCheck; both answer 409 OperationNotSupported for SabreNdc, so neither the code nor the quantity can ever be validated (see TC-FARECHECK-NEG-01).
+- **Status:** BLOCKED
+- **Evidence:** it needs GetAncillary codes and a working FareCheck; both answer 409 OperationNotSupported for SabreNdc, so neither the code nor the quantity can ever be validated (see TC-FARECHECK-NEG-01). | Round 1 verdict: BLOCKED (unchanged)
+
+### FLOW-V2-88 — BLOCKED
+
+- **Test Case:** [Upselling-Ancillary][Response] Verify Family-D flow completes end-to-end via the Upselling fare-selection path.
+- **Category:** Flow - Positive
+- **Endpoint Name:** V2 flow
+- **Request:** Not sent - Ancillary enrichment is required by this flow, and SabreNdc/EGY does not support it: Ancillaries are not offered (offerHasAncillary=false on all 91 offers (re-checked 2026-11-24); GetAncillary and FareCheck answer 409 OperationNotSupported - see TC-ANCILLARY-NEG-01, TC-FARECHECK-NEG-01).
+- **Response:** No request sent
+- **Expected:** Family-B checks apply through the first Retrieve, plus: BookAfterHold transitions bookingStatus from held to booked/confirmed; pnr/bookingToken/gdsPNR are unchanged from Hold (same-PNR invariant); the final Retrieve confirms the booked state. Ancillary check: passengersSelectedAncillaries lists exactly the codes selected at GetAncillary/FareCheck with matching AdditionalServiceCategory/quantity; paxTotalAncillaryAmount equals the sum of selected ancillary prices. FareCheck check: final booking price equals FareCheck's re-priced total, not the pre-ancillary FareConfirm/AddPassenger-era total. Manual price-reconciliation must be supplied at Hold/FareConfirmAfterHold/BookAfterHold (V2 enforces this by script only there) and additionally checked by hand at Search/Upselling/Book/Retrieve since no script covers those in V2.
+- **Actual:** Blocked: Ancillary enrichment is required by this flow, and SabreNdc/EGY does not support it: Ancillaries are not offered (offerHasAncillary=false on all 91 offers (re-checked 2026-11-24); GetAncillary and FareCheck answer 409 OperationNotSupported - see TC-ANCILLARY-NEG-01, TC-FARECHECK-NEG-01).
+- **Status:** BLOCKED
+- **Evidence:** Ancillary enrichment is required by this flow, and SabreNdc/EGY does not support it: Ancillaries are not offered (offerHasAncillary=false on all 91 offers (re-checked 2026-11-24); GetAncillary and FareCheck answer 409 OperationNotSupported - see TC-ANCILLARY-NEG-01, TC-FARECHECK-NEG-01). | Round 1 verdict: BLOCKED (unchanged)
+
+### FLOW-V2-88-NEG — BLOCKED
+
+- **Test Case:** [Hold][Request] Validate Hold is rejected for a supplier without confirmed Hold support (FlyNas).
+- **Category:** Flow - Negative
+- **Endpoint Name:** V2 flow
+- **Request:** Not sent - it is defined for supplier FlyNas (Hold Not Supported); this run is scoped to SabreNdc/EGY, where every offer is canBeHeld=true.
+- **Response:** No request sent
+- **Expected:** Hold against FlyNas is rejected outright - the flow must not proceed to FareConfirmAfterHold/Retrieve; confirms live capability enforcement matches the documented (cross-validated, high-confidence) Hold=Not Supported gap rather than being silently accepted.
+- **Actual:** Blocked: it is defined for supplier FlyNas (Hold Not Supported); this run is scoped to SabreNdc/EGY, where every offer is canBeHeld=true.
+- **Status:** BLOCKED
+- **Evidence:** it is defined for supplier FlyNas (Hold Not Supported); this run is scoped to SabreNdc/EGY, where every offer is canBeHeld=true. | Round 1 verdict: BLOCKED (unchanged)
+
+### FLOW-V2-89 — BLOCKED
+
+- **Test Case:** [Upselling-Ancillary][Response] Verify Family-E flow completes end-to-end via the Upselling fare-selection path.
+- **Category:** Flow - Positive
+- **Endpoint Name:** V2 flow
+- **Request:** Not sent - Ancillary enrichment is required by this flow, and SabreNdc/EGY does not support it: Ancillaries are not offered (offerHasAncillary=false on all 91 offers (re-checked 2026-11-24); GetAncillary and FareCheck answer 409 OperationNotSupported - see TC-ANCILLARY-NEG-01, TC-FARECHECK-NEG-01).
+- **Response:** No request sent
+- **Expected:** Family-D checks apply, plus Family-C's Void checks applied to the now-finalized (ex-Held) booking. Ancillary check: passengersSelectedAncillaries lists exactly the codes selected at GetAncillary/FareCheck with matching AdditionalServiceCategory/quantity; paxTotalAncillaryAmount equals the sum of selected ancillary prices. FareCheck check: final booking price equals FareCheck's re-priced total, not the pre-ancillary FareConfirm/AddPassenger-era total. Manual price-reconciliation must be supplied at Hold/FareConfirmAfterHold/BookAfterHold (V2 enforces this by script only there) and additionally checked by hand at Search/Upselling/Book/Retrieve since no script covers those in V2.
+- **Actual:** Blocked: Ancillary enrichment is required by this flow, and SabreNdc/EGY does not support it: Ancillaries are not offered (offerHasAncillary=false on all 91 offers (re-checked 2026-11-24); GetAncillary and FareCheck answer 409 OperationNotSupported - see TC-ANCILLARY-NEG-01, TC-FARECHECK-NEG-01).
+- **Status:** BLOCKED
+- **Evidence:** Ancillary enrichment is required by this flow, and SabreNdc/EGY does not support it: Ancillaries are not offered (offerHasAncillary=false on all 91 offers (re-checked 2026-11-24); GetAncillary and FareCheck answer 409 OperationNotSupported - see TC-ANCILLARY-NEG-01, TC-FARECHECK-NEG-01). | Round 1 verdict: BLOCKED (unchanged)
+
+### FLOW-V2-89-NEG — BLOCKED
+
+- **Test Case:** [BookAfterHold][Response] Verify behavior of BookAfterHold attempted after holdExpirationDate has passed.
+- **Category:** Flow - Negative
+- **Endpoint Name:** V2 flow
+- **Request:** Not sent - the post-expiry state cannot be reached in a session: holds observed on SabreNdc/EGY expire about 5 days after creation (2026-10-30 for holds made on 2026-10-25), and the window cannot be shortened.
+- **Response:** No request sent
+- **Expected:** Exact resulting status is UNKNOWN - confirm live per §2.12/§6.5. Expected candidates are an explicit expiration/price-change rejection or a supplier-level "offer no longer available" error, not a silent success reusing stale Hold-era pricing.
+- **Actual:** Blocked: the post-expiry state cannot be reached in a session: holds observed on SabreNdc/EGY expire about 5 days after creation (2026-10-30 for holds made on 2026-10-25), and the window cannot be shortened.
+- **Status:** BLOCKED
+- **Evidence:** the post-expiry state cannot be reached in a session: holds observed on SabreNdc/EGY expire about 5 days after creation (2026-10-30 for holds made on 2026-10-25), and the window cannot be shortened. | Round 1 verdict: BLOCKED (unchanged)
+
+### FLOW-V2-90 — BLOCKED
+
+- **Test Case:** [Upselling-Ancillary][Response] Verify Family-F flow completes end-to-end via the Upselling fare-selection path.
+- **Category:** Flow - Positive
+- **Endpoint Name:** V2 flow
+- **Request:** Not sent - Ancillary enrichment is required by this flow, and SabreNdc/EGY does not support it: Ancillaries are not offered (offerHasAncillary=false on all 91 offers (re-checked 2026-11-24); GetAncillary and FareCheck answer 409 OperationNotSupported - see TC-ANCILLARY-NEG-01, TC-FARECHECK-NEG-01).
+- **Response:** No request sent
+- **Expected:** Family-B checks apply through the first Retrieve, plus: CancelAfterHold has zero script coverage and no genuine saved example (UNKNOWN exact response); a follow-up manual Retrieve is expected to show a cancelled/terminated bookingStatus, distinct from both held and booked states - this is the weakest-validated end-state in the flow catalog, confirm live and record as the regression baseline. Ancillary check: passengersSelectedAncillaries lists exactly the codes selected at GetAncillary/FareCheck with matching AdditionalServiceCategory/quantity; paxTotalAncillaryAmount equals the sum of selected ancillary prices. FareCheck check: final booking price equals FareCheck's re-priced total, not the pre-ancillary FareConfirm/AddPassenger-era total. Manual price-reconciliation must be supplied at Hold/FareConfirmAfterHold/BookAfterHold (V2 enforces this by script only there) and additionally checked by hand at Search/Upselling/Book/Retrieve since no script covers those in V2.
+- **Actual:** Blocked: Ancillary enrichment is required by this flow, and SabreNdc/EGY does not support it: Ancillaries are not offered (offerHasAncillary=false on all 91 offers (re-checked 2026-11-24); GetAncillary and FareCheck answer 409 OperationNotSupported - see TC-ANCILLARY-NEG-01, TC-FARECHECK-NEG-01).
+- **Status:** BLOCKED
+- **Evidence:** Ancillary enrichment is required by this flow, and SabreNdc/EGY does not support it: Ancillaries are not offered (offerHasAncillary=false on all 91 offers (re-checked 2026-11-24); GetAncillary and FareCheck answer 409 OperationNotSupported - see TC-ANCILLARY-NEG-01, TC-FARECHECK-NEG-01). | Round 1 verdict: BLOCKED (unchanged)
+
+### FLOW-V2-90-NEG — BLOCKED
+
+- **Test Case:** [CancelAfterHold][Response] Verify behavior of CancelAfterHold attempted after holdExpirationDate has passed.
+- **Category:** Flow - Negative
+- **Endpoint Name:** V2 flow
+- **Request:** Not sent - the post-expiry state cannot be reached in a session: holds observed on SabreNdc/EGY expire about 5 days after creation (2026-10-30 for holds made on 2026-10-25), and the window cannot be shortened.
+- **Response:** No request sent
+- **Expected:** Exact resulting status is UNKNOWN - confirm live per §2.12/§6.5. Expected candidates are an explicit expiration/price-change rejection or a supplier-level "offer no longer available" error, not a silent success reusing stale Hold-era pricing.
+- **Actual:** Blocked: the post-expiry state cannot be reached in a session: holds observed on SabreNdc/EGY expire about 5 days after creation (2026-10-30 for holds made on 2026-10-25), and the window cannot be shortened.
+- **Status:** BLOCKED
+- **Evidence:** the post-expiry state cannot be reached in a session: holds observed on SabreNdc/EGY expire about 5 days after creation (2026-10-30 for holds made on 2026-10-25), and the window cannot be shortened. | Round 1 verdict: BLOCKED (unchanged)
+
+### FLOW-V2-91 — BLOCKED
+
+- **Test Case:** [Upselling-Bundle+Ancillary][Response] Verify Family-A flow completes end-to-end via the Upselling fare-selection path.
+- **Category:** Flow - Positive
+- **Endpoint Name:** V2 flow
+- **Request:** Not sent - Bundle + Ancillary enrichment is required by this flow, and SabreNdc/EGY does not support it: Bundles are not offered (haveBundles=false on all 91 offers (re-checked 2026-11-24); GetOfferBundles answers 409 OperationNotSupported - see TC-BUNDLE-NEG-01 in the Generic report and FLOW-V2-31-NEG); Ancillaries are not offered (offerHasAncillary=false on all 91 offers (re-checked 2026-11-24); GetAncillary and FareCheck answer 409 OperationNotSupported - see TC-ANCILLARY-NEG-01, TC-FARECHECK-NEG-01).
+- **Response:** No request sent
+- **Expected:** Booking confirmed: bookingStatus on Retrieve reflects a booked/confirmed state; selectedOffer.offerId and priceDetails.totalAmount match between Book and Retrieve; passengersList on Retrieve matches the AddPassenger submission. Bundle check: final priceDetails.totalAmount reflects the chosen bundle's feePrice; bundle-included services are not also charged as separate ancillary lines. Ancillary check: passengersSelectedAncillaries lists exactly the codes selected at GetAncillary/FareCheck with matching AdditionalServiceCategory/quantity; paxTotalAncillaryAmount equals the sum of selected ancillary prices. FareCheck check: final booking price equals FareCheck's re-priced total, not the pre-ancillary FareConfirm/AddPassenger-era total. Manual price-reconciliation must be supplied at Hold/FareConfirmAfterHold/BookAfterHold (V2 enforces this by script only there) and additionally checked by hand at Search/Upselling/Book/Retrieve since no script covers those in V2.
+- **Actual:** Blocked: Bundle + Ancillary enrichment is required by this flow, and SabreNdc/EGY does not support it: Bundles are not offered (haveBundles=false on all 91 offers (re-checked 2026-11-24); GetOfferBundles answers 409 OperationNotSupported - see TC-BUNDLE-NEG-01 in the Generic report and FLOW-V2-31-NEG); Ancillaries are not offered (offerHasAncillary=false on all 91 offers (re-checked 2026-11-24); GetAncillary and FareCheck answer 409 OperationNotSupported - see TC-ANCILLARY-NEG-01, TC-FARECHECK-NEG-01).
+- **Status:** BLOCKED
+- **Evidence:** Bundle + Ancillary enrichment is required by this flow, and SabreNdc/EGY does not support it: Bundles are not offered (haveBundles=false on all 91 offers (re-checked 2026-11-24); GetOfferBundles answers 409 OperationNotSupported - see TC-BUNDLE-NEG-01 in the Generic report and FLOW-V2-31-NEG); Ancillaries are not offered (offerHasAncillary=false on all 91 offers (re-checked 2026-11-24); GetAncillary and FareCheck answer 409 OperationNotSupported - see TC-ANCILLARY-NEG-01, TC-FARECHECK-NEG-01). | Round 1 verdict: BLOCKED (unchanged)
+
+### FLOW-V2-91-NEG — BLOCKED
+
+- **Test Case:** [Upselling][Request] Validate Upselling is rejected for FlyCham (Upsell capability not supported).
+- **Category:** Flow - Negative
+- **Endpoint Name:** V2 flow
+- **Request:** Not sent - it is defined for supplier FlyCham (Upsell Not Supported); this run is scoped to SabreNdc/EGY, where Upselling works (see FLOW-V2-73).
+- **Response:** No request sent
+- **Expected:** Upselling against FlyCham is rejected/fails, since FlyCham has no confirmed Upsell support (§4.2 explicit NO, §4.6) - expect a 4xx or a supplier-level "not supported" error, not a silent empty upsellOffers[] pass-through that lets the flow continue.
+- **Actual:** Blocked: it is defined for supplier FlyCham (Upsell Not Supported); this run is scoped to SabreNdc/EGY, where Upselling works (see FLOW-V2-73).
+- **Status:** BLOCKED
+- **Evidence:** it is defined for supplier FlyCham (Upsell Not Supported); this run is scoped to SabreNdc/EGY, where Upselling works (see FLOW-V2-73). | Round 1 verdict: BLOCKED (unchanged)
+
+### FLOW-V2-92 — BLOCKED
+
+- **Test Case:** [Upselling-Bundle+Ancillary][Response] Verify Family-B flow completes end-to-end via the Upselling fare-selection path.
+- **Category:** Flow - Positive
+- **Endpoint Name:** V2 flow
+- **Request:** Not sent - Bundle + Ancillary enrichment is required by this flow, and SabreNdc/EGY does not support it: Bundles are not offered (haveBundles=false on all 91 offers (re-checked 2026-11-24); GetOfferBundles answers 409 OperationNotSupported - see TC-BUNDLE-NEG-01 in the Generic report and FLOW-V2-31-NEG); Ancillaries are not offered (offerHasAncillary=false on all 91 offers (re-checked 2026-11-24); GetAncillary and FareCheck answer 409 OperationNotSupported - see TC-ANCILLARY-NEG-01, TC-FARECHECK-NEG-01).
+- **Response:** No request sent
+- **Expected:** Booking held (not finalized): bookingStatus on Retrieve reflects a held state; holdExpirationDate present and still in the future at Retrieve time; FareConfirmAfterHold price matches Hold's original price (no drift) in the common case. This flow STOPS here and leaves a dangling Held booking with no cleanup step - log the pnr for out-of-band tracking/eventual CancelAfterHold. Bundle check: final priceDetails.totalAmount reflects the chosen bundle's feePrice; bundle-included services are not also charged as separate ancillary lines. Ancillary check: passengersSelectedAncillaries lists exactly the codes selected at GetAncillary/FareCheck with matching AdditionalServiceCategory/quantity; paxTotalAncillaryAmount equals the sum of selected ancillary prices. FareCheck check: final booking price equals FareCheck's re-priced total, not the pre-ancillary FareConfirm/AddPassenger-era total. Manual price-reconciliation must be supplied at Hold/FareConfirmAfterHold/BookAfterHold (V2 enforces this by script only there) and additionally checked by hand at Search/Upselling/Book/Retrieve since no script covers those in V2.
+- **Actual:** Blocked: Bundle + Ancillary enrichment is required by this flow, and SabreNdc/EGY does not support it: Bundles are not offered (haveBundles=false on all 91 offers (re-checked 2026-11-24); GetOfferBundles answers 409 OperationNotSupported - see TC-BUNDLE-NEG-01 in the Generic report and FLOW-V2-31-NEG); Ancillaries are not offered (offerHasAncillary=false on all 91 offers (re-checked 2026-11-24); GetAncillary and FareCheck answer 409 OperationNotSupported - see TC-ANCILLARY-NEG-01, TC-FARECHECK-NEG-01).
+- **Status:** BLOCKED
+- **Evidence:** Bundle + Ancillary enrichment is required by this flow, and SabreNdc/EGY does not support it: Bundles are not offered (haveBundles=false on all 91 offers (re-checked 2026-11-24); GetOfferBundles answers 409 OperationNotSupported - see TC-BUNDLE-NEG-01 in the Generic report and FLOW-V2-31-NEG); Ancillaries are not offered (offerHasAncillary=false on all 91 offers (re-checked 2026-11-24); GetAncillary and FareCheck answer 409 OperationNotSupported - see TC-ANCILLARY-NEG-01, TC-FARECHECK-NEG-01). | Round 1 verdict: BLOCKED (unchanged)
+
+### FLOW-V2-92-NEG — BLOCKED
+
+- **Test Case:** [Hold][Request] Validate Hold is rejected for a supplier without confirmed Hold support (FlyNas).
+- **Category:** Flow - Negative
+- **Endpoint Name:** V2 flow
+- **Request:** Not sent - it is defined for supplier FlyNas (Hold Not Supported); this run is scoped to SabreNdc/EGY, where every offer is canBeHeld=true.
+- **Response:** No request sent
+- **Expected:** Hold against FlyNas is rejected outright - the flow must not proceed to FareConfirmAfterHold/Retrieve; confirms live capability enforcement matches the documented (cross-validated, high-confidence) Hold=Not Supported gap rather than being silently accepted.
+- **Actual:** Blocked: it is defined for supplier FlyNas (Hold Not Supported); this run is scoped to SabreNdc/EGY, where every offer is canBeHeld=true.
+- **Status:** BLOCKED
+- **Evidence:** it is defined for supplier FlyNas (Hold Not Supported); this run is scoped to SabreNdc/EGY, where every offer is canBeHeld=true. | Round 1 verdict: BLOCKED (unchanged)
+
+### FLOW-V2-93 — BLOCKED
+
+- **Test Case:** [Upselling-Bundle+Ancillary][Response] Verify Family-C flow completes end-to-end via the Upselling fare-selection path.
+- **Category:** Flow - Positive
+- **Endpoint Name:** V2 flow
+- **Request:** Not sent - Bundle + Ancillary enrichment is required by this flow, and SabreNdc/EGY does not support it: Bundles are not offered (haveBundles=false on all 91 offers (re-checked 2026-11-24); GetOfferBundles answers 409 OperationNotSupported - see TC-BUNDLE-NEG-01 in the Generic report and FLOW-V2-31-NEG); Ancillaries are not offered (offerHasAncillary=false on all 91 offers (re-checked 2026-11-24); GetAncillary and FareCheck answer 409 OperationNotSupported - see TC-ANCILLARY-NEG-01, TC-FARECHECK-NEG-01).
+- **Response:** No request sent
+- **Expected:** Family-A checks apply through Retrieve, plus: Void succeeds only if the booking's voidCapability allowed it; a follow-up manual Retrieve shows a voided bookingStatus. Bundle check: final priceDetails.totalAmount reflects the chosen bundle's feePrice; bundle-included services are not also charged as separate ancillary lines. Ancillary check: passengersSelectedAncillaries lists exactly the codes selected at GetAncillary/FareCheck with matching AdditionalServiceCategory/quantity; paxTotalAncillaryAmount equals the sum of selected ancillary prices. FareCheck check: final booking price equals FareCheck's re-priced total, not the pre-ancillary FareConfirm/AddPassenger-era total. Manual price-reconciliation must be supplied at Hold/FareConfirmAfterHold/BookAfterHold (V2 enforces this by script only there) and additionally checked by hand at Search/Upselling/Book/Retrieve since no script covers those in V2.
+- **Actual:** Blocked: Bundle + Ancillary enrichment is required by this flow, and SabreNdc/EGY does not support it: Bundles are not offered (haveBundles=false on all 91 offers (re-checked 2026-11-24); GetOfferBundles answers 409 OperationNotSupported - see TC-BUNDLE-NEG-01 in the Generic report and FLOW-V2-31-NEG); Ancillaries are not offered (offerHasAncillary=false on all 91 offers (re-checked 2026-11-24); GetAncillary and FareCheck answer 409 OperationNotSupported - see TC-ANCILLARY-NEG-01, TC-FARECHECK-NEG-01).
+- **Status:** BLOCKED
+- **Evidence:** Bundle + Ancillary enrichment is required by this flow, and SabreNdc/EGY does not support it: Bundles are not offered (haveBundles=false on all 91 offers (re-checked 2026-11-24); GetOfferBundles answers 409 OperationNotSupported - see TC-BUNDLE-NEG-01 in the Generic report and FLOW-V2-31-NEG); Ancillaries are not offered (offerHasAncillary=false on all 91 offers (re-checked 2026-11-24); GetAncillary and FareCheck answer 409 OperationNotSupported - see TC-ANCILLARY-NEG-01, TC-FARECHECK-NEG-01). | Round 1 verdict: BLOCKED (unchanged)
+
+### FLOW-V2-93-NEG — BLOCKED
+
+- **Test Case:** [FareCheck][Request] Validate FareCheck rejects a hand-constructed AncillaryCode not sourced from GetAncillary.
+- **Category:** Flow - Negative
+- **Endpoint Name:** V2 flow
+- **Request:** Not sent - it needs GetAncillary codes and a working FareCheck; both answer 409 OperationNotSupported for SabreNdc, so neither the code nor the quantity can ever be validated (see TC-FARECHECK-NEG-01).
+- **Response:** No request sent
+- **Expected:** FareCheck rejects the hand-constructed AncillaryCode - expect a 4xx/validation error, not a silently-accepted re-price; confirms AncillaryCode must be the opaque gzip+base64 token copied verbatim from GetAncillary, never hand-built (§2.8).
+- **Actual:** Blocked: it needs GetAncillary codes and a working FareCheck; both answer 409 OperationNotSupported for SabreNdc, so neither the code nor the quantity can ever be validated (see TC-FARECHECK-NEG-01).
+- **Status:** BLOCKED
+- **Evidence:** it needs GetAncillary codes and a working FareCheck; both answer 409 OperationNotSupported for SabreNdc, so neither the code nor the quantity can ever be validated (see TC-FARECHECK-NEG-01). | Round 1 verdict: BLOCKED (unchanged)
+
+### FLOW-V2-94 — BLOCKED
+
+- **Test Case:** [Upselling-Bundle+Ancillary][Response] Verify Family-D flow completes end-to-end via the Upselling fare-selection path.
+- **Category:** Flow - Positive
+- **Endpoint Name:** V2 flow
+- **Request:** Not sent - Bundle + Ancillary enrichment is required by this flow, and SabreNdc/EGY does not support it: Bundles are not offered (haveBundles=false on all 91 offers (re-checked 2026-11-24); GetOfferBundles answers 409 OperationNotSupported - see TC-BUNDLE-NEG-01 in the Generic report and FLOW-V2-31-NEG); Ancillaries are not offered (offerHasAncillary=false on all 91 offers (re-checked 2026-11-24); GetAncillary and FareCheck answer 409 OperationNotSupported - see TC-ANCILLARY-NEG-01, TC-FARECHECK-NEG-01).
+- **Response:** No request sent
+- **Expected:** Family-B checks apply through the first Retrieve, plus: BookAfterHold transitions bookingStatus from held to booked/confirmed; pnr/bookingToken/gdsPNR are unchanged from Hold (same-PNR invariant); the final Retrieve confirms the booked state. Bundle check: final priceDetails.totalAmount reflects the chosen bundle's feePrice; bundle-included services are not also charged as separate ancillary lines. Ancillary check: passengersSelectedAncillaries lists exactly the codes selected at GetAncillary/FareCheck with matching AdditionalServiceCategory/quantity; paxTotalAncillaryAmount equals the sum of selected ancillary prices. FareCheck check: final booking price equals FareCheck's re-priced total, not the pre-ancillary FareConfirm/AddPassenger-era total. Manual price-reconciliation must be supplied at Hold/FareConfirmAfterHold/BookAfterHold (V2 enforces this by script only there) and additionally checked by hand at Search/Upselling/Book/Retrieve since no script covers those in V2.
+- **Actual:** Blocked: Bundle + Ancillary enrichment is required by this flow, and SabreNdc/EGY does not support it: Bundles are not offered (haveBundles=false on all 91 offers (re-checked 2026-11-24); GetOfferBundles answers 409 OperationNotSupported - see TC-BUNDLE-NEG-01 in the Generic report and FLOW-V2-31-NEG); Ancillaries are not offered (offerHasAncillary=false on all 91 offers (re-checked 2026-11-24); GetAncillary and FareCheck answer 409 OperationNotSupported - see TC-ANCILLARY-NEG-01, TC-FARECHECK-NEG-01).
+- **Status:** BLOCKED
+- **Evidence:** Bundle + Ancillary enrichment is required by this flow, and SabreNdc/EGY does not support it: Bundles are not offered (haveBundles=false on all 91 offers (re-checked 2026-11-24); GetOfferBundles answers 409 OperationNotSupported - see TC-BUNDLE-NEG-01 in the Generic report and FLOW-V2-31-NEG); Ancillaries are not offered (offerHasAncillary=false on all 91 offers (re-checked 2026-11-24); GetAncillary and FareCheck answer 409 OperationNotSupported - see TC-ANCILLARY-NEG-01, TC-FARECHECK-NEG-01). | Round 1 verdict: BLOCKED (unchanged)
+
+### FLOW-V2-94-NEG — BLOCKED
+
+- **Test Case:** [BookAfterHold][Response] Verify behavior of BookAfterHold attempted after holdExpirationDate has passed.
+- **Category:** Flow - Negative
+- **Endpoint Name:** V2 flow
+- **Request:** Not sent - the post-expiry state cannot be reached in a session: holds observed on SabreNdc/EGY expire about 5 days after creation (2026-10-30 for holds made on 2026-10-25), and the window cannot be shortened.
+- **Response:** No request sent
+- **Expected:** Exact resulting status is UNKNOWN - confirm live per §2.12/§6.5. Expected candidates are an explicit expiration/price-change rejection or a supplier-level "offer no longer available" error, not a silent success reusing stale Hold-era pricing.
+- **Actual:** Blocked: the post-expiry state cannot be reached in a session: holds observed on SabreNdc/EGY expire about 5 days after creation (2026-10-30 for holds made on 2026-10-25), and the window cannot be shortened.
+- **Status:** BLOCKED
+- **Evidence:** the post-expiry state cannot be reached in a session: holds observed on SabreNdc/EGY expire about 5 days after creation (2026-10-30 for holds made on 2026-10-25), and the window cannot be shortened. | Round 1 verdict: BLOCKED (unchanged)
+
+### FLOW-V2-95 — BLOCKED
+
+- **Test Case:** [Upselling-Bundle+Ancillary][Response] Verify Family-E flow completes end-to-end via the Upselling fare-selection path.
+- **Category:** Flow - Positive
+- **Endpoint Name:** V2 flow
+- **Request:** Not sent - Bundle + Ancillary enrichment is required by this flow, and SabreNdc/EGY does not support it: Bundles are not offered (haveBundles=false on all 91 offers (re-checked 2026-11-24); GetOfferBundles answers 409 OperationNotSupported - see TC-BUNDLE-NEG-01 in the Generic report and FLOW-V2-31-NEG); Ancillaries are not offered (offerHasAncillary=false on all 91 offers (re-checked 2026-11-24); GetAncillary and FareCheck answer 409 OperationNotSupported - see TC-ANCILLARY-NEG-01, TC-FARECHECK-NEG-01).
+- **Response:** No request sent
+- **Expected:** Family-D checks apply, plus Family-C's Void checks applied to the now-finalized (ex-Held) booking. Bundle check: final priceDetails.totalAmount reflects the chosen bundle's feePrice; bundle-included services are not also charged as separate ancillary lines. Ancillary check: passengersSelectedAncillaries lists exactly the codes selected at GetAncillary/FareCheck with matching AdditionalServiceCategory/quantity; paxTotalAncillaryAmount equals the sum of selected ancillary prices. FareCheck check: final booking price equals FareCheck's re-priced total, not the pre-ancillary FareConfirm/AddPassenger-era total. Manual price-reconciliation must be supplied at Hold/FareConfirmAfterHold/BookAfterHold (V2 enforces this by script only there) and additionally checked by hand at Search/Upselling/Book/Retrieve since no script covers those in V2.
+- **Actual:** Blocked: Bundle + Ancillary enrichment is required by this flow, and SabreNdc/EGY does not support it: Bundles are not offered (haveBundles=false on all 91 offers (re-checked 2026-11-24); GetOfferBundles answers 409 OperationNotSupported - see TC-BUNDLE-NEG-01 in the Generic report and FLOW-V2-31-NEG); Ancillaries are not offered (offerHasAncillary=false on all 91 offers (re-checked 2026-11-24); GetAncillary and FareCheck answer 409 OperationNotSupported - see TC-ANCILLARY-NEG-01, TC-FARECHECK-NEG-01).
+- **Status:** BLOCKED
+- **Evidence:** Bundle + Ancillary enrichment is required by this flow, and SabreNdc/EGY does not support it: Bundles are not offered (haveBundles=false on all 91 offers (re-checked 2026-11-24); GetOfferBundles answers 409 OperationNotSupported - see TC-BUNDLE-NEG-01 in the Generic report and FLOW-V2-31-NEG); Ancillaries are not offered (offerHasAncillary=false on all 91 offers (re-checked 2026-11-24); GetAncillary and FareCheck answer 409 OperationNotSupported - see TC-ANCILLARY-NEG-01, TC-FARECHECK-NEG-01). | Round 1 verdict: BLOCKED (unchanged)
+
+### FLOW-V2-95-NEG — BLOCKED
+
+- **Test Case:** [Hold][Request] Validate Hold is rejected for a supplier without confirmed Hold support (FlyNas).
+- **Category:** Flow - Negative
+- **Endpoint Name:** V2 flow
+- **Request:** Not sent - it is defined for supplier FlyNas (Hold Not Supported); this run is scoped to SabreNdc/EGY, where every offer is canBeHeld=true.
+- **Response:** No request sent
+- **Expected:** Hold against FlyNas is rejected outright - the flow must not proceed to FareConfirmAfterHold/Retrieve; confirms live capability enforcement matches the documented (cross-validated, high-confidence) Hold=Not Supported gap rather than being silently accepted.
+- **Actual:** Blocked: it is defined for supplier FlyNas (Hold Not Supported); this run is scoped to SabreNdc/EGY, where every offer is canBeHeld=true.
+- **Status:** BLOCKED
+- **Evidence:** it is defined for supplier FlyNas (Hold Not Supported); this run is scoped to SabreNdc/EGY, where every offer is canBeHeld=true. | Round 1 verdict: BLOCKED (unchanged)
+
+### FLOW-V2-96 — BLOCKED
+
+- **Test Case:** [Upselling-Bundle+Ancillary][Response] Verify Family-F flow completes end-to-end via the Upselling fare-selection path.
+- **Category:** Flow - Positive
+- **Endpoint Name:** V2 flow
+- **Request:** Not sent - Bundle + Ancillary enrichment is required by this flow, and SabreNdc/EGY does not support it: Bundles are not offered (haveBundles=false on all 91 offers (re-checked 2026-11-24); GetOfferBundles answers 409 OperationNotSupported - see TC-BUNDLE-NEG-01 in the Generic report and FLOW-V2-31-NEG); Ancillaries are not offered (offerHasAncillary=false on all 91 offers (re-checked 2026-11-24); GetAncillary and FareCheck answer 409 OperationNotSupported - see TC-ANCILLARY-NEG-01, TC-FARECHECK-NEG-01).
+- **Response:** No request sent
+- **Expected:** Family-B checks apply through the first Retrieve, plus: CancelAfterHold has zero script coverage and no genuine saved example (UNKNOWN exact response); a follow-up manual Retrieve is expected to show a cancelled/terminated bookingStatus, distinct from both held and booked states - this is the weakest-validated end-state in the flow catalog, confirm live and record as the regression baseline. Bundle check: final priceDetails.totalAmount reflects the chosen bundle's feePrice; bundle-included services are not also charged as separate ancillary lines. Ancillary check: passengersSelectedAncillaries lists exactly the codes selected at GetAncillary/FareCheck with matching AdditionalServiceCategory/quantity; paxTotalAncillaryAmount equals the sum of selected ancillary prices. FareCheck check: final booking price equals FareCheck's re-priced total, not the pre-ancillary FareConfirm/AddPassenger-era total. Manual price-reconciliation must be supplied at Hold/FareConfirmAfterHold/BookAfterHold (V2 enforces this by script only there) and additionally checked by hand at Search/Upselling/Book/Retrieve since no script covers those in V2.
+- **Actual:** Blocked: Bundle + Ancillary enrichment is required by this flow, and SabreNdc/EGY does not support it: Bundles are not offered (haveBundles=false on all 91 offers (re-checked 2026-11-24); GetOfferBundles answers 409 OperationNotSupported - see TC-BUNDLE-NEG-01 in the Generic report and FLOW-V2-31-NEG); Ancillaries are not offered (offerHasAncillary=false on all 91 offers (re-checked 2026-11-24); GetAncillary and FareCheck answer 409 OperationNotSupported - see TC-ANCILLARY-NEG-01, TC-FARECHECK-NEG-01).
+- **Status:** BLOCKED
+- **Evidence:** Bundle + Ancillary enrichment is required by this flow, and SabreNdc/EGY does not support it: Bundles are not offered (haveBundles=false on all 91 offers (re-checked 2026-11-24); GetOfferBundles answers 409 OperationNotSupported - see TC-BUNDLE-NEG-01 in the Generic report and FLOW-V2-31-NEG); Ancillaries are not offered (offerHasAncillary=false on all 91 offers (re-checked 2026-11-24); GetAncillary and FareCheck answer 409 OperationNotSupported - see TC-ANCILLARY-NEG-01, TC-FARECHECK-NEG-01). | Round 1 verdict: BLOCKED (unchanged)
+
+### FLOW-V2-96-NEG — BLOCKED
+
+- **Test Case:** [CancelAfterHold][Response] Verify behavior of CancelAfterHold attempted after holdExpirationDate has passed.
+- **Category:** Flow - Negative
+- **Endpoint Name:** V2 flow
+- **Request:** Not sent - the post-expiry state cannot be reached in a session: holds observed on SabreNdc/EGY expire about 5 days after creation (2026-10-30 for holds made on 2026-10-25), and the window cannot be shortened.
+- **Response:** No request sent
+- **Expected:** Exact resulting status is UNKNOWN - confirm live per §2.12/§6.5. Expected candidates are an explicit expiration/price-change rejection or a supplier-level "offer no longer available" error, not a silent success reusing stale Hold-era pricing.
+- **Actual:** Blocked: the post-expiry state cannot be reached in a session: holds observed on SabreNdc/EGY expire about 5 days after creation (2026-10-30 for holds made on 2026-10-25), and the window cannot be shortened.
+- **Status:** BLOCKED
+- **Evidence:** the post-expiry state cannot be reached in a session: holds observed on SabreNdc/EGY expire about 5 days after creation (2026-10-30 for holds made on 2026-10-25), and the window cannot be shortened. | Round 1 verdict: BLOCKED (unchanged)
+
+### FLOW-V2-97 — BLOCKED
+
+- **Test Case:** [Upselling-SeatMap][Response] Verify Family-A flow completes end-to-end via the Upselling fare-selection path.
+- **Category:** Flow - Positive
+- **Endpoint Name:** V2 flow
+- **Request:** Not sent - SeatMap enrichment is required by this flow, and SabreNdc/EGY does not support it: Seat maps are not offered (isSeatMapRequired=false and offerHasSeat=false on all 91 offers (re-checked 2026-11-24); GetSeatMap and FareCheck answer 409 OperationNotSupported - see TC-SEATMAP-NEG-01, FLOW-V2-49-NEG).
+- **Response:** No request sent
+- **Expected:** Booking confirmed: bookingStatus on Retrieve reflects a booked/confirmed state; selectedOffer.offerId and priceDetails.totalAmount match between Book and Retrieve; passengersList on Retrieve matches the AddPassenger submission. SeatMap check: the chosen cellCode appears as a Seat-category entry in passengersSelectedAncillaries, priced per GetSeatMap/FareCheck. FareCheck check: final booking price equals FareCheck's re-priced total, not the pre-ancillary FareConfirm/AddPassenger-era total. Manual price-reconciliation must be supplied at Hold/FareConfirmAfterHold/BookAfterHold (V2 enforces this by script only there) and additionally checked by hand at Search/Upselling/Book/Retrieve since no script covers those in V2.
+- **Actual:** Blocked: SeatMap enrichment is required by this flow, and SabreNdc/EGY does not support it: Seat maps are not offered (isSeatMapRequired=false and offerHasSeat=false on all 91 offers (re-checked 2026-11-24); GetSeatMap and FareCheck answer 409 OperationNotSupported - see TC-SEATMAP-NEG-01, FLOW-V2-49-NEG).
+- **Status:** BLOCKED
+- **Evidence:** SeatMap enrichment is required by this flow, and SabreNdc/EGY does not support it: Seat maps are not offered (isSeatMapRequired=false and offerHasSeat=false on all 91 offers (re-checked 2026-11-24); GetSeatMap and FareCheck answer 409 OperationNotSupported - see TC-SEATMAP-NEG-01, FLOW-V2-49-NEG). | Round 1 verdict: BLOCKED (unchanged)
+
+### FLOW-V2-97-NEG — PASS
+
+- **Test Case:** [AddPassenger][Request] Validate AddPassenger rejects un-substituted upSellingResponseId/upSellingSelectedOfferId.
+- **Category:** Flow - Negative
+- **Endpoint Name:** V2 flow - AddPassenger (un-substituted Upselling ids)
+- **Request:** Search &gt; Upselling &gt; AddPassenger using the Search-era ResponseId/selectedOfferId instead of upSellingResponseId/upSellingSelectedOfferId
+- **Response:** un-substituted Search-era ids: rejected 400 code=NDC-INT-TEC-A0001 msg="Invalid request. Please check the request parameters and try again." ctx=[{"Name":"SelectedOfferId","Value":"The selec | Search responseId + upsell offerId: ACCEPTED
+- **Expected:** AddPassenger called with the un-substituted (stale) ID pair is expected to be rejected as a mismatched/expired offer reference rather than silently succeed - exact rejection shape UNKNOWN, confirm live; this exercises the manual-substitution-omission error that is unique to the Upselling path (§2.3, §3.2 ID-substitution note).
+- **Actual:** un-substituted Search-era ids: rejected 400 code=NDC-INT-TEC-A0001 msg="Invalid request. Please check the request parameters and try again." ctx=[{"Name":"SelectedOfferId","Value":"The selec | Search responseId + upsell offerId: ACCEPTED
+- **Status:** PASS
+- **Evidence:** un-substituted Search-era ids: rejected 400 code=NDC-INT-TEC-A0001 msg="Invalid request. Please check the request parameters and try again." ctx=[{"Name":"SelectedOfferId","Value":"The selec | Search responseId + upsell offerId: ACCEPTED | Round 1 verdict: PASS (unchanged)
+
+  - **Hop 1 &mdash; V2 Search:** PASS &mdash; 200
+  - **Hop 2 &mdash; V2 Upselling:** PASS &mdash; 200
+  - **Hop 3 &mdash; V2 AddPassenger:** PASS &mdash; 400
+  - **Hop 4 &mdash; V2 AddPassenger:** PASS &mdash; 200
+
+### FLOW-V2-98 — BLOCKED
+
+- **Test Case:** [Upselling-SeatMap][Response] Verify Family-B flow completes end-to-end via the Upselling fare-selection path.
+- **Category:** Flow - Positive
+- **Endpoint Name:** V2 flow
+- **Request:** Not sent - SeatMap enrichment is required by this flow, and SabreNdc/EGY does not support it: Seat maps are not offered (isSeatMapRequired=false and offerHasSeat=false on all 91 offers (re-checked 2026-11-24); GetSeatMap and FareCheck answer 409 OperationNotSupported - see TC-SEATMAP-NEG-01, FLOW-V2-49-NEG).
+- **Response:** No request sent
+- **Expected:** Booking held (not finalized): bookingStatus on Retrieve reflects a held state; holdExpirationDate present and still in the future at Retrieve time; FareConfirmAfterHold price matches Hold's original price (no drift) in the common case. This flow STOPS here and leaves a dangling Held booking with no cleanup step - log the pnr for out-of-band tracking/eventual CancelAfterHold. SeatMap check: the chosen cellCode appears as a Seat-category entry in passengersSelectedAncillaries, priced per GetSeatMap/FareCheck. FareCheck check: final booking price equals FareCheck's re-priced total, not the pre-ancillary FareConfirm/AddPassenger-era total. Manual price-reconciliation must be supplied at Hold/FareConfirmAfterHold/BookAfterHold (V2 enforces this by script only there) and additionally checked by hand at Search/Upselling/Book/Retrieve since no script covers those in V2.
+- **Actual:** Blocked: SeatMap enrichment is required by this flow, and SabreNdc/EGY does not support it: Seat maps are not offered (isSeatMapRequired=false and offerHasSeat=false on all 91 offers (re-checked 2026-11-24); GetSeatMap and FareCheck answer 409 OperationNotSupported - see TC-SEATMAP-NEG-01, FLOW-V2-49-NEG).
+- **Status:** BLOCKED
+- **Evidence:** SeatMap enrichment is required by this flow, and SabreNdc/EGY does not support it: Seat maps are not offered (isSeatMapRequired=false and offerHasSeat=false on all 91 offers (re-checked 2026-11-24); GetSeatMap and FareCheck answer 409 OperationNotSupported - see TC-SEATMAP-NEG-01, FLOW-V2-49-NEG). | Round 1 verdict: BLOCKED (unchanged)
+
+### FLOW-V2-98-NEG — BLOCKED
+
+- **Test Case:** [Hold][Request] Validate Hold is rejected for a supplier without confirmed Hold support (FlyNas).
+- **Category:** Flow - Negative
+- **Endpoint Name:** V2 flow
+- **Request:** Not sent - it is defined for supplier FlyNas (Hold Not Supported); this run is scoped to SabreNdc/EGY, where every offer is canBeHeld=true.
+- **Response:** No request sent
+- **Expected:** Hold against FlyNas is rejected outright - the flow must not proceed to FareConfirmAfterHold/Retrieve; confirms live capability enforcement matches the documented (cross-validated, high-confidence) Hold=Not Supported gap rather than being silently accepted.
+- **Actual:** Blocked: it is defined for supplier FlyNas (Hold Not Supported); this run is scoped to SabreNdc/EGY, where every offer is canBeHeld=true.
+- **Status:** BLOCKED
+- **Evidence:** it is defined for supplier FlyNas (Hold Not Supported); this run is scoped to SabreNdc/EGY, where every offer is canBeHeld=true. | Round 1 verdict: BLOCKED (unchanged)
+
+### FLOW-V2-99 — BLOCKED
+
+- **Test Case:** [Upselling-SeatMap][Response] Verify Family-C flow completes end-to-end via the Upselling fare-selection path.
+- **Category:** Flow - Positive
+- **Endpoint Name:** V2 flow
+- **Request:** Not sent - SeatMap enrichment is required by this flow, and SabreNdc/EGY does not support it: Seat maps are not offered (isSeatMapRequired=false and offerHasSeat=false on all 91 offers (re-checked 2026-11-24); GetSeatMap and FareCheck answer 409 OperationNotSupported - see TC-SEATMAP-NEG-01, FLOW-V2-49-NEG).
+- **Response:** No request sent
+- **Expected:** Family-A checks apply through Retrieve, plus: Void succeeds only if the booking's voidCapability allowed it; a follow-up manual Retrieve shows a voided bookingStatus. SeatMap check: the chosen cellCode appears as a Seat-category entry in passengersSelectedAncillaries, priced per GetSeatMap/FareCheck. FareCheck check: final booking price equals FareCheck's re-priced total, not the pre-ancillary FareConfirm/AddPassenger-era total. Manual price-reconciliation must be supplied at Hold/FareConfirmAfterHold/BookAfterHold (V2 enforces this by script only there) and additionally checked by hand at Search/Upselling/Book/Retrieve since no script covers those in V2.
+- **Actual:** Blocked: SeatMap enrichment is required by this flow, and SabreNdc/EGY does not support it: Seat maps are not offered (isSeatMapRequired=false and offerHasSeat=false on all 91 offers (re-checked 2026-11-24); GetSeatMap and FareCheck answer 409 OperationNotSupported - see TC-SEATMAP-NEG-01, FLOW-V2-49-NEG).
+- **Status:** BLOCKED
+- **Evidence:** SeatMap enrichment is required by this flow, and SabreNdc/EGY does not support it: Seat maps are not offered (isSeatMapRequired=false and offerHasSeat=false on all 91 offers (re-checked 2026-11-24); GetSeatMap and FareCheck answer 409 OperationNotSupported - see TC-SEATMAP-NEG-01, FLOW-V2-49-NEG). | Round 1 verdict: BLOCKED (unchanged)
+
+### FLOW-V2-99-NEG — PASS
+
+- **Test Case:** [AddPassenger][Request] Validate AddPassenger rejects un-substituted upSellingResponseId/upSellingSelectedOfferId.
+- **Category:** Flow - Negative
+- **Endpoint Name:** V2 flow - AddPassenger (un-substituted Upselling ids)
+- **Request:** Search &gt; Upselling &gt; AddPassenger using the Search-era ResponseId/selectedOfferId instead of upSellingResponseId/upSellingSelectedOfferId
+- **Response:** un-substituted Search-era ids: rejected 400 code=NDC-INT-TEC-A0001 msg="Invalid request. Please check the request parameters and try again." ctx=[{"Name":"SelectedOfferId","Value":"The selec | Search responseId + upsell offerId: ACCEPTED
+- **Expected:** AddPassenger called with the un-substituted (stale) ID pair is expected to be rejected as a mismatched/expired offer reference rather than silently succeed - exact rejection shape UNKNOWN, confirm live; this exercises the manual-substitution-omission error that is unique to the Upselling path (§2.3, §3.2 ID-substitution note).
+- **Actual:** un-substituted Search-era ids: rejected 400 code=NDC-INT-TEC-A0001 msg="Invalid request. Please check the request parameters and try again." ctx=[{"Name":"SelectedOfferId","Value":"The selec | Search responseId + upsell offerId: ACCEPTED
+- **Status:** PASS
+- **Evidence:** un-substituted Search-era ids: rejected 400 code=NDC-INT-TEC-A0001 msg="Invalid request. Please check the request parameters and try again." ctx=[{"Name":"SelectedOfferId","Value":"The selec | Search responseId + upsell offerId: ACCEPTED | Round 1 verdict: PASS (unchanged)
+
+  - **Hop 1 &mdash; V2 Search:** PASS &mdash; 200
+  - **Hop 2 &mdash; V2 Upselling:** PASS &mdash; 200
+  - **Hop 3 &mdash; V2 AddPassenger:** PASS &mdash; 400
+  - **Hop 4 &mdash; V2 AddPassenger:** PASS &mdash; 200
+
+### FLOW-V2-100 — BLOCKED
+
+- **Test Case:** [Upselling-SeatMap][Response] Verify Family-D flow completes end-to-end via the Upselling fare-selection path.
+- **Category:** Flow - Positive
+- **Endpoint Name:** V2 flow
+- **Request:** Not sent - SeatMap enrichment is required by this flow, and SabreNdc/EGY does not support it: Seat maps are not offered (isSeatMapRequired=false and offerHasSeat=false on all 91 offers (re-checked 2026-11-24); GetSeatMap and FareCheck answer 409 OperationNotSupported - see TC-SEATMAP-NEG-01, FLOW-V2-49-NEG).
+- **Response:** No request sent
+- **Expected:** Family-B checks apply through the first Retrieve, plus: BookAfterHold transitions bookingStatus from held to booked/confirmed; pnr/bookingToken/gdsPNR are unchanged from Hold (same-PNR invariant); the final Retrieve confirms the booked state. SeatMap check: the chosen cellCode appears as a Seat-category entry in passengersSelectedAncillaries, priced per GetSeatMap/FareCheck. FareCheck check: final booking price equals FareCheck's re-priced total, not the pre-ancillary FareConfirm/AddPassenger-era total. Manual price-reconciliation must be supplied at Hold/FareConfirmAfterHold/BookAfterHold (V2 enforces this by script only there) and additionally checked by hand at Search/Upselling/Book/Retrieve since no script covers those in V2.
+- **Actual:** Blocked: SeatMap enrichment is required by this flow, and SabreNdc/EGY does not support it: Seat maps are not offered (isSeatMapRequired=false and offerHasSeat=false on all 91 offers (re-checked 2026-11-24); GetSeatMap and FareCheck answer 409 OperationNotSupported - see TC-SEATMAP-NEG-01, FLOW-V2-49-NEG).
+- **Status:** BLOCKED
+- **Evidence:** SeatMap enrichment is required by this flow, and SabreNdc/EGY does not support it: Seat maps are not offered (isSeatMapRequired=false and offerHasSeat=false on all 91 offers (re-checked 2026-11-24); GetSeatMap and FareCheck answer 409 OperationNotSupported - see TC-SEATMAP-NEG-01, FLOW-V2-49-NEG). | Round 1 verdict: BLOCKED (unchanged)
+
+### FLOW-V2-100-NEG — BLOCKED
+
+- **Test Case:** [BookAfterHold][Response] Verify behavior of BookAfterHold attempted after holdExpirationDate has passed.
+- **Category:** Flow - Negative
+- **Endpoint Name:** V2 flow
+- **Request:** Not sent - the post-expiry state cannot be reached in a session: holds observed on SabreNdc/EGY expire about 5 days after creation (2026-10-30 for holds made on 2026-10-25), and the window cannot be shortened.
+- **Response:** No request sent
+- **Expected:** Exact resulting status is UNKNOWN - confirm live per §2.12/§6.5. Expected candidates are an explicit expiration/price-change rejection or a supplier-level "offer no longer available" error, not a silent success reusing stale Hold-era pricing.
+- **Actual:** Blocked: the post-expiry state cannot be reached in a session: holds observed on SabreNdc/EGY expire about 5 days after creation (2026-10-30 for holds made on 2026-10-25), and the window cannot be shortened.
+- **Status:** BLOCKED
+- **Evidence:** the post-expiry state cannot be reached in a session: holds observed on SabreNdc/EGY expire about 5 days after creation (2026-10-30 for holds made on 2026-10-25), and the window cannot be shortened. | Round 1 verdict: BLOCKED (unchanged)
+
+### FLOW-V2-101 — BLOCKED
+
+- **Test Case:** [Upselling-SeatMap][Response] Verify Family-E flow completes end-to-end via the Upselling fare-selection path.
+- **Category:** Flow - Positive
+- **Endpoint Name:** V2 flow
+- **Request:** Not sent - SeatMap enrichment is required by this flow, and SabreNdc/EGY does not support it: Seat maps are not offered (isSeatMapRequired=false and offerHasSeat=false on all 91 offers (re-checked 2026-11-24); GetSeatMap and FareCheck answer 409 OperationNotSupported - see TC-SEATMAP-NEG-01, FLOW-V2-49-NEG).
+- **Response:** No request sent
+- **Expected:** Family-D checks apply, plus Family-C's Void checks applied to the now-finalized (ex-Held) booking. SeatMap check: the chosen cellCode appears as a Seat-category entry in passengersSelectedAncillaries, priced per GetSeatMap/FareCheck. FareCheck check: final booking price equals FareCheck's re-priced total, not the pre-ancillary FareConfirm/AddPassenger-era total. Manual price-reconciliation must be supplied at Hold/FareConfirmAfterHold/BookAfterHold (V2 enforces this by script only there) and additionally checked by hand at Search/Upselling/Book/Retrieve since no script covers those in V2.
+- **Actual:** Blocked: SeatMap enrichment is required by this flow, and SabreNdc/EGY does not support it: Seat maps are not offered (isSeatMapRequired=false and offerHasSeat=false on all 91 offers (re-checked 2026-11-24); GetSeatMap and FareCheck answer 409 OperationNotSupported - see TC-SEATMAP-NEG-01, FLOW-V2-49-NEG).
+- **Status:** BLOCKED
+- **Evidence:** SeatMap enrichment is required by this flow, and SabreNdc/EGY does not support it: Seat maps are not offered (isSeatMapRequired=false and offerHasSeat=false on all 91 offers (re-checked 2026-11-24); GetSeatMap and FareCheck answer 409 OperationNotSupported - see TC-SEATMAP-NEG-01, FLOW-V2-49-NEG). | Round 1 verdict: BLOCKED (unchanged)
+
+### FLOW-V2-101-NEG — BLOCKED
+
+- **Test Case:** [Hold][Request] Validate Hold is rejected for a supplier without confirmed Hold support (FlyNas).
+- **Category:** Flow - Negative
+- **Endpoint Name:** V2 flow
+- **Request:** Not sent - it is defined for supplier FlyNas (Hold Not Supported); this run is scoped to SabreNdc/EGY, where every offer is canBeHeld=true.
+- **Response:** No request sent
+- **Expected:** Hold against FlyNas is rejected outright - the flow must not proceed to FareConfirmAfterHold/Retrieve; confirms live capability enforcement matches the documented (cross-validated, high-confidence) Hold=Not Supported gap rather than being silently accepted.
+- **Actual:** Blocked: it is defined for supplier FlyNas (Hold Not Supported); this run is scoped to SabreNdc/EGY, where every offer is canBeHeld=true.
+- **Status:** BLOCKED
+- **Evidence:** it is defined for supplier FlyNas (Hold Not Supported); this run is scoped to SabreNdc/EGY, where every offer is canBeHeld=true. | Round 1 verdict: BLOCKED (unchanged)
+
+### FLOW-V2-102 — BLOCKED
+
+- **Test Case:** [Upselling-SeatMap][Response] Verify Family-F flow completes end-to-end via the Upselling fare-selection path.
+- **Category:** Flow - Positive
+- **Endpoint Name:** V2 flow
+- **Request:** Not sent - SeatMap enrichment is required by this flow, and SabreNdc/EGY does not support it: Seat maps are not offered (isSeatMapRequired=false and offerHasSeat=false on all 91 offers (re-checked 2026-11-24); GetSeatMap and FareCheck answer 409 OperationNotSupported - see TC-SEATMAP-NEG-01, FLOW-V2-49-NEG).
+- **Response:** No request sent
+- **Expected:** Family-B checks apply through the first Retrieve, plus: CancelAfterHold has zero script coverage and no genuine saved example (UNKNOWN exact response); a follow-up manual Retrieve is expected to show a cancelled/terminated bookingStatus, distinct from both held and booked states - this is the weakest-validated end-state in the flow catalog, confirm live and record as the regression baseline. SeatMap check: the chosen cellCode appears as a Seat-category entry in passengersSelectedAncillaries, priced per GetSeatMap/FareCheck. FareCheck check: final booking price equals FareCheck's re-priced total, not the pre-ancillary FareConfirm/AddPassenger-era total. Manual price-reconciliation must be supplied at Hold/FareConfirmAfterHold/BookAfterHold (V2 enforces this by script only there) and additionally checked by hand at Search/Upselling/Book/Retrieve since no script covers those in V2.
+- **Actual:** Blocked: SeatMap enrichment is required by this flow, and SabreNdc/EGY does not support it: Seat maps are not offered (isSeatMapRequired=false and offerHasSeat=false on all 91 offers (re-checked 2026-11-24); GetSeatMap and FareCheck answer 409 OperationNotSupported - see TC-SEATMAP-NEG-01, FLOW-V2-49-NEG).
+- **Status:** BLOCKED
+- **Evidence:** SeatMap enrichment is required by this flow, and SabreNdc/EGY does not support it: Seat maps are not offered (isSeatMapRequired=false and offerHasSeat=false on all 91 offers (re-checked 2026-11-24); GetSeatMap and FareCheck answer 409 OperationNotSupported - see TC-SEATMAP-NEG-01, FLOW-V2-49-NEG). | Round 1 verdict: BLOCKED (unchanged)
+
+### FLOW-V2-102-NEG — BLOCKED
+
+- **Test Case:** [CancelAfterHold][Response] Verify behavior of CancelAfterHold attempted after holdExpirationDate has passed.
+- **Category:** Flow - Negative
+- **Endpoint Name:** V2 flow
+- **Request:** Not sent - the post-expiry state cannot be reached in a session: holds observed on SabreNdc/EGY expire about 5 days after creation (2026-10-30 for holds made on 2026-10-25), and the window cannot be shortened.
+- **Response:** No request sent
+- **Expected:** Exact resulting status is UNKNOWN - confirm live per §2.12/§6.5. Expected candidates are an explicit expiration/price-change rejection or a supplier-level "offer no longer available" error, not a silent success reusing stale Hold-era pricing.
+- **Actual:** Blocked: the post-expiry state cannot be reached in a session: holds observed on SabreNdc/EGY expire about 5 days after creation (2026-10-30 for holds made on 2026-10-25), and the window cannot be shortened.
+- **Status:** BLOCKED
+- **Evidence:** the post-expiry state cannot be reached in a session: holds observed on SabreNdc/EGY expire about 5 days after creation (2026-10-30 for holds made on 2026-10-25), and the window cannot be shortened. | Round 1 verdict: BLOCKED (unchanged)
+
+### FLOW-V2-103 — BLOCKED
+
+- **Test Case:** [Upselling-Bundle+SeatMap][Response] Verify Family-A flow completes end-to-end via the Upselling fare-selection path.
+- **Category:** Flow - Positive
+- **Endpoint Name:** V2 flow
+- **Request:** Not sent - Bundle + SeatMap enrichment is required by this flow, and SabreNdc/EGY does not support it: Bundles are not offered (haveBundles=false on all 91 offers (re-checked 2026-11-24); GetOfferBundles answers 409 OperationNotSupported - see TC-BUNDLE-NEG-01 in the Generic report and FLOW-V2-31-NEG); Seat maps are not offered (isSeatMapRequired=false and offerHasSeat=false on all 91 offers (re-checked 2026-11-24); GetSeatMap and FareCheck answer 409 OperationNotSupported - see TC-SEATMAP-NEG-01, FLOW-V2-49-NEG).
+- **Response:** No request sent
+- **Expected:** Booking confirmed: bookingStatus on Retrieve reflects a booked/confirmed state; selectedOffer.offerId and priceDetails.totalAmount match between Book and Retrieve; passengersList on Retrieve matches the AddPassenger submission. Bundle check: final priceDetails.totalAmount reflects the chosen bundle's feePrice; bundle-included services are not also charged as separate ancillary lines. SeatMap check: the chosen cellCode appears as a Seat-category entry in passengersSelectedAncillaries, priced per GetSeatMap/FareCheck. FareCheck check: final booking price equals FareCheck's re-priced total, not the pre-ancillary FareConfirm/AddPassenger-era total. Manual price-reconciliation must be supplied at Hold/FareConfirmAfterHold/BookAfterHold (V2 enforces this by script only there) and additionally checked by hand at Search/Upselling/Book/Retrieve since no script covers those in V2.
+- **Actual:** Blocked: Bundle + SeatMap enrichment is required by this flow, and SabreNdc/EGY does not support it: Bundles are not offered (haveBundles=false on all 91 offers (re-checked 2026-11-24); GetOfferBundles answers 409 OperationNotSupported - see TC-BUNDLE-NEG-01 in the Generic report and FLOW-V2-31-NEG); Seat maps are not offered (isSeatMapRequired=false and offerHasSeat=false on all 91 offers (re-checked 2026-11-24); GetSeatMap and FareCheck answer 409 OperationNotSupported - see TC-SEATMAP-NEG-01, FLOW-V2-49-NEG).
+- **Status:** BLOCKED
+- **Evidence:** Bundle + SeatMap enrichment is required by this flow, and SabreNdc/EGY does not support it: Bundles are not offered (haveBundles=false on all 91 offers (re-checked 2026-11-24); GetOfferBundles answers 409 OperationNotSupported - see TC-BUNDLE-NEG-01 in the Generic report and FLOW-V2-31-NEG); Seat maps are not offered (isSeatMapRequired=false and offerHasSeat=false on all 91 offers (re-checked 2026-11-24); GetSeatMap and FareCheck answer 409 OperationNotSupported - see TC-SEATMAP-NEG-01, FLOW-V2-49-NEG). | Round 1 verdict: BLOCKED (unchanged)
+
+### FLOW-V2-103-NEG — BLOCKED
+
+- **Test Case:** [AddPassenger][Request] Validate AddPassenger rejects un-substituted upSellingResponseId/upSellingSelectedOfferId.
+- **Category:** Flow - Negative
+- **Endpoint Name:** V2 flow
+- **Request:** Not sent - the positive chain up to the fault hop includes an unsupported enrichment hop(s), which SabreNdc/EGY cannot execute (). The same fault on the supported chain is covered by: FLOW-V2-75-NEG.
+- **Response:** No request sent
+- **Expected:** AddPassenger called with the un-substituted (stale) ID pair is expected to be rejected as a mismatched/expired offer reference rather than silently succeed - exact rejection shape UNKNOWN, confirm live; this exercises the manual-substitution-omission error that is unique to the Upselling path (§2.3, §3.2 ID-substitution note).
+- **Actual:** Blocked: the positive chain up to the fault hop includes an unsupported enrichment hop(s), which SabreNdc/EGY cannot execute (). The same fault on the supported chain is covered by: FLOW-V2-75-NEG.
+- **Status:** BLOCKED
+- **Evidence:** the positive chain up to the fault hop includes an unsupported enrichment hop(s), which SabreNdc/EGY cannot execute (). The same fault on the supported chain is covered by: FLOW-V2-75-NEG. | Round 1 verdict: BLOCKED (unchanged)
+
+### FLOW-V2-104 — BLOCKED
+
+- **Test Case:** [Upselling-Bundle+SeatMap][Response] Verify Family-B flow completes end-to-end via the Upselling fare-selection path.
+- **Category:** Flow - Positive
+- **Endpoint Name:** V2 flow
+- **Request:** Not sent - Bundle + SeatMap enrichment is required by this flow, and SabreNdc/EGY does not support it: Bundles are not offered (haveBundles=false on all 91 offers (re-checked 2026-11-24); GetOfferBundles answers 409 OperationNotSupported - see TC-BUNDLE-NEG-01 in the Generic report and FLOW-V2-31-NEG); Seat maps are not offered (isSeatMapRequired=false and offerHasSeat=false on all 91 offers (re-checked 2026-11-24); GetSeatMap and FareCheck answer 409 OperationNotSupported - see TC-SEATMAP-NEG-01, FLOW-V2-49-NEG).
+- **Response:** No request sent
+- **Expected:** Booking held (not finalized): bookingStatus on Retrieve reflects a held state; holdExpirationDate present and still in the future at Retrieve time; FareConfirmAfterHold price matches Hold's original price (no drift) in the common case. This flow STOPS here and leaves a dangling Held booking with no cleanup step - log the pnr for out-of-band tracking/eventual CancelAfterHold. Bundle check: final priceDetails.totalAmount reflects the chosen bundle's feePrice; bundle-included services are not also charged as separate ancillary lines. SeatMap check: the chosen cellCode appears as a Seat-category entry in passengersSelectedAncillaries, priced per GetSeatMap/FareCheck. FareCheck check: final booking price equals FareCheck's re-priced total, not the pre-ancillary FareConfirm/AddPassenger-era total. Manual price-reconciliation must be supplied at Hold/FareConfirmAfterHold/BookAfterHold (V2 enforces this by script only there) and additionally checked by hand at Search/Upselling/Book/Retrieve since no script covers those in V2.
+- **Actual:** Blocked: Bundle + SeatMap enrichment is required by this flow, and SabreNdc/EGY does not support it: Bundles are not offered (haveBundles=false on all 91 offers (re-checked 2026-11-24); GetOfferBundles answers 409 OperationNotSupported - see TC-BUNDLE-NEG-01 in the Generic report and FLOW-V2-31-NEG); Seat maps are not offered (isSeatMapRequired=false and offerHasSeat=false on all 91 offers (re-checked 2026-11-24); GetSeatMap and FareCheck answer 409 OperationNotSupported - see TC-SEATMAP-NEG-01, FLOW-V2-49-NEG).
+- **Status:** BLOCKED
+- **Evidence:** Bundle + SeatMap enrichment is required by this flow, and SabreNdc/EGY does not support it: Bundles are not offered (haveBundles=false on all 91 offers (re-checked 2026-11-24); GetOfferBundles answers 409 OperationNotSupported - see TC-BUNDLE-NEG-01 in the Generic report and FLOW-V2-31-NEG); Seat maps are not offered (isSeatMapRequired=false and offerHasSeat=false on all 91 offers (re-checked 2026-11-24); GetSeatMap and FareCheck answer 409 OperationNotSupported - see TC-SEATMAP-NEG-01, FLOW-V2-49-NEG). | Round 1 verdict: BLOCKED (unchanged)
+
+### FLOW-V2-104-NEG — BLOCKED
+
+- **Test Case:** [Hold][Request] Validate Hold is rejected for a supplier without confirmed Hold support (FlyNas).
+- **Category:** Flow - Negative
+- **Endpoint Name:** V2 flow
+- **Request:** Not sent - it is defined for supplier FlyNas (Hold Not Supported); this run is scoped to SabreNdc/EGY, where every offer is canBeHeld=true.
+- **Response:** No request sent
+- **Expected:** Hold against FlyNas is rejected outright - the flow must not proceed to FareConfirmAfterHold/Retrieve; confirms live capability enforcement matches the documented (cross-validated, high-confidence) Hold=Not Supported gap rather than being silently accepted.
+- **Actual:** Blocked: it is defined for supplier FlyNas (Hold Not Supported); this run is scoped to SabreNdc/EGY, where every offer is canBeHeld=true.
+- **Status:** BLOCKED
+- **Evidence:** it is defined for supplier FlyNas (Hold Not Supported); this run is scoped to SabreNdc/EGY, where every offer is canBeHeld=true. | Round 1 verdict: BLOCKED (unchanged)
+
+### FLOW-V2-105 — BLOCKED
+
+- **Test Case:** [Upselling-Bundle+SeatMap][Response] Verify Family-C flow completes end-to-end via the Upselling fare-selection path.
+- **Category:** Flow - Positive
+- **Endpoint Name:** V2 flow
+- **Request:** Not sent - Bundle + SeatMap enrichment is required by this flow, and SabreNdc/EGY does not support it: Bundles are not offered (haveBundles=false on all 91 offers (re-checked 2026-11-24); GetOfferBundles answers 409 OperationNotSupported - see TC-BUNDLE-NEG-01 in the Generic report and FLOW-V2-31-NEG); Seat maps are not offered (isSeatMapRequired=false and offerHasSeat=false on all 91 offers (re-checked 2026-11-24); GetSeatMap and FareCheck answer 409 OperationNotSupported - see TC-SEATMAP-NEG-01, FLOW-V2-49-NEG).
+- **Response:** No request sent
+- **Expected:** Family-A checks apply through Retrieve, plus: Void succeeds only if the booking's voidCapability allowed it; a follow-up manual Retrieve shows a voided bookingStatus. Bundle check: final priceDetails.totalAmount reflects the chosen bundle's feePrice; bundle-included services are not also charged as separate ancillary lines. SeatMap check: the chosen cellCode appears as a Seat-category entry in passengersSelectedAncillaries, priced per GetSeatMap/FareCheck. FareCheck check: final booking price equals FareCheck's re-priced total, not the pre-ancillary FareConfirm/AddPassenger-era total. Manual price-reconciliation must be supplied at Hold/FareConfirmAfterHold/BookAfterHold (V2 enforces this by script only there) and additionally checked by hand at Search/Upselling/Book/Retrieve since no script covers those in V2.
+- **Actual:** Blocked: Bundle + SeatMap enrichment is required by this flow, and SabreNdc/EGY does not support it: Bundles are not offered (haveBundles=false on all 91 offers (re-checked 2026-11-24); GetOfferBundles answers 409 OperationNotSupported - see TC-BUNDLE-NEG-01 in the Generic report and FLOW-V2-31-NEG); Seat maps are not offered (isSeatMapRequired=false and offerHasSeat=false on all 91 offers (re-checked 2026-11-24); GetSeatMap and FareCheck answer 409 OperationNotSupported - see TC-SEATMAP-NEG-01, FLOW-V2-49-NEG).
+- **Status:** BLOCKED
+- **Evidence:** Bundle + SeatMap enrichment is required by this flow, and SabreNdc/EGY does not support it: Bundles are not offered (haveBundles=false on all 91 offers (re-checked 2026-11-24); GetOfferBundles answers 409 OperationNotSupported - see TC-BUNDLE-NEG-01 in the Generic report and FLOW-V2-31-NEG); Seat maps are not offered (isSeatMapRequired=false and offerHasSeat=false on all 91 offers (re-checked 2026-11-24); GetSeatMap and FareCheck answer 409 OperationNotSupported - see TC-SEATMAP-NEG-01, FLOW-V2-49-NEG). | Round 1 verdict: BLOCKED (unchanged)
+
+### FLOW-V2-105-NEG — BLOCKED
+
+- **Test Case:** [Upselling][Request] Validate Upselling is rejected for FlyCham (Upsell capability not supported).
+- **Category:** Flow - Negative
+- **Endpoint Name:** V2 flow
+- **Request:** Not sent - it is defined for supplier FlyCham (Upsell Not Supported); this run is scoped to SabreNdc/EGY, where Upselling works (see FLOW-V2-73).
+- **Response:** No request sent
+- **Expected:** Upselling against FlyCham is rejected/fails, since FlyCham has no confirmed Upsell support (§4.2 explicit NO, §4.6) - expect a 4xx or a supplier-level "not supported" error, not a silent empty upsellOffers[] pass-through that lets the flow continue.
+- **Actual:** Blocked: it is defined for supplier FlyCham (Upsell Not Supported); this run is scoped to SabreNdc/EGY, where Upselling works (see FLOW-V2-73).
+- **Status:** BLOCKED
+- **Evidence:** it is defined for supplier FlyCham (Upsell Not Supported); this run is scoped to SabreNdc/EGY, where Upselling works (see FLOW-V2-73). | Round 1 verdict: BLOCKED (unchanged)
+
+### FLOW-V2-106 — BLOCKED
+
+- **Test Case:** [Upselling-Bundle+SeatMap][Response] Verify Family-D flow completes end-to-end via the Upselling fare-selection path.
+- **Category:** Flow - Positive
+- **Endpoint Name:** V2 flow
+- **Request:** Not sent - Bundle + SeatMap enrichment is required by this flow, and SabreNdc/EGY does not support it: Bundles are not offered (haveBundles=false on all 91 offers (re-checked 2026-11-24); GetOfferBundles answers 409 OperationNotSupported - see TC-BUNDLE-NEG-01 in the Generic report and FLOW-V2-31-NEG); Seat maps are not offered (isSeatMapRequired=false and offerHasSeat=false on all 91 offers (re-checked 2026-11-24); GetSeatMap and FareCheck answer 409 OperationNotSupported - see TC-SEATMAP-NEG-01, FLOW-V2-49-NEG).
+- **Response:** No request sent
+- **Expected:** Family-B checks apply through the first Retrieve, plus: BookAfterHold transitions bookingStatus from held to booked/confirmed; pnr/bookingToken/gdsPNR are unchanged from Hold (same-PNR invariant); the final Retrieve confirms the booked state. Bundle check: final priceDetails.totalAmount reflects the chosen bundle's feePrice; bundle-included services are not also charged as separate ancillary lines. SeatMap check: the chosen cellCode appears as a Seat-category entry in passengersSelectedAncillaries, priced per GetSeatMap/FareCheck. FareCheck check: final booking price equals FareCheck's re-priced total, not the pre-ancillary FareConfirm/AddPassenger-era total. Manual price-reconciliation must be supplied at Hold/FareConfirmAfterHold/BookAfterHold (V2 enforces this by script only there) and additionally checked by hand at Search/Upselling/Book/Retrieve since no script covers those in V2.
+- **Actual:** Blocked: Bundle + SeatMap enrichment is required by this flow, and SabreNdc/EGY does not support it: Bundles are not offered (haveBundles=false on all 91 offers (re-checked 2026-11-24); GetOfferBundles answers 409 OperationNotSupported - see TC-BUNDLE-NEG-01 in the Generic report and FLOW-V2-31-NEG); Seat maps are not offered (isSeatMapRequired=false and offerHasSeat=false on all 91 offers (re-checked 2026-11-24); GetSeatMap and FareCheck answer 409 OperationNotSupported - see TC-SEATMAP-NEG-01, FLOW-V2-49-NEG).
+- **Status:** BLOCKED
+- **Evidence:** Bundle + SeatMap enrichment is required by this flow, and SabreNdc/EGY does not support it: Bundles are not offered (haveBundles=false on all 91 offers (re-checked 2026-11-24); GetOfferBundles answers 409 OperationNotSupported - see TC-BUNDLE-NEG-01 in the Generic report and FLOW-V2-31-NEG); Seat maps are not offered (isSeatMapRequired=false and offerHasSeat=false on all 91 offers (re-checked 2026-11-24); GetSeatMap and FareCheck answer 409 OperationNotSupported - see TC-SEATMAP-NEG-01, FLOW-V2-49-NEG). | Round 1 verdict: BLOCKED (unchanged)
+
+### FLOW-V2-106-NEG — BLOCKED
+
+- **Test Case:** [Hold][Request] Validate Hold is rejected for a supplier without confirmed Hold support (FlyNas).
+- **Category:** Flow - Negative
+- **Endpoint Name:** V2 flow
+- **Request:** Not sent - it is defined for supplier FlyNas (Hold Not Supported); this run is scoped to SabreNdc/EGY, where every offer is canBeHeld=true.
+- **Response:** No request sent
+- **Expected:** Hold against FlyNas is rejected outright - the flow must not proceed to FareConfirmAfterHold/Retrieve; confirms live capability enforcement matches the documented (cross-validated, high-confidence) Hold=Not Supported gap rather than being silently accepted.
+- **Actual:** Blocked: it is defined for supplier FlyNas (Hold Not Supported); this run is scoped to SabreNdc/EGY, where every offer is canBeHeld=true.
+- **Status:** BLOCKED
+- **Evidence:** it is defined for supplier FlyNas (Hold Not Supported); this run is scoped to SabreNdc/EGY, where every offer is canBeHeld=true. | Round 1 verdict: BLOCKED (unchanged)
+
+### FLOW-V2-107 — BLOCKED
+
+- **Test Case:** [Upselling-Bundle+SeatMap][Response] Verify Family-E flow completes end-to-end via the Upselling fare-selection path.
+- **Category:** Flow - Positive
+- **Endpoint Name:** V2 flow
+- **Request:** Not sent - Bundle + SeatMap enrichment is required by this flow, and SabreNdc/EGY does not support it: Bundles are not offered (haveBundles=false on all 91 offers (re-checked 2026-11-24); GetOfferBundles answers 409 OperationNotSupported - see TC-BUNDLE-NEG-01 in the Generic report and FLOW-V2-31-NEG); Seat maps are not offered (isSeatMapRequired=false and offerHasSeat=false on all 91 offers (re-checked 2026-11-24); GetSeatMap and FareCheck answer 409 OperationNotSupported - see TC-SEATMAP-NEG-01, FLOW-V2-49-NEG).
+- **Response:** No request sent
+- **Expected:** Family-D checks apply, plus Family-C's Void checks applied to the now-finalized (ex-Held) booking. Bundle check: final priceDetails.totalAmount reflects the chosen bundle's feePrice; bundle-included services are not also charged as separate ancillary lines. SeatMap check: the chosen cellCode appears as a Seat-category entry in passengersSelectedAncillaries, priced per GetSeatMap/FareCheck. FareCheck check: final booking price equals FareCheck's re-priced total, not the pre-ancillary FareConfirm/AddPassenger-era total. Manual price-reconciliation must be supplied at Hold/FareConfirmAfterHold/BookAfterHold (V2 enforces this by script only there) and additionally checked by hand at Search/Upselling/Book/Retrieve since no script covers those in V2.
+- **Actual:** Blocked: Bundle + SeatMap enrichment is required by this flow, and SabreNdc/EGY does not support it: Bundles are not offered (haveBundles=false on all 91 offers (re-checked 2026-11-24); GetOfferBundles answers 409 OperationNotSupported - see TC-BUNDLE-NEG-01 in the Generic report and FLOW-V2-31-NEG); Seat maps are not offered (isSeatMapRequired=false and offerHasSeat=false on all 91 offers (re-checked 2026-11-24); GetSeatMap and FareCheck answer 409 OperationNotSupported - see TC-SEATMAP-NEG-01, FLOW-V2-49-NEG).
+- **Status:** BLOCKED
+- **Evidence:** Bundle + SeatMap enrichment is required by this flow, and SabreNdc/EGY does not support it: Bundles are not offered (haveBundles=false on all 91 offers (re-checked 2026-11-24); GetOfferBundles answers 409 OperationNotSupported - see TC-BUNDLE-NEG-01 in the Generic report and FLOW-V2-31-NEG); Seat maps are not offered (isSeatMapRequired=false and offerHasSeat=false on all 91 offers (re-checked 2026-11-24); GetSeatMap and FareCheck answer 409 OperationNotSupported - see TC-SEATMAP-NEG-01, FLOW-V2-49-NEG). | Round 1 verdict: BLOCKED (unchanged)
+
+### FLOW-V2-107-NEG — BLOCKED
+
+- **Test Case:** [BookAfterHold][Response] Verify behavior of BookAfterHold attempted after holdExpirationDate has passed.
+- **Category:** Flow - Negative
+- **Endpoint Name:** V2 flow
+- **Request:** Not sent - the post-expiry state cannot be reached in a session: holds observed on SabreNdc/EGY expire about 5 days after creation (2026-10-30 for holds made on 2026-10-25), and the window cannot be shortened.
+- **Response:** No request sent
+- **Expected:** Exact resulting status is UNKNOWN - confirm live per §2.12/§6.5. Expected candidates are an explicit expiration/price-change rejection or a supplier-level "offer no longer available" error, not a silent success reusing stale Hold-era pricing.
+- **Actual:** Blocked: the post-expiry state cannot be reached in a session: holds observed on SabreNdc/EGY expire about 5 days after creation (2026-10-30 for holds made on 2026-10-25), and the window cannot be shortened.
+- **Status:** BLOCKED
+- **Evidence:** the post-expiry state cannot be reached in a session: holds observed on SabreNdc/EGY expire about 5 days after creation (2026-10-30 for holds made on 2026-10-25), and the window cannot be shortened. | Round 1 verdict: BLOCKED (unchanged)
+
+### FLOW-V2-108 — BLOCKED
+
+- **Test Case:** [Upselling-Bundle+SeatMap][Response] Verify Family-F flow completes end-to-end via the Upselling fare-selection path.
+- **Category:** Flow - Positive
+- **Endpoint Name:** V2 flow
+- **Request:** Not sent - Bundle + SeatMap enrichment is required by this flow, and SabreNdc/EGY does not support it: Bundles are not offered (haveBundles=false on all 91 offers (re-checked 2026-11-24); GetOfferBundles answers 409 OperationNotSupported - see TC-BUNDLE-NEG-01 in the Generic report and FLOW-V2-31-NEG); Seat maps are not offered (isSeatMapRequired=false and offerHasSeat=false on all 91 offers (re-checked 2026-11-24); GetSeatMap and FareCheck answer 409 OperationNotSupported - see TC-SEATMAP-NEG-01, FLOW-V2-49-NEG).
+- **Response:** No request sent
+- **Expected:** Family-B checks apply through the first Retrieve, plus: CancelAfterHold has zero script coverage and no genuine saved example (UNKNOWN exact response); a follow-up manual Retrieve is expected to show a cancelled/terminated bookingStatus, distinct from both held and booked states - this is the weakest-validated end-state in the flow catalog, confirm live and record as the regression baseline. Bundle check: final priceDetails.totalAmount reflects the chosen bundle's feePrice; bundle-included services are not also charged as separate ancillary lines. SeatMap check: the chosen cellCode appears as a Seat-category entry in passengersSelectedAncillaries, priced per GetSeatMap/FareCheck. FareCheck check: final booking price equals FareCheck's re-priced total, not the pre-ancillary FareConfirm/AddPassenger-era total. Manual price-reconciliation must be supplied at Hold/FareConfirmAfterHold/BookAfterHold (V2 enforces this by script only there) and additionally checked by hand at Search/Upselling/Book/Retrieve since no script covers those in V2.
+- **Actual:** Blocked: Bundle + SeatMap enrichment is required by this flow, and SabreNdc/EGY does not support it: Bundles are not offered (haveBundles=false on all 91 offers (re-checked 2026-11-24); GetOfferBundles answers 409 OperationNotSupported - see TC-BUNDLE-NEG-01 in the Generic report and FLOW-V2-31-NEG); Seat maps are not offered (isSeatMapRequired=false and offerHasSeat=false on all 91 offers (re-checked 2026-11-24); GetSeatMap and FareCheck answer 409 OperationNotSupported - see TC-SEATMAP-NEG-01, FLOW-V2-49-NEG).
+- **Status:** BLOCKED
+- **Evidence:** Bundle + SeatMap enrichment is required by this flow, and SabreNdc/EGY does not support it: Bundles are not offered (haveBundles=false on all 91 offers (re-checked 2026-11-24); GetOfferBundles answers 409 OperationNotSupported - see TC-BUNDLE-NEG-01 in the Generic report and FLOW-V2-31-NEG); Seat maps are not offered (isSeatMapRequired=false and offerHasSeat=false on all 91 offers (re-checked 2026-11-24); GetSeatMap and FareCheck answer 409 OperationNotSupported - see TC-SEATMAP-NEG-01, FLOW-V2-49-NEG). | Round 1 verdict: BLOCKED (unchanged)
+
+### FLOW-V2-108-NEG — BLOCKED
+
+- **Test Case:** [CancelAfterHold][Response] Verify behavior of CancelAfterHold attempted after holdExpirationDate has passed.
+- **Category:** Flow - Negative
+- **Endpoint Name:** V2 flow
+- **Request:** Not sent - the post-expiry state cannot be reached in a session: holds observed on SabreNdc/EGY expire about 5 days after creation (2026-10-30 for holds made on 2026-10-25), and the window cannot be shortened.
+- **Response:** No request sent
+- **Expected:** Exact resulting status is UNKNOWN - confirm live per §2.12/§6.5. Expected candidates are an explicit expiration/price-change rejection or a supplier-level "offer no longer available" error, not a silent success reusing stale Hold-era pricing.
+- **Actual:** Blocked: the post-expiry state cannot be reached in a session: holds observed on SabreNdc/EGY expire about 5 days after creation (2026-10-30 for holds made on 2026-10-25), and the window cannot be shortened.
+- **Status:** BLOCKED
+- **Evidence:** the post-expiry state cannot be reached in a session: holds observed on SabreNdc/EGY expire about 5 days after creation (2026-10-30 for holds made on 2026-10-25), and the window cannot be shortened. | Round 1 verdict: BLOCKED (unchanged)
+
+### FLOW-V2-109 — BLOCKED
+
+- **Test Case:** [Upselling-Ancillary+SeatMap][Response] Verify Family-A flow completes end-to-end via the Upselling fare-selection path.
+- **Category:** Flow - Positive
+- **Endpoint Name:** V2 flow
+- **Request:** Not sent - Ancillary + SeatMap enrichment is required by this flow, and SabreNdc/EGY does not support it: Ancillaries are not offered (offerHasAncillary=false on all 91 offers (re-checked 2026-11-24); GetAncillary and FareCheck answer 409 OperationNotSupported - see TC-ANCILLARY-NEG-01, TC-FARECHECK-NEG-01); Seat maps are not offered (isSeatMapRequired=false and offerHasSeat=false on all 91 offers (re-checked 2026-11-24); GetSeatMap and FareCheck answer 409 OperationNotSupported - see TC-SEATMAP-NEG-01, FLOW-V2-49-NEG).
+- **Response:** No request sent
+- **Expected:** Booking confirmed: bookingStatus on Retrieve reflects a booked/confirmed state; selectedOffer.offerId and priceDetails.totalAmount match between Book and Retrieve; passengersList on Retrieve matches the AddPassenger submission. Ancillary check: passengersSelectedAncillaries lists exactly the codes selected at GetAncillary/FareCheck with matching AdditionalServiceCategory/quantity; paxTotalAncillaryAmount equals the sum of selected ancillary prices. SeatMap check: the chosen cellCode appears as a Seat-category entry in passengersSelectedAncillaries, priced per GetSeatMap/FareCheck. FareCheck check: final booking price equals FareCheck's re-priced total, not the pre-ancillary FareConfirm/AddPassenger-era total. Manual price-reconciliation must be supplied at Hold/FareConfirmAfterHold/BookAfterHold (V2 enforces this by script only there) and additionally checked by hand at Search/Upselling/Book/Retrieve since no script covers those in V2.
+- **Actual:** Blocked: Ancillary + SeatMap enrichment is required by this flow, and SabreNdc/EGY does not support it: Ancillaries are not offered (offerHasAncillary=false on all 91 offers (re-checked 2026-11-24); GetAncillary and FareCheck answer 409 OperationNotSupported - see TC-ANCILLARY-NEG-01, TC-FARECHECK-NEG-01); Seat maps are not offered (isSeatMapRequired=false and offerHasSeat=false on all 91 offers (re-checked 2026-11-24); GetSeatMap and FareCheck answer 409 OperationNotSupported - see TC-SEATMAP-NEG-01, FLOW-V2-49-NEG).
+- **Status:** BLOCKED
+- **Evidence:** Ancillary + SeatMap enrichment is required by this flow, and SabreNdc/EGY does not support it: Ancillaries are not offered (offerHasAncillary=false on all 91 offers (re-checked 2026-11-24); GetAncillary and FareCheck answer 409 OperationNotSupported - see TC-ANCILLARY-NEG-01, TC-FARECHECK-NEG-01); Seat maps are not offered (isSeatMapRequired=false and offerHasSeat=false on all 91 offers (re-checked 2026-11-24); GetSeatMap and FareCheck answer 409 OperationNotSupported - see TC-SEATMAP-NEG-01, FLOW-V2-49-NEG). | Round 1 verdict: BLOCKED (unchanged)
+
+### FLOW-V2-109-NEG — BLOCKED
+
+- **Test Case:** [FareCheck][Request] Validate FareCheck rejects a hand-constructed AncillaryCode not sourced from GetAncillary.
+- **Category:** Flow - Negative
+- **Endpoint Name:** V2 flow
+- **Request:** Not sent - it needs GetAncillary codes and a working FareCheck; both answer 409 OperationNotSupported for SabreNdc, so neither the code nor the quantity can ever be validated (see TC-FARECHECK-NEG-01).
+- **Response:** No request sent
+- **Expected:** FareCheck rejects the hand-constructed AncillaryCode - expect a 4xx/validation error, not a silently-accepted re-price; confirms AncillaryCode must be the opaque gzip+base64 token copied verbatim from GetAncillary, never hand-built (§2.8).
+- **Actual:** Blocked: it needs GetAncillary codes and a working FareCheck; both answer 409 OperationNotSupported for SabreNdc, so neither the code nor the quantity can ever be validated (see TC-FARECHECK-NEG-01).
+- **Status:** BLOCKED
+- **Evidence:** it needs GetAncillary codes and a working FareCheck; both answer 409 OperationNotSupported for SabreNdc, so neither the code nor the quantity can ever be validated (see TC-FARECHECK-NEG-01). | Round 1 verdict: BLOCKED (unchanged)
+
+### FLOW-V2-110 — BLOCKED
+
+- **Test Case:** [Upselling-Ancillary+SeatMap][Response] Verify Family-B flow completes end-to-end via the Upselling fare-selection path.
+- **Category:** Flow - Positive
+- **Endpoint Name:** V2 flow
+- **Request:** Not sent - Ancillary + SeatMap enrichment is required by this flow, and SabreNdc/EGY does not support it: Ancillaries are not offered (offerHasAncillary=false on all 91 offers (re-checked 2026-11-24); GetAncillary and FareCheck answer 409 OperationNotSupported - see TC-ANCILLARY-NEG-01, TC-FARECHECK-NEG-01); Seat maps are not offered (isSeatMapRequired=false and offerHasSeat=false on all 91 offers (re-checked 2026-11-24); GetSeatMap and FareCheck answer 409 OperationNotSupported - see TC-SEATMAP-NEG-01, FLOW-V2-49-NEG).
+- **Response:** No request sent
+- **Expected:** Booking held (not finalized): bookingStatus on Retrieve reflects a held state; holdExpirationDate present and still in the future at Retrieve time; FareConfirmAfterHold price matches Hold's original price (no drift) in the common case. This flow STOPS here and leaves a dangling Held booking with no cleanup step - log the pnr for out-of-band tracking/eventual CancelAfterHold. Ancillary check: passengersSelectedAncillaries lists exactly the codes selected at GetAncillary/FareCheck with matching AdditionalServiceCategory/quantity; paxTotalAncillaryAmount equals the sum of selected ancillary prices. SeatMap check: the chosen cellCode appears as a Seat-category entry in passengersSelectedAncillaries, priced per GetSeatMap/FareCheck. FareCheck check: final booking price equals FareCheck's re-priced total, not the pre-ancillary FareConfirm/AddPassenger-era total. Manual price-reconciliation must be supplied at Hold/FareConfirmAfterHold/BookAfterHold (V2 enforces this by script only there) and additionally checked by hand at Search/Upselling/Book/Retrieve since no script covers those in V2.
+- **Actual:** Blocked: Ancillary + SeatMap enrichment is required by this flow, and SabreNdc/EGY does not support it: Ancillaries are not offered (offerHasAncillary=false on all 91 offers (re-checked 2026-11-24); GetAncillary and FareCheck answer 409 OperationNotSupported - see TC-ANCILLARY-NEG-01, TC-FARECHECK-NEG-01); Seat maps are not offered (isSeatMapRequired=false and offerHasSeat=false on all 91 offers (re-checked 2026-11-24); GetSeatMap and FareCheck answer 409 OperationNotSupported - see TC-SEATMAP-NEG-01, FLOW-V2-49-NEG).
+- **Status:** BLOCKED
+- **Evidence:** Ancillary + SeatMap enrichment is required by this flow, and SabreNdc/EGY does not support it: Ancillaries are not offered (offerHasAncillary=false on all 91 offers (re-checked 2026-11-24); GetAncillary and FareCheck answer 409 OperationNotSupported - see TC-ANCILLARY-NEG-01, TC-FARECHECK-NEG-01); Seat maps are not offered (isSeatMapRequired=false and offerHasSeat=false on all 91 offers (re-checked 2026-11-24); GetSeatMap and FareCheck answer 409 OperationNotSupported - see TC-SEATMAP-NEG-01, FLOW-V2-49-NEG). | Round 1 verdict: BLOCKED (unchanged)
+
+### FLOW-V2-110-NEG — BLOCKED
+
+- **Test Case:** [FareConfirmAfterHold][Response] Verify behavior of FareConfirmAfterHold attempted after holdExpirationDate has passed.
+- **Category:** Flow - Negative
+- **Endpoint Name:** V2 flow
+- **Request:** Not sent - the post-expiry state cannot be reached in a session: holds observed on SabreNdc/EGY expire about 5 days after creation (2026-10-30 for holds made on 2026-10-25), and the window cannot be shortened.
+- **Response:** No request sent
+- **Expected:** Exact resulting status is UNKNOWN - confirm live per §2.12/§6.5. Expected candidates are an explicit expiration/price-change rejection or a supplier-level "offer no longer available" error, not a silent success reusing stale Hold-era pricing.
+- **Actual:** Blocked: the post-expiry state cannot be reached in a session: holds observed on SabreNdc/EGY expire about 5 days after creation (2026-10-30 for holds made on 2026-10-25), and the window cannot be shortened.
+- **Status:** BLOCKED
+- **Evidence:** the post-expiry state cannot be reached in a session: holds observed on SabreNdc/EGY expire about 5 days after creation (2026-10-30 for holds made on 2026-10-25), and the window cannot be shortened. | Round 1 verdict: BLOCKED (unchanged)
+
+### FLOW-V2-111 — BLOCKED
+
+- **Test Case:** [Upselling-Ancillary+SeatMap][Response] Verify Family-C flow completes end-to-end via the Upselling fare-selection path.
+- **Category:** Flow - Positive
+- **Endpoint Name:** V2 flow
+- **Request:** Not sent - Ancillary + SeatMap enrichment is required by this flow, and SabreNdc/EGY does not support it: Ancillaries are not offered (offerHasAncillary=false on all 91 offers (re-checked 2026-11-24); GetAncillary and FareCheck answer 409 OperationNotSupported - see TC-ANCILLARY-NEG-01, TC-FARECHECK-NEG-01); Seat maps are not offered (isSeatMapRequired=false and offerHasSeat=false on all 91 offers (re-checked 2026-11-24); GetSeatMap and FareCheck answer 409 OperationNotSupported - see TC-SEATMAP-NEG-01, FLOW-V2-49-NEG).
+- **Response:** No request sent
+- **Expected:** Family-A checks apply through Retrieve, plus: Void succeeds only if the booking's voidCapability allowed it; a follow-up manual Retrieve shows a voided bookingStatus. Ancillary check: passengersSelectedAncillaries lists exactly the codes selected at GetAncillary/FareCheck with matching AdditionalServiceCategory/quantity; paxTotalAncillaryAmount equals the sum of selected ancillary prices. SeatMap check: the chosen cellCode appears as a Seat-category entry in passengersSelectedAncillaries, priced per GetSeatMap/FareCheck. FareCheck check: final booking price equals FareCheck's re-priced total, not the pre-ancillary FareConfirm/AddPassenger-era total. Manual price-reconciliation must be supplied at Hold/FareConfirmAfterHold/BookAfterHold (V2 enforces this by script only there) and additionally checked by hand at Search/Upselling/Book/Retrieve since no script covers those in V2.
+- **Actual:** Blocked: Ancillary + SeatMap enrichment is required by this flow, and SabreNdc/EGY does not support it: Ancillaries are not offered (offerHasAncillary=false on all 91 offers (re-checked 2026-11-24); GetAncillary and FareCheck answer 409 OperationNotSupported - see TC-ANCILLARY-NEG-01, TC-FARECHECK-NEG-01); Seat maps are not offered (isSeatMapRequired=false and offerHasSeat=false on all 91 offers (re-checked 2026-11-24); GetSeatMap and FareCheck answer 409 OperationNotSupported - see TC-SEATMAP-NEG-01, FLOW-V2-49-NEG).
+- **Status:** BLOCKED
+- **Evidence:** Ancillary + SeatMap enrichment is required by this flow, and SabreNdc/EGY does not support it: Ancillaries are not offered (offerHasAncillary=false on all 91 offers (re-checked 2026-11-24); GetAncillary and FareCheck answer 409 OperationNotSupported - see TC-ANCILLARY-NEG-01, TC-FARECHECK-NEG-01); Seat maps are not offered (isSeatMapRequired=false and offerHasSeat=false on all 91 offers (re-checked 2026-11-24); GetSeatMap and FareCheck answer 409 OperationNotSupported - see TC-SEATMAP-NEG-01, FLOW-V2-49-NEG). | Round 1 verdict: BLOCKED (unchanged)
+
+### FLOW-V2-111-NEG — BLOCKED
+
+- **Test Case:** [FareCheck][Request] Validate FareCheck rejects a hand-constructed AncillaryCode not sourced from GetAncillary.
+- **Category:** Flow - Negative
+- **Endpoint Name:** V2 flow
+- **Request:** Not sent - it needs GetAncillary codes and a working FareCheck; both answer 409 OperationNotSupported for SabreNdc, so neither the code nor the quantity can ever be validated (see TC-FARECHECK-NEG-01).
+- **Response:** No request sent
+- **Expected:** FareCheck rejects the hand-constructed AncillaryCode - expect a 4xx/validation error, not a silently-accepted re-price; confirms AncillaryCode must be the opaque gzip+base64 token copied verbatim from GetAncillary, never hand-built (§2.8).
+- **Actual:** Blocked: it needs GetAncillary codes and a working FareCheck; both answer 409 OperationNotSupported for SabreNdc, so neither the code nor the quantity can ever be validated (see TC-FARECHECK-NEG-01).
+- **Status:** BLOCKED
+- **Evidence:** it needs GetAncillary codes and a working FareCheck; both answer 409 OperationNotSupported for SabreNdc, so neither the code nor the quantity can ever be validated (see TC-FARECHECK-NEG-01). | Round 1 verdict: BLOCKED (unchanged)
+
+### FLOW-V2-112 — BLOCKED
+
+- **Test Case:** [Upselling-Ancillary+SeatMap][Response] Verify Family-D flow completes end-to-end via the Upselling fare-selection path.
+- **Category:** Flow - Positive
+- **Endpoint Name:** V2 flow
+- **Request:** Not sent - Ancillary + SeatMap enrichment is required by this flow, and SabreNdc/EGY does not support it: Ancillaries are not offered (offerHasAncillary=false on all 91 offers (re-checked 2026-11-24); GetAncillary and FareCheck answer 409 OperationNotSupported - see TC-ANCILLARY-NEG-01, TC-FARECHECK-NEG-01); Seat maps are not offered (isSeatMapRequired=false and offerHasSeat=false on all 91 offers (re-checked 2026-11-24); GetSeatMap and FareCheck answer 409 OperationNotSupported - see TC-SEATMAP-NEG-01, FLOW-V2-49-NEG).
+- **Response:** No request sent
+- **Expected:** Family-B checks apply through the first Retrieve, plus: BookAfterHold transitions bookingStatus from held to booked/confirmed; pnr/bookingToken/gdsPNR are unchanged from Hold (same-PNR invariant); the final Retrieve confirms the booked state. Ancillary check: passengersSelectedAncillaries lists exactly the codes selected at GetAncillary/FareCheck with matching AdditionalServiceCategory/quantity; paxTotalAncillaryAmount equals the sum of selected ancillary prices. SeatMap check: the chosen cellCode appears as a Seat-category entry in passengersSelectedAncillaries, priced per GetSeatMap/FareCheck. FareCheck check: final booking price equals FareCheck's re-priced total, not the pre-ancillary FareConfirm/AddPassenger-era total. Manual price-reconciliation must be supplied at Hold/FareConfirmAfterHold/BookAfterHold (V2 enforces this by script only there) and additionally checked by hand at Search/Upselling/Book/Retrieve since no script covers those in V2.
+- **Actual:** Blocked: Ancillary + SeatMap enrichment is required by this flow, and SabreNdc/EGY does not support it: Ancillaries are not offered (offerHasAncillary=false on all 91 offers (re-checked 2026-11-24); GetAncillary and FareCheck answer 409 OperationNotSupported - see TC-ANCILLARY-NEG-01, TC-FARECHECK-NEG-01); Seat maps are not offered (isSeatMapRequired=false and offerHasSeat=false on all 91 offers (re-checked 2026-11-24); GetSeatMap and FareCheck answer 409 OperationNotSupported - see TC-SEATMAP-NEG-01, FLOW-V2-49-NEG).
+- **Status:** BLOCKED
+- **Evidence:** Ancillary + SeatMap enrichment is required by this flow, and SabreNdc/EGY does not support it: Ancillaries are not offered (offerHasAncillary=false on all 91 offers (re-checked 2026-11-24); GetAncillary and FareCheck answer 409 OperationNotSupported - see TC-ANCILLARY-NEG-01, TC-FARECHECK-NEG-01); Seat maps are not offered (isSeatMapRequired=false and offerHasSeat=false on all 91 offers (re-checked 2026-11-24); GetSeatMap and FareCheck answer 409 OperationNotSupported - see TC-SEATMAP-NEG-01, FLOW-V2-49-NEG). | Round 1 verdict: BLOCKED (unchanged)
+
+### FLOW-V2-112-NEG — BLOCKED
+
+- **Test Case:** [Hold][Request] Validate Hold is rejected for a supplier without confirmed Hold support (FlyNas).
+- **Category:** Flow - Negative
+- **Endpoint Name:** V2 flow
+- **Request:** Not sent - it is defined for supplier FlyNas (Hold Not Supported); this run is scoped to SabreNdc/EGY, where every offer is canBeHeld=true.
+- **Response:** No request sent
+- **Expected:** Hold against FlyNas is rejected outright - the flow must not proceed to FareConfirmAfterHold/Retrieve; confirms live capability enforcement matches the documented (cross-validated, high-confidence) Hold=Not Supported gap rather than being silently accepted.
+- **Actual:** Blocked: it is defined for supplier FlyNas (Hold Not Supported); this run is scoped to SabreNdc/EGY, where every offer is canBeHeld=true.
+- **Status:** BLOCKED
+- **Evidence:** it is defined for supplier FlyNas (Hold Not Supported); this run is scoped to SabreNdc/EGY, where every offer is canBeHeld=true. | Round 1 verdict: BLOCKED (unchanged)
+
+### FLOW-V2-113 — BLOCKED
+
+- **Test Case:** [Upselling-Ancillary+SeatMap][Response] Verify Family-E flow completes end-to-end via the Upselling fare-selection path.
+- **Category:** Flow - Positive
+- **Endpoint Name:** V2 flow
+- **Request:** Not sent - Ancillary + SeatMap enrichment is required by this flow, and SabreNdc/EGY does not support it: Ancillaries are not offered (offerHasAncillary=false on all 91 offers (re-checked 2026-11-24); GetAncillary and FareCheck answer 409 OperationNotSupported - see TC-ANCILLARY-NEG-01, TC-FARECHECK-NEG-01); Seat maps are not offered (isSeatMapRequired=false and offerHasSeat=false on all 91 offers (re-checked 2026-11-24); GetSeatMap and FareCheck answer 409 OperationNotSupported - see TC-SEATMAP-NEG-01, FLOW-V2-49-NEG).
+- **Response:** No request sent
+- **Expected:** Family-D checks apply, plus Family-C's Void checks applied to the now-finalized (ex-Held) booking. Ancillary check: passengersSelectedAncillaries lists exactly the codes selected at GetAncillary/FareCheck with matching AdditionalServiceCategory/quantity; paxTotalAncillaryAmount equals the sum of selected ancillary prices. SeatMap check: the chosen cellCode appears as a Seat-category entry in passengersSelectedAncillaries, priced per GetSeatMap/FareCheck. FareCheck check: final booking price equals FareCheck's re-priced total, not the pre-ancillary FareConfirm/AddPassenger-era total. Manual price-reconciliation must be supplied at Hold/FareConfirmAfterHold/BookAfterHold (V2 enforces this by script only there) and additionally checked by hand at Search/Upselling/Book/Retrieve since no script covers those in V2.
+- **Actual:** Blocked: Ancillary + SeatMap enrichment is required by this flow, and SabreNdc/EGY does not support it: Ancillaries are not offered (offerHasAncillary=false on all 91 offers (re-checked 2026-11-24); GetAncillary and FareCheck answer 409 OperationNotSupported - see TC-ANCILLARY-NEG-01, TC-FARECHECK-NEG-01); Seat maps are not offered (isSeatMapRequired=false and offerHasSeat=false on all 91 offers (re-checked 2026-11-24); GetSeatMap and FareCheck answer 409 OperationNotSupported - see TC-SEATMAP-NEG-01, FLOW-V2-49-NEG).
+- **Status:** BLOCKED
+- **Evidence:** Ancillary + SeatMap enrichment is required by this flow, and SabreNdc/EGY does not support it: Ancillaries are not offered (offerHasAncillary=false on all 91 offers (re-checked 2026-11-24); GetAncillary and FareCheck answer 409 OperationNotSupported - see TC-ANCILLARY-NEG-01, TC-FARECHECK-NEG-01); Seat maps are not offered (isSeatMapRequired=false and offerHasSeat=false on all 91 offers (re-checked 2026-11-24); GetSeatMap and FareCheck answer 409 OperationNotSupported - see TC-SEATMAP-NEG-01, FLOW-V2-49-NEG). | Round 1 verdict: BLOCKED (unchanged)
+
+### FLOW-V2-113-NEG — BLOCKED
+
+- **Test Case:** [BookAfterHold][Response] Verify behavior of BookAfterHold attempted after holdExpirationDate has passed.
+- **Category:** Flow - Negative
+- **Endpoint Name:** V2 flow
+- **Request:** Not sent - the post-expiry state cannot be reached in a session: holds observed on SabreNdc/EGY expire about 5 days after creation (2026-10-30 for holds made on 2026-10-25), and the window cannot be shortened.
+- **Response:** No request sent
+- **Expected:** Exact resulting status is UNKNOWN - confirm live per §2.12/§6.5. Expected candidates are an explicit expiration/price-change rejection or a supplier-level "offer no longer available" error, not a silent success reusing stale Hold-era pricing.
+- **Actual:** Blocked: the post-expiry state cannot be reached in a session: holds observed on SabreNdc/EGY expire about 5 days after creation (2026-10-30 for holds made on 2026-10-25), and the window cannot be shortened.
+- **Status:** BLOCKED
+- **Evidence:** the post-expiry state cannot be reached in a session: holds observed on SabreNdc/EGY expire about 5 days after creation (2026-10-30 for holds made on 2026-10-25), and the window cannot be shortened. | Round 1 verdict: BLOCKED (unchanged)
+
+### FLOW-V2-114 — BLOCKED
+
+- **Test Case:** [Upselling-Ancillary+SeatMap][Response] Verify Family-F flow completes end-to-end via the Upselling fare-selection path.
+- **Category:** Flow - Positive
+- **Endpoint Name:** V2 flow
+- **Request:** Not sent - Ancillary + SeatMap enrichment is required by this flow, and SabreNdc/EGY does not support it: Ancillaries are not offered (offerHasAncillary=false on all 91 offers (re-checked 2026-11-24); GetAncillary and FareCheck answer 409 OperationNotSupported - see TC-ANCILLARY-NEG-01, TC-FARECHECK-NEG-01); Seat maps are not offered (isSeatMapRequired=false and offerHasSeat=false on all 91 offers (re-checked 2026-11-24); GetSeatMap and FareCheck answer 409 OperationNotSupported - see TC-SEATMAP-NEG-01, FLOW-V2-49-NEG).
+- **Response:** No request sent
+- **Expected:** Family-B checks apply through the first Retrieve, plus: CancelAfterHold has zero script coverage and no genuine saved example (UNKNOWN exact response); a follow-up manual Retrieve is expected to show a cancelled/terminated bookingStatus, distinct from both held and booked states - this is the weakest-validated end-state in the flow catalog, confirm live and record as the regression baseline. Ancillary check: passengersSelectedAncillaries lists exactly the codes selected at GetAncillary/FareCheck with matching AdditionalServiceCategory/quantity; paxTotalAncillaryAmount equals the sum of selected ancillary prices. SeatMap check: the chosen cellCode appears as a Seat-category entry in passengersSelectedAncillaries, priced per GetSeatMap/FareCheck. FareCheck check: final booking price equals FareCheck's re-priced total, not the pre-ancillary FareConfirm/AddPassenger-era total. Manual price-reconciliation must be supplied at Hold/FareConfirmAfterHold/BookAfterHold (V2 enforces this by script only there) and additionally checked by hand at Search/Upselling/Book/Retrieve since no script covers those in V2.
+- **Actual:** Blocked: Ancillary + SeatMap enrichment is required by this flow, and SabreNdc/EGY does not support it: Ancillaries are not offered (offerHasAncillary=false on all 91 offers (re-checked 2026-11-24); GetAncillary and FareCheck answer 409 OperationNotSupported - see TC-ANCILLARY-NEG-01, TC-FARECHECK-NEG-01); Seat maps are not offered (isSeatMapRequired=false and offerHasSeat=false on all 91 offers (re-checked 2026-11-24); GetSeatMap and FareCheck answer 409 OperationNotSupported - see TC-SEATMAP-NEG-01, FLOW-V2-49-NEG).
+- **Status:** BLOCKED
+- **Evidence:** Ancillary + SeatMap enrichment is required by this flow, and SabreNdc/EGY does not support it: Ancillaries are not offered (offerHasAncillary=false on all 91 offers (re-checked 2026-11-24); GetAncillary and FareCheck answer 409 OperationNotSupported - see TC-ANCILLARY-NEG-01, TC-FARECHECK-NEG-01); Seat maps are not offered (isSeatMapRequired=false and offerHasSeat=false on all 91 offers (re-checked 2026-11-24); GetSeatMap and FareCheck answer 409 OperationNotSupported - see TC-SEATMAP-NEG-01, FLOW-V2-49-NEG). | Round 1 verdict: BLOCKED (unchanged)
+
+### FLOW-V2-114-NEG — BLOCKED
+
+- **Test Case:** [CancelAfterHold][Response] Verify behavior of CancelAfterHold attempted after holdExpirationDate has passed.
+- **Category:** Flow - Negative
+- **Endpoint Name:** V2 flow
+- **Request:** Not sent - the post-expiry state cannot be reached in a session: holds observed on SabreNdc/EGY expire about 5 days after creation (2026-10-30 for holds made on 2026-10-25), and the window cannot be shortened.
+- **Response:** No request sent
+- **Expected:** Exact resulting status is UNKNOWN - confirm live per §2.12/§6.5. Expected candidates are an explicit expiration/price-change rejection or a supplier-level "offer no longer available" error, not a silent success reusing stale Hold-era pricing.
+- **Actual:** Blocked: the post-expiry state cannot be reached in a session: holds observed on SabreNdc/EGY expire about 5 days after creation (2026-10-30 for holds made on 2026-10-25), and the window cannot be shortened.
+- **Status:** BLOCKED
+- **Evidence:** the post-expiry state cannot be reached in a session: holds observed on SabreNdc/EGY expire about 5 days after creation (2026-10-30 for holds made on 2026-10-25), and the window cannot be shortened. | Round 1 verdict: BLOCKED (unchanged)
+
+### FLOW-V2-115 — BLOCKED
+
+- **Test Case:** [Upselling-Bundle+Ancillary+SeatMap][Response] Verify Family-A flow completes end-to-end via the Upselling fare-selection path.
+- **Category:** Flow - Positive
+- **Endpoint Name:** V2 flow
+- **Request:** Not sent - Bundle + Ancillary + SeatMap enrichment is required by this flow, and SabreNdc/EGY does not support it: Bundles are not offered (haveBundles=false on all 91 offers (re-checked 2026-11-24); GetOfferBundles answers 409 OperationNotSupported - see TC-BUNDLE-NEG-01 in the Generic report and FLOW-V2-31-NEG); Ancillaries are not offered (offerHasAncillary=false on all 91 offers (re-checked 2026-11-24); GetAncillary and FareCheck answer 409 OperationNotSupported - see TC-ANCILLARY-NEG-01, TC-FARECHECK-NEG-01); Seat maps are not offered (isSeatMapRequired=false and offerHasSeat=false on all 91 offers (re-checked 2026-11-24); GetSeatMap and FareCheck answer 409 OperationNotSupported - see TC-SEATMAP-NEG-01, FLOW-V2-49-NEG).
+- **Response:** No request sent
+- **Expected:** Booking confirmed: bookingStatus on Retrieve reflects a booked/confirmed state; selectedOffer.offerId and priceDetails.totalAmount match between Book and Retrieve; passengersList on Retrieve matches the AddPassenger submission. Bundle check: final priceDetails.totalAmount reflects the chosen bundle's feePrice; bundle-included services are not also charged as separate ancillary lines. Ancillary check: passengersSelectedAncillaries lists exactly the codes selected at GetAncillary/FareCheck with matching AdditionalServiceCategory/quantity; paxTotalAncillaryAmount equals the sum of selected ancillary prices. SeatMap check: the chosen cellCode appears as a Seat-category entry in passengersSelectedAncillaries, priced per GetSeatMap/FareCheck. FareCheck check: final booking price equals FareCheck's re-priced total, not the pre-ancillary FareConfirm/AddPassenger-era total. Manual price-reconciliation must be supplied at Hold/FareConfirmAfterHold/BookAfterHold (V2 enforces this by script only there) and additionally checked by hand at Search/Upselling/Book/Retrieve since no script covers those in V2.
+- **Actual:** Blocked: Bundle + Ancillary + SeatMap enrichment is required by this flow, and SabreNdc/EGY does not support it: Bundles are not offered (haveBundles=false on all 91 offers (re-checked 2026-11-24); GetOfferBundles answers 409 OperationNotSupported - see TC-BUNDLE-NEG-01 in the Generic report and FLOW-V2-31-NEG); Ancillaries are not offered (offerHasAncillary=false on all 91 offers (re-checked 2026-11-24); GetAncillary and FareCheck answer 409 OperationNotSupported - see TC-ANCILLARY-NEG-01, TC-FARECHECK-NEG-01); Seat maps are not offered (isSeatMapRequired=false and offerHasSeat=false on all 91 offers (re-checked 2026-11-24); GetSeatMap and FareCheck answer 409 OperationNotSupported - see TC-SEATMAP-NEG-01, FLOW-V2-49-NEG).
+- **Status:** BLOCKED
+- **Evidence:** Bundle + Ancillary + SeatMap enrichment is required by this flow, and SabreNdc/EGY does not support it: Bundles are not offered (haveBundles=false on all 91 offers (re-checked 2026-11-24); GetOfferBundles answers 409 OperationNotSupported - see TC-BUNDLE-NEG-01 in the Generic report and FLOW-V2-31-NEG); Ancillaries are not offered (offerHasAncillary=false on all 91 offers (re-checked 2026-11-24); GetAncillary and FareCheck answer 409 OperationNotSupported - see TC-ANCILLARY-NEG-01, TC-FARECHECK-NEG-01); Seat maps are not offered (isSeatMapRequired=false and offerHasSeat=false on all 91 offers (re-checked 2026-11-24); GetSeatMap and FareCheck answer 409 OperationNotSupported - see TC-SEATMAP-NEG-01, FLOW-V2-49-NEG). | Round 1 verdict: BLOCKED (unchanged)
+
+### FLOW-V2-115-NEG — BLOCKED
+
+- **Test Case:** [Upselling][Request] Validate Upselling is rejected for FlyCham (Upsell capability not supported).
+- **Category:** Flow - Negative
+- **Endpoint Name:** V2 flow
+- **Request:** Not sent - it is defined for supplier FlyCham (Upsell Not Supported); this run is scoped to SabreNdc/EGY, where Upselling works (see FLOW-V2-73).
+- **Response:** No request sent
+- **Expected:** Upselling against FlyCham is rejected/fails, since FlyCham has no confirmed Upsell support (§4.2 explicit NO, §4.6) - expect a 4xx or a supplier-level "not supported" error, not a silent empty upsellOffers[] pass-through that lets the flow continue.
+- **Actual:** Blocked: it is defined for supplier FlyCham (Upsell Not Supported); this run is scoped to SabreNdc/EGY, where Upselling works (see FLOW-V2-73).
+- **Status:** BLOCKED
+- **Evidence:** it is defined for supplier FlyCham (Upsell Not Supported); this run is scoped to SabreNdc/EGY, where Upselling works (see FLOW-V2-73). | Round 1 verdict: BLOCKED (unchanged)
+
+### FLOW-V2-116 — BLOCKED
+
+- **Test Case:** [Upselling-Bundle+Ancillary+SeatMap][Response] Verify Family-B flow completes end-to-end via the Upselling fare-selection path.
+- **Category:** Flow - Positive
+- **Endpoint Name:** V2 flow
+- **Request:** Not sent - Bundle + Ancillary + SeatMap enrichment is required by this flow, and SabreNdc/EGY does not support it: Bundles are not offered (haveBundles=false on all 91 offers (re-checked 2026-11-24); GetOfferBundles answers 409 OperationNotSupported - see TC-BUNDLE-NEG-01 in the Generic report and FLOW-V2-31-NEG); Ancillaries are not offered (offerHasAncillary=false on all 91 offers (re-checked 2026-11-24); GetAncillary and FareCheck answer 409 OperationNotSupported - see TC-ANCILLARY-NEG-01, TC-FARECHECK-NEG-01); Seat maps are not offered (isSeatMapRequired=false and offerHasSeat=false on all 91 offers (re-checked 2026-11-24); GetSeatMap and FareCheck answer 409 OperationNotSupported - see TC-SEATMAP-NEG-01, FLOW-V2-49-NEG).
+- **Response:** No request sent
+- **Expected:** Booking held (not finalized): bookingStatus on Retrieve reflects a held state; holdExpirationDate present and still in the future at Retrieve time; FareConfirmAfterHold price matches Hold's original price (no drift) in the common case. This flow STOPS here and leaves a dangling Held booking with no cleanup step - log the pnr for out-of-band tracking/eventual CancelAfterHold. Bundle check: final priceDetails.totalAmount reflects the chosen bundle's feePrice; bundle-included services are not also charged as separate ancillary lines. Ancillary check: passengersSelectedAncillaries lists exactly the codes selected at GetAncillary/FareCheck with matching AdditionalServiceCategory/quantity; paxTotalAncillaryAmount equals the sum of selected ancillary prices. SeatMap check: the chosen cellCode appears as a Seat-category entry in passengersSelectedAncillaries, priced per GetSeatMap/FareCheck. FareCheck check: final booking price equals FareCheck's re-priced total, not the pre-ancillary FareConfirm/AddPassenger-era total. Manual price-reconciliation must be supplied at Hold/FareConfirmAfterHold/BookAfterHold (V2 enforces this by script only there) and additionally checked by hand at Search/Upselling/Book/Retrieve since no script covers those in V2.
+- **Actual:** Blocked: Bundle + Ancillary + SeatMap enrichment is required by this flow, and SabreNdc/EGY does not support it: Bundles are not offered (haveBundles=false on all 91 offers (re-checked 2026-11-24); GetOfferBundles answers 409 OperationNotSupported - see TC-BUNDLE-NEG-01 in the Generic report and FLOW-V2-31-NEG); Ancillaries are not offered (offerHasAncillary=false on all 91 offers (re-checked 2026-11-24); GetAncillary and FareCheck answer 409 OperationNotSupported - see TC-ANCILLARY-NEG-01, TC-FARECHECK-NEG-01); Seat maps are not offered (isSeatMapRequired=false and offerHasSeat=false on all 91 offers (re-checked 2026-11-24); GetSeatMap and FareCheck answer 409 OperationNotSupported - see TC-SEATMAP-NEG-01, FLOW-V2-49-NEG).
+- **Status:** BLOCKED
+- **Evidence:** Bundle + Ancillary + SeatMap enrichment is required by this flow, and SabreNdc/EGY does not support it: Bundles are not offered (haveBundles=false on all 91 offers (re-checked 2026-11-24); GetOfferBundles answers 409 OperationNotSupported - see TC-BUNDLE-NEG-01 in the Generic report and FLOW-V2-31-NEG); Ancillaries are not offered (offerHasAncillary=false on all 91 offers (re-checked 2026-11-24); GetAncillary and FareCheck answer 409 OperationNotSupported - see TC-ANCILLARY-NEG-01, TC-FARECHECK-NEG-01); Seat maps are not offered (isSeatMapRequired=false and offerHasSeat=false on all 91 offers (re-checked 2026-11-24); GetSeatMap and FareCheck answer 409 OperationNotSupported - see TC-SEATMAP-NEG-01, FLOW-V2-49-NEG). | Round 1 verdict: BLOCKED (unchanged)
+
+### FLOW-V2-116-NEG — BLOCKED
+
+- **Test Case:** [Hold][Request] Validate Hold is rejected for a supplier without confirmed Hold support (FlyNas).
+- **Category:** Flow - Negative
+- **Endpoint Name:** V2 flow
+- **Request:** Not sent - it is defined for supplier FlyNas (Hold Not Supported); this run is scoped to SabreNdc/EGY, where every offer is canBeHeld=true.
+- **Response:** No request sent
+- **Expected:** Hold against FlyNas is rejected outright - the flow must not proceed to FareConfirmAfterHold/Retrieve; confirms live capability enforcement matches the documented (cross-validated, high-confidence) Hold=Not Supported gap rather than being silently accepted.
+- **Actual:** Blocked: it is defined for supplier FlyNas (Hold Not Supported); this run is scoped to SabreNdc/EGY, where every offer is canBeHeld=true.
+- **Status:** BLOCKED
+- **Evidence:** it is defined for supplier FlyNas (Hold Not Supported); this run is scoped to SabreNdc/EGY, where every offer is canBeHeld=true. | Round 1 verdict: BLOCKED (unchanged)
+
+### FLOW-V2-117 — BLOCKED
+
+- **Test Case:** [Upselling-Bundle+Ancillary+SeatMap][Response] Verify Family-C flow completes end-to-end via the Upselling fare-selection path.
+- **Category:** Flow - Positive
+- **Endpoint Name:** V2 flow
+- **Request:** Not sent - Bundle + Ancillary + SeatMap enrichment is required by this flow, and SabreNdc/EGY does not support it: Bundles are not offered (haveBundles=false on all 91 offers (re-checked 2026-11-24); GetOfferBundles answers 409 OperationNotSupported - see TC-BUNDLE-NEG-01 in the Generic report and FLOW-V2-31-NEG); Ancillaries are not offered (offerHasAncillary=false on all 91 offers (re-checked 2026-11-24); GetAncillary and FareCheck answer 409 OperationNotSupported - see TC-ANCILLARY-NEG-01, TC-FARECHECK-NEG-01); Seat maps are not offered (isSeatMapRequired=false and offerHasSeat=false on all 91 offers (re-checked 2026-11-24); GetSeatMap and FareCheck answer 409 OperationNotSupported - see TC-SEATMAP-NEG-01, FLOW-V2-49-NEG).
+- **Response:** No request sent
+- **Expected:** Family-A checks apply through Retrieve, plus: Void succeeds only if the booking's voidCapability allowed it; a follow-up manual Retrieve shows a voided bookingStatus. Bundle check: final priceDetails.totalAmount reflects the chosen bundle's feePrice; bundle-included services are not also charged as separate ancillary lines. Ancillary check: passengersSelectedAncillaries lists exactly the codes selected at GetAncillary/FareCheck with matching AdditionalServiceCategory/quantity; paxTotalAncillaryAmount equals the sum of selected ancillary prices. SeatMap check: the chosen cellCode appears as a Seat-category entry in passengersSelectedAncillaries, priced per GetSeatMap/FareCheck. FareCheck check: final booking price equals FareCheck's re-priced total, not the pre-ancillary FareConfirm/AddPassenger-era total. Manual price-reconciliation must be supplied at Hold/FareConfirmAfterHold/BookAfterHold (V2 enforces this by script only there) and additionally checked by hand at Search/Upselling/Book/Retrieve since no script covers those in V2.
+- **Actual:** Blocked: Bundle + Ancillary + SeatMap enrichment is required by this flow, and SabreNdc/EGY does not support it: Bundles are not offered (haveBundles=false on all 91 offers (re-checked 2026-11-24); GetOfferBundles answers 409 OperationNotSupported - see TC-BUNDLE-NEG-01 in the Generic report and FLOW-V2-31-NEG); Ancillaries are not offered (offerHasAncillary=false on all 91 offers (re-checked 2026-11-24); GetAncillary and FareCheck answer 409 OperationNotSupported - see TC-ANCILLARY-NEG-01, TC-FARECHECK-NEG-01); Seat maps are not offered (isSeatMapRequired=false and offerHasSeat=false on all 91 offers (re-checked 2026-11-24); GetSeatMap and FareCheck answer 409 OperationNotSupported - see TC-SEATMAP-NEG-01, FLOW-V2-49-NEG).
+- **Status:** BLOCKED
+- **Evidence:** Bundle + Ancillary + SeatMap enrichment is required by this flow, and SabreNdc/EGY does not support it: Bundles are not offered (haveBundles=false on all 91 offers (re-checked 2026-11-24); GetOfferBundles answers 409 OperationNotSupported - see TC-BUNDLE-NEG-01 in the Generic report and FLOW-V2-31-NEG); Ancillaries are not offered (offerHasAncillary=false on all 91 offers (re-checked 2026-11-24); GetAncillary and FareCheck answer 409 OperationNotSupported - see TC-ANCILLARY-NEG-01, TC-FARECHECK-NEG-01); Seat maps are not offered (isSeatMapRequired=false and offerHasSeat=false on all 91 offers (re-checked 2026-11-24); GetSeatMap and FareCheck answer 409 OperationNotSupported - see TC-SEATMAP-NEG-01, FLOW-V2-49-NEG). | Round 1 verdict: BLOCKED (unchanged)
+
+### FLOW-V2-117-NEG — BLOCKED
+
+- **Test Case:** [FareCheck][Request] Validate FareCheck rejects a hand-constructed AncillaryCode not sourced from GetAncillary.
+- **Category:** Flow - Negative
+- **Endpoint Name:** V2 flow
+- **Request:** Not sent - it needs GetAncillary codes and a working FareCheck; both answer 409 OperationNotSupported for SabreNdc, so neither the code nor the quantity can ever be validated (see TC-FARECHECK-NEG-01).
+- **Response:** No request sent
+- **Expected:** FareCheck rejects the hand-constructed AncillaryCode - expect a 4xx/validation error, not a silently-accepted re-price; confirms AncillaryCode must be the opaque gzip+base64 token copied verbatim from GetAncillary, never hand-built (§2.8).
+- **Actual:** Blocked: it needs GetAncillary codes and a working FareCheck; both answer 409 OperationNotSupported for SabreNdc, so neither the code nor the quantity can ever be validated (see TC-FARECHECK-NEG-01).
+- **Status:** BLOCKED
+- **Evidence:** it needs GetAncillary codes and a working FareCheck; both answer 409 OperationNotSupported for SabreNdc, so neither the code nor the quantity can ever be validated (see TC-FARECHECK-NEG-01). | Round 1 verdict: BLOCKED (unchanged)
+
+### FLOW-V2-118 — BLOCKED
+
+- **Test Case:** [Upselling-Bundle+Ancillary+SeatMap][Response] Verify Family-D flow completes end-to-end via the Upselling fare-selection path.
+- **Category:** Flow - Positive
+- **Endpoint Name:** V2 flow
+- **Request:** Not sent - Bundle + Ancillary + SeatMap enrichment is required by this flow, and SabreNdc/EGY does not support it: Bundles are not offered (haveBundles=false on all 91 offers (re-checked 2026-11-24); GetOfferBundles answers 409 OperationNotSupported - see TC-BUNDLE-NEG-01 in the Generic report and FLOW-V2-31-NEG); Ancillaries are not offered (offerHasAncillary=false on all 91 offers (re-checked 2026-11-24); GetAncillary and FareCheck answer 409 OperationNotSupported - see TC-ANCILLARY-NEG-01, TC-FARECHECK-NEG-01); Seat maps are not offered (isSeatMapRequired=false and offerHasSeat=false on all 91 offers (re-checked 2026-11-24); GetSeatMap and FareCheck answer 409 OperationNotSupported - see TC-SEATMAP-NEG-01, FLOW-V2-49-NEG).
+- **Response:** No request sent
+- **Expected:** Family-B checks apply through the first Retrieve, plus: BookAfterHold transitions bookingStatus from held to booked/confirmed; pnr/bookingToken/gdsPNR are unchanged from Hold (same-PNR invariant); the final Retrieve confirms the booked state. Bundle check: final priceDetails.totalAmount reflects the chosen bundle's feePrice; bundle-included services are not also charged as separate ancillary lines. Ancillary check: passengersSelectedAncillaries lists exactly the codes selected at GetAncillary/FareCheck with matching AdditionalServiceCategory/quantity; paxTotalAncillaryAmount equals the sum of selected ancillary prices. SeatMap check: the chosen cellCode appears as a Seat-category entry in passengersSelectedAncillaries, priced per GetSeatMap/FareCheck. FareCheck check: final booking price equals FareCheck's re-priced total, not the pre-ancillary FareConfirm/AddPassenger-era total. Manual price-reconciliation must be supplied at Hold/FareConfirmAfterHold/BookAfterHold (V2 enforces this by script only there) and additionally checked by hand at Search/Upselling/Book/Retrieve since no script covers those in V2.
+- **Actual:** Blocked: Bundle + Ancillary + SeatMap enrichment is required by this flow, and SabreNdc/EGY does not support it: Bundles are not offered (haveBundles=false on all 91 offers (re-checked 2026-11-24); GetOfferBundles answers 409 OperationNotSupported - see TC-BUNDLE-NEG-01 in the Generic report and FLOW-V2-31-NEG); Ancillaries are not offered (offerHasAncillary=false on all 91 offers (re-checked 2026-11-24); GetAncillary and FareCheck answer 409 OperationNotSupported - see TC-ANCILLARY-NEG-01, TC-FARECHECK-NEG-01); Seat maps are not offered (isSeatMapRequired=false and offerHasSeat=false on all 91 offers (re-checked 2026-11-24); GetSeatMap and FareCheck answer 409 OperationNotSupported - see TC-SEATMAP-NEG-01, FLOW-V2-49-NEG).
+- **Status:** BLOCKED
+- **Evidence:** Bundle + Ancillary + SeatMap enrichment is required by this flow, and SabreNdc/EGY does not support it: Bundles are not offered (haveBundles=false on all 91 offers (re-checked 2026-11-24); GetOfferBundles answers 409 OperationNotSupported - see TC-BUNDLE-NEG-01 in the Generic report and FLOW-V2-31-NEG); Ancillaries are not offered (offerHasAncillary=false on all 91 offers (re-checked 2026-11-24); GetAncillary and FareCheck answer 409 OperationNotSupported - see TC-ANCILLARY-NEG-01, TC-FARECHECK-NEG-01); Seat maps are not offered (isSeatMapRequired=false and offerHasSeat=false on all 91 offers (re-checked 2026-11-24); GetSeatMap and FareCheck answer 409 OperationNotSupported - see TC-SEATMAP-NEG-01, FLOW-V2-49-NEG). | Round 1 verdict: BLOCKED (unchanged)
+
+### FLOW-V2-118-NEG — BLOCKED
+
+- **Test Case:** [BookAfterHold][Response] Verify behavior of BookAfterHold attempted after holdExpirationDate has passed.
+- **Category:** Flow - Negative
+- **Endpoint Name:** V2 flow
+- **Request:** Not sent - the post-expiry state cannot be reached in a session: holds observed on SabreNdc/EGY expire about 5 days after creation (2026-10-30 for holds made on 2026-10-25), and the window cannot be shortened.
+- **Response:** No request sent
+- **Expected:** Exact resulting status is UNKNOWN - confirm live per §2.12/§6.5. Expected candidates are an explicit expiration/price-change rejection or a supplier-level "offer no longer available" error, not a silent success reusing stale Hold-era pricing.
+- **Actual:** Blocked: the post-expiry state cannot be reached in a session: holds observed on SabreNdc/EGY expire about 5 days after creation (2026-10-30 for holds made on 2026-10-25), and the window cannot be shortened.
+- **Status:** BLOCKED
+- **Evidence:** the post-expiry state cannot be reached in a session: holds observed on SabreNdc/EGY expire about 5 days after creation (2026-10-30 for holds made on 2026-10-25), and the window cannot be shortened. | Round 1 verdict: BLOCKED (unchanged)
+
+### FLOW-V2-119 — BLOCKED
+
+- **Test Case:** [Upselling-Bundle+Ancillary+SeatMap][Response] Verify Family-E flow completes end-to-end via the Upselling fare-selection path.
+- **Category:** Flow - Positive
+- **Endpoint Name:** V2 flow
+- **Request:** Not sent - Bundle + Ancillary + SeatMap enrichment is required by this flow, and SabreNdc/EGY does not support it: Bundles are not offered (haveBundles=false on all 91 offers (re-checked 2026-11-24); GetOfferBundles answers 409 OperationNotSupported - see TC-BUNDLE-NEG-01 in the Generic report and FLOW-V2-31-NEG); Ancillaries are not offered (offerHasAncillary=false on all 91 offers (re-checked 2026-11-24); GetAncillary and FareCheck answer 409 OperationNotSupported - see TC-ANCILLARY-NEG-01, TC-FARECHECK-NEG-01); Seat maps are not offered (isSeatMapRequired=false and offerHasSeat=false on all 91 offers (re-checked 2026-11-24); GetSeatMap and FareCheck answer 409 OperationNotSupported - see TC-SEATMAP-NEG-01, FLOW-V2-49-NEG).
+- **Response:** No request sent
+- **Expected:** Family-D checks apply, plus Family-C's Void checks applied to the now-finalized (ex-Held) booking. Bundle check: final priceDetails.totalAmount reflects the chosen bundle's feePrice; bundle-included services are not also charged as separate ancillary lines. Ancillary check: passengersSelectedAncillaries lists exactly the codes selected at GetAncillary/FareCheck with matching AdditionalServiceCategory/quantity; paxTotalAncillaryAmount equals the sum of selected ancillary prices. SeatMap check: the chosen cellCode appears as a Seat-category entry in passengersSelectedAncillaries, priced per GetSeatMap/FareCheck. FareCheck check: final booking price equals FareCheck's re-priced total, not the pre-ancillary FareConfirm/AddPassenger-era total. Manual price-reconciliation must be supplied at Hold/FareConfirmAfterHold/BookAfterHold (V2 enforces this by script only there) and additionally checked by hand at Search/Upselling/Book/Retrieve since no script covers those in V2.
+- **Actual:** Blocked: Bundle + Ancillary + SeatMap enrichment is required by this flow, and SabreNdc/EGY does not support it: Bundles are not offered (haveBundles=false on all 91 offers (re-checked 2026-11-24); GetOfferBundles answers 409 OperationNotSupported - see TC-BUNDLE-NEG-01 in the Generic report and FLOW-V2-31-NEG); Ancillaries are not offered (offerHasAncillary=false on all 91 offers (re-checked 2026-11-24); GetAncillary and FareCheck answer 409 OperationNotSupported - see TC-ANCILLARY-NEG-01, TC-FARECHECK-NEG-01); Seat maps are not offered (isSeatMapRequired=false and offerHasSeat=false on all 91 offers (re-checked 2026-11-24); GetSeatMap and FareCheck answer 409 OperationNotSupported - see TC-SEATMAP-NEG-01, FLOW-V2-49-NEG).
+- **Status:** BLOCKED
+- **Evidence:** Bundle + Ancillary + SeatMap enrichment is required by this flow, and SabreNdc/EGY does not support it: Bundles are not offered (haveBundles=false on all 91 offers (re-checked 2026-11-24); GetOfferBundles answers 409 OperationNotSupported - see TC-BUNDLE-NEG-01 in the Generic report and FLOW-V2-31-NEG); Ancillaries are not offered (offerHasAncillary=false on all 91 offers (re-checked 2026-11-24); GetAncillary and FareCheck answer 409 OperationNotSupported - see TC-ANCILLARY-NEG-01, TC-FARECHECK-NEG-01); Seat maps are not offered (isSeatMapRequired=false and offerHasSeat=false on all 91 offers (re-checked 2026-11-24); GetSeatMap and FareCheck answer 409 OperationNotSupported - see TC-SEATMAP-NEG-01, FLOW-V2-49-NEG). | Round 1 verdict: BLOCKED (unchanged)
+
+### FLOW-V2-119-NEG — BLOCKED
+
+- **Test Case:** [Hold][Request] Validate Hold is rejected for a supplier without confirmed Hold support (FlyNas).
+- **Category:** Flow - Negative
+- **Endpoint Name:** V2 flow
+- **Request:** Not sent - it is defined for supplier FlyNas (Hold Not Supported); this run is scoped to SabreNdc/EGY, where every offer is canBeHeld=true.
+- **Response:** No request sent
+- **Expected:** Hold against FlyNas is rejected outright - the flow must not proceed to FareConfirmAfterHold/Retrieve; confirms live capability enforcement matches the documented (cross-validated, high-confidence) Hold=Not Supported gap rather than being silently accepted.
+- **Actual:** Blocked: it is defined for supplier FlyNas (Hold Not Supported); this run is scoped to SabreNdc/EGY, where every offer is canBeHeld=true.
+- **Status:** BLOCKED
+- **Evidence:** it is defined for supplier FlyNas (Hold Not Supported); this run is scoped to SabreNdc/EGY, where every offer is canBeHeld=true. | Round 1 verdict: BLOCKED (unchanged)
+
+### FLOW-V2-120 — BLOCKED
+
+- **Test Case:** [Upselling-Bundle+Ancillary+SeatMap][Response] Verify Family-F flow completes end-to-end via the Upselling fare-selection path.
+- **Category:** Flow - Positive
+- **Endpoint Name:** V2 flow
+- **Request:** Not sent - Bundle + Ancillary + SeatMap enrichment is required by this flow, and SabreNdc/EGY does not support it: Bundles are not offered (haveBundles=false on all 91 offers (re-checked 2026-11-24); GetOfferBundles answers 409 OperationNotSupported - see TC-BUNDLE-NEG-01 in the Generic report and FLOW-V2-31-NEG); Ancillaries are not offered (offerHasAncillary=false on all 91 offers (re-checked 2026-11-24); GetAncillary and FareCheck answer 409 OperationNotSupported - see TC-ANCILLARY-NEG-01, TC-FARECHECK-NEG-01); Seat maps are not offered (isSeatMapRequired=false and offerHasSeat=false on all 91 offers (re-checked 2026-11-24); GetSeatMap and FareCheck answer 409 OperationNotSupported - see TC-SEATMAP-NEG-01, FLOW-V2-49-NEG).
+- **Response:** No request sent
+- **Expected:** Family-B checks apply through the first Retrieve, plus: CancelAfterHold has zero script coverage and no genuine saved example (UNKNOWN exact response); a follow-up manual Retrieve is expected to show a cancelled/terminated bookingStatus, distinct from both held and booked states - this is the weakest-validated end-state in the flow catalog, confirm live and record as the regression baseline. Bundle check: final priceDetails.totalAmount reflects the chosen bundle's feePrice; bundle-included services are not also charged as separate ancillary lines. Ancillary check: passengersSelectedAncillaries lists exactly the codes selected at GetAncillary/FareCheck with matching AdditionalServiceCategory/quantity; paxTotalAncillaryAmount equals the sum of selected ancillary prices. SeatMap check: the chosen cellCode appears as a Seat-category entry in passengersSelectedAncillaries, priced per GetSeatMap/FareCheck. FareCheck check: final booking price equals FareCheck's re-priced total, not the pre-ancillary FareConfirm/AddPassenger-era total. Manual price-reconciliation must be supplied at Hold/FareConfirmAfterHold/BookAfterHold (V2 enforces this by script only there) and additionally checked by hand at Search/Upselling/Book/Retrieve since no script covers those in V2.
+- **Actual:** Blocked: Bundle + Ancillary + SeatMap enrichment is required by this flow, and SabreNdc/EGY does not support it: Bundles are not offered (haveBundles=false on all 91 offers (re-checked 2026-11-24); GetOfferBundles answers 409 OperationNotSupported - see TC-BUNDLE-NEG-01 in the Generic report and FLOW-V2-31-NEG); Ancillaries are not offered (offerHasAncillary=false on all 91 offers (re-checked 2026-11-24); GetAncillary and FareCheck answer 409 OperationNotSupported - see TC-ANCILLARY-NEG-01, TC-FARECHECK-NEG-01); Seat maps are not offered (isSeatMapRequired=false and offerHasSeat=false on all 91 offers (re-checked 2026-11-24); GetSeatMap and FareCheck answer 409 OperationNotSupported - see TC-SEATMAP-NEG-01, FLOW-V2-49-NEG).
+- **Status:** BLOCKED
+- **Evidence:** Bundle + Ancillary + SeatMap enrichment is required by this flow, and SabreNdc/EGY does not support it: Bundles are not offered (haveBundles=false on all 91 offers (re-checked 2026-11-24); GetOfferBundles answers 409 OperationNotSupported - see TC-BUNDLE-NEG-01 in the Generic report and FLOW-V2-31-NEG); Ancillaries are not offered (offerHasAncillary=false on all 91 offers (re-checked 2026-11-24); GetAncillary and FareCheck answer 409 OperationNotSupported - see TC-ANCILLARY-NEG-01, TC-FARECHECK-NEG-01); Seat maps are not offered (isSeatMapRequired=false and offerHasSeat=false on all 91 offers (re-checked 2026-11-24); GetSeatMap and FareCheck answer 409 OperationNotSupported - see TC-SEATMAP-NEG-01, FLOW-V2-49-NEG). | Round 1 verdict: BLOCKED (unchanged)
+
+### FLOW-V2-120-NEG — BLOCKED
+
+- **Test Case:** [CancelAfterHold][Response] Verify behavior of CancelAfterHold attempted after holdExpirationDate has passed.
+- **Category:** Flow - Negative
+- **Endpoint Name:** V2 flow
+- **Request:** Not sent - the post-expiry state cannot be reached in a session: holds observed on SabreNdc/EGY expire about 5 days after creation (2026-10-30 for holds made on 2026-10-25), and the window cannot be shortened.
+- **Response:** No request sent
+- **Expected:** Exact resulting status is UNKNOWN - confirm live per §2.12/§6.5. Expected candidates are an explicit expiration/price-change rejection or a supplier-level "offer no longer available" error, not a silent success reusing stale Hold-era pricing.
+- **Actual:** Blocked: the post-expiry state cannot be reached in a session: holds observed on SabreNdc/EGY expire about 5 days after creation (2026-10-30 for holds made on 2026-10-25), and the window cannot be shortened.
+- **Status:** BLOCKED
+- **Evidence:** the post-expiry state cannot be reached in a session: holds observed on SabreNdc/EGY expire about 5 days after creation (2026-10-30 for holds made on 2026-10-25), and the window cannot be shortened. | Round 1 verdict: BLOCKED (unchanged)
+
+### TC-ADDPAX-POS-01 — PASS
+
+- **Test Case:** [AddPassenger][Request] Validate a valid passenger and contact payload is accepted.
+- **Category:** Positive
+- **Endpoint Name:** AddPassenger
+- **Request:** Search 2 ADT + 1 CHD + 1 INF &gt; FareConfirm &gt; AddPassenger with the full passengersList (INF has ParentPaxRefId) + contactsList
+- **Response:** 200 offerId + responseId
+- **Expected:** HTTP 200; response returns non-empty offerId and responseId; capture as getAddPaxOfferId, getAddPaxResponceID (note collection variable name typo "Responce"); these supersede all prior IDs for every subsequent V2 step.
+- **Actual:** 200; offerId and responseId present (they supersede the FareConfirm ids)
+- **Status:** PASS
+- **Evidence:** 200 {"offerId":"46147f4e-6193-4105-b7a0-a03b9c41c8d4&amp;lMCEpFBheDGaAZOnTW9zdGFmYaCnSWJyYWhpbdb/JdnxAAEBoTCak6dNb3N0YWZhoKdJYnJhaGltokVH1v9yQ8IA1v9m+zuAqEE3MDI4Njk2AQG | Round 1 verdict: PASS (unchanged)
+
+  - **Hop 1 &mdash; V2 Search:** PASS &mdash; 200 - 20 offers; picked offers[0] total 43903.2 EGP
+  - **Hop 2 &mdash; V2 FareConfirm:** PASS &mdash; 200 - total 43903.2 EGP; canBeHeld=true haveBundles=false offerHasAncillary=false isSeatMapRequired=false
+  - **Hop 3 &mdash; V2 AddPassenger:** PASS &mdash; 200 {"offerId":"46147f4e-6193-4105-b7a0-a03b9c41c8d4&amp;lMCEpFBheDGaAZOnTW9zdGFmYaCnSWJyYWhpbdb/JdnxAAEBoTCak6dNb3N0YWZhoKdJYnJhaGltokVH1v9yQ8IA1v9m+zuAqEE3MDI4Njk2AQGiRUfW/yXZ8QCiRUfAokVHokVHpFBheDKaAZOlQWh
+
+### TC-ADDPAX-NEG-01 — PASS
+
+- **Test Case:** [AddPassenger][Request] Validate an INF passenger without a valid ParentPaxRefId is rejected.
+- **Category:** Negative
+- **Endpoint Name:** AddPassenger
+- **Request:** AddPassenger with an infant whose ParentPaxRefId is omitted / non-existent / pointing at a child
+- **Response:** omitted: 400 code=NDC-INT-TEC-A0001 msg="Invalid request. Please check the request parameters and try again." ctx=[{"Name":"PredicateValidator","Value":"Invali | non-existent Pax9: 400 code=NDC-INT-TEC-A0001 msg="Invalid request. Please check the request parameters and try again." ctx=[{"Name":"PredicateValidator","Value":"Invali | points at CHD: 400 code=NDC-INT-TEC-A0001 msg="Invalid request. Please check the request parameters and try again." ctx=[{"Name":"PredicateValidator","Value":"Invali
+- **Expected:** Request is rejected (expected 4xx, exact code UNKNOWN - confirm live per §7.9) since every INF passenger must carry a valid ParentPaxRefId resolving to an ADT entry in the same request (§2.5 Request Rules).
+- **Actual:** omitted: 400 code=NDC-INT-TEC-A0001 msg="Invalid request. Please check the request parameters and try again." ctx=[{"Name":"PredicateValidator","Value":"Invali | non-existent Pax9: 400 code=NDC-INT-TEC-A0001 msg="Invalid request. Please check the request parameters and try again." ctx=[{"Name":"PredicateValidator","Value":"Invali | points at CHD: 400 code=NDC-INT-TEC-A0001 msg="Invalid request. Please check the request parameters and try again." ctx=[{"Name":"PredicateValidator","Value":"Invali
+- **Status:** PASS
+- **Evidence:** omitted: 400 code=NDC-INT-TEC-A0001 msg="Invalid request. Please check the request parameters and try again." ctx=[{"Name":"PredicateValidator","Value":"Invali | non-existent Pax9: 400 code=NDC-INT-TEC-A0001 msg="Invalid request. Please check the request parameters and try again." ctx=[{"Name":"PredicateValidator","Value":"Invali | points at CHD: 400 code=NDC-INT-TEC-A0001 msg="Invalid request. Please check the request parameters and try again." ctx=[{"Name":"PredicateValidator","Value":"Invali | Round 1 verdict: PASS (unchanged)
+
+  - **Attempt 1 of 5 - V2 Search:** HTTP 200
+  - **Attempt 2 of 5 - V2 FareConfirm:** HTTP 200
+  - **Attempt 3 of 5 - INF without ParentPaxRefId:** HTTP 400
+  - **Attempt 4 of 5 - INF with ParentPaxRefId=Pax9 (does not exist):** HTTP 400
+  - **Attempt 5 of 5 - INF with ParentPaxRefId pointing at a CHD (Pax2):** HTTP 400
+
+### TC-ADDPAX-NEG-02 — PASS
+
+- **Test Case:** [AddPassenger][Request] Validate a contactRefId that does not resolve in contactsList is rejected.
+- **Category:** Negative
+- **Endpoint Name:** AddPassenger
+- **Request:** AddPassenger with contactRefId "99" while contactsList only has key "0"
+- **Response:** 400 code=NDC-INT-TEC-A0001 msg="Invalid request. Please check the request parameters and try again." ctx=[{"Name":"PredicateValidator","Value":"Passenger without valid contact reference"},{"Name":"PredicateValidator","Value":"All conta
+- **Expected:** Request is rejected (expected 4xx, exact code UNKNOWN - confirm live) since contactRefId must resolve to a key present in contactsList (§2.5 Request Rules).
+- **Actual:** Rejected: 400 code=NDC-INT-TEC-A0001 msg="Invalid request. Please check the request parameters and try again." ctx=[{"Name":"PredicateValidator","Value":"Passenger without valid contact reference"},{"Name":"PredicateValidator","Value":"All conta
+- **Status:** PASS
+- **Evidence:** 400 code=NDC-INT-TEC-A0001 msg="Invalid request. Please check the request parameters and try again." ctx=[{"Name":"PredicateValidator","Value":"Passenger without valid contact reference"},{"Name":"PredicateValidator","Value":"All conta | Round 1 verdict: PASS (unchanged)
+
+  - **Hop 1 &mdash; V2 Search:** PASS &mdash; 200 - 20 offers; picked offers[0] total 13233.8 EGP
+  - **Hop 2 &mdash; V2 FareConfirm:** PASS &mdash; 200 - total 13233.8 EGP; canBeHeld=true haveBundles=false offerHasAncillary=false isSeatMapRequired=false
+  - **Hop 3 &mdash; V2 AddPassenger:** PASS &mdash; 400 {"Status":400,"TransactionId":"b8aac67f-6c1b-4175-b6d6-ab8a3a3a9ba7","ErrorCode":"NDC-INT-TEC-A0001","ErrorMessage":"Invalid request. Please check the request parameters and try again.","Context":[{"N
+
+### TC-ADDPAX-VAL-01 — PASS
+
+- **Test Case:** [AddPassenger][Request] Validate passenger count/type mix against what was declared at Search time.
+- **Category:** Validation
+- **Endpoint Name:** AddPassenger / Hold
+- **Request:** Search 2 ADT + 1 CHD &gt; FareConfirm &gt; AddPassenger with 3 ADT &gt; Hold; hold cancelled afterwards
+- **Response:** Search 2 ADT + 1 CHD, AddPassenger/Hold with 3 ADT: rejected at AddPassenger: 400 code=NDC-INT-TEC-A0001 msg="Invalid request. Please check the request parameters and try again." ctx=[{"Name":"PredicateValidator","Value":"Requested passengers must match the search Criteria."}]
+- **Expected:** Behavior is UNKNOWN - not verified by any script per SPEC.md §2.5; this is a genuine coverage gap. Manually confirm live whether the mismatch is silently accepted, rejected by AddPassenger itself, or rejected later at Book/Hold, and record the result as the baseline going forward.
+- **Actual:** Search 2 ADT + 1 CHD, AddPassenger/Hold with 3 ADT: rejected at AddPassenger: 400 code=NDC-INT-TEC-A0001 msg="Invalid request. Please check the request parameters and try again." ctx=[{"Name":"PredicateValidator","Value":"Requested passengers must match the search Criteria."}]
+- **Status:** PASS
+- **Evidence:** Search 2 ADT + 1 CHD, AddPassenger/Hold with 3 ADT: rejected at AddPassenger: 400 code=NDC-INT-TEC-A0001 msg="Invalid request. Please check the request parameters and try again." ctx=[{"Name":"PredicateValidator","Value":"Requested passengers must match the search Criteria."}] | Round 1 verdict: PASS (unchanged)
+
+  - **Hop 1 &mdash; V2 Search:** PASS &mdash; 200 - 20 offers; picked offers[0] total 39148.4 EGP
+  - **Hop 2 &mdash; V2 FareConfirm:** PASS &mdash; 200 - total 39148.4 EGP; canBeHeld=true haveBundles=false offerHasAncillary=false isSeatMapRequired=false
+  - **Hop 3 &mdash; V2 AddPassenger:** PASS &mdash; 400
+
+### TC-ADDPAX-BND-01 — PASS
+
+- **Test Case:** [AddPassenger][Request] Validate handling of a non-Latin-script passenger name.
+- **Category:** Boundary
+- **Endpoint Name:** AddPassenger / Hold
+- **Request:** AddPassenger with Arabic first/last names (and travelDocument names), then Hold; hold cancelled afterwards
+- **Response:** Arabic passenger name: rejected at AddPassenger: 400 code=NDC-INT-TEC-A0001 msg="Invalid request. Please check the request parameters and try again." ctx=[{"Name":"RegularExpressionValidator","Value":"Passenger name must contain alphabetic characters only."},{"Name":"RegularExpressio
+- **Expected:** Behavior is UNKNOWN - every observed example in the collection uses Latin-script names only (§2.5 Testing Notes); confirm live whether non-Latin names are accepted, transliterated, or rejected, and record the result. Given ~38 suppliers span many non-English-speaking home markets, this is a realistic, currently-unexercised boundary.
+- **Actual:** Arabic passenger name: rejected at AddPassenger: 400 code=NDC-INT-TEC-A0001 msg="Invalid request. Please check the request parameters and try again." ctx=[{"Name":"RegularExpressionValidator","Value":"Passenger name must contain alphabetic characters only."},{"Name":"RegularExpressio
+- **Status:** PASS
+- **Evidence:** Arabic passenger name: rejected at AddPassenger: 400 code=NDC-INT-TEC-A0001 msg="Invalid request. Please check the request parameters and try again." ctx=[{"Name":"RegularExpressionValidator","Value":"Passenger name must contain alphabetic characters only."},{"Name":"RegularExpressio | Round 1 verdict: PASS (unchanged)
+
+  - **Hop 1 &mdash; V2 Search:** PASS &mdash; 200 - 20 offers; picked offers[0] total 13233.8 EGP
+  - **Hop 2 &mdash; V2 FareConfirm:** PASS &mdash; 200 - total 13233.8 EGP; canBeHeld=true haveBundles=false offerHasAncillary=false isSeatMapRequired=false
+  - **Hop 3 &mdash; V2 AddPassenger:** PASS &mdash; 400
+
+### TC-ANCILLARY-POS-01 — BLOCKED
+
+- **Test Case:** [GetAncillary][Response] Verify available ancillary services are returned for an ancillary-capable offer.
+- **Category:** Positive
+- **Endpoint Name:** ANCILLARY
+- **Request:** Not sent -  enrichment is required by this flow, and SabreNdc/EGY does not support it: .
+- **Response:** No request sent
+- **Expected:** HTTP 200; response includes isFareCheckRequired, offerId, responseId (captured as ANCofferId/ANCresponseId), passengersAncillariesAvailabilty, and segmentsAncillariesDetails with ancillaryCategory/price/availableCount per service.
+- **Actual:** Blocked:  enrichment is required by this flow, and SabreNdc/EGY does not support it: .
+- **Status:** BLOCKED
+- **Evidence:**  enrichment is required by this flow, and SabreNdc/EGY does not support it: . | Round 1 verdict: BLOCKED (unchanged)
+
+### TC-ANCILLARY-NEG-01 — PASS
+
+- **Test Case:** [GetAncillary][Request] Validate calling GetAncillary when offerHasAncillary=false.
+- **Category:** Negative
+- **Endpoint Name:** GetAncillary
+- **Request:** Search &gt; FareConfirm (offerHasAncillary=false) &gt; AddPassenger &gt; GetAncillary
+- **Response:** 409 code=OperationNotSupported msg="This action is not currently supported by the selected supplier." ctx=[{"Name":"OperationNotSupported","Value":"SabreNdc does not exists"}]
+- **Expected:** Behavior is UNKNOWN - INFERRED expectation is an empty availability set or an explicit rejection rather than a populated ancillary list; confirm live which occurs and record as the baseline (§2.6 Business Logic).
+- **Actual:** offerHasAncillary=false; GetAncillary -&gt; 409 code=OperationNotSupported msg="This action is not currently supported by the selected supplier." ctx=[{"Name":"OperationNotSupported","Value":"SabreNdc does not exists"}]. Rejected, not an empty list.
+- **Status:** PASS
+- **Evidence:** 409 code=OperationNotSupported msg="This action is not currently supported by the selected supplier." ctx=[{"Name":"OperationNotSupported","Value":"SabreNdc does not exists"}] | Round 1 verdict: PASS (unchanged)
+
+  - **Hop 1 &mdash; V2 Search:** PASS &mdash; 200 - 20 offers; picked offers[0] total 13233.8 EGP
+  - **Hop 2 &mdash; V2 FareConfirm:** PASS &mdash; 200 - total 13233.8 EGP; canBeHeld=true haveBundles=false offerHasAncillary=false isSeatMapRequired=false
+  - **Hop 3 &mdash; V2 AddPassenger:** PASS &mdash; 200 {"offerId":"c766d597-cd26-4585-99f5-b1e4868503b7&amp;lMCBpFBheDGaAZOnTW9zdGFmYaCnSWJyYWhpbdb/JdnxAAEBoTCak6dNb3N0YWZhoKdJYnJhaGltokVH1v9yQ8IA1v9m+zuAqEE3MTEwOTEyAQGiRUfW/yXZ8QCiRUfAokVHokVHgaEwk7VuZGMucWE
+  - **Hop 4 &mdash; V2 Ancillary:** PASS &mdash; 409
+
+### TC-ANCILLARY-VAL-01 — BLOCKED
+
+- **Test Case:** [GetAncillary][Response] Validate the misspelled passengersAncillariesAvailabilty field and ancillaryCategory taxonomy.
+- **Category:** Validation
+- **Endpoint Name:** ANCILLARY
+- **Request:** Not sent -  enrichment is required by this flow, and SabreNdc/EGY does not support it: .
+- **Response:** No request sent
+- **Expected:** passengersAncillariesAvailabilty is present under its exact (misspelled) key - this is a genuine defect in the live API's own JSON, not a documentation typo, and assertions must match it exactly. ancillaryCategory values are constrained to the known taxonomy (Baggage, Meal, Seat, Other); an unrecognized value should be flagged, not hard-failed (§8.3).
+- **Actual:** Blocked:  enrichment is required by this flow, and SabreNdc/EGY does not support it: .
+- **Status:** BLOCKED
+- **Evidence:**  enrichment is required by this flow, and SabreNdc/EGY does not support it: . | Round 1 verdict: BLOCKED (unchanged)
+
+### TC-ANCILLARY-BND-01 — BLOCKED
+
+- **Test Case:** [GetAncillary][Response] Validate availableCount=null is treated as unlimited, distinct from 0.
+- **Category:** Boundary
+- **Endpoint Name:** ANCILLARY
+- **Request:** Not sent -  enrichment is required by this flow, and SabreNdc/EGY does not support it: .
+- **Response:** No request sent
+- **Expected:** availableCount=null is explicitly asserted to mean "unlimited/not tracked," distinct from availableCount=0 which means "none available" - a service with null must not be treated as unselectable.
+- **Actual:** Blocked:  enrichment is required by this flow, and SabreNdc/EGY does not support it: .
+- **Status:** BLOCKED
+- **Evidence:**  enrichment is required by this flow, and SabreNdc/EGY does not support it: . | Round 1 verdict: BLOCKED (unchanged)
+
+### TC-SEATMAP-POS-01 — BLOCKED
+
+- **Test Case:** [GetSeatMap][Response] Verify the seat map is returned for a seat-map-capable offer.
+- **Category:** Positive
+- **Endpoint Name:** SEATMAP
+- **Request:** Not sent -  enrichment is required by this flow, and SabreNdc/EGY does not support it: .
+- **Response:** No request sent
+- **Expected:** HTTP 200; response includes seatMapDetails per segment with rows/cells; no collection variables are auto-captured - the chosen cellCode must be manually recorded for the next Book/Hold step.
+- **Actual:** Blocked:  enrichment is required by this flow, and SabreNdc/EGY does not support it: .
+- **Status:** BLOCKED
+- **Evidence:**  enrichment is required by this flow, and SabreNdc/EGY does not support it: . | Round 1 verdict: BLOCKED (unchanged)
+
+### TC-SEATMAP-NEG-01 — PASS
+
+- **Test Case:** [GetSeatMap][Request] Validate calling GetSeatMap when isSeatMapRequired=false.
+- **Category:** Negative
+- **Endpoint Name:** GetSeatMap
+- **Request:** Search &gt; FareConfirm (isSeatMapRequired=false) &gt; AddPassenger &gt; GetSeatMap
+- **Response:** 409 code=OperationNotSupported msg="This action is not currently supported by the selected supplier." ctx=[{"Name":"OperationNotSupported","Value":"SabreNdc does not exists"}]
+- **Expected:** Behavior is UNKNOWN - confirm live whether an empty/no seatMapDetails is returned or the call is rejected outright, and record as the baseline (§2.7 Business Logic).
+- **Actual:** isSeatMapRequired=false; GetSeatMap -&gt; 409 code=OperationNotSupported msg="This action is not currently supported by the selected supplier." ctx=[{"Name":"OperationNotSupported","Value":"SabreNdc does not exists"}]. Rejected, not an empty seat map.
+- **Status:** PASS
+- **Evidence:** 409 code=OperationNotSupported msg="This action is not currently supported by the selected supplier." ctx=[{"Name":"OperationNotSupported","Value":"SabreNdc does not exists"}] | Round 1 verdict: PASS (unchanged)
+
+  - **Hop 1 &mdash; V2 Search:** PASS &mdash; 200 - 20 offers; picked offers[0] total 13233.8 EGP
+  - **Hop 2 &mdash; V2 FareConfirm:** PASS &mdash; 200 - total 13233.8 EGP; canBeHeld=true haveBundles=false offerHasAncillary=false isSeatMapRequired=false
+  - **Hop 3 &mdash; V2 AddPassenger:** PASS &mdash; 200 {"offerId":"a9a111a5-5210-4abd-b112-84896da47f88&amp;lMCBpFBheDGaAZOnTW9zdGFmYaCnSWJyYWhpbdb/JdnxAAEBoTCak6dNb3N0YWZhoKdJYnJhaGltokVH1v9yQ8IA1v9m+zuAqEE3OTU3MzM1AQGiRUfW/yXZ8QCiRUfAokVHokVHgaEwk7VuZGMucWE
+  - **Hop 4 &mdash; V2 SeatMap:** PASS &mdash; 409
+
+### TC-SEATMAP-VAL-01 — BLOCKED
+
+- **Test Case:** [GetSeatMap][Response] Validate cellCategory/cellAvailability values against the known enum set.
+- **Category:** Validation
+- **Endpoint Name:** SEATMAP
+- **Request:** Not sent -  enrichment is required by this flow, and SabreNdc/EGY does not support it: .
+- **Response:** No request sent
+- **Expected:** cellCategory is checked against the known observed value ("Seat"); cellAvailability is checked against the known observed set (Occupied, AvailablePaid). An unrecognized value in either enum is flagged for review rather than hard-failed, per §8.3's "flag, don't hard-fail on enum growth" rule. Also confirm live whether cellDetails is a proper nested JSON object or a stringified dump (§2.7 flags this as possibly an extraction artifact, UNKNOWN pending live confirmation).
+- **Actual:** Blocked:  enrichment is required by this flow, and SabreNdc/EGY does not support it: .
+- **Status:** BLOCKED
+- **Evidence:**  enrichment is required by this flow, and SabreNdc/EGY does not support it: . | Round 1 verdict: BLOCKED (unchanged)
+
+### TC-FARECHECK-POS-01 — BLOCKED
+
+- **Test Case:** [FareCheck][Response] Verify price delta equals the sum of selected ancillary/seat prices.
+- **Category:** Positive
+- **Endpoint Name:** FARECHECK
+- **Request:** Not sent -  enrichment is required by this flow, and SabreNdc/EGY does not support it: .
+- **Response:** No request sent
+- **Expected:** selectedOffer.passengerFareBreakdown[].paxTotalAncillaryAmount equals the sum of the selected ancillary/seat prices; priceDetails.totalAmount equals the pre-ancillary FareConfirm/AddPassenger-era total plus that same delta - the single highest-value price-integrity assertion for any enrichment-bearing flow.
+- **Actual:** Blocked:  enrichment is required by this flow, and SabreNdc/EGY does not support it: .
+- **Status:** BLOCKED
+- **Evidence:**  enrichment is required by this flow, and SabreNdc/EGY does not support it: . | Round 1 verdict: BLOCKED (unchanged)
+
+### TC-FARECHECK-NEG-01 — BLOCKED
+
+- **Test Case:** [FareCheck][Request] Validate an AncillaryCode not sourced from GetAncillary is rejected.
+- **Category:** Negative
+- **Endpoint Name:** FareCheck
+- **Request:** FareCheck with a hand-constructed AncillaryCode after AddPassenger
+- **Response:** 409 code=OperationNotSupported msg="This action is not currently supported by the selected supplier." ctx=[{"Name":"OperationNotSupported","Value":"SabreNdc does not exists"}]
+- **Expected:** Request is rejected (expected 4xx/validation error, exact code UNKNOWN - confirm live) since AncillaryCode must be copied verbatim from GetAncillary and is never hand-constructed (§2.8 Request Rules).
+- **Actual:** Blocked: FareCheck rejects every request for SabreNdc with 409 OperationNotSupported before looking at the code (409 code=OperationNotSupported msg="This action is not currently supported by the selected supplier." ctx=[{"Name":"OperationNotSupported","Value":"SabreNdc doe), so a rejection of the invented code cannot be told apart from the supplier simply not supporting the endpoint.
+- **Status:** BLOCKED
+- **Evidence:** 409 code=OperationNotSupported msg="This action is not currently supported by the selected supplier." ctx=[{"Name":"OperationNotSupported","Value":"SabreNdc does not exists"}] | Round 1 verdict: BLOCKED (unchanged)
+
+  - **Hop 1 &mdash; V2 Search:** PASS &mdash; 200 - 20 offers; picked offers[0] total 13233.8 EGP
+  - **Hop 2 &mdash; V2 FareConfirm:** PASS &mdash; 200 - total 13233.8 EGP; canBeHeld=true haveBundles=false offerHasAncillary=false isSeatMapRequired=false
+  - **Hop 3 &mdash; V2 AddPassenger:** PASS &mdash; 200 {"offerId":"c17c27a8-8d77-40f2-89d4-ce5bc402c6a6&amp;lMCBpFBheDGaAZOnTW9zdGFmYaCnSWJyYWhpbdb/JdnxAAEBoTCak6dNb3N0YWZhoKdJYnJhaGltokVH1v9yQ8IA1v9m+zuAqEE3Njg5NjAzAQGiRUfW/yXZ8QCiRUfAokVHokVHgaEwk7VuZGMucWE
+  - **Hop 4 &mdash; V2 FareCheck:** FAIL &mdash; 409
+
+### TC-FARECHECK-INT-01 — BLOCKED
+
+- **Test Case:** [FareCheck][Integration] Verify which responseId Book/Hold actually require after FareCheck.
+- **Category:** Integration
+- **Endpoint Name:** FARECHECK
+- **Request:** Not sent -  enrichment is required by this flow, and SabreNdc/EGY does not support it: .
+- **Response:** No request sent
+- **Expected:** Determine and record which ResponseId value Book/Hold actually accept post-FareCheck. SPEC.md flags this as an UNKNOWN/needs-live-confirmation soft spot: since the propagation line is commented out, fareConfirmResponseId may remain stale post-FareCheck while only the offerId variables update - if Book/Hold require a fresh responseId that was never captured, this is a latent chaining bug (§2.8 Response Mapping/Testing Notes).
+- **Actual:** Blocked:  enrichment is required by this flow, and SabreNdc/EGY does not support it: .
+- **Status:** BLOCKED
+- **Evidence:**  enrichment is required by this flow, and SabreNdc/EGY does not support it: . | Round 1 verdict: BLOCKED (unchanged)
+
+### TC-FARECHECK-BND-01 — BLOCKED
+
+- **Test Case:** [FareCheck][Request] Validate an ancillary quantity exceeding availableCount is rejected.
+- **Category:** Boundary
+- **Endpoint Name:** FARECHECK
+- **Request:** Not sent -  enrichment is required by this flow, and SabreNdc/EGY does not support it: .
+- **Response:** No request sent
+- **Expected:** Behavior is UNKNOWN - confirm live whether the request is rejected outright or silently capped/accepted; record as baseline (§2.8 Common Errors).
+- **Actual:** Blocked:  enrichment is required by this flow, and SabreNdc/EGY does not support it: .
+- **Status:** BLOCKED
+- **Evidence:**  enrichment is required by this flow, and SabreNdc/EGY does not support it: . | Round 1 verdict: BLOCKED (unchanged)
+
+### TC-HOLD-NEG-01 — PASS
+
+- **Test Case:** [Hold][Request] Validate the {{credentialsSelector}} vs {{Credentials_Selector}} casing mismatch resolves empty and fails.
+- **Category:** Negative
+- **Endpoint Name:** Hold
+- **Request:** V2 Hold with credentialsSelector set to the literal "{{credentialsSelector}}", empty, and omitted (what the saved collection request sends when the variable is not defined)
+- **Response:** credentialsSelector = literal "{{credentialsSelector}}" (unresolved Postman placeholder): rejected 400 code=1001 msg="Validation errors occurred. Please check your request." ctx=[{"name":"holdRequestDto","value":"The holdRequestDto field i | credentialsSelector = "" (what an unresolved variable becomes): rejected 400 code=1001 msg="Validation errors occurred. Please check your request." ctx=[{"name":"holdRequestDto","value":"The holdRequestDto field i | credentialsSelector omitted: rejected 400 code=1001 msg="Validation errors occurred. Please check your request." ctx=[{"name":"CredentialsSelector","value":"Select a valid Creden
+- **Expected:** The unresolved {{credentialsSelector}} placeholder resolves to empty/undefined in the sent request, and the call is expected to fail (or silently use an empty credentials selector) rather than succeed with the intended region context - confirm the exact live failure mode and record it (§2.10).
+- **Actual:** credentialsSelector = literal "{{credentialsSelector}}" (unresolved Postman placeholder): rejected 400 code=1001 msg="Validation errors occurred. Please check your request." ctx=[{"name":"holdRequestDto","value":"The holdRequestDto field i | credentialsSelector = "" (what an unresolved variable becomes): rejected 400 code=1001 msg="Validation errors occurred. Please check your request." ctx=[{"name":"holdRequestDto","value":"The holdRequestDto field i | credentialsSelector omitted: rejected 400 code=1001 msg="Validation errors occurred. Please check your request." ctx=[{"name":"CredentialsSelector","value":"Select a valid Creden
+- **Status:** PASS
+- **Evidence:** credentialsSelector = literal "{{credentialsSelector}}" (unresolved Postman placeholder): rejected 400 code=1001 msg="Validation errors occurred. Please check your request." ctx=[{"name":"holdRequestDto","value":"The holdRequestDto field i | credentialsSelector = "" (what an unresolved variable becomes): rejected 400 code=1001 msg="Validation errors occurred. Please check your request." ctx=[{"name":"holdRequestDto","value":"The holdRequestDto field i | credentialsSelector omitted: rejected 400 code=1001 msg="Validation errors occurred. Please check your request." ctx=[{"name":"CredentialsSelector","value":"Select a valid Creden | Round 1 verdict: PASS (unchanged)
+
+  - **Hop 1 &mdash; V2 Search:** PASS &mdash; 200 - 20 offers; picked offers[0] total 13233.8 EGP
+  - **Hop 2 &mdash; V2 FareConfirm:** PASS &mdash; 200 - total 13233.8 EGP; canBeHeld=true haveBundles=false offerHasAncillary=false isSeatMapRequired=false
+  - **Hop 3 &mdash; V2 AddPassenger:** PASS &mdash; 200 - offerId + responseId returned
+  - **Hop 4 &mdash; V2 Hold:** PASS &mdash; 400
+  - **Hop 5 &mdash; V2 Hold:** PASS &mdash; 400
+  - **Hop 6 &mdash; V2 Hold:** PASS &mdash; 400
+
+### TC-CANCELHOLD-NEG-01 — PASS
+
+- **Test Case:** [CancelAfterHold][Request] Validate the unquoted {{Credentials_Selector}} produces invalid JSON.
+- **Category:** Negative
+- **Endpoint Name:** CancelAfterHold
+- **Request:** Hold, then CancelAfterHold with the body exactly as the saved collection request renders it: "credentialsSelector": EGY (unquoted); hold then cancelled properly
+- **Response:** 400 code=1001 msg="Validation errors occurred. Please check your request." ctx=[{"name":"cancelAfterHoldRequestDto","value":"The cancelAfterHoldRequestDto field is required."},{"name":"$.credentialsSelector","
+- **Expected:** After Postman variable substitution, the body renders as `"credentialsSelector" : UAE,` - a bare unquoted token - which is invalid JSON; the request is expected to fail at the JSON-parsing layer (client-side send error or a server-side parse-error response), not merely an authorization failure. This is a literal syntax bug in the saved request body, not a business-logic inference (§2.14).
+- **Actual:** Invalid JSON rejected at the parser: 400 code=1001 msg="Validation errors occurred. Please check your request." ctx=[{"name":"cancelAfterHoldRequestDto","value":"The cancelAfterHoldRequestDto field is required."},{"name":"$.credentialsSelector","
+- **Status:** PASS
+- **Evidence:** 400 code=1001 msg="Validation errors occurred. Please check your request." ctx=[{"name":"cancelAfterHoldRequestDto","value":"The cancelAfterHoldRequestDto field is required."},{"name":"$.credentialsSelector"," | Round 1 verdict: PASS (unchanged)
+
+  - **Hop 1 &mdash; V2 Search:** PASS &mdash; 200 - 20 offers; picked offers[0] total 13233.8 EGP
+  - **Hop 2 &mdash; V2 FareConfirm:** PASS &mdash; 200 - total 13233.8 EGP; canBeHeld=true haveBundles=false offerHasAncillary=false isSeatMapRequired=false
+  - **Hop 3 &mdash; V2 AddPassenger:** PASS &mdash; 200 - offerId + responseId returned
+  - **Hop 4 &mdash; V2 Hold:** PASS &mdash; 200 - pnr RUBJNR gdsPNR RUBJNR; voidCapability=VoidNotAllowed; tickets none; holdExpirationDate 2026-10-30T21:59:00+02:00
+  - **Hop 5 &mdash; V2 CancelAfterHold:** PASS &mdash; 400
+  - **Hop 6 &mdash; V2 CancelAfterHold (cleanup):** PASS &mdash; 200 {"cancelled":true,"message":"Held Order Is Cancelled","passengersCancelledAncillaries":null}
+
+### TC-VOID-NEG-01 — PASS
+
+- **Test Case:** [Void][Request] Verify whether a hardcoded empty gdsPNR breaks Void for GDS-routed suppliers.
+- **Category:** Negative
+- **Endpoint Name:** Void
+- **Request:** Book (SabreNdc, GDS-routed) then Void with gdsPNR sent as a literal empty string, as the collection's saved example does
+- **Response:** 200 code=undefined msg="" ctx=""
+- **Expected:** Confirm live whether Void succeeds or fails when gdsPNR is sent as a literal empty string for a supplier whose booking actually requires a GDS PNR. The one working example in the collection is for AirArabia (LCC, not GDS-routed) and did not need it - record whether this is a supplier-type-dependent required field for GDS suppliers specifically (§2.15).
+- **Actual:** Void with gdsPNR "" succeeded (200 voided=true) for SabreNdc, a GDS-routed supplier; Book's gdsPNR (RZHCQL) equals its pnr (RZHCQL), so Sabre needs no separate GDS PNR
+- **Status:** PASS
+- **Evidence:** Void with gdsPNR "" succeeded (200 voided=true) for SabreNdc, a GDS-routed supplier; Book's gdsPNR (RZHCQL) equals its pnr (RZHCQL), so Sabre needs no separate GDS PNR | Round 1 verdict: PASS (unchanged)
+
+  - **Hop 1 &mdash; V2 Search:** PASS &mdash; 200 - 20 offers; picked offers[0] total 13233.8 EGP
+  - **Hop 2 &mdash; V2 FareConfirm:** PASS &mdash; 200 - total 13233.8 EGP; canBeHeld=true haveBundles=false offerHasAncillary=false isSeatMapRequired=false
+  - **Hop 3 &mdash; V2 AddPassenger:** PASS &mdash; 200 - offerId + responseId returned
+  - **Hop 4 &mdash; V2 Book:** PASS &mdash; 200 - pnr RZHCQL gdsPNR RZHCQL; voidCapability=FullVoidOnlyAllowed; tickets ["1572141592722"]
+  - **Hop 5 &mdash; V2 Void (empty-gdsPNR):** PASS &mdash; 200
+
+### TC-BUNDLE-VAL-01 — BLOCKED
+
+- **Test Case:** [GetOfferBundles][Response] Validate JourneyKey1 is not relied upon anywhere downstream in a V2 Bundle-bearing Upselling chain.
+- **Category:** Validation
+- **Endpoint Name:** BUNDLE
+- **Request:** Not sent -  enrichment is required by this flow, and SabreNdc/EGY does not support it: .
+- **Response:** No request sent
+- **Expected:** JourneyKey1 evaluates to undefined against the real response shape (script/response-shape mismatch bug, identical wording in both V1 and V2 scripts) and is confirmed to be consumed by no subsequent request in the V2 collection - the chain succeeds using fareConfirmResponseId/selectedOfferId threaded through directly, proving JourneyKey1 is a dead, if inert, variable. This case documents the V2-collection-observed instance of this defect specifically in an Upselling+Bundle chain; a separate Both-version generic pass owns the cross-version framing of this same defect.
+- **Actual:** Blocked:  enrichment is required by this flow, and SabreNdc/EGY does not support it: .
+- **Status:** BLOCKED
+- **Evidence:**  enrichment is required by this flow, and SabreNdc/EGY does not support it: . | Round 1 verdict: BLOCKED (unchanged)
+
+## Findings
+
+### Defects
+
+- **[FLOW-V2-26-NEG] BUG-13 (occurrence 2, not new) &mdash; Hold accepts a stale or mismatched AddPassenger id pair and creates a live hold: AddPassenger-A responseId + AddPassenger-B offerId: ACCEPTED, hold SDKOXT | responseId of the pre-AddPassenger FareConfirm step + AddPassenger-A offerId (stale pair): ACCEPTED, hold RYFLLY** Field: `ResponseId / selectedOfferId (Hold)`. Expected: rejection of an id pair that does not come from this flow's AddPassenger. **History:** First confirmed in Round 1 (FLOW-V2-26-NEG, 2026-10-25) **Impact:** A booking can be created from ids that do not belong together. Evidence: AddPassenger-A responseId + AddPassenger-B offerId: ACCEPTED, hold SDKOXT | responseId of the pre-AddPassenger FareConfirm step + AddPassenger-A offerId (stale pair): ACCEPTED, hold RYFLLY
+- **[FLOW-V2-30] BUG-06 (occurrence 6, not new) &mdash; Retrieve after a successful CancelAfterHold returns 200 with bookingStatus "OnHold" (not cancelled)** Field: `bookingStatus`. Expected: "Cancelled". **History:** First confirmed in the SabreNdc Void run (2026-10-22, TC-VOID-BIZ-04); again in Round 1 (TC-CANCELHOLD-REG-01, FLOW-V2-30, FLOW-V2-78); again earlier in this round **Impact:** Cancelled holds look live to monitoring and cleanup jobs. Evidence: capability flags recorded: canBeHeld=true haveBundles=false offerHasAncillary=false isSeatMapRequired=false | Hold price reconciliation (OK: all checks hold; total 13233.8 EGP): ok | PnrReprice price equals Hold price and reconciles: ok | Retrieve shows a held state with a future holdExpirationDate (bookingStatus "OnHold", 2026-10-30T21:59:00+02:00): ok | CancelAfterHold returns cancelled:true: ok | Retrieve after CancelAfterHold shows a cancelled/terminated state (got "OnHold"): FAILED
+- **[FLOW-V2-78] BUG-06 (occurrence 7, not new) &mdash; Retrieve after a successful CancelAfterHold returns 200 with bookingStatus "OnHold" (not cancelled)** Field: `bookingStatus`. Expected: "Cancelled". **History:** First confirmed in the SabreNdc Void run (2026-10-22, TC-VOID-BIZ-04); again in Round 1 (TC-CANCELHOLD-REG-01, FLOW-V2-30, FLOW-V2-78); again earlier in this round **Impact:** Cancelled holds look live to monitoring and cleanup jobs. Evidence: capability flags recorded: canBeHeld=true haveBundles=false offerHasAncillary=false isSeatMapRequired=false | Hold price reconciliation (OK: all checks hold; total 13233.8 EGP): ok | PnrReprice price equals Hold price and reconciles: ok | Retrieve shows a held state with a future holdExpirationDate (bookingStatus "OnHold", 2026-10-30T21:59:00+02:00): ok | CancelAfterHold returns cancelled:true: ok | Retrieve after CancelAfterHold shows a cancelled/terminated state (got "OnHold"): FAILED
+
+### Unknown-resolutions
+
+- **[FLOW-V2-25-NEG]** FareConfirm re-checks supplier/credentialsSelector against the Search ids: supplier switched to TravelportNdc/UAE: rejected 400 code=NDC-INT-TEC-A0001 msg="Invalid request. Please check the request parameters and try again." ctx=[{"Name":"SelectedOfferId","Value":"Failed to | credentialsSelector switched to KSA (SabreNdc): rejected 400 code=NDC-INT-TEC-A0001 msg="Invalid request. Please check the request parameters and try again." ctx=[{"Name":"PredicateValidator","Value":"The cr | supplier switched to AirArabia, selector EGY: rejected 400 code=NDC-INT-TEC-A0001 msg="Invalid request. Please check the request parameters and try again." ctx=[{"Name":"SelectedOfferId","Value":"Failed to Evidence: supplier switched to TravelportNdc/UAE: rejected 400 code=NDC-INT-TEC-A0001 msg="Invalid request. Please check the request parameters and try again." ctx=[{"Name":"SelectedOfferId","Value":"Failed to | credentialsSelector switched to KSA (SabreNdc): rejected 400 code=NDC-INT-TEC-A0001 msg="Invalid request. Please check the request parameters and try again." ctx=[{"Name":"PredicateValidator","Value":"The cr | supplier switched to AirArabia, selector EGY: rejected 400 code=NDC-INT-TEC-A0001 msg="Invalid request. Please check the request parameters and try again." ctx=[{"Name":"SelectedOfferId","Value":"Failed to
+- **[FLOW-V2-73]** V2 Upselling on SabreNdc/EGY returns 200 with 6 upsellOffers (responseId + upsellOffers[]; same shape as Search offers incl. capability flags); upsellOffers[0] carries the same fare as the searched offer. The collection's upSellingResponseId/upSellingSelectedOfferId must be fed manually into AddPassenger. Evidence: Upselling response keys: responseId, supplier, journeys, flightSegments, priceClasses, baggageDetails, upsellOffers
+- **[TC-ADDPAX-NEG-01]** AddPassenger rejects an INF with a missing/invalid ParentPaxRefId: omitted: 400 code=NDC-INT-TEC-A0001 msg="Invalid request. Please check the request parameters and try again." ctx=[{"Name":"PredicateValidator","Value":"Invali | non-existent Pax9: 400 code=NDC-INT-TEC-A0001 msg="Invalid request. Please check the request parameters and try again." ctx=[{"Name":"PredicateValidator","Value":"Invali | points at CHD: 400 code=NDC-INT-TEC-A0001 msg="Invalid request. Please check the request parameters and try again." ctx=[{"Name":"PredicateValidator","Value":"Invali Evidence: omitted: 400 code=NDC-INT-TEC-A0001 msg="Invalid request. Please check the request parameters and try again." ctx=[{"Name":"PredicateValidator","Value":"Invali | non-existent Pax9: 400 code=NDC-INT-TEC-A0001 msg="Invalid request. Please check the request parameters and try again." ctx=[{"Name":"PredicateValidator","Value":"Invali | points at CHD: 400 code=NDC-INT-TEC-A0001 msg="Invalid request. Please check the request parameters and try again." ctx=[{"Name":"PredicateValidator","Value":"Invali
+- **[TC-ADDPAX-NEG-02]** AddPassenger with an unresolved contactRefId: 400 code=NDC-INT-TEC-A0001 msg="Invalid request. Please check the request parameters and try again." ctx=[{"Name":"PredicateValidator","Value":"Passenger without valid contact reference"},{"Name":"PredicateValidator","Value":"All conta Evidence: 400 code=NDC-INT-TEC-A0001 msg="Invalid request. Please check the request parameters and try again." ctx=[{"Name":"PredicateValidator","Value":"Passenger without valid contact reference"},{"Name":"PredicateValidator","Value":"All conta
+- **[TC-ADDPAX-VAL-01]** A passenger mix that differs from Search is rejected at AddPassenger: 400 code=NDC-INT-TEC-A0001 msg="Invalid request. Please check the request parameters and try again." ctx=[{"Name":"PredicateValidator","Value":"Requested passengers must match the search Criteria."}] Evidence: Search 2 ADT + 1 CHD, AddPassenger/Hold with 3 ADT: rejected at AddPassenger: 400 code=NDC-INT-TEC-A0001 msg="Invalid request. Please check the request parameters and try again." ctx=[{"Name":"PredicateValidator","Value":"Requested passengers must match the search Criteria."}]
+- **[TC-ADDPAX-BND-01]** Non-Latin passenger names on SabreNdc/EGY: Arabic passenger name: rejected at AddPassenger: 400 code=NDC-INT-TEC-A0001 msg="Invalid request. Please check the request parameters and try again." ctx=[{"Name":"RegularExpressionValidator","Value":"Passenger name must contain alphabetic characters only."},{"Name":"RegularExpressio Evidence: Arabic passenger name: rejected at AddPassenger: 400 code=NDC-INT-TEC-A0001 msg="Invalid request. Please check the request parameters and try again." ctx=[{"Name":"RegularExpressionValidator","Value":"Passenger name must contain alphabetic characters only."},{"Name":"RegularExpressio
+- **[TC-ANCILLARY-NEG-01]** GetAncillary on an offer with offerHasAncillary=false returns HTTP 409 {ErrorCode:"OperationNotSupported", ErrorMessage:"This action is not currently supported by the selected supplier.", Context:[{Name:"OperationNotSupported", Value:"SabreNdc does not exists"}]} - an explicit rejection, not an empty availability set Evidence: 409 code=OperationNotSupported msg="This action is not currently supported by the selected supplier." ctx=[{"Name":"OperationNotSupported","Value":"SabreNdc does not exists"}]
+- **[TC-SEATMAP-NEG-01]** GetSeatMap on an offer with isSeatMapRequired=false returns HTTP 409 OperationNotSupported (same envelope as GetAncillary/FareCheck) - an explicit rejection, not an empty seatMapDetails Evidence: 409 code=OperationNotSupported msg="This action is not currently supported by the selected supplier." ctx=[{"Name":"OperationNotSupported","Value":"SabreNdc does not exists"}]
+- **[TC-HOLD-NEG-01]** Hold with an unresolved/empty/missing credentialsSelector is rejected: credentialsSelector = literal "{{credentialsSelector}}" (unresolved Postman placeholder): rejected 400 code=1001 msg="Validation errors occurred. Please check your request." ctx=[{"name":"holdRequestDto","value":"The holdRequestDto field i | credentialsSelector = "" (what an unresolved variable becomes): rejected 400 code=1001 msg="Validation errors occurred. Please check your request." ctx=[{"name":"holdRequestDto","value":"The holdRequestDto field i | credentialsSelector omitted: rejected 400 code=1001 msg="Validation errors occurred. Please check your request." ctx=[{"name":"CredentialsSelector","value":"Select a valid Creden Evidence: credentialsSelector = literal "{{credentialsSelector}}" (unresolved Postman placeholder): rejected 400 code=1001 msg="Validation errors occurred. Please check your request." ctx=[{"name":"holdRequestDto","value":"The holdRequestDto field i | credentialsSelector = "" (what an unresolved variable becomes): rejected 400 code=1001 msg="Validation errors occurred. Please check your request." ctx=[{"name":"holdRequestDto","value":"The holdRequestDto field i | credentialsSelector omitted: rejected 400 code=1001 msg="Validation errors occurred. Please check your request." ctx=[{"name":"CredentialsSelector","value":"Select a valid Creden
+- **[TC-CANCELHOLD-NEG-01]** CancelAfterHold with an unquoted credentialsSelector (invalid JSON): 400 code=1001 msg="Validation errors occurred. Please check your request." ctx=[{"name":"cancelAfterHoldRequestDto","value":"The cancelAfterHoldRequestDto field is required."},{"name":"$.credentialsSelector"," Evidence: 400 code=1001 msg="Validation errors occurred. Please check your request." ctx=[{"name":"cancelAfterHoldRequestDto","value":"The cancelAfterHoldRequestDto field is required."},{"name":"$.credentialsSelector","
+- **[TC-VOID-NEG-01]** Void with gdsPNR "" succeeded (200 voided=true) for SabreNdc, a GDS-routed supplier; Book's gdsPNR (RZHCQL) equals its pnr (RZHCQL), so Sabre needs no separate GDS PNR Evidence: Void with gdsPNR "" succeeded (200 voided=true) for SabreNdc, a GDS-routed supplier; Book's gdsPNR (RZHCQL) equals its pnr (RZHCQL), so Sabre needs no separate GDS PNR
+
+## Proposed SPEC.md updates
+
+No SPEC.md updates proposed this round (Round 11's pending proposals are unchanged).
+
+## Cleanup / follow-up
+
+Live artifacts left behind this round (1):
+
+- **needs_void_cancel** &mdash; pnr none (null) &mdash; Nothing left behind: all 16 Book / Hold PNRs created by this run's test cases were voided or cancelled by the test that made them (see the session-wide audit in the final summary).
+

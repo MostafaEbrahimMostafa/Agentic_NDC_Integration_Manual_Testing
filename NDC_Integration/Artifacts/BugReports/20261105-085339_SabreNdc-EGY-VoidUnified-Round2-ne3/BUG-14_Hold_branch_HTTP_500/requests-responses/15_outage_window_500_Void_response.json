@@ -1,0 +1,8 @@
+{
+  "label": "outage window 500 Void",
+  "status": 500,
+  "durationMs": 476,
+  "requestedAtUtc": "2026-11-05T09:51:08.714Z",
+  "respondedAtUtc": "2026-11-05T09:51:09.190Z",
+  "body": "(empty body)"
+}

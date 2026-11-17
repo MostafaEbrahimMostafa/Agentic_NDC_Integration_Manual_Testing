@@ -1,0 +1,77 @@
+{
+  "id": "FLOW-V2-26",
+  "title": "V2 NONE family B: Search > FareConfirm > AddPassenger > Hold > PnrReprice > Retrieve",
+  "source": "SPEC.md §5.4 flow #26",
+  "version": "V2",
+  "chain": [
+    {
+      "step": "Search",
+      "offer": {
+        "direct": true
+      }
+    },
+    "FareConfirm",
+    "AddPassenger",
+    "Hold",
+    "PnrReprice",
+    "Retrieve"
+  ],
+  "assert": [
+    {
+      "step": "Search",
+      "path": "$status",
+      "op": "equals",
+      "value": 200
+    },
+    {
+      "step": "FareConfirm",
+      "path": "$status",
+      "op": "equals",
+      "value": 200
+    },
+    {
+      "step": "AddPassenger",
+      "path": "$status",
+      "op": "equals",
+      "value": 200
+    },
+    {
+      "step": "Hold",
+      "path": "$status",
+      "op": "equals",
+      "value": 200
+    },
+    {
+      "step": "PnrReprice",
+      "path": "$status",
+      "op": "equals",
+      "value": 200
+    },
+    {
+      "step": "Retrieve",
+      "path": "$status",
+      "op": "equals",
+      "value": 200
+    },
+    {
+      "step": "Hold",
+      "path": "$.pnr",
+      "op": "exists"
+    },
+    {
+      "step": "Retrieve",
+      "path": "$.pnr",
+      "op": "equalsStep",
+      "other": {
+        "step": "Hold",
+        "path": "$.pnr"
+      }
+    }
+  ],
+  "notes": "Regression-ring neighbour. Supplier, selector and test data come from the bug recipe that lists it. Family B: ends on an open hold (no ticket).",
+  "approved": {
+    "by": "Mostafa Ebrahim Mostafa",
+    "date": "2026-11-17",
+    "sha": "6141343590cb7e79"
+  }
+}

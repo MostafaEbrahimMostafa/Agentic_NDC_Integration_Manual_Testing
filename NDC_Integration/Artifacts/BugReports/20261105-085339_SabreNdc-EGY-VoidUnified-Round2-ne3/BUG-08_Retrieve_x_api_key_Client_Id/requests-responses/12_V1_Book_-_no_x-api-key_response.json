@@ -1,0 +1,19 @@
+{
+  "label": "V1 Book - no x-api-key",
+  "status": 401,
+  "durationMs": 99,
+  "requestedAtUtc": "2026-11-05T10:55:42.462Z",
+  "respondedAtUtc": "2026-11-05T10:55:42.561Z",
+  "body": {
+    "Status": 401,
+    "TransactionId": "16e5de00-b2bd-4a26-8ec9-7198ac40367e",
+    "ErrorCode": "AuthenticationError",
+    "ErrorMessage": "Authentication error. Please check your credentials.",
+    "Context": [
+      {
+        "Name": "Authentication error. Please check your credentials.",
+        "Value": "Invalid authorization header"
+      }
+    ]
+  }
+}

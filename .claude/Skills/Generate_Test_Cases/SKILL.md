@@ -30,6 +30,13 @@ underlying Postman collections (`Postman_Collection/Collection_V1/`, `Collection
 is marked `UNKNOWN` there, generate a test case that **confirms** it live (per §7.9) rather than
 guessing an expected value.
 
+**AI guardrails** ([`../_shared/AI_Guardrails.md`](../_shared/AI_Guardrails.md), G-1/G-3): label the
+source of every row's Expected Result in its `Notes` column as `Source: SPEC §x.y`,
+`Source: LIVE-CONFIRMED <KB file / run slug>` or `Source: INFERRED — <basis>`. The CSV columns stay
+unchanged. A rule that SPEC itself marks `INFERRED`/`UNKNOWN` is `INFERRED`. Such a row's FAIL is a
+question for the user, never a defect, so make the row's title or Notes say it confirms the rule.
+Never borrow another supplier's behaviour as the expectation.
+
 ## Scope
 
 One generation request = one clearly bounded scope: a single endpoint (§2.1–§2.15), a single flow

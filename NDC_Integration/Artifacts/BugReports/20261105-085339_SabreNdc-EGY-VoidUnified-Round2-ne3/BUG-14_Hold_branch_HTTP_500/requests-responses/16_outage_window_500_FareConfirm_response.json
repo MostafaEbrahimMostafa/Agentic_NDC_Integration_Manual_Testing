@@ -1,0 +1,8 @@
+{
+  "label": "outage window 500 FareConfirm",
+  "status": 500,
+  "durationMs": 308,
+  "requestedAtUtc": "2026-11-05T09:51:08.890Z",
+  "respondedAtUtc": "2026-11-05T09:51:09.198Z",
+  "body": "(empty body)"
+}

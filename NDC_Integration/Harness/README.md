@@ -8,7 +8,7 @@ re-parse the Postman collection or re-derive request shapes: everything extracte
 
 | File | Purpose |
 |---|---|
-| `NdcV1.Extracted.ps1` | **Pre-extracted constants** from the Postman artifacts: environments, `x-api-key`/`Client-Id`, V1 endpoint paths, the collection's active test passengers/contacts, and the known collection defects. This is the file to update if the collection changes. |
+| `NdcV1.Extracted.ps1` | **Pre-extracted constants** from the Postman artifacts: environments, headers (the `x-api-key`/`Client-Id` **values** are read from `NDC_API_KEY`/`NDC_CLIENT_ID` in the git-ignored repo-root `.env`, never stored here), V1 endpoint paths, the collection's active test passengers/contacts, and the known collection defects. This is the file to update if the collection changes. |
 | `NdcV1.Harness.ps1` | HTTP transport (`Invoke-Ndc`), request-body builders (`Body-*`), SPEC §2.1 price validation (`Test-NdcPrice`), JSONL logging (`Add-NdcLog`) and the live Markdown re-render (`Render-NdcMd`). |
 | `NdcV1.FlowRunner.ps1` | `Invoke-NdcFlow` — runs an endpoint chain and logs it as **one** test case with per-hop detail nested inside, per the `generate-qa-report` contract. |
 | `NdcV1.HtmlReport.ps1` | `Render-NdcHtml` — the one-time final HTML transform, rebuilt purely from the JSONL. |

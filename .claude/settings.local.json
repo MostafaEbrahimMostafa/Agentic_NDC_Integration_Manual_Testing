@@ -1,7 +1,14 @@
 {
   "permissions": {
     "allow": [
-      "PowerShell($f = \"g:\\\\Software Testing\\\\Sheen Company\\\\AI Agent\\\\NDC Manual Testing\\\\NDC_Integration\\\\SPEC.md\"; \"Lines: $\\(\\(Get-Content $f | Measure-Object -Line\\).Lines\\)\"; \"Chars: $\\(\\(Get-Content -Raw $f\\).Length\\)\")"
+      "PowerShell($f = \"g:\\\\Software Testing\\\\Sheen Company\\\\AI Agent\\\\NDC Manual Testing\\\\NDC_Integration\\\\SPEC.md\"; \"Lines: $\\(\\(Get-Content $f | Measure-Object -Line\\).Lines\\)\"; \"Chars: $\\(\\(Get-Content -Raw $f\\).Length\\)\")",
+      "Bash(node -e ' *)",
+      "Bash(node \"/c/Users/sheen/AppData/Local/Temp/claude/c--Users-sheen-Desktop-resources-NDC-Manual-Testing/d86d37dd-2555-4f2f-99ee-7d04dd098e4b/scratchpad/check_tags.js\" \".claude/Skills/Generate_QA_Report/references/time-breakdown-template.html\")",
+      "Bash(node \"/c/Users/sheen/AppData/Local/Temp/claude/c--Users-sheen-Desktop-resources-NDC-Manual-Testing/d86d37dd-2555-4f2f-99ee-7d04dd098e4b/scratchpad/check_tags.js\" \".claude/Skills/Generate_QA_Report/references/report-template.html\")",
+      "Bash(node \"/c/Users/sheen/AppData/Local/Temp/claude/c--Users-sheen-Desktop-resources-NDC-Manual-Testing/d86d37dd-2555-4f2f-99ee-7d04dd098e4b/scratchpad/find_div_break.js\" \".claude/Skills/Generate_QA_Report/references/report-template.html\")",
+      "Bash(node \"/c/Users/sheen/AppData/Local/Temp/claude/c--Users-sheen-Desktop-resources-NDC-Manual-Testing/d86d37dd-2555-4f2f-99ee-7d04dd098e4b/scratchpad/check_tags_nocomments.js\" \".claude/Skills/Generate_QA_Report/references/report-template.html\")",
+      "Bash(node \"/c/Users/sheen/AppData/Local/Temp/claude/c--Users-sheen-Desktop-resources-NDC-Manual-Testing/d86d37dd-2555-4f2f-99ee-7d04dd098e4b/scratchpad/find_div_break2.js\" \".claude/Skills/Generate_QA_Report/references/report-template.html\")",
+      "Bash(node \"/c/Users/sheen/AppData/Local/Temp/claude/c--Users-sheen-Desktop-resources-NDC-Manual-Testing/d86d37dd-2555-4f2f-99ee-7d04dd098e4b/scratchpad/check_json_blocks.js\" \".claude/Skills/Generate_QA_Report/references/log-schema.md\")"
     ]
   }
 }

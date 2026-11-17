@@ -1,0 +1,2262 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>NDC Integration - Execution Time Breakdown</title>
+<style>
+  :root{
+    color-scheme: light;
+    --paper:#F3F5F8; --surface:#FFFFFF; --surface-2:#EAEEF4;
+    --ink:#10151F; --ink-2:#45536B; --ink-muted:#7C8AA0;
+    --line:#DDE3EC; --line-strong:#C6CEDC;
+    --accent:#2A78D6; --accent-ink:#1C5CAB; --accent-wash:#E4EEFA;
+    --good:#0CA30C; --warning:#C98A17; --serious:#D9673C; --critical:#D03B3B;
+    --good-wash:rgba(12,163,12,0.12); --warning-wash:rgba(250,178,25,0.16);
+    --serious-wash:rgba(236,131,90,0.14); --critical-wash:rgba(208,59,59,0.12);
+    --shadow:rgba(16,21,31,0.08);
+    --time-exec:#2A78D6; --time-wait:#C98A17; --time-claude:#7C5CE0; --time-report:#0C9488; --time-overhead:#7C8AA0;
+    --font-sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+    --font-mono:ui-monospace,"SF Mono","Cascadia Code","Roboto Mono",Consolas,"Courier New",monospace;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:where(:not([data-theme="light"])){
+      color-scheme: dark;
+      --paper:#0A0E15; --surface:#111826; --surface-2:#16202F;
+      --ink:#EDF1F7; --ink-2:#B7C2D1; --ink-muted:#8290A6;
+      --line:#232E40; --line-strong:#324058;
+      --accent:#3987E5; --accent-ink:#8FBBEF; --accent-wash:#152A45;
+      --good:#35C24A; --warning:#E3A730; --serious:#E88A5E; --critical:#EA5B5B;
+      --good-wash:rgba(53,194,74,0.16); --warning-wash:rgba(227,167,48,0.16);
+      --serious-wash:rgba(232,138,94,0.16); --critical-wash:rgba(234,91,91,0.18);
+      --shadow:rgba(0,0,0,0.5);
+      --time-exec:#3987E5; --time-wait:#E3A730; --time-claude:#9B85F0; --time-report:#2FD1C0; --time-overhead:#8290A6;
+    }
+  }
+  :root[data-theme="dark"]{
+    color-scheme: dark;
+    --paper:#0A0E15; --surface:#111826; --surface-2:#16202F;
+    --ink:#EDF1F7; --ink-2:#B7C2D1; --ink-muted:#8290A6;
+    --line:#232E40; --line-strong:#324058;
+    --accent:#3987E5; --accent-ink:#8FBBEF; --accent-wash:#152A45;
+    --good:#35C24A; --warning:#E3A730; --serious:#E88A5E; --critical:#EA5B5B;
+    --good-wash:rgba(53,194,74,0.16); --warning-wash:rgba(227,167,48,0.16);
+    --serious-wash:rgba(232,138,94,0.16); --critical-wash:rgba(234,91,91,0.18);
+    --shadow:rgba(0,0,0,0.5);
+    --time-exec:#3987E5; --time-wait:#E3A730; --time-claude:#9B85F0; --time-report:#2FD1C0; --time-overhead:#8290A6;
+  }
+  :root[data-theme="light"]{
+    color-scheme: light;
+    --paper:#F3F5F8; --surface:#FFFFFF; --surface-2:#EAEEF4;
+    --ink:#10151F; --ink-2:#45536B; --ink-muted:#7C8AA0;
+    --line:#DDE3EC; --line-strong:#C6CEDC;
+    --accent:#2A78D6; --accent-ink:#1C5CAB; --accent-wash:#E4EEFA;
+    --good:#0CA30C; --warning:#C98A17; --serious:#D9673C; --critical:#D03B3B;
+    --good-wash:rgba(12,163,12,0.12); --warning-wash:rgba(250,178,25,0.16);
+    --serious-wash:rgba(236,131,90,0.14); --critical-wash:rgba(208,59,59,0.12);
+    --shadow:rgba(16,21,31,0.08);
+    --time-exec:#2A78D6; --time-wait:#C98A17; --time-claude:#7C5CE0; --time-report:#0C9488; --time-overhead:#7C8AA0;
+  }
+  *{ box-sizing:border-box; }
+  html,body{ margin:0; padding:0; }
+  body{ background:var(--paper); color:var(--ink); font-family:var(--font-sans);
+        font-size:14px; line-height:1.5; -webkit-font-smoothing:antialiased; }
+  @media (prefers-reduced-motion: reduce){ *{ animation-duration:.001ms !important; transition-duration:.001ms !important; } }
+  a{ color:var(--accent-ink); }
+  .wrap{ max-width:1040px; margin:0 auto; padding:32px 20px 80px; }
+  .dashboard-card{ background:var(--surface); border:1px solid var(--line-strong); border-radius:24px; padding:24px; }
+  code,.mono{ font-family:var(--font-mono); font-size:.92em; }
+  .tb-back{ font-size:13px; color:var(--ink-muted); text-decoration:none; }
+  .tb-back:hover{ text-decoration:underline; }
+  .header{ margin-bottom:20px; }
+  .header h1{ font-size:30px; font-weight:800; margin:10px 0 8px; }
+  .meta-card{ margin-top:8px; }
+  .fields{ display:flex; flex-direction:column; gap:4px; margin:4px 0 6px; }
+  .field-row{ display:flex; flex-wrap:wrap; gap:4px 28px; }
+  .field{ font-size:14px; display:flex; gap:6px; }
+  .field .k{ color:var(--ink-2); font-weight:700; font-size:15px; letter-spacing:normal; text-transform:none; flex-shrink:0; }
+  .field .k::after{ content:':'; }
+  .field .v{ color:var(--ink); }
+  h2.section-num{ font-size:15px; text-transform:uppercase; letter-spacing:.04em; color:var(--ink-2);
+      border-bottom:1px solid var(--line); padding-bottom:6px; margin:32px 0 14px; }
+  .empty{ color:var(--ink-muted); font-size:13px; font-style:italic; }
+
+  .tb-cat-cards{ display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:12px; margin-bottom:22px; }
+  .tb-cat-card{ text-align:center; }
+  .tb-cat-card .val{ font-size:22px; font-weight:700; color:var(--ink); }
+  .tb-cat-card .pct{ font-size:13px; font-weight:600; margin-top:2px; }
+  .tb-cat-card .lbl{ font-size:12px; color:var(--ink-muted); margin-top:4px; }
+  .tb-cat-card .swatch{ display:inline-block; width:10px; height:10px; border-radius:3px; margin-right:6px; vertical-align:middle; }
+  .tb-cat-card.exec .pct{ color:var(--time-exec); }
+  .tb-cat-card.wait .pct{ color:var(--time-wait); }
+  .tb-cat-card.claude .pct{ color:var(--time-claude); }
+  .tb-cat-card.report .pct{ color:var(--time-report); }
+  .tb-cat-card.overhead .pct{ color:var(--time-overhead); }
+
+  .tb-bars{ display:flex; flex-direction:column; gap:10px; margin:18px 0 20px; }
+  .tb-bar-row{ display:flex; align-items:center; gap:14px; }
+  .tb-bar-label{ width:180px; flex-shrink:0; font-size:13px; font-weight:600; color:var(--ink-2); display:flex; align-items:center; gap:8px; }
+  .tb-bar-track{ flex:1 1 auto; background:var(--surface-2); border-radius:7px; height:16px; overflow:hidden; }
+  .tb-bar-fill{ height:100%; border-radius:7px; }
+  .tb-bar-value{ width:170px; flex-shrink:0; text-align:right; font-size:12.5px; color:var(--ink-2); font-family:var(--font-mono); }
+
+  .tb-reconcile{ font-size:13px; color:var(--ink-2); margin-top:14px; padding-top:14px; border-top:1px solid var(--line); }
+  .tb-reconcile b{ color:var(--ink); }
+  .tb-warning{ background:var(--warning-wash); border:1px solid var(--warning); border-radius:12px; padding:12px 14px; margin-top:12px; font-size:13px; color:var(--ink); }
+  .tb-warning .w-title{ font-weight:700; color:var(--warning); margin-bottom:4px; }
+
+  table.tb-table{ width:100%; border-collapse:collapse; font-size:13px; }
+  table.tb-table th{ text-align:left; font-size:11px; text-transform:uppercase; letter-spacing:.04em; color:var(--ink-muted); font-weight:700; padding:8px 10px; border-bottom:1px solid var(--line-strong); white-space:nowrap; }
+  table.tb-table td{ padding:9px 10px; border-bottom:1px solid var(--line); color:var(--ink-2); vertical-align:top; overflow-wrap:anywhere; }
+  table.tb-table tr:last-child td{ border-bottom:none; }
+  table.tb-table td.num, table.tb-table th.num{ text-align:right; font-family:var(--font-mono); white-space:nowrap; }
+  .tb-table-wrap{ overflow-x:auto; }
+  table.tb-table tr.tb-sub td{ background:rgba(127,127,127,.06); font-size:12.5px; }
+  table.tb-table tr.tb-sub td:first-child{ padding-left:28px; }
+  .tb-sub-arrow{ color:var(--ink-muted); margin-right:8px; }
+  table.tb-table tfoot td{ border-top:1px solid var(--line-strong); padding-top:12px; }
+  .tb-foot-note{ font-weight:400; color:var(--ink-muted); font-size:12px; }
+
+  .tc-toolbar{ display:flex; flex-wrap:wrap; align-items:center; gap:8px; margin:0 0 14px; position:sticky; top:0; z-index:5; background:var(--paper); padding:6px 0; }
+  .tc-toolbar input[type="search"]{ flex:1 1 220px; min-width:160px; padding:7px 10px; border-radius:7px; border:1px solid var(--line-strong); background:var(--surface); color:var(--ink); font-size:13px; }
+  .tc-toolbar select{ padding:7px 10px; border-radius:7px; border:1px solid var(--line-strong); background:var(--surface); color:var(--ink); font-size:13px; }
+  .tc-toolbar button{ padding:7px 12px; border-radius:7px; border:1px solid var(--line-strong); background:var(--surface); color:var(--ink-2); font-size:12px; font-weight:600; cursor:pointer; }
+  .tc-toolbar button:hover{ background:var(--surface-2); }
+  #tcbReset{ color:var(--critical); border-color:var(--critical); }
+  #tcbReset:hover{ background:var(--critical-wash); }
+  .tc-toolbar .tc-count{ font-size:12px; color:var(--ink-muted); margin-left:auto; white-space:nowrap; }
+  .tb-no-results{ padding:24px 16px; text-align:center; color:var(--critical); font-size:15px; font-weight:700; background:var(--critical-wash); border:1px solid var(--critical); border-radius:12px; margin-top:8px; }
+  .tb-no-results.js-hidden{ display:none; }
+
+  table.tcb-table{ width:100%; border-collapse:collapse; font-size:12.5px; }
+  table.tcb-table th{ text-align:left; font-size:11px; text-transform:uppercase; letter-spacing:.03em; color:var(--ink-muted); font-weight:700; padding:8px 9px; border-bottom:1px solid var(--line-strong); white-space:nowrap; cursor:pointer; user-select:none; }
+  table.tcb-table th:hover{ color:var(--ink); }
+  table.tcb-table th .sort-arrow{ font-size:9px; margin-left:3px; color:var(--accent-ink); }
+  table.tcb-table td{ padding:8px 9px; border-bottom:1px solid var(--line); color:var(--ink-2); vertical-align:top; overflow-wrap:anywhere; }
+  table.tcb-table td.num{ text-align:right; font-family:var(--font-mono); white-space:nowrap; }
+  table.tcb-table tr.js-hidden{ display:none; }
+  .badge{ font-size:11px; font-weight:700; padding:2px 8px; border-radius:5px; white-space:nowrap; }
+  .badge.PASS{ background:var(--good-wash); color:var(--good); }
+  .badge.FAIL{ background:var(--critical-wash); color:var(--critical); }
+  .badge.BLOCKED{ background:var(--serious-wash); color:var(--serious); }
+  .timing-partial{ font-size:10.5px; font-style:italic; color:var(--warning); display:block; margin-top:2px; }
+
+  .tb-timeline{ display:flex; flex-direction:column; }
+  .tb-tl-row{ display:flex; gap:14px; padding:7px 0; border-bottom:1px solid var(--line); font-size:13px; }
+  .tb-tl-row:last-child{ border-bottom:none; }
+  .tb-tl-time{ width:150px; flex-shrink:0; font-family:var(--font-mono); color:var(--ink-muted); font-size:12px; }
+  .tb-tl-label{ color:var(--ink-2); }
+  .tb-tl-label b{ color:var(--ink); }
+
+  .tb-overhead-box{ margin:0; padding:0; }
+  .tb-overhead-box .oh-title{ font-size:12px; font-weight:700; color:var(--ink-2); margin-bottom:8px; }
+  .tb-oh-rows{ display:flex; flex-direction:column; gap:6px; }
+  .tb-oh-row{ display:grid; grid-template-columns:minmax(0,1fr) 90px 80px; align-items:center; column-gap:16px; font-size:12.5px; color:var(--ink-2); }
+  .tb-oh-row .oh-val{ font-family:var(--font-mono); color:var(--ink); white-space:nowrap; text-align:right; }
+  .tb-phase-note{ font-size:12px; color:var(--ink-muted); margin:-6px 0 14px; }
+
+  /* --- overhead-row detail popup (added 2026-09-30): every .tb-oh-row opens #tbModal --- */
+  .tb-oh-row.tb-oh-click{ cursor:pointer; padding:6px 8px; margin:0 -8px; border-radius:8px; border:1px solid transparent; }
+  .tb-oh-row.tb-oh-click:hover, .tb-oh-row.tb-oh-click:focus-visible{ background:var(--accent-wash); border-color:var(--accent); outline:none; }
+  .tb-table tr.tb-oh-click{ cursor:pointer; }
+  .tb-table tr.tb-oh-click:hover td, .tb-table tr.tb-oh-click:focus-visible td{ background:var(--accent-wash); }
+  .tb-table td.oh-more{ color:var(--accent-ink); font-size:11px; font-weight:700; white-space:nowrap; text-align:right; }
+  .tb-oh-row .oh-more{ color:var(--accent-ink); font-size:11px; font-weight:700; white-space:nowrap; text-align:right; }
+  @media (max-width:560px){ .tb-oh-row{ grid-template-columns:minmax(0,1fr) auto; } .tb-oh-row .oh-more{ display:none; } }
+  .tb-modal{ position:fixed; inset:0; z-index:50; display:flex; align-items:center; justify-content:center; padding:20px; background:rgba(10,14,21,.55); }
+  .tb-modal.js-hidden{ display:none; }
+  .tb-modal-card{ background:var(--surface); color:var(--ink); border:1px solid var(--line-strong); border-radius:14px; box-shadow:0 18px 50px var(--shadow); width:min(720px,100%); max-height:88vh; overflow:auto; padding:20px 22px; }
+  .tb-modal-head{ display:flex; justify-content:space-between; align-items:flex-start; gap:12px; margin-bottom:12px; }
+  .tb-modal-title{ font-size:16px; font-weight:700; }
+  .tb-modal-x{ border:1px solid var(--line-strong); background:var(--surface-2); color:var(--ink); border-radius:8px; padding:2px 10px; font-size:16px; cursor:pointer; }
+  .tb-modal-grid{ display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:10px; margin-bottom:14px; }
+  .tb-modal-grid .mg{ background:var(--surface-2); border-radius:10px; padding:8px 12px; }
+  .tb-modal-grid .mg .k{ font-size:10.5px; text-transform:uppercase; letter-spacing:.04em; color:var(--ink-muted); font-weight:700; }
+  .tb-modal-grid .mg .v{ font-size:13px; font-family:var(--font-mono); margin-top:2px; }
+  .tb-modal h4{ margin:12px 0 4px; font-size:11px; text-transform:uppercase; letter-spacing:.04em; color:var(--ink-2); }
+  .tb-modal p, .tb-modal li{ font-size:13px; line-height:1.55; color:var(--ink-2); margin:0 0 4px; }
+  .tb-modal ol{ margin:0; padding-left:20px; }
+  .tb-modal .mnote{ margin-top:14px; font-size:11.5px; color:var(--ink-muted); }
+  /* --- collapsible sections 2-6 (click the title) --- */
+  details.tb-sec{ margin:0; }
+  details.tb-sec > summary{ font-size:15px; font-weight:700; text-transform:uppercase; letter-spacing:.04em; color:var(--ink-2);
+      border-bottom:1px solid var(--line); padding-bottom:6px; margin:32px 0 14px; cursor:pointer; list-style:none; }
+  details.tb-sec > summary::-webkit-details-marker{ display:none; }
+  details.tb-sec > summary:hover{ color:var(--accent-ink); }
+  /* --- Expand all / Collapse all above section 2 --- */
+.tc-actions{ display:flex; justify-content:flex-end; gap:8px; margin:32px 0 8px; }
+.tc-actions button{ padding:7px 12px; border-radius:7px; border:1px solid var(--line-strong); background:var(--surface); color:var(--ink-2); font-size:12px; font-weight:600; cursor:pointer; }
+.tc-cat-actions{ display:flex; justify-content:flex-end; gap:8px; margin:4px 0 10px; }
+.tc-cat-actions button{ padding:5px 10px; border-radius:7px; border:1px solid var(--line-strong); background:var(--surface); color:var(--ink-2); font-size:11px; font-weight:600; cursor:pointer; }
+.tc-cat-actions button:hover{ background:var(--surface-2); }
+.tc-actions button:hover{ background:var(--surface-2); }
+</style>
+</head><body><div class="wrap">
+
+<a class="tb-back" href="./20261101-143923_Amadeus-EGY-PaxNameLimits-V1-ne3.html">&larr; Back to QA Execution Report</a>
+
+<div class="header">
+<h1>Execution Time Breakdown</h1>
+</div>
+
+<div class="meta-card dashboard-card">
+<div class="field-row">
+<div class="field"><span class="k">Total Duration</span><span class="v">25m 4s</span></div>
+<div class="field"><span class="k">Execution Start</span><span class="v">2026-11-01 14:39:23 UTC</span></div>
+<div class="field"><span class="k">Execution End</span><span class="v">2026-11-01 15:04:26 UTC</span></div>
+</div>
+</div>
+
+<h2 class="section-num">1. Time Breakdown</h2>
+<div class="tb-cat-cards">
+<div class="tb-cat-card exec dashboard-card"><div class="val">17m 56s</div><div class="pct">71.5%</div><div class="lbl"><span class="swatch" style="background:var(--time-exec)"></span>Test Case Execution</div></div>
+<div class="tb-cat-card wait dashboard-card"><div class="val">0s</div><div class="pct">0.0%</div><div class="lbl"><span class="swatch" style="background:var(--time-wait)"></span>Waiting</div></div>
+<div class="tb-cat-card claude dashboard-card"><div class="val">0s</div><div class="pct">0.0%</div><div class="lbl"><span class="swatch" style="background:var(--time-claude)"></span>Claude / AI Processing</div></div>
+<div class="tb-cat-card report dashboard-card"><div class="val">31s</div><div class="pct">2.1%</div><div class="lbl"><span class="swatch" style="background:var(--time-report)"></span>Reporting</div></div>
+<div class="tb-cat-card overhead dashboard-card"><div class="val">6m 37s</div><div class="pct">26.4%</div><div class="lbl"><span class="swatch" style="background:var(--time-overhead)"></span>Other / Overhead</div></div>
+</div>
+
+<div class="dashboard-card">
+<div class="tb-bars">
+<div class="tb-bar-row"><div class="tb-bar-label"><span class="swatch" style="display:inline-block;width:10px;height:10px;border-radius:3px;background:var(--time-exec)"></span>Test Case Execution</div><div class="tb-bar-track"><div class="tb-bar-fill" style="width:71.5%;background:var(--time-exec)"></div></div><div class="tb-bar-value">17m 56s &middot; 71.5%</div></div>
+<div class="tb-bar-row"><div class="tb-bar-label"><span class="swatch" style="display:inline-block;width:10px;height:10px;border-radius:3px;background:var(--time-wait)"></span>Waiting</div><div class="tb-bar-track"><div class="tb-bar-fill" style="width:0.0%;background:var(--time-wait)"></div></div><div class="tb-bar-value">0s &middot; 0.0%</div></div>
+<div class="tb-bar-row"><div class="tb-bar-label"><span class="swatch" style="display:inline-block;width:10px;height:10px;border-radius:3px;background:var(--time-claude)"></span>Claude / AI Processing</div><div class="tb-bar-track"><div class="tb-bar-fill" style="width:0.0%;background:var(--time-claude)"></div></div><div class="tb-bar-value">0s &middot; 0.0%</div></div>
+<div class="tb-bar-row"><div class="tb-bar-label"><span class="swatch" style="display:inline-block;width:10px;height:10px;border-radius:3px;background:var(--time-report)"></span>Reporting</div><div class="tb-bar-track"><div class="tb-bar-fill" style="width:2.1%;background:var(--time-report)"></div></div><div class="tb-bar-value">31s &middot; 2.1%</div></div>
+<div class="tb-bar-row"><div class="tb-bar-label"><span class="swatch" style="display:inline-block;width:10px;height:10px;border-radius:3px;background:var(--time-overhead)"></span>Other / Overhead</div><div class="tb-bar-track"><div class="tb-bar-fill" style="width:26.4%;background:var(--time-overhead)"></div></div><div class="tb-bar-value">6m 37s &middot; 26.4%</div></div>
+</div>
+
+<div class="tb-reconcile">Accounted Time: <b>25m 4s</b> &nbsp;=&nbsp; Total Duration: <b>25m 4s</b> &nbsp;&#10003;</div>
+</div>
+
+<div class="tc-actions">
+<button type="button" id="tbExpandAll">Expand all</button>
+<button type="button" id="tbCollapseAll">Collapse all</button>
+</div>
+<details class="tb-sec" open><summary>2. Execution Phases</summary>
+<div class="tb-phase-note">Phases are wall-clock stages of the run. The <b>Test Execution</b> phase (23m 49s) is longer than <b>Test Case Execution</b> (17m 56s, section 1) because it also contains idle time between calls. Click a phase row for the breakdown.</div>
+<div class="dashboard-card tb-table-wrap">
+<table class="tb-table">
+<thead><tr><th>Phase</th><th>Start</th><th>End</th><th class="num">Duration</th><th class="num">%</th><th></th></tr></thead>
+<tbody>
+<tr class="tb-oh-click" role="button" tabindex="0" data-detail="{&quot;title&quot;:&quot;Test Execution phase&quot;,&quot;start&quot;:&quot;2026-11-01 14:39:23 UTC&quot;,&quot;end&quot;:&quot;2026-11-01 15:03:12 UTC&quot;,&quot;duration&quot;:&quot;23m 49s&quot;,&quot;share&quot;:&quot;95.0% of total&quot;,&quot;before&quot;:&quot;Run started at 14:39:23.&quot;,&quot;after&quot;:&quot;Next: Report Generation phase, starting 15:04:25.&quot;,&quot;steps&quot;:[&quot;Sending the API calls and checking their responses (the test cases themselves), plus the time spent reading results and preparing the next call.&quot;,&quot;API calls in flight: 17m 56s (this is the Test Case Execution card; each call counted once).&quot;,&quot;Idle inside the phase: 5m 53s = phase 23m 49s minus calls 17m 56s. It is counted as Overhead, not as test time.&quot;,&quot;Idle 2m 0s between 14:57:51 and 14:59:51 (TC-PAXNAME-SEC-09 finished; next call had not started).&quot;,&quot;Idle 1m 24s between 15:01:48 and 15:03:12 (TC-PAXNAME-BND-23 finished; next call had not started).&quot;,&quot;Idle 1m 11s between 15:00:21 and 15:01:32 (TC-PAXNAME-SEC-08 finished; next call had not started).&quot;,&quot;Idle 14s between 14:52:26 and 14:52:40 (TC-PAXNAME-BND-22 finished; next call had not started).&quot;,&quot;Idle 9s between 14:51:41 and 14:51:50 (TC-PAXNAME-SEC-07 finished; next call had not started).&quot;],&quot;note&quot;:&quot;Phase times are wall-clock; they are not the same as the five categories in section 1, and gaps between phases belong to no phase.&quot;}"><td>Test Execution</td><td>14:39:23</td><td>15:03:12</td><td class="num">23m 49s</td><td class="num">95.0%</td><td class="oh-more">Details &rsaquo;</td></tr>
+<tr class="tb-oh-click tb-sub" role="button" tabindex="0" data-detail="{&quot;title&quot;:&quot;Per-test-case JSONL + Markdown writes&quot;,&quot;start&quot;:&quot;2026-11-01 14:39:29 UTC&quot;,&quot;end&quot;:&quot;2026-11-01 15:01:48 UTC&quot;,&quot;duration&quot;:&quot;29.7s&quot;,&quot;share&quot;:&quot;2.0% of total (sum of the 128 windows)&quot;,&quot;before&quot;:&quot;Right before: Phase \&quot;Test Execution\&quot; started at 14:39:23.&quot;,&quot;after&quot;:&quot;Right after: Phase \&quot;Test Execution\&quot; ended at 15:03:12.&quot;,&quot;steps&quot;:[&quot;For each of the 128 test cases: appended its line to the .jsonl, then re-rendered the whole .md from the log. The time is the window around that one append + render.&quot;,&quot;Average 232 ms per test case; shortest 113 ms (TC-PAXNAME-POS-02), longest 586 ms (TC-PAXNAME-BND-24).&quot;,&quot;Slowest five: TC-PAXNAME-BND-24 586 ms, TC-PAXNAME-NEG-20 580 ms, TC-PAXNAME-VAL-29 570 ms, TC-PAXNAME-POS-09 558 ms, TC-PAXNAME-BIZ-26 557 ms.&quot;],&quot;note&quot;:&quot;Each write is charged to its own test case in the Reporting column of the Test Case Time table. The time between writes is not counted here (it is in Other / Overhead).&quot;}"><td><span class="tb-sub-arrow">&#8627;</span>Per-test-case JSONL + Markdown writes (128 test cases)</td><td>14:39:29</td><td>15:01:48</td><td class="num">29.7s</td><td class="num">2.0%</td><td class="oh-more">Details &rsaquo;</td></tr>
+<tr class="tb-oh-click" role="button" tabindex="0" data-detail="{&quot;title&quot;:&quot;Report Generation phase&quot;,&quot;start&quot;:&quot;2026-11-01 15:04:25 UTC&quot;,&quot;end&quot;:&quot;2026-11-01 15:04:26 UTC&quot;,&quot;duration&quot;:&quot;1.18s&quot;,&quot;share&quot;:&quot;0.1% of total&quot;,&quot;before&quot;:&quot;Idle for 1m 13s after the Test Execution phase ended (no phase was running).&quot;,&quot;after&quot;:&quot;Run ended at 15:04:26.&quot;,&quot;steps&quot;:[&quot;Rendering the final HTML report and this Time Breakdown page.&quot;,&quot;Reporting step inside this phase: Final HTML Report Generation (1s).&quot;,&quot;Reporting step inside this phase: Time Breakdown Report Generation (1s).&quot;,&quot;Only the instants the log records as reporting count as Reporting time; the phase boundaries here are the moments the renders started and ended.&quot;],&quot;note&quot;:&quot;Phase times are wall-clock; they are not the same as the five categories in section 1, and gaps between phases belong to no phase.&quot;}"><td>Report Generation</td><td>15:04:25</td><td>15:04:26</td><td class="num">1.18s</td><td class="num">0.1%</td><td class="oh-more">Details &rsaquo;</td></tr>
+<tr class="tb-oh-click tb-sub" role="button" tabindex="0" data-detail="{&quot;title&quot;:&quot;Final HTML Report Generation&quot;,&quot;start&quot;:&quot;2026-11-01 15:04:25 UTC&quot;,&quot;end&quot;:&quot;2026-11-01 15:04:26 UTC&quot;,&quot;duration&quot;:&quot;626 ms&quot;,&quot;share&quot;:&quot;0.0% of total&quot;,&quot;before&quot;:&quot;Right before: Phase \&quot;Report Generation\&quot; started at 15:04:25.&quot;,&quot;after&quot;:&quot;Right after: Phase \&quot;Report Generation\&quot; ended at 15:04:26.&quot;,&quot;steps&quot;:[&quot;Rendered the single self-contained QA report (.html) from the finished .jsonl: summary donut, category cards, per-test-case request/response panels, findings, proposed SPEC.md updates and clean-up list.&quot;],&quot;note&quot;:&quot;Run-level work, not attributable to one test case: it appears in the Reporting card but in no test case row.&quot;}"><td><span class="tb-sub-arrow">&#8627;</span>Final HTML Report Generation</td><td>15:04:25</td><td>15:04:26</td><td class="num">626 ms</td><td class="num">0.0%</td><td class="oh-more">Details &rsaquo;</td></tr>
+<tr class="tb-oh-click tb-sub" role="button" tabindex="0" data-detail="{&quot;title&quot;:&quot;Time Breakdown Report Generation&quot;,&quot;start&quot;:&quot;2026-11-01 15:04:26 UTC&quot;,&quot;end&quot;:&quot;2026-11-01 15:04:26 UTC&quot;,&quot;duration&quot;:&quot;545 ms&quot;,&quot;share&quot;:&quot;0.0% of total&quot;,&quot;before&quot;:&quot;Right before: Phase \&quot;Report Generation\&quot; started at 15:04:25.&quot;,&quot;after&quot;:&quot;Right after: Phase \&quot;Report Generation\&quot; ended at 15:04:26.&quot;,&quot;steps&quot;:[&quot;Rendered this Time Breakdown page from the .jsonl timestamps (categories, phases, AI operations, reporting, per-test-case table, timeline, overhead).&quot;],&quot;note&quot;:&quot;Run-level work, not attributable to one test case: it appears in the Reporting card but in no test case row.&quot;}"><td><span class="tb-sub-arrow">&#8627;</span>Time Breakdown Report Generation</td><td>15:04:26</td><td>15:04:26</td><td class="num">545 ms</td><td class="num">0.0%</td><td class="oh-more">Details &rsaquo;</td></tr>
+</tbody>
+<tfoot><tr><td colspan="3"><b>Total Reporting Time</b> <span class="tb-foot-note">(sum of the &#8627; rows above)</span></td><td class="num"><b>30.9s</b></td><td colspan="2" class="num"><span class="tb-foot-note">card: 31s rounded</span></td></tr></tfoot>
+</table>
+</div>
+
+</details>
+<details class="tb-sec" open><summary>3. Claude / AI Operations</summary>
+<div class="dashboard-card tb-table-wrap">
+<div class="empty">No AI operations recorded for this run.</div>
+</div>
+
+</details>
+<details class="tb-sec" open><summary>4. Test Case Time</summary>
+<div class="tc-toolbar dashboard-card">
+<input type="search" id="tcbSearch" placeholder="Search test case ID or title...">
+<select id="tcbStatusFilter">
+<option value="">All statuses</option>
+<option value="PASS">Passed</option>
+<option value="FAIL">Failed</option>
+<option value="BLOCKED">Blocked</option>
+</select>
+<select id="tcbCategoryFilter">
+<option value="">All categories</option>
+<option value="positive">Positive</option>
+<option value="boundary">Boundary</option>
+<option value="business-rule">Business Rule</option>
+<option value="negative">Negative</option>
+<option value="validation">Validation</option>
+<option value="security">Security</option>
+<option value="regression">Regression</option>
+</select>
+<button type="button" id="tcbReset">Reset</button>
+<span class="tc-count" id="tcbCount">128 / 128 shown</span>
+</div>
+<div class="tb-no-results js-hidden" id="tcbNoResults">No test cases match the current search/filter.</div>
+<div class="dashboard-card tb-table-wrap">
+<table class="tcb-table" id="tcbTable">
+<thead><tr>
+<th data-sort="idx" data-type="num">#</th>
+<th data-sort="tcid" data-type="text">Test Case ID</th>
+<th data-sort="title" data-type="text">Test Case</th>
+<th data-sort="status" data-type="text">Status</th>
+<th data-sort="start" data-type="num">Start</th>
+<th data-sort="end" data-type="num">End</th>
+<th data-sort="exec" data-type="num" class="num">Execution</th>
+<th data-sort="wait" data-type="num" class="num">Waiting</th>
+<th data-sort="claude" data-type="num" class="num">Claude</th>
+<th data-sort="report" data-type="num" class="num">Reporting</th>
+<th data-sort="total" data-type="num" class="num">Total</th>
+</tr></thead>
+<tbody>
+<tr data-tcid="TC-CAPCHECK-AMD-01" data-title="Verify Amadeus credentials for credentialsSelector EGY are active and return holdable offers for an ADT + INF search." data-status="PASS" data-cat="positive">
+<td data-sort-v="1">1</td>
+<td>TC-CAPCHECK-AMD-01</td>
+<td>Verify Amadeus credentials for credentialsSelector EGY are active and return holdable offers for an ADT + INF search.</td>
+<td><span class="badge PASS">PASS</span></td>
+<td data-sort-v="1793543963523">14:39:23</td>
+<td data-sort-v="1793543969825">14:39:29</td>
+<td class="num" data-sort-v="3147">3.15s</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="138">138 ms</td>
+<td class="num" data-sort-v="3285">3.28s</td>
+</tr>
+<tr data-tcid="TC-PAXNAME-POS-01" data-title="[Request] Validate a typical ADT + INF passengersList (short names) is accepted on both Hold and Book and echoed untruncated." data-status="FAIL" data-cat="positive">
+<td data-sort-v="2">2</td>
+<td>TC-PAXNAME-POS-01</td>
+<td>[Request] Validate a typical ADT + INF passengersList (short names) is accepted on both Hold and Book and echoed untruncated.</td>
+<td><span class="badge FAIL">FAIL</span></td>
+<td data-sort-v="1793543970079">14:39:30</td>
+<td data-sort-v="1793543997808">14:39:57</td>
+<td class="num" data-sort-v="27705">27.7s</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="153">153 ms</td>
+<td class="num" data-sort-v="27858">27.9s</td>
+</tr>
+<tr data-tcid="TC-PAXNAME-POS-02" data-title="[Request] Validate an ADT-only passengersList (no infant) with short names is accepted." data-status="PASS" data-cat="positive">
+<td data-sort-v="3">3</td>
+<td>TC-PAXNAME-POS-02</td>
+<td>[Request] Validate an ADT-only passengersList (no infant) with short names is accepted.</td>
+<td><span class="badge PASS">PASS</span></td>
+<td data-sort-v="1793543998086">14:39:58</td>
+<td data-sort-v="1793544012892">14:40:12</td>
+<td class="num" data-sort-v="14791">14.8s</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="113">113 ms</td>
+<td class="num" data-sort-v="14904">14.9s</td>
+</tr>
+<tr data-tcid="TC-PAXNAME-POS-03" data-title="[Request] Validate an ADT + CHD + INF passengersList with short names is accepted." data-status="FAIL" data-cat="positive">
+<td data-sort-v="4">4</td>
+<td>TC-PAXNAME-POS-03</td>
+<td>[Request] Validate an ADT + CHD + INF passengersList with short names is accepted.</td>
+<td><span class="badge FAIL">FAIL</span></td>
+<td data-sort-v="1793544013118">14:40:13</td>
+<td data-sort-v="1793544027178">14:40:27</td>
+<td class="num" data-sort-v="14051">14.1s</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="134">134 ms</td>
+<td class="num" data-sort-v="14185">14.2s</td>
+</tr>
+<tr data-tcid="TC-PAXNAME-POS-04" data-title="[Request] Validate two ADT each travelling with their own INF (two short pairs) is accepted and each infant stays linked to its own adult." data-status="FAIL" data-cat="positive">
+<td data-sort-v="5">5</td>
+<td>TC-PAXNAME-POS-04</td>
+<td>[Request] Validate two ADT each travelling with their own INF (two short pairs) is accepted and each infant stays linked to its own adult.</td>
+<td><span class="badge FAIL">FAIL</span></td>
+<td data-sort-v="1793544027424">14:40:27</td>
+<td data-sort-v="1793544039335">14:40:39</td>
+<td class="num" data-sort-v="11902">11.9s</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="130">130 ms</td>
+<td class="num" data-sort-v="12032">12.0s</td>
+</tr>
+<tr data-tcid="TC-PAXNAME-POS-05" data-title="[Request] Validate a six-passenger party (3 ADT + 1 CHD + 2 INF) where both ADT+INF pairs sit exactly on the 59-character limit is accepted." data-status="FAIL" data-cat="positive">
+<td data-sort-v="6">6</td>
+<td>TC-PAXNAME-POS-05</td>
+<td>[Request] Validate a six-passenger party (3 ADT + 1 CHD + 2 INF) where both ADT+INF pairs sit exactly on the 59-character limit is accepted.</td>
+<td><span class="badge FAIL">FAIL</span></td>
+<td data-sort-v="1793544039578">14:40:39</td>
+<td data-sort-v="1793544044888">14:40:44</td>
+<td class="num" data-sort-v="5297">5.30s</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="136">136 ms</td>
+<td class="num" data-sort-v="5433">5.43s</td>
+</tr>
+<tr data-tcid="TC-PAXNAME-BND-01" data-title="[Request] Validate an ADT first name of exactly 25 characters (the maximum) is accepted." data-status="PASS" data-cat="boundary">
+<td data-sort-v="7">7</td>
+<td>TC-PAXNAME-BND-01</td>
+<td>[Request] Validate an ADT first name of exactly 25 characters (the maximum) is accepted.</td>
+<td><span class="badge PASS">PASS</span></td>
+<td data-sort-v="1793544045140">14:40:45</td>
+<td data-sort-v="1793544058082">14:40:58</td>
+<td class="num" data-sort-v="12931">12.9s</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="143">143 ms</td>
+<td class="num" data-sort-v="13074">13.1s</td>
+</tr>
+<tr data-tcid="TC-PAXNAME-BND-02" data-title="[Request] Validate an ADT first name of 26 characters (one over the maximum) is rejected." data-status="FAIL" data-cat="boundary">
+<td data-sort-v="8">8</td>
+<td>TC-PAXNAME-BND-02</td>
+<td>[Request] Validate an ADT first name of 26 characters (one over the maximum) is rejected.</td>
+<td><span class="badge FAIL">FAIL</span></td>
+<td data-sort-v="1793544058335">14:40:58</td>
+<td data-sort-v="1793544079147">14:41:19</td>
+<td class="num" data-sort-v="20799">20.8s</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="149">149 ms</td>
+<td class="num" data-sort-v="20948">20.9s</td>
+</tr>
+<tr data-tcid="TC-PAXNAME-BND-03" data-title="[Request] Validate an ADT last name of exactly 25 characters (the maximum) is accepted." data-status="PASS" data-cat="boundary">
+<td data-sort-v="9">9</td>
+<td>TC-PAXNAME-BND-03</td>
+<td>[Request] Validate an ADT last name of exactly 25 characters (the maximum) is accepted.</td>
+<td><span class="badge PASS">PASS</span></td>
+<td data-sort-v="1793544079402">14:41:19</td>
+<td data-sort-v="1793544096962">14:41:36</td>
+<td class="num" data-sort-v="17552">17.6s</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="134">134 ms</td>
+<td class="num" data-sort-v="17686">17.7s</td>
+</tr>
+<tr data-tcid="TC-PAXNAME-BND-04" data-title="[Request] Validate an ADT last name of 26 characters (one over the maximum) is rejected." data-status="FAIL" data-cat="boundary">
+<td data-sort-v="10">10</td>
+<td>TC-PAXNAME-BND-04</td>
+<td>[Request] Validate an ADT last name of 26 characters (one over the maximum) is rejected.</td>
+<td><span class="badge FAIL">FAIL</span></td>
+<td data-sort-v="1793544097215">14:41:37</td>
+<td data-sort-v="1793544124953">14:42:04</td>
+<td class="num" data-sort-v="27704">27.7s</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="140">140 ms</td>
+<td class="num" data-sort-v="27844">27.8s</td>
+</tr>
+<tr data-tcid="TC-PAXNAME-BND-05" data-title="[Request] Validate an ADT with a 25-character first name AND a 25-character last name (ADT only, no infant) is accepted." data-status="PASS" data-cat="boundary">
+<td data-sort-v="11">11</td>
+<td>TC-PAXNAME-BND-05</td>
+<td>[Request] Validate an ADT with a 25-character first name AND a 25-character last name (ADT only, no infant) is accepted.</td>
+<td><span class="badge PASS">PASS</span></td>
+<td data-sort-v="1793544125214">14:42:05</td>
+<td data-sort-v="1793544140086">14:42:20</td>
+<td class="num" data-sort-v="14859">14.9s</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="151">151 ms</td>
+<td class="num" data-sort-v="15010">15.0s</td>
+</tr>
+<tr data-tcid="TC-PAXNAME-BND-06" data-title="[Request] Validate an ADT with both first and last name at 26 characters is rejected with the 25-character limit message." data-status="FAIL" data-cat="boundary">
+<td data-sort-v="12">12</td>
+<td>TC-PAXNAME-BND-06</td>
+<td>[Request] Validate an ADT with both first and last name at 26 characters is rejected with the 25-character limit message.</td>
+<td><span class="badge FAIL">FAIL</span></td>
+<td data-sort-v="1793544140364">14:42:20</td>
+<td data-sort-v="1793544145450">14:42:25</td>
+<td class="num" data-sort-v="5077">5.08s</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="147">147 ms</td>
+<td class="num" data-sort-v="5224">5.22s</td>
+</tr>
+<tr data-tcid="TC-PAXNAME-BND-07" data-title="[Request] Validate an ADT first name of 24 characters with a 2-character title is accepted (the title is not counted against the 25-character first-name limit)." data-status="PASS" data-cat="boundary">
+<td data-sort-v="13">13</td>
+<td>TC-PAXNAME-BND-07</td>
+<td>[Request] Validate an ADT first name of 24 characters with a 2-character title is accepted (the title is not counted against the 25-character first-name limit).</td>
+<td><span class="badge PASS">PASS</span></td>
+<td data-sort-v="1793544145713">14:42:25</td>
+<td data-sort-v="1793544158062">14:42:38</td>
+<td class="num" data-sort-v="12344">12.3s</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="146">146 ms</td>
+<td class="num" data-sort-v="12490">12.5s</td>
+</tr>
+<tr data-tcid="TC-PAXNAME-BND-08" data-title="[Request] Validate an INF first name of exactly 25 characters (with a tiny adult so the combined limit is not hit) is accepted." data-status="PASS" data-cat="boundary">
+<td data-sort-v="14">14</td>
+<td>TC-PAXNAME-BND-08</td>
+<td>[Request] Validate an INF first name of exactly 25 characters (with a tiny adult so the combined limit is not hit) is accepted.</td>
+<td><span class="badge PASS">PASS</span></td>
+<td data-sort-v="1793544158329">14:42:38</td>
+<td data-sort-v="1793544171173">14:42:51</td>
+<td class="num" data-sort-v="12833">12.8s</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="147">147 ms</td>
+<td class="num" data-sort-v="12980">13.0s</td>
+</tr>
+<tr data-tcid="TC-PAXNAME-BND-09" data-title="[Request] Validate an INF first name of 26 characters (tiny adult, combined limit not hit) is rejected." data-status="FAIL" data-cat="boundary">
+<td data-sort-v="15">15</td>
+<td>TC-PAXNAME-BND-09</td>
+<td>[Request] Validate an INF first name of 26 characters (tiny adult, combined limit not hit) is rejected.</td>
+<td><span class="badge FAIL">FAIL</span></td>
+<td data-sort-v="1793544171442">14:42:51</td>
+<td data-sort-v="1793544192697">14:43:12</td>
+<td class="num" data-sort-v="21242">21.2s</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="138">138 ms</td>
+<td class="num" data-sort-v="21380">21.4s</td>
+</tr>
+<tr data-tcid="TC-PAXNAME-BND-10" data-title="[Request] Validate an INF last name of 26 characters (tiny adult, combined limit not hit) is rejected." data-status="FAIL" data-cat="boundary">
+<td data-sort-v="16">16</td>
+<td>TC-PAXNAME-BND-10</td>
+<td>[Request] Validate an INF last name of 26 characters (tiny adult, combined limit not hit) is rejected.</td>
+<td><span class="badge FAIL">FAIL</span></td>
+<td data-sort-v="1793544192953">14:43:12</td>
+<td data-sort-v="1793544215434">14:43:35</td>
+<td class="num" data-sort-v="25616">25.6s</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="149">149 ms</td>
+<td class="num" data-sort-v="25765">25.8s</td>
+</tr>
+<tr data-tcid="TC-PAXNAME-BND-11" data-title="[Request] Validate a CHD with a 25-character first name and a 25-character last name (alongside a short ADT) is accepted." data-status="FAIL" data-cat="boundary">
+<td data-sort-v="17">17</td>
+<td>TC-PAXNAME-BND-11</td>
+<td>[Request] Validate a CHD with a 25-character first name and a 25-character last name (alongside a short ADT) is accepted.</td>
+<td><span class="badge FAIL">FAIL</span></td>
+<td data-sort-v="1793544215717">14:43:35</td>
+<td data-sort-v="1793544226247">14:43:46</td>
+<td class="num" data-sort-v="10515">10.5s</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="149">149 ms</td>
+<td class="num" data-sort-v="10664">10.7s</td>
+</tr>
+<tr data-tcid="TC-PAXNAME-BND-12" data-title="[Request] Validate a CHD first name of 26 characters is rejected." data-status="FAIL" data-cat="boundary">
+<td data-sort-v="18">18</td>
+<td>TC-PAXNAME-BND-12</td>
+<td>[Request] Validate a CHD first name of 26 characters is rejected.</td>
+<td><span class="badge FAIL">FAIL</span></td>
+<td data-sort-v="1793544226519">14:43:46</td>
+<td data-sort-v="1793544255405">14:44:15</td>
+<td class="num" data-sort-v="28860">28.9s</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="160">160 ms</td>
+<td class="num" data-sort-v="29020">29.0s</td>
+</tr>
+<tr data-tcid="TC-PAXNAME-BND-13" data-title="[Request] Validate an ADT + INF combined passenger string of exactly 59 characters (51 + 8 delimiters, the maximum) is accepted on Hold and Book." data-status="FAIL" data-cat="boundary">
+<td data-sort-v="19">19</td>
+<td>TC-PAXNAME-BND-13</td>
+<td>[Request] Validate an ADT + INF combined passenger string of exactly 59 characters (51 + 8 delimiters, the maximum) is accepted on Hold and Book.</td>
+<td><span class="badge FAIL">FAIL</span></td>
+<td data-sort-v="1793544255699">14:44:15</td>
+<td data-sort-v="1793544282759">14:44:42</td>
+<td class="num" data-sort-v="27029">27.0s</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="220">220 ms</td>
+<td class="num" data-sort-v="27249">27.2s</td>
+</tr>
+<tr data-tcid="TC-PAXNAME-BND-14" data-title="[Request] Validate an ADT + INF combined passenger string of 58 characters (one under the maximum) is accepted." data-status="PASS" data-cat="boundary">
+<td data-sort-v="20">20</td>
+<td>TC-PAXNAME-BND-14</td>
+<td>[Request] Validate an ADT + INF combined passenger string of 58 characters (one under the maximum) is accepted.</td>
+<td><span class="badge PASS">PASS</span></td>
+<td data-sort-v="1793544283136">14:44:43</td>
+<td data-sort-v="1793544296113">14:44:56</td>
+<td class="num" data-sort-v="12966">13.0s</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="170">170 ms</td>
+<td class="num" data-sort-v="13136">13.1s</td>
+</tr>
+<tr data-tcid="TC-PAXNAME-BND-15" data-title="[Request] Validate an ADT + INF combined passenger string of 60 characters (52 + 8, one over the maximum) is rejected." data-status="PASS" data-cat="boundary">
+<td data-sort-v="21">21</td>
+<td>TC-PAXNAME-BND-15</td>
+<td>[Request] Validate an ADT + INF combined passenger string of 60 characters (52 + 8, one over the maximum) is rejected.</td>
+<td><span class="badge PASS">PASS</span></td>
+<td data-sort-v="1793544296437">14:44:56</td>
+<td data-sort-v="1793544297342">14:44:57</td>
+<td class="num" data-sort-v="903">903 ms</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="142">142 ms</td>
+<td class="num" data-sort-v="1045">1.04s</td>
+</tr>
+<tr data-tcid="TC-PAXNAME-BND-16" data-title="[Request] Validate an ADT + INF combined passenger string of 61 characters (53 + 8, the stakeholder example total) is rejected even though every name is within 25 characters." data-status="PASS" data-cat="boundary">
+<td data-sort-v="22">22</td>
+<td>TC-PAXNAME-BND-16</td>
+<td>[Request] Validate an ADT + INF combined passenger string of 61 characters (53 + 8, the stakeholder example total) is rejected even though every name is within 25 characters.</td>
+<td><span class="badge PASS">PASS</span></td>
+<td data-sort-v="1793544297617">14:44:57</td>
+<td data-sort-v="1793544303518">14:45:03</td>
+<td class="num" data-sort-v="5881">5.88s</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="163">163 ms</td>
+<td class="num" data-sort-v="6044">6.04s</td>
+</tr>
+<tr data-tcid="TC-PAXNAME-BND-17" data-title="[Request] Validate an ADT-only passenger with 25-character first and last names and the 3-character title Mrs (string length 60 incl. 4 delimiters) is accepted because the combined rule is ADT+INF only." data-status="FAIL" data-cat="boundary">
+<td data-sort-v="23">23</td>
+<td>TC-PAXNAME-BND-17</td>
+<td>[Request] Validate an ADT-only passenger with 25-character first and last names and the 3-character title Mrs (string length 60 incl. 4 delimiters) is accepted because the combined rule is ADT+INF only.</td>
+<td><span class="badge FAIL">FAIL</span></td>
+<td data-sort-v="1793544303820">14:45:03</td>
+<td data-sort-v="1793544308689">14:45:08</td>
+<td class="num" data-sort-v="4863">4.86s</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="127">127 ms</td>
+<td class="num" data-sort-v="4990">4.99s</td>
+</tr>
+<tr data-tcid="TC-PAXNAME-BND-18" data-title="[Request] Validate the adult title is counted exactly once in the combined limit (names sum 40 with title Mrs = 51, accepted)." data-status="PASS" data-cat="boundary">
+<td data-sort-v="24">24</td>
+<td>TC-PAXNAME-BND-18</td>
+<td>[Request] Validate the adult title is counted exactly once in the combined limit (names sum 40 with title Mrs = 51, accepted).</td>
+<td><span class="badge PASS">PASS</span></td>
+<td data-sort-v="1793544308940">14:45:08</td>
+<td data-sort-v="1793544321796">14:45:21</td>
+<td class="num" data-sort-v="12847">12.8s</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="144">144 ms</td>
+<td class="num" data-sort-v="12991">13.0s</td>
+</tr>
+<tr data-tcid="TC-PAXNAME-BND-19" data-title="[Request] Validate a longer adult title (Mrs instead of Mr) on names that sit on the limit pushes the combined string over 59 and is rejected." data-status="PASS" data-cat="boundary">
+<td data-sort-v="25">25</td>
+<td>TC-PAXNAME-BND-19</td>
+<td>[Request] Validate a longer adult title (Mrs instead of Mr) on names that sit on the limit pushes the combined string over 59 and is rejected.</td>
+<td><span class="badge PASS">PASS</span></td>
+<td data-sort-v="1793544322068">14:45:22</td>
+<td data-sort-v="1793544322459">14:45:22</td>
+<td class="num" data-sort-v="388">388 ms</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="123">123 ms</td>
+<td class="num" data-sort-v="511">511 ms</td>
+</tr>
+<tr data-tcid="TC-PAXNAME-BND-20" data-title="[Request] Validate a longer infant title (MSTR instead of MS) on names that sit on the limit pushes the combined string over 59 and is rejected." data-status="PASS" data-cat="boundary">
+<td data-sort-v="26">26</td>
+<td>TC-PAXNAME-BND-20</td>
+<td>[Request] Validate a longer infant title (MSTR instead of MS) on names that sit on the limit pushes the combined string over 59 and is rejected.</td>
+<td><span class="badge PASS">PASS</span></td>
+<td data-sort-v="1793544322712">14:45:22</td>
+<td data-sort-v="1793544323093">14:45:23</td>
+<td class="num" data-sort-v="378">378 ms</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="129">129 ms</td>
+<td class="num" data-sort-v="507">507 ms</td>
+</tr>
+<tr data-tcid="TC-PAXNAME-BND-21" data-title="[Request] Validate an ADT first name of 1,000 characters is rejected quickly with the 25-character message." data-status="FAIL" data-cat="boundary">
+<td data-sort-v="27">27</td>
+<td>TC-PAXNAME-BND-21</td>
+<td>[Request] Validate an ADT first name of 1,000 characters is rejected quickly with the 25-character message.</td>
+<td><span class="badge FAIL">FAIL</span></td>
+<td data-sort-v="1793544323347">14:45:23</td>
+<td data-sort-v="1793544328157">14:45:28</td>
+<td class="num" data-sort-v="4796">4.80s</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="137">137 ms</td>
+<td class="num" data-sort-v="4933">4.93s</td>
+</tr>
+<tr data-tcid="TC-PAXNAME-BIZ-01" data-title="[Request] Validate an adult with 25/25 names plus a minimal infant is rejected by the combined 59 rule (every individual name is within 25)." data-status="PASS" data-cat="business-rule">
+<td data-sort-v="28">28</td>
+<td>TC-PAXNAME-BIZ-01</td>
+<td>[Request] Validate an adult with 25/25 names plus a minimal infant is rejected by the combined 59 rule (every individual name is within 25).</td>
+<td><span class="badge PASS">PASS</span></td>
+<td data-sort-v="1793544328421">14:45:28</td>
+<td data-sort-v="1793544329672">14:45:29</td>
+<td class="num" data-sort-v="1249">1.25s</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="156">156 ms</td>
+<td class="num" data-sort-v="1405">1.41s</td>
+</tr>
+<tr data-tcid="TC-PAXNAME-BIZ-02" data-title="[Request] Validate a minimal adult with an infant carrying 25/25 names is rejected by the combined 59 rule." data-status="PASS" data-cat="business-rule">
+<td data-sort-v="29">29</td>
+<td>TC-PAXNAME-BIZ-02</td>
+<td>[Request] Validate a minimal adult with an infant carrying 25/25 names is rejected by the combined 59 rule.</td>
+<td><span class="badge PASS">PASS</span></td>
+<td data-sort-v="1793544330023">14:45:30</td>
+<td data-sort-v="1793544330329">14:45:30</td>
+<td class="num" data-sort-v="305">305 ms</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="135">135 ms</td>
+<td class="num" data-sort-v="440">440 ms</td>
+</tr>
+<tr data-tcid="TC-PAXNAME-BIZ-03" data-title="[Request] Validate a CHD is excluded from the combined sum (ADT+INF pair at 59, CHD with 25/25 names) and the booking is accepted." data-status="FAIL" data-cat="business-rule">
+<td data-sort-v="30">30</td>
+<td>TC-PAXNAME-BIZ-03</td>
+<td>[Request] Validate a CHD is excluded from the combined sum (ADT+INF pair at 59, CHD with 25/25 names) and the booking is accepted.</td>
+<td><span class="badge FAIL">FAIL</span></td>
+<td data-sort-v="1793544330589">14:45:30</td>
+<td data-sort-v="1793544336089">14:45:36</td>
+<td class="num" data-sort-v="5488">5.49s</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="191">191 ms</td>
+<td class="num" data-sort-v="5679">5.68s</td>
+</tr>
+<tr data-tcid="TC-PAXNAME-BIZ-04" data-title="[Request] Validate the combined sum uses the infant's linked adult: a 25/25 adult with no infant plus a short adult carrying the infant is accepted." data-status="FAIL" data-cat="business-rule">
+<td data-sort-v="31">31</td>
+<td>TC-PAXNAME-BIZ-04</td>
+<td>[Request] Validate the combined sum uses the infant's linked adult: a 25/25 adult with no infant plus a short adult carrying the infant is accepted.</td>
+<td><span class="badge FAIL">FAIL</span></td>
+<td data-sort-v="1793544336423">14:45:36</td>
+<td data-sort-v="1793544343695">14:45:43</td>
+<td class="num" data-sort-v="7263">7.26s</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="147">147 ms</td>
+<td class="num" data-sort-v="7410">7.41s</td>
+</tr>
+<tr data-tcid="TC-PAXNAME-BIZ-05" data-title="[Request] Validate the same party with the infant linked to the long 25/25 adult is rejected by the combined 59 rule." data-status="PASS" data-cat="business-rule">
+<td data-sort-v="32">32</td>
+<td>TC-PAXNAME-BIZ-05</td>
+<td>[Request] Validate the same party with the infant linked to the long 25/25 adult is rejected by the combined 59 rule.</td>
+<td><span class="badge PASS">PASS</span></td>
+<td data-sort-v="1793544343964">14:45:43</td>
+<td data-sort-v="1793544357430">14:45:57</td>
+<td class="num" data-sort-v="13443">13.4s</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="157">157 ms</td>
+<td class="num" data-sort-v="13600">13.6s</td>
+</tr>
+<tr data-tcid="TC-PAXNAME-BIZ-06" data-title="[Request] Validate that with two ADT+INF pairs only the offending second pair is reported (one combined entry, pair 1 is clean)." data-status="PASS" data-cat="business-rule">
+<td data-sort-v="33">33</td>
+<td>TC-PAXNAME-BIZ-06</td>
+<td>[Request] Validate that with two ADT+INF pairs only the offending second pair is reported (one combined entry, pair 1 is clean).</td>
+<td><span class="badge PASS">PASS</span></td>
+<td data-sort-v="1793544357716">14:45:57</td>
+<td data-sort-v="1793544369040">14:46:09</td>
+<td class="num" data-sort-v="11283">11.3s</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="238">238 ms</td>
+<td class="num" data-sort-v="11521">11.5s</td>
+</tr>
+<tr data-tcid="TC-PAXNAME-BIZ-07" data-title="[Request] Validate that when both ADT+INF pairs exceed 59 the response reports each offending pair (two combined entries)." data-status="PASS" data-cat="business-rule">
+<td data-sort-v="34">34</td>
+<td>TC-PAXNAME-BIZ-07</td>
+<td>[Request] Validate that when both ADT+INF pairs exceed 59 the response reports each offending pair (two combined entries).</td>
+<td><span class="badge PASS">PASS</span></td>
+<td data-sort-v="1793544369436">14:46:09</td>
+<td data-sort-v="1793544374925">14:46:14</td>
+<td class="num" data-sort-v="5477">5.48s</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="143">143 ms</td>
+<td class="num" data-sort-v="5620">5.62s</td>
+</tr>
+<tr data-tcid="TC-PAXNAME-BIZ-08" data-title="[Request] Validate two ADT+INF pairs that each sit exactly on the 59 limit are accepted." data-status="PASS" data-cat="business-rule">
+<td data-sort-v="35">35</td>
+<td>TC-PAXNAME-BIZ-08</td>
+<td>[Request] Validate two ADT+INF pairs that each sit exactly on the 59 limit are accepted.</td>
+<td><span class="badge PASS">PASS</span></td>
+<td data-sort-v="1793544375196">14:46:15</td>
+<td data-sort-v="1793544388519">14:46:28</td>
+<td class="num" data-sort-v="13314">13.3s</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="125">125 ms</td>
+<td class="num" data-sort-v="13439">13.4s</td>
+</tr>
+<tr data-tcid="TC-PAXNAME-BIZ-09" data-title="[Request] Validate an adult middle name is not added to the combined 59 sum (pair at 59 plus an 11-character adult middle name is accepted)." data-status="PASS" data-cat="business-rule">
+<td data-sort-v="36">36</td>
+<td>TC-PAXNAME-BIZ-09</td>
+<td>[Request] Validate an adult middle name is not added to the combined 59 sum (pair at 59 plus an 11-character adult middle name is accepted).</td>
+<td><span class="badge PASS">PASS</span></td>
+<td data-sort-v="1793544388770">14:46:28</td>
+<td data-sort-v="1793544401980">14:46:41</td>
+<td class="num" data-sort-v="13200">13.2s</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="150">150 ms</td>
+<td class="num" data-sort-v="13350">13.3s</td>
+</tr>
+<tr data-tcid="TC-PAXNAME-BIZ-10" data-title="[Request] Validate a 1-character infant middle name is not added to the combined 59 sum (pair at 59 plus infant middle K is accepted)." data-status="PASS" data-cat="business-rule">
+<td data-sort-v="37">37</td>
+<td>TC-PAXNAME-BIZ-10</td>
+<td>[Request] Validate a 1-character infant middle name is not added to the combined 59 sum (pair at 59 plus infant middle K is accepted).</td>
+<td><span class="badge PASS">PASS</span></td>
+<td data-sort-v="1793544402261">14:46:42</td>
+<td data-sort-v="1793544414517">14:46:54</td>
+<td class="num" data-sort-v="12246">12.2s</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="149">149 ms</td>
+<td class="num" data-sort-v="12395">12.4s</td>
+</tr>
+<tr data-tcid="TC-PAXNAME-BIZ-11" data-title="[Request] Validate first (13) + middle (13) totalling 26 characters is accepted because rule R1 is per field." data-status="PASS" data-cat="business-rule">
+<td data-sort-v="38">38</td>
+<td>TC-PAXNAME-BIZ-11</td>
+<td>[Request] Validate first (13) + middle (13) totalling 26 characters is accepted because rule R1 is per field.</td>
+<td><span class="badge PASS">PASS</span></td>
+<td data-sort-v="1793544414801">14:46:54</td>
+<td data-sort-v="1793544427332">14:47:07</td>
+<td class="num" data-sort-v="12520">12.5s</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="155">155 ms</td>
+<td class="num" data-sort-v="12675">12.7s</td>
+</tr>
+<tr data-tcid="TC-PAXNAME-BIZ-12" data-title="[Request] Validate a 30-character middle name (first and last short) is handled with a controlled outcome." data-status="PASS" data-cat="business-rule">
+<td data-sort-v="39">39</td>
+<td>TC-PAXNAME-BIZ-12</td>
+<td>[Request] Validate a 30-character middle name (first and last short) is handled with a controlled outcome.</td>
+<td><span class="badge PASS">PASS</span></td>
+<td data-sort-v="1793544427620">14:47:07</td>
+<td data-sort-v="1793544439614">14:47:19</td>
+<td class="num" data-sort-v="11984">12.0s</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="145">145 ms</td>
+<td class="num" data-sort-v="12129">12.1s</td>
+</tr>
+<tr data-tcid="TC-PAXNAME-BIZ-13" data-title="[Request] Validate a 20-character title on short names is rejected by the combined 59 rule (total 53) rather than silently truncated." data-status="FAIL" data-cat="business-rule">
+<td data-sort-v="40">40</td>
+<td>TC-PAXNAME-BIZ-13</td>
+<td>[Request] Validate a 20-character title on short names is rejected by the combined 59 rule (total 53) rather than silently truncated.</td>
+<td><span class="badge FAIL">FAIL</span></td>
+<td data-sort-v="1793544439888">14:47:19</td>
+<td data-sort-v="1793544440068">14:47:20</td>
+<td class="num" data-sort-v="179">179 ms</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="133">133 ms</td>
+<td class="num" data-sort-v="312">312 ms</td>
+</tr>
+<tr data-tcid="TC-PAXNAME-BIZ-14" data-title="[Request] Validate pair evaluation does not depend on key order: an infant listed before its adult (Pax1=INF, Pax2=ADT) at 52 is rejected." data-status="PASS" data-cat="business-rule">
+<td data-sort-v="41">41</td>
+<td>TC-PAXNAME-BIZ-14</td>
+<td>[Request] Validate pair evaluation does not depend on key order: an infant listed before its adult (Pax1=INF, Pax2=ADT) at 52 is rejected.</td>
+<td><span class="badge PASS">PASS</span></td>
+<td data-sort-v="1793544440318">14:47:20</td>
+<td data-sort-v="1793544451461">14:47:31</td>
+<td class="num" data-sort-v="11112">11.1s</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="165">165 ms</td>
+<td class="num" data-sort-v="11277">11.3s</td>
+</tr>
+<tr data-tcid="TC-PAXNAME-BIZ-15" data-title="[Request] Validate an infant with no ParentPaxRefId and over-limit names returns a controlled 4xx." data-status="PASS" data-cat="business-rule">
+<td data-sort-v="42">42</td>
+<td>TC-PAXNAME-BIZ-15</td>
+<td>[Request] Validate an infant with no ParentPaxRefId and over-limit names returns a controlled 4xx.</td>
+<td><span class="badge PASS">PASS</span></td>
+<td data-sort-v="1793544451749">14:47:31</td>
+<td data-sort-v="1793544451965">14:47:31</td>
+<td class="num" data-sort-v="212">212 ms</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="126">126 ms</td>
+<td class="num" data-sort-v="338">338 ms</td>
+</tr>
+<tr data-tcid="TC-PAXNAME-BIZ-16" data-title="[Request] Validate an infant whose ParentPaxRefId points to a non-existent passenger (Pax9) with short names is rejected." data-status="PASS" data-cat="business-rule">
+<td data-sort-v="43">43</td>
+<td>TC-PAXNAME-BIZ-16</td>
+<td>[Request] Validate an infant whose ParentPaxRefId points to a non-existent passenger (Pax9) with short names is rejected.</td>
+<td><span class="badge PASS">PASS</span></td>
+<td data-sort-v="1793544452216">14:47:32</td>
+<td data-sort-v="1793544452429">14:47:32</td>
+<td class="num" data-sort-v="212">212 ms</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="138">138 ms</td>
+<td class="num" data-sort-v="350">350 ms</td>
+</tr>
+<tr data-tcid="TC-PAXNAME-NEG-01" data-title="[Request] Validate an empty-string ADT first name is rejected." data-status="PASS" data-cat="negative">
+<td data-sort-v="44">44</td>
+<td>TC-PAXNAME-NEG-01</td>
+<td>[Request] Validate an empty-string ADT first name is rejected.</td>
+<td><span class="badge PASS">PASS</span></td>
+<td data-sort-v="1793544452695">14:47:32</td>
+<td data-sort-v="1793544452873">14:47:32</td>
+<td class="num" data-sort-v="175">175 ms</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="136">136 ms</td>
+<td class="num" data-sort-v="311">311 ms</td>
+</tr>
+<tr data-tcid="TC-PAXNAME-NEG-02" data-title="[Request] Validate an empty-string ADT last name is rejected." data-status="PASS" data-cat="negative">
+<td data-sort-v="45">45</td>
+<td>TC-PAXNAME-NEG-02</td>
+<td>[Request] Validate an empty-string ADT last name is rejected.</td>
+<td><span class="badge PASS">PASS</span></td>
+<td data-sort-v="1793544453143">14:47:33</td>
+<td data-sort-v="1793544453322">14:47:33</td>
+<td class="num" data-sort-v="177">177 ms</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="127">127 ms</td>
+<td class="num" data-sort-v="304">304 ms</td>
+</tr>
+<tr data-tcid="TC-PAXNAME-NEG-03" data-title="[Request] Validate a whitespace-only ADT first name is rejected." data-status="PASS" data-cat="negative">
+<td data-sort-v="46">46</td>
+<td>TC-PAXNAME-NEG-03</td>
+<td>[Request] Validate a whitespace-only ADT first name is rejected.</td>
+<td><span class="badge PASS">PASS</span></td>
+<td data-sort-v="1793544453574">14:47:33</td>
+<td data-sort-v="1793544453746">14:47:33</td>
+<td class="num" data-sort-v="170">170 ms</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="138">138 ms</td>
+<td class="num" data-sort-v="308">308 ms</td>
+</tr>
+<tr data-tcid="TC-PAXNAME-NEG-04" data-title="[Request] Validate an ADT with the name.first key omitted is rejected." data-status="PASS" data-cat="negative">
+<td data-sort-v="47">47</td>
+<td>TC-PAXNAME-NEG-04</td>
+<td>[Request] Validate an ADT with the name.first key omitted is rejected.</td>
+<td><span class="badge PASS">PASS</span></td>
+<td data-sort-v="1793544454012">14:47:34</td>
+<td data-sort-v="1793544454189">14:47:34</td>
+<td class="num" data-sort-v="176">176 ms</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="126">126 ms</td>
+<td class="num" data-sort-v="302">302 ms</td>
+</tr>
+<tr data-tcid="TC-PAXNAME-NEG-05" data-title="[Request] Validate an ADT with the whole name object omitted is rejected." data-status="PASS" data-cat="negative">
+<td data-sort-v="48">48</td>
+<td>TC-PAXNAME-NEG-05</td>
+<td>[Request] Validate an ADT with the whole name object omitted is rejected.</td>
+<td><span class="badge PASS">PASS</span></td>
+<td data-sort-v="1793544454443">14:47:34</td>
+<td data-sort-v="1793544454618">14:47:34</td>
+<td class="num" data-sort-v="173">173 ms</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="126">126 ms</td>
+<td class="num" data-sort-v="299">299 ms</td>
+</tr>
+<tr data-tcid="TC-PAXNAME-NEG-06" data-title="[Request] Validate an ADT with name.last set to null is rejected." data-status="PASS" data-cat="negative">
+<td data-sort-v="49">49</td>
+<td>TC-PAXNAME-NEG-06</td>
+<td>[Request] Validate an ADT with name.last set to null is rejected.</td>
+<td><span class="badge PASS">PASS</span></td>
+<td data-sort-v="1793544454872">14:47:34</td>
+<td data-sort-v="1793544455047">14:47:35</td>
+<td class="num" data-sort-v="173">173 ms</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="133">133 ms</td>
+<td class="num" data-sort-v="306">306 ms</td>
+</tr>
+<tr data-tcid="TC-PAXNAME-NEG-07" data-title="[Request] Validate an empty-string ADT title is rejected or handled in a controlled way." data-status="PASS" data-cat="negative">
+<td data-sort-v="50">50</td>
+<td>TC-PAXNAME-NEG-07</td>
+<td>[Request] Validate an empty-string ADT title is rejected or handled in a controlled way.</td>
+<td><span class="badge PASS">PASS</span></td>
+<td data-sort-v="1793544455307">14:47:35</td>
+<td data-sort-v="1793544467474">14:47:47</td>
+<td class="num" data-sort-v="12143">12.1s</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="147">147 ms</td>
+<td class="num" data-sort-v="12290">12.3s</td>
+</tr>
+<tr data-tcid="TC-PAXNAME-NEG-08" data-title="[Request] Validate an ADT with the title key omitted is rejected or handled in a controlled way." data-status="PASS" data-cat="negative">
+<td data-sort-v="51">51</td>
+<td>TC-PAXNAME-NEG-08</td>
+<td>[Request] Validate an ADT with the title key omitted is rejected or handled in a controlled way.</td>
+<td><span class="badge PASS">PASS</span></td>
+<td data-sort-v="1793544467745">14:47:47</td>
+<td data-sort-v="1793544479760">14:47:59</td>
+<td class="num" data-sort-v="11991">12.0s</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="159">159 ms</td>
+<td class="num" data-sort-v="12150">12.2s</td>
+</tr>
+<tr data-tcid="TC-PAXNAME-NEG-09" data-title="[Request] Validate an empty-string INF first name (with its adult) is rejected." data-status="PASS" data-cat="negative">
+<td data-sort-v="52">52</td>
+<td>TC-PAXNAME-NEG-09</td>
+<td>[Request] Validate an empty-string INF first name (with its adult) is rejected.</td>
+<td><span class="badge PASS">PASS</span></td>
+<td data-sort-v="1793544480051">14:48:00</td>
+<td data-sort-v="1793544480349">14:48:00</td>
+<td class="num" data-sort-v="294">294 ms</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="132">132 ms</td>
+<td class="num" data-sort-v="426">426 ms</td>
+</tr>
+<tr data-tcid="TC-PAXNAME-NEG-10" data-title="[Request] Validate an empty passengersList object is rejected." data-status="PASS" data-cat="negative">
+<td data-sort-v="53">53</td>
+<td>TC-PAXNAME-NEG-10</td>
+<td>[Request] Validate an empty passengersList object is rejected.</td>
+<td><span class="badge PASS">PASS</span></td>
+<td data-sort-v="1793544480616">14:48:00</td>
+<td data-sort-v="1793544480854">14:48:00</td>
+<td class="num" data-sort-v="236">236 ms</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="159">159 ms</td>
+<td class="num" data-sort-v="395">395 ms</td>
+</tr>
+<tr data-tcid="TC-PAXNAME-NEG-11" data-title="[Request] Validate a null passengersList is rejected." data-status="PASS" data-cat="negative">
+<td data-sort-v="54">54</td>
+<td>TC-PAXNAME-NEG-11</td>
+<td>[Request] Validate a null passengersList is rejected.</td>
+<td><span class="badge PASS">PASS</span></td>
+<td data-sort-v="1793544481142">14:48:01</td>
+<td data-sort-v="1793544481315">14:48:01</td>
+<td class="num" data-sort-v="171">171 ms</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="133">133 ms</td>
+<td class="num" data-sort-v="304">304 ms</td>
+</tr>
+<tr data-tcid="TC-PAXNAME-NEG-12" data-title="[Request] Validate a numeric (non-string) name.first value is rejected without a 5xx." data-status="PASS" data-cat="negative">
+<td data-sort-v="55">55</td>
+<td>TC-PAXNAME-NEG-12</td>
+<td>[Request] Validate a numeric (non-string) name.first value is rejected without a 5xx.</td>
+<td><span class="badge PASS">PASS</span></td>
+<td data-sort-v="1793544481574">14:48:01</td>
+<td data-sort-v="1793544481760">14:48:01</td>
+<td class="num" data-sort-v="184">184 ms</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="132">132 ms</td>
+<td class="num" data-sort-v="316">316 ms</td>
+</tr>
+<tr data-tcid="TC-PAXNAME-NEG-13" data-title="[Request] Validate an object-typed name.first value is rejected without a 5xx." data-status="PASS" data-cat="negative">
+<td data-sort-v="56">56</td>
+<td>TC-PAXNAME-NEG-13</td>
+<td>[Request] Validate an object-typed name.first value is rejected without a 5xx.</td>
+<td><span class="badge PASS">PASS</span></td>
+<td data-sort-v="1793544482028">14:48:02</td>
+<td data-sort-v="1793544482215">14:48:02</td>
+<td class="num" data-sort-v="186">186 ms</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="128">128 ms</td>
+<td class="num" data-sort-v="314">314 ms</td>
+</tr>
+<tr data-tcid="TC-PAXNAME-NEG-14" data-title="[Request] Validate a 10,000-character ADT last name is rejected without a 5xx or an oversized reflected response." data-status="FAIL" data-cat="negative">
+<td data-sort-v="57">57</td>
+<td>TC-PAXNAME-NEG-14</td>
+<td>[Request] Validate a 10,000-character ADT last name is rejected without a 5xx or an oversized reflected response.</td>
+<td><span class="badge FAIL">FAIL</span></td>
+<td data-sort-v="1793544482471">14:48:02</td>
+<td data-sort-v="1793544482735">14:48:02</td>
+<td class="num" data-sort-v="261">261 ms</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="143">143 ms</td>
+<td class="num" data-sort-v="404">404 ms</td>
+</tr>
+<tr data-tcid="TC-PAXNAME-NEG-15" data-title="[Request] Validate an over-limit name together with an invalid fareConfirmResponseId returns a controlled 4xx and records which validation fires first." data-status="PASS" data-cat="negative">
+<td data-sort-v="58">58</td>
+<td>TC-PAXNAME-NEG-15</td>
+<td>[Request] Validate an over-limit name together with an invalid fareConfirmResponseId returns a controlled 4xx and records which validation fires first.</td>
+<td><span class="badge PASS">PASS</span></td>
+<td data-sort-v="1793544483004">14:48:03</td>
+<td data-sort-v="1793544483176">14:48:03</td>
+<td class="num" data-sort-v="172">172 ms</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="136">136 ms</td>
+<td class="num" data-sort-v="308">308 ms</td>
+</tr>
+<tr data-tcid="TC-PAXNAME-NEG-16" data-title="[Request] Validate an over-limit name together with a missing contactsList returns a controlled 4xx." data-status="PASS" data-cat="negative">
+<td data-sort-v="59">59</td>
+<td>TC-PAXNAME-NEG-16</td>
+<td>[Request] Validate an over-limit name together with a missing contactsList returns a controlled 4xx.</td>
+<td><span class="badge PASS">PASS</span></td>
+<td data-sort-v="1793544483444">14:48:03</td>
+<td data-sort-v="1793544483534">14:48:03</td>
+<td class="num" data-sort-v="90">90 ms</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="132">132 ms</td>
+<td class="num" data-sort-v="222">222 ms</td>
+</tr>
+<tr data-tcid="TC-PAXNAME-VAL-01" data-title="[Request] Validate a 25-character first name that contains an embedded space is accepted (the space counts as one of the 25)." data-status="PASS" data-cat="validation">
+<td data-sort-v="60">60</td>
+<td>TC-PAXNAME-VAL-01</td>
+<td>[Request] Validate a 25-character first name that contains an embedded space is accepted (the space counts as one of the 25).</td>
+<td><span class="badge PASS">PASS</span></td>
+<td data-sort-v="1793544483794">14:48:03</td>
+<td data-sort-v="1793544495224">14:48:15</td>
+<td class="num" data-sort-v="11424">11.4s</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="150">150 ms</td>
+<td class="num" data-sort-v="11574">11.6s</td>
+</tr>
+<tr data-tcid="TC-PAXNAME-VAL-02" data-title="[Request] Validate a 26-character first name that contains an embedded space is rejected (the space is counted)." data-status="FAIL" data-cat="validation">
+<td data-sort-v="61">61</td>
+<td>TC-PAXNAME-VAL-02</td>
+<td>[Request] Validate a 26-character first name that contains an embedded space is rejected (the space is counted).</td>
+<td><span class="badge FAIL">FAIL</span></td>
+<td data-sort-v="1793544495510">14:48:15</td>
+<td data-sort-v="1793544510442">14:48:30</td>
+<td class="num" data-sort-v="14930">14.9s</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="148">148 ms</td>
+<td class="num" data-sort-v="15078">15.1s</td>
+</tr>
+<tr data-tcid="TC-PAXNAME-VAL-03" data-title="[Request] Validate a 25-character hyphenated last name is accepted." data-status="FAIL" data-cat="validation">
+<td data-sort-v="62">62</td>
+<td>TC-PAXNAME-VAL-03</td>
+<td>[Request] Validate a 25-character hyphenated last name is accepted.</td>
+<td><span class="badge FAIL">FAIL</span></td>
+<td data-sort-v="1793544510721">14:48:30</td>
+<td data-sort-v="1793544515472">14:48:35</td>
+<td class="num" data-sort-v="4743">4.74s</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="125">125 ms</td>
+<td class="num" data-sort-v="4868">4.87s</td>
+</tr>
+<tr data-tcid="TC-PAXNAME-VAL-04" data-title="[Request] Validate a 25-character last name with apostrophes (O'Connor style) is accepted." data-status="FAIL" data-cat="validation">
+<td data-sort-v="63">63</td>
+<td>TC-PAXNAME-VAL-04</td>
+<td>[Request] Validate a 25-character last name with apostrophes (O'Connor style) is accepted.</td>
+<td><span class="badge FAIL">FAIL</span></td>
+<td data-sort-v="1793544515725">14:48:35</td>
+<td data-sort-v="1793544520129">14:48:40</td>
+<td class="num" data-sort-v="4397">4.40s</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="142">142 ms</td>
+<td class="num" data-sort-v="4539">4.54s</td>
+</tr>
+<tr data-tcid="TC-PAXNAME-VAL-05" data-title="[Request] Validate a 26-character hyphenated last name is rejected." data-status="FAIL" data-cat="validation">
+<td data-sort-v="64">64</td>
+<td>TC-PAXNAME-VAL-05</td>
+<td>[Request] Validate a 26-character hyphenated last name is rejected.</td>
+<td><span class="badge FAIL">FAIL</span></td>
+<td data-sort-v="1793544520401">14:48:40</td>
+<td data-sort-v="1793544520614">14:48:40</td>
+<td class="num" data-sort-v="212">212 ms</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="135">135 ms</td>
+<td class="num" data-sort-v="347">347 ms</td>
+</tr>
+<tr data-tcid="TC-PAXNAME-VAL-06" data-title="[Request] Validate a first name of 25 letters plus one trailing space (26 raw characters) is handled consistently (trimmed or counted)." data-status="PASS" data-cat="validation">
+<td data-sort-v="65">65</td>
+<td>TC-PAXNAME-VAL-06</td>
+<td>[Request] Validate a first name of 25 letters plus one trailing space (26 raw characters) is handled consistently (trimmed or counted).</td>
+<td><span class="badge PASS">PASS</span></td>
+<td data-sort-v="1793544520900">14:48:40</td>
+<td data-sort-v="1793544537134">14:48:57</td>
+<td class="num" data-sort-v="16218">16.2s</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="171">171 ms</td>
+<td class="num" data-sort-v="16389">16.4s</td>
+</tr>
+<tr data-tcid="TC-PAXNAME-VAL-07" data-title="[Request] Validate a first name of one leading space plus 25 letters (26 raw characters) is handled consistently (trimmed or counted)." data-status="PASS" data-cat="validation">
+<td data-sort-v="66">66</td>
+<td>TC-PAXNAME-VAL-07</td>
+<td>[Request] Validate a first name of one leading space plus 25 letters (26 raw characters) is handled consistently (trimmed or counted).</td>
+<td><span class="badge PASS">PASS</span></td>
+<td data-sort-v="1793544537441">14:48:57</td>
+<td data-sort-v="1793544553063">14:49:13</td>
+<td class="num" data-sort-v="15613">15.6s</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="163">163 ms</td>
+<td class="num" data-sort-v="15776">15.8s</td>
+</tr>
+<tr data-tcid="TC-PAXNAME-VAL-08" data-title="[Request] Validate a first name containing a digit (John2) is handled with a controlled outcome." data-status="PASS" data-cat="validation">
+<td data-sort-v="67">67</td>
+<td>TC-PAXNAME-VAL-08</td>
+<td>[Request] Validate a first name containing a digit (John2) is handled with a controlled outcome.</td>
+<td><span class="badge PASS">PASS</span></td>
+<td data-sort-v="1793544553361">14:49:13</td>
+<td data-sort-v="1793544560055">14:49:20</td>
+<td class="num" data-sort-v="6687">6.69s</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="158">158 ms</td>
+<td class="num" data-sort-v="6845">6.85s</td>
+</tr>
+<tr data-tcid="TC-PAXNAME-VAL-09" data-title="[Request] Validate a 5-letter Arabic first name (U+0645 U+0635 U+0637 U+0641 U+0649) is handled with a controlled outcome." data-status="FAIL" data-cat="validation">
+<td data-sort-v="68">68</td>
+<td>TC-PAXNAME-VAL-09</td>
+<td>[Request] Validate a 5-letter Arabic first name (U+0645 U+0635 U+0637 U+0641 U+0649) is handled with a controlled outcome.</td>
+<td><span class="badge FAIL">FAIL</span></td>
+<td data-sort-v="1793544560367">14:49:20</td>
+<td data-sort-v="1793544566810">14:49:26</td>
+<td class="num" data-sort-v="6426">6.43s</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="166">166 ms</td>
+<td class="num" data-sort-v="6592">6.59s</td>
+</tr>
+<tr data-tcid="TC-PAXNAME-VAL-10" data-title="[Request] Validate a 26-character Arabic first name is rejected (length rule applies to non-Latin names)." data-status="PASS" data-cat="validation">
+<td data-sort-v="69">69</td>
+<td>TC-PAXNAME-VAL-10</td>
+<td>[Request] Validate a 26-character Arabic first name is rejected (length rule applies to non-Latin names).</td>
+<td><span class="badge PASS">PASS</span></td>
+<td data-sort-v="1793544567108">14:49:27</td>
+<td data-sort-v="1793544575660">14:49:35</td>
+<td class="num" data-sort-v="8542">8.54s</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="159">159 ms</td>
+<td class="num" data-sort-v="8701">8.70s</td>
+</tr>
+<tr data-tcid="TC-PAXNAME-VAL-11" data-title="[Request] Validate accented Latin names (José / Müller) are handled with a controlled outcome." data-status="FAIL" data-cat="validation">
+<td data-sort-v="70">70</td>
+<td>TC-PAXNAME-VAL-11</td>
+<td>[Request] Validate accented Latin names (José / Müller) are handled with a controlled outcome.</td>
+<td><span class="badge FAIL">FAIL</span></td>
+<td data-sort-v="1793544575960">14:49:35</td>
+<td data-sort-v="1793544582253">14:49:42</td>
+<td class="num" data-sort-v="6282">6.28s</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="166">166 ms</td>
+<td class="num" data-sort-v="6448">6.45s</td>
+</tr>
+<tr data-tcid="TC-PAXNAME-VAL-12" data-title="[Request] Validate a decomposed-accent first name (13 x "e" + U+0301 = 13 visible letters, 26 code units) is handled consistently with the 25 limit." data-status="PASS" data-cat="validation">
+<td data-sort-v="71">71</td>
+<td>TC-PAXNAME-VAL-12</td>
+<td>[Request] Validate a decomposed-accent first name (13 x "e" + U+0301 = 13 visible letters, 26 code units) is handled consistently with the 25 limit.</td>
+<td><span class="badge PASS">PASS</span></td>
+<td data-sort-v="1793544582554">14:49:42</td>
+<td data-sort-v="1793544587264">14:49:47</td>
+<td class="num" data-sort-v="4698">4.70s</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="135">135 ms</td>
+<td class="num" data-sort-v="4833">4.83s</td>
+</tr>
+<tr data-tcid="TC-PAXNAME-VAL-13" data-title="[Request] Validate a first name of 13 emoji (U+1F600 x 13 = 13 code points, 26 UTF-16 units) is handled with a controlled outcome." data-status="PASS" data-cat="validation">
+<td data-sort-v="72">72</td>
+<td>TC-PAXNAME-VAL-13</td>
+<td>[Request] Validate a first name of 13 emoji (U+1F600 x 13 = 13 code points, 26 UTF-16 units) is handled with a controlled outcome.</td>
+<td><span class="badge PASS">PASS</span></td>
+<td data-sort-v="1793544587540">14:49:47</td>
+<td data-sort-v="1793544592409">14:49:52</td>
+<td class="num" data-sort-v="4846">4.85s</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="138">138 ms</td>
+<td class="num" data-sort-v="4984">4.98s</td>
+</tr>
+<tr data-tcid="TC-PAXNAME-VAL-14" data-title="[Request] Validate a first name containing the combined-string delimiter "/" (A/B) is handled with a controlled outcome." data-status="PASS" data-cat="validation">
+<td data-sort-v="73">73</td>
+<td>TC-PAXNAME-VAL-14</td>
+<td>[Request] Validate a first name containing the combined-string delimiter "/" (A/B) is handled with a controlled outcome.</td>
+<td><span class="badge PASS">PASS</span></td>
+<td data-sort-v="1793544592683">14:49:52</td>
+<td data-sort-v="1793544603193">14:50:03</td>
+<td class="num" data-sort-v="10494">10.5s</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="183">183 ms</td>
+<td class="num" data-sort-v="10677">10.7s</td>
+</tr>
+<tr data-tcid="TC-PAXNAME-VAL-15" data-title="[Request] Validate a last name containing the delimiters "(" and ")" (C(ADT)) is handled with a controlled outcome." data-status="PASS" data-cat="validation">
+<td data-sort-v="74">74</td>
+<td>TC-PAXNAME-VAL-15</td>
+<td>[Request] Validate a last name containing the delimiters "(" and ")" (C(ADT)) is handled with a controlled outcome.</td>
+<td><span class="badge PASS">PASS</span></td>
+<td data-sort-v="1793544603516">14:50:03</td>
+<td data-sort-v="1793544611010">14:50:11</td>
+<td class="num" data-sort-v="7477">7.48s</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="164">164 ms</td>
+<td class="num" data-sort-v="7641">7.64s</td>
+</tr>
+<tr data-tcid="TC-PAXNAME-VAL-16" data-title="[Request] Validate a first name containing a line break and a tab is handled with a controlled outcome." data-status="PASS" data-cat="validation">
+<td data-sort-v="75">75</td>
+<td>TC-PAXNAME-VAL-16</td>
+<td>[Request] Validate a first name containing a line break and a tab is handled with a controlled outcome.</td>
+<td><span class="badge PASS">PASS</span></td>
+<td data-sort-v="1793544611316">14:50:11</td>
+<td data-sort-v="1793544617604">14:50:17</td>
+<td class="num" data-sort-v="6280">6.28s</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="190">190 ms</td>
+<td class="num" data-sort-v="6470">6.47s</td>
+</tr>
+<tr data-tcid="TC-PAXNAME-VAL-17" data-title="[Request] Validate a 25-character all-lowercase first name is accepted and echoed (case does not change the length)." data-status="PASS" data-cat="validation">
+<td data-sort-v="76">76</td>
+<td>TC-PAXNAME-VAL-17</td>
+<td>[Request] Validate a 25-character all-lowercase first name is accepted and echoed (case does not change the length).</td>
+<td><span class="badge PASS">PASS</span></td>
+<td data-sort-v="1793544617953">14:50:17</td>
+<td data-sort-v="1793544630888">14:50:30</td>
+<td class="num" data-sort-v="12924">12.9s</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="163">163 ms</td>
+<td class="num" data-sort-v="13087">13.1s</td>
+</tr>
+<tr data-tcid="TC-PAXNAME-VAL-18" data-title="[Response] Verify the name-limit rejection envelope: Status 400, ErrorCode NDC-INT-TEC-A0001, ErrorMessage, GUID TransactionId, Context[] of {Value} objects, JSON content type." data-status="FAIL" data-cat="validation">
+<td data-sort-v="77">77</td>
+<td>TC-PAXNAME-VAL-18</td>
+<td>[Response] Verify the name-limit rejection envelope: Status 400, ErrorCode NDC-INT-TEC-A0001, ErrorMessage, GUID TransactionId, Context[] of {Value} objects, JSON content type.</td>
+<td><span class="badge FAIL">FAIL</span></td>
+<td data-sort-v="1793544631198">14:50:31</td>
+<td data-sort-v="1793544645636">14:50:45</td>
+<td class="num" data-sort-v="14430">14.4s</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="171">171 ms</td>
+<td class="num" data-sort-v="14601">14.6s</td>
+</tr>
+<tr data-tcid="TC-PAXNAME-VAL-19" data-title="[Response] Verify the lengths reported in the 25-character message equal the actual lengths of the submitted first and last names." data-status="FAIL" data-cat="validation">
+<td data-sort-v="78">78</td>
+<td>TC-PAXNAME-VAL-19</td>
+<td>[Response] Verify the lengths reported in the 25-character message equal the actual lengths of the submitted first and last names.</td>
+<td><span class="badge FAIL">FAIL</span></td>
+<td data-sort-v="1793544645947">14:50:45</td>
+<td data-sort-v="1793544653172">14:50:53</td>
+<td class="num" data-sort-v="7225">7.22s</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="155">155 ms</td>
+<td class="num" data-sort-v="7380">7.38s</td>
+</tr>
+<tr data-tcid="TC-PAXNAME-VAL-20" data-title="[Response] Verify the combined-length message arithmetic: total = sum of first+title+last+PTC, delimiters = 8, and the quoted adult string matches the submitted passengers." data-status="FAIL" data-cat="validation">
+<td data-sort-v="79">79</td>
+<td>TC-PAXNAME-VAL-20</td>
+<td>[Response] Verify the combined-length message arithmetic: total = sum of first+title+last+PTC, delimiters = 8, and the quoted adult string matches the submitted passengers.</td>
+<td><span class="badge FAIL">FAIL</span></td>
+<td data-sort-v="1793544653472">14:50:53</td>
+<td data-sort-v="1793544662813">14:51:02</td>
+<td class="num" data-sort-v="9328">9.33s</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="160">160 ms</td>
+<td class="num" data-sort-v="9488">9.49s</td>
+</tr>
+<tr data-tcid="TC-PAXNAME-VAL-21" data-title="[Response] Verify one name-limit entry is returned per offending passenger (ADT first name and INF last name over 25 give two name entries plus the combined entry)." data-status="FAIL" data-cat="validation">
+<td data-sort-v="80">80</td>
+<td>TC-PAXNAME-VAL-21</td>
+<td>[Response] Verify one name-limit entry is returned per offending passenger (ADT first name and INF last name over 25 give two name entries plus the combined entry).</td>
+<td><span class="badge FAIL">FAIL</span></td>
+<td data-sort-v="1793544663117">14:51:03</td>
+<td data-sort-v="1793544663216">14:51:03</td>
+<td class="num" data-sort-v="99">99 ms</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="157">157 ms</td>
+<td class="num" data-sort-v="256">256 ms</td>
+</tr>
+<tr data-tcid="TC-PAXNAME-VAL-22" data-title="[Response] Verify the same invalid passengersList returns an identical error body on three consecutive calls (only TransactionId differs)." data-status="FAIL" data-cat="validation">
+<td data-sort-v="81">81</td>
+<td>TC-PAXNAME-VAL-22</td>
+<td>[Response] Verify the same invalid passengersList returns an identical error body on three consecutive calls (only TransactionId differs).</td>
+<td><span class="badge FAIL">FAIL</span></td>
+<td data-sort-v="1793544663515">14:51:03</td>
+<td data-sort-v="1793544679541">14:51:19</td>
+<td class="num" data-sort-v="16014">16.0s</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="181">181 ms</td>
+<td class="num" data-sort-v="16195">16.2s</td>
+</tr>
+<tr data-tcid="TC-PAXNAME-VAL-23" data-title="[Response] Verify the same over-limit passengersList returns the same error on Hold and Book (cross-endpoint consistency)." data-status="PASS" data-cat="validation">
+<td data-sort-v="82">82</td>
+<td>TC-PAXNAME-VAL-23</td>
+<td>[Response] Verify the same over-limit passengersList returns the same error on Hold and Book (cross-endpoint consistency).</td>
+<td><span class="badge PASS">PASS</span></td>
+<td data-sort-v="1793544679878">14:51:19</td>
+<td data-sort-v="1793544680076">14:51:20</td>
+<td class="num" data-sort-v="196">196 ms</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="157">157 ms</td>
+<td class="num" data-sort-v="353">353 ms</td>
+</tr>
+<tr data-tcid="TC-PAXNAME-VAL-24" data-title="[Response] Verify the name-limit rejection is returned before any supplier call (response under 2 seconds, three repeats, no PNR)." data-status="PASS" data-cat="validation">
+<td data-sort-v="83">83</td>
+<td>TC-PAXNAME-VAL-24</td>
+<td>[Response] Verify the name-limit rejection is returned before any supplier call (response under 2 seconds, three repeats, no PNR).</td>
+<td><span class="badge PASS">PASS</span></td>
+<td data-sort-v="1793544680404">14:51:20</td>
+<td data-sort-v="1793544680702">14:51:20</td>
+<td class="num" data-sort-v="296">296 ms</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="190">190 ms</td>
+<td class="num" data-sort-v="486">486 ms</td>
+</tr>
+<tr data-tcid="TC-PAXNAME-SEC-01" data-title="[Request] Validate an over-limit passengersList without the x-api-key header is rejected as unauthenticated, not as a name-validation error." data-status="PASS" data-cat="security">
+<td data-sort-v="84">84</td>
+<td>TC-PAXNAME-SEC-01</td>
+<td>[Request] Validate an over-limit passengersList without the x-api-key header is rejected as unauthenticated, not as a name-validation error.</td>
+<td><span class="badge PASS">PASS</span></td>
+<td data-sort-v="1793544681067">14:51:21</td>
+<td data-sort-v="1793544681368">14:51:21</td>
+<td class="num" data-sort-v="299">299 ms</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="277">277 ms</td>
+<td class="num" data-sort-v="576">576 ms</td>
+</tr>
+<tr data-tcid="TC-PAXNAME-SEC-02" data-title="[Request] Validate an over-limit passengersList with an invalid x-api-key is rejected as unauthenticated." data-status="PASS" data-cat="security">
+<td data-sort-v="85">85</td>
+<td>TC-PAXNAME-SEC-02</td>
+<td>[Request] Validate an over-limit passengersList with an invalid x-api-key is rejected as unauthenticated.</td>
+<td><span class="badge PASS">PASS</span></td>
+<td data-sort-v="1793544681815">14:51:21</td>
+<td data-sort-v="1793544681959">14:51:21</td>
+<td class="num" data-sort-v="144">144 ms</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="142">142 ms</td>
+<td class="num" data-sort-v="286">286 ms</td>
+</tr>
+<tr data-tcid="TC-PAXNAME-SEC-03" data-title="[Response] Verify a script-tag payload used as an over-limit first name is rejected and reflected only as escaped JSON text." data-status="PASS" data-cat="security">
+<td data-sort-v="86">86</td>
+<td>TC-PAXNAME-SEC-03</td>
+<td>[Response] Verify a script-tag payload used as an over-limit first name is rejected and reflected only as escaped JSON text.</td>
+<td><span class="badge PASS">PASS</span></td>
+<td data-sort-v="1793544682241">14:51:22</td>
+<td data-sort-v="1793544682472">14:51:22</td>
+<td class="num" data-sort-v="229">229 ms</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="164">164 ms</td>
+<td class="num" data-sort-v="393">393 ms</td>
+</tr>
+<tr data-tcid="TC-PAXNAME-SEC-04" data-title="[Request] Validate a 25-character script tag (&lt;script&gt;alert(1)&lt;/script&gt;) used as a first name is handled with a controlled outcome." data-status="PASS" data-cat="security">
+<td data-sort-v="87">87</td>
+<td>TC-PAXNAME-SEC-04</td>
+<td>[Request] Validate a 25-character script tag (&lt;script&gt;alert(1)&lt;/script&gt;) used as a first name is handled with a controlled outcome.</td>
+<td><span class="badge PASS">PASS</span></td>
+<td data-sort-v="1793544682797">14:51:22</td>
+<td data-sort-v="1793544687379">14:51:27</td>
+<td class="num" data-sort-v="4577">4.58s</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="146">146 ms</td>
+<td class="num" data-sort-v="4723">4.72s</td>
+</tr>
+<tr data-tcid="TC-PAXNAME-SEC-05" data-title="[Request] Validate an SQL-injection style last name (Robert'); DROP TABLE--) is handled with a controlled outcome." data-status="PASS" data-cat="security">
+<td data-sort-v="88">88</td>
+<td>TC-PAXNAME-SEC-05</td>
+<td>[Request] Validate an SQL-injection style last name (Robert'); DROP TABLE--) is handled with a controlled outcome.</td>
+<td><span class="badge PASS">PASS</span></td>
+<td data-sort-v="1793544687667">14:51:27</td>
+<td data-sort-v="1793544692362">14:51:32</td>
+<td class="num" data-sort-v="4676">4.68s</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="142">142 ms</td>
+<td class="num" data-sort-v="4818">4.82s</td>
+</tr>
+<tr data-tcid="TC-PAXNAME-SEC-06" data-title="[Request] Validate a CRLF header-injection style first name (A\r\nX-Injected: 1) is handled with a controlled outcome and no injected response header." data-status="PASS" data-cat="security">
+<td data-sort-v="89">89</td>
+<td>TC-PAXNAME-SEC-06</td>
+<td>[Request] Validate a CRLF header-injection style first name (A\r\nX-Injected: 1) is handled with a controlled outcome and no injected response header.</td>
+<td><span class="badge PASS">PASS</span></td>
+<td data-sort-v="1793544692662">14:51:32</td>
+<td data-sort-v="1793544692765">14:51:32</td>
+<td class="num" data-sort-v="103">103 ms</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="167">167 ms</td>
+<td class="num" data-sort-v="270">270 ms</td>
+</tr>
+<tr data-tcid="TC-PAXNAME-SEC-07" data-title="[Request] Validate a format-string style first name (%s%s%s%n{0}{1}) is handled with a controlled outcome." data-status="PASS" data-cat="security">
+<td data-sort-v="90">90</td>
+<td>TC-PAXNAME-SEC-07</td>
+<td>[Request] Validate a format-string style first name (%s%s%s%n{0}{1}) is handled with a controlled outcome.</td>
+<td><span class="badge PASS">PASS</span></td>
+<td data-sort-v="1793544693092">14:51:33</td>
+<td data-sort-v="1793544701339">14:51:41</td>
+<td class="num" data-sort-v="8233">8.23s</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="166">166 ms</td>
+<td class="num" data-sort-v="8399">8.40s</td>
+</tr>
+<tr data-tcid="TC-PAXNAME-REG-01" data-title="[Response] Verify the originally reported over-limit scenario (27-character first name + infant, pair total 53) returns the documented two-entry Context." data-status="FAIL" data-cat="regression">
+<td data-sort-v="91">91</td>
+<td>TC-PAXNAME-REG-01</td>
+<td>[Response] Verify the originally reported over-limit scenario (27-character first name + infant, pair total 53) returns the documented two-entry Context.</td>
+<td><span class="badge FAIL">FAIL</span></td>
+<td data-sort-v="1793544710711">14:51:50</td>
+<td data-sort-v="1793544720376">14:52:00</td>
+<td class="num" data-sort-v="9647">9.65s</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="171">171 ms</td>
+<td class="num" data-sort-v="9818">9.82s</td>
+</tr>
+<tr data-tcid="TC-PAXNAME-POS-06" data-title="[Request] Validate a plain ADT-only Book with short names returns HTTP 200 with a PNR and tickets (Book control case independent of the name rules)." data-status="FAIL" data-cat="positive">
+<td data-sort-v="92">92</td>
+<td>TC-PAXNAME-POS-06</td>
+<td>[Request] Validate a plain ADT-only Book with short names returns HTTP 200 with a PNR and tickets (Book control case independent of the name rules).</td>
+<td><span class="badge FAIL">FAIL</span></td>
+<td data-sort-v="1793544720689">14:52:00</td>
+<td data-sort-v="1793544733274">14:52:13</td>
+<td class="num" data-sort-v="12575">12.6s</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="168">168 ms</td>
+<td class="num" data-sort-v="12743">12.7s</td>
+</tr>
+<tr data-tcid="TC-PAXNAME-BND-22" data-title="[Request] Validate a CHD whose first+last names make the passenger string exactly 59 characters (24 + 24 names, title Miss, 4 delimiters) is accepted." data-status="PASS" data-cat="boundary">
+<td data-sort-v="93">93</td>
+<td>TC-PAXNAME-BND-22</td>
+<td>[Request] Validate a CHD whose first+last names make the passenger string exactly 59 characters (24 + 24 names, title Miss, 4 delimiters) is accepted.</td>
+<td><span class="badge PASS">PASS</span></td>
+<td data-sort-v="1793544733575">14:52:13</td>
+<td data-sort-v="1793544746848">14:52:26</td>
+<td class="num" data-sort-v="13265">13.3s</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="169">169 ms</td>
+<td class="num" data-sort-v="13434">13.4s</td>
+</tr>
+<tr data-tcid="TC-PAXNAME-BIZ-17" data-title="[Response] Verify an infant with the same surname as its adult is present in the echoed passengersList." data-status="FAIL" data-cat="business-rule">
+<td data-sort-v="94">94</td>
+<td>TC-PAXNAME-BIZ-17</td>
+<td>[Response] Verify an infant with the same surname as its adult is present in the echoed passengersList.</td>
+<td><span class="badge FAIL">FAIL</span></td>
+<td data-sort-v="1793544760352">14:52:40</td>
+<td data-sort-v="1793544773959">14:52:53</td>
+<td class="num" data-sort-v="13597">13.6s</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="169">169 ms</td>
+<td class="num" data-sort-v="13766">13.8s</td>
+</tr>
+<tr data-tcid="TC-PAXNAME-BIZ-18" data-title="[Response] Verify an infant with a different surname from its adult is present in the echoed passengersList (control for the same-surname case)." data-status="PASS" data-cat="business-rule">
+<td data-sort-v="95">95</td>
+<td>TC-PAXNAME-BIZ-18</td>
+<td>[Response] Verify an infant with a different surname from its adult is present in the echoed passengersList (control for the same-surname case).</td>
+<td><span class="badge PASS">PASS</span></td>
+<td data-sort-v="1793544774269">14:52:54</td>
+<td data-sort-v="1793544786476">14:53:06</td>
+<td class="num" data-sort-v="12198">12.2s</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="167">167 ms</td>
+<td class="num" data-sort-v="12365">12.4s</td>
+</tr>
+<tr data-tcid="TC-PAXNAME-BIZ-19" data-title="[Response] Verify ParentPaxRefId is honoured: an infant declared under the second adult is attached to the second adult, not the first." data-status="FAIL" data-cat="business-rule">
+<td data-sort-v="96">96</td>
+<td>TC-PAXNAME-BIZ-19</td>
+<td>[Response] Verify ParentPaxRefId is honoured: an infant declared under the second adult is attached to the second adult, not the first.</td>
+<td><span class="badge FAIL">FAIL</span></td>
+<td data-sort-v="1793544786785">14:53:06</td>
+<td data-sort-v="1793544802201">14:53:22</td>
+<td class="num" data-sort-v="15403">15.4s</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="186">186 ms</td>
+<td class="num" data-sort-v="15589">15.6s</td>
+</tr>
+<tr data-tcid="TC-PAXNAME-BIZ-20" data-title="[Request] Validate that a long first adult with a short second adult carrying the infant is accepted when the declared pairing keeps every pair under 59 (20/20 first adult)." data-status="FAIL" data-cat="business-rule">
+<td data-sort-v="97">97</td>
+<td>TC-PAXNAME-BIZ-20</td>
+<td>[Request] Validate that a long first adult with a short second adult carrying the infant is accepted when the declared pairing keeps every pair under 59 (20/20 first adult).</td>
+<td><span class="badge FAIL">FAIL</span></td>
+<td data-sort-v="1793544802538">14:53:22</td>
+<td data-sort-v="1793544812003">14:53:32</td>
+<td class="num" data-sort-v="9450">9.45s</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="167">167 ms</td>
+<td class="num" data-sort-v="9617">9.62s</td>
+</tr>
+<tr data-tcid="TC-PAXNAME-POS-07" data-title="[Request] Validate non-sequential passenger keys (Pax1, Pax3, Pax7) with the infant pointing at Pax3 are accepted." data-status="PASS" data-cat="positive">
+<td data-sort-v="98">98</td>
+<td>TC-PAXNAME-POS-07</td>
+<td>[Request] Validate non-sequential passenger keys (Pax1, Pax3, Pax7) with the infant pointing at Pax3 are accepted.</td>
+<td><span class="badge PASS">PASS</span></td>
+<td data-sort-v="1793544812315">14:53:32</td>
+<td data-sort-v="1793544825162">14:53:45</td>
+<td class="num" data-sort-v="12838">12.8s</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="185">185 ms</td>
+<td class="num" data-sort-v="13023">13.0s</td>
+</tr>
+<tr data-tcid="TC-PAXNAME-POS-08" data-title="[Request] Validate a nine-passenger party (4 ADT + 4 INF + 1 CHD) with every ADT+INF pair exactly on the limit is accepted." data-status="PASS" data-cat="positive">
+<td data-sort-v="99">99</td>
+<td>TC-PAXNAME-POS-08</td>
+<td>[Request] Validate a nine-passenger party (4 ADT + 4 INF + 1 CHD) with every ADT+INF pair exactly on the limit is accepted.</td>
+<td><span class="badge PASS">PASS</span></td>
+<td data-sort-v="1793544825505">14:53:45</td>
+<td data-sort-v="1793544838304">14:53:58</td>
+<td class="num" data-sort-v="12789">12.8s</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="505">505 ms</td>
+<td class="num" data-sort-v="13294">13.3s</td>
+</tr>
+<tr data-tcid="TC-PAXNAME-POS-09" data-title="[Request] Validate a rejected over-limit Hold can be corrected and re-submitted on the same fareConfirmResponseId and is then accepted." data-status="FAIL" data-cat="positive">
+<td data-sort-v="100">100</td>
+<td>TC-PAXNAME-POS-09</td>
+<td>[Request] Validate a rejected over-limit Hold can be corrected and re-submitted on the same fareConfirmResponseId and is then accepted.</td>
+<td><span class="badge FAIL">FAIL</span></td>
+<td data-sort-v="1793544839316">14:53:59</td>
+<td data-sort-v="1793544854384">14:54:14</td>
+<td class="num" data-sort-v="15040">15.0s</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="558">558 ms</td>
+<td class="num" data-sort-v="15598">15.6s</td>
+</tr>
+<tr data-tcid="TC-PAXNAME-POS-10" data-title="[Request] Validate an all-uppercase 25-character first name and last name (ADT only) is accepted and echoed." data-status="PASS" data-cat="positive">
+<td data-sort-v="101">101</td>
+<td>TC-PAXNAME-POS-10</td>
+<td>[Request] Validate an all-uppercase 25-character first name and last name (ADT only) is accepted and echoed.</td>
+<td><span class="badge PASS">PASS</span></td>
+<td data-sort-v="1793544855450">14:54:15</td>
+<td data-sort-v="1793544868103">14:54:28</td>
+<td class="num" data-sort-v="12634">12.6s</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="455">455 ms</td>
+<td class="num" data-sort-v="13089">13.1s</td>
+</tr>
+<tr data-tcid="TC-PAXNAME-BND-24" data-title="[Request] Validate an ADT + INF pair sharing the same surname with names+titles+PTC of exactly 51 (the requirement limit, 59 with delimiters) is accepted." data-status="FAIL" data-cat="boundary">
+<td data-sort-v="102">102</td>
+<td>TC-PAXNAME-BND-24</td>
+<td>[Request] Validate an ADT + INF pair sharing the same surname with names+titles+PTC of exactly 51 (the requirement limit, 59 with delimiters) is accepted.</td>
+<td><span class="badge FAIL">FAIL</span></td>
+<td data-sort-v="1793544868966">14:54:28</td>
+<td data-sort-v="1793544881006">14:54:41</td>
+<td class="num" data-sort-v="12017">12.0s</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="586">586 ms</td>
+<td class="num" data-sort-v="12603">12.6s</td>
+</tr>
+<tr data-tcid="TC-PAXNAME-BND-25" data-title="[Request] Validate an ADT + INF pair sharing the same surname with a total of 52 (one over the requirement limit) is rejected." data-status="FAIL" data-cat="boundary">
+<td data-sort-v="103">103</td>
+<td>TC-PAXNAME-BND-25</td>
+<td>[Request] Validate an ADT + INF pair sharing the same surname with a total of 52 (one over the requirement limit) is rejected.</td>
+<td><span class="badge FAIL">FAIL</span></td>
+<td data-sort-v="1793544882094">14:54:42</td>
+<td data-sort-v="1793544892112">14:54:52</td>
+<td class="num" data-sort-v="9988">9.99s</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="427">427 ms</td>
+<td class="num" data-sort-v="10415">10.4s</td>
+</tr>
+<tr data-tcid="TC-PAXNAME-BND-26" data-title="[Request] Validate an ADT + INF pair sharing the same surname with a total of 57 is rejected per the requirement (59-character limit, 51 of content)." data-status="FAIL" data-cat="boundary">
+<td data-sort-v="104">104</td>
+<td>TC-PAXNAME-BND-26</td>
+<td>[Request] Validate an ADT + INF pair sharing the same surname with a total of 57 is rejected per the requirement (59-character limit, 51 of content).</td>
+<td><span class="badge FAIL">FAIL</span></td>
+<td data-sort-v="1793544892914">14:54:52</td>
+<td data-sort-v="1793544905278">14:55:05</td>
+<td class="num" data-sort-v="12334">12.3s</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="493">493 ms</td>
+<td class="num" data-sort-v="12827">12.8s</td>
+</tr>
+<tr data-tcid="TC-PAXNAME-BND-27" data-title="[Request] Validate an ADT + INF pair sharing the same surname with a total of 58 is rejected." data-status="PASS" data-cat="boundary">
+<td data-sort-v="105">105</td>
+<td>TC-PAXNAME-BND-27</td>
+<td>[Request] Validate an ADT + INF pair sharing the same surname with a total of 58 is rejected.</td>
+<td><span class="badge PASS">PASS</span></td>
+<td data-sort-v="1793544906315">14:55:06</td>
+<td data-sort-v="1793544912067">14:55:12</td>
+<td class="num" data-sort-v="5724">5.72s</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="459">459 ms</td>
+<td class="num" data-sort-v="6183">6.18s</td>
+</tr>
+<tr data-tcid="TC-PAXNAME-BND-28" data-title="[Request] Validate single-character first and last names (A / B) on an ADT are handled with a controlled outcome." data-status="PASS" data-cat="boundary">
+<td data-sort-v="106">106</td>
+<td>TC-PAXNAME-BND-28</td>
+<td>[Request] Validate single-character first and last names (A / B) on an ADT are handled with a controlled outcome.</td>
+<td><span class="badge PASS">PASS</span></td>
+<td data-sort-v="1793544912898">14:55:12</td>
+<td data-sort-v="1793544917668">14:55:17</td>
+<td class="num" data-sort-v="4742">4.74s</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="461">461 ms</td>
+<td class="num" data-sort-v="5203">5.20s</td>
+</tr>
+<tr data-tcid="TC-PAXNAME-BND-29" data-title="[Request] Validate a 13-character first name of the German sharp-s (U+00DF), which upper-cases to 26 characters at the supplier, is handled with a controlled outcome." data-status="FAIL" data-cat="boundary">
+<td data-sort-v="107">107</td>
+<td>TC-PAXNAME-BND-29</td>
+<td>[Request] Validate a 13-character first name of the German sharp-s (U+00DF), which upper-cases to 26 characters at the supplier, is handled with a controlled outcome.</td>
+<td><span class="badge FAIL">FAIL</span></td>
+<td data-sort-v="1793544918499">14:55:18</td>
+<td data-sort-v="1793544926065">14:55:26</td>
+<td class="num" data-sort-v="7549">7.55s</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="488">488 ms</td>
+<td class="num" data-sort-v="8037">8.04s</td>
+</tr>
+<tr data-tcid="TC-PAXNAME-BIZ-21" data-title="[Request] Validate two infants declared under the same adult (2 ADT + 2 INF, both ParentPaxRefId = Pax1) are handled with a controlled outcome." data-status="PASS" data-cat="business-rule">
+<td data-sort-v="108">108</td>
+<td>TC-PAXNAME-BIZ-21</td>
+<td>[Request] Validate two infants declared under the same adult (2 ADT + 2 INF, both ParentPaxRefId = Pax1) are handled with a controlled outcome.</td>
+<td><span class="badge PASS">PASS</span></td>
+<td data-sort-v="1793544926999">14:55:26</td>
+<td data-sort-v="1793544932113">14:55:32</td>
+<td class="num" data-sort-v="5090">5.09s</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="387">387 ms</td>
+<td class="num" data-sort-v="5477">5.48s</td>
+</tr>
+<tr data-tcid="TC-PAXNAME-BIZ-22" data-title="[Request] Validate an infant whose ParentPaxRefId points to a child (CHD) instead of an adult is rejected with a controlled 4xx." data-status="PASS" data-cat="business-rule">
+<td data-sort-v="109">109</td>
+<td>TC-PAXNAME-BIZ-22</td>
+<td>[Request] Validate an infant whose ParentPaxRefId points to a child (CHD) instead of an adult is rejected with a controlled 4xx.</td>
+<td><span class="badge PASS">PASS</span></td>
+<td data-sort-v="1793544932846">14:55:32</td>
+<td data-sort-v="1793544938548">14:55:38</td>
+<td class="num" data-sort-v="5672">5.67s</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="394">394 ms</td>
+<td class="num" data-sort-v="6066">6.07s</td>
+</tr>
+<tr data-tcid="TC-PAXNAME-BIZ-23" data-title="[Request] Validate lower-case passengerTypeCode values (adt / inf) cannot be used to bypass the combined-length rule on an over-limit pair." data-status="PASS" data-cat="business-rule">
+<td data-sort-v="110">110</td>
+<td>TC-PAXNAME-BIZ-23</td>
+<td>[Request] Validate lower-case passengerTypeCode values (adt / inf) cannot be used to bypass the combined-length rule on an over-limit pair.</td>
+<td><span class="badge PASS">PASS</span></td>
+<td data-sort-v="1793544939359">14:55:39</td>
+<td data-sort-v="1793544944295">14:55:44</td>
+<td class="num" data-sort-v="4909">4.91s</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="544">544 ms</td>
+<td class="num" data-sort-v="5453">5.45s</td>
+</tr>
+<tr data-tcid="TC-PAXNAME-BIZ-24" data-title="[Request] Validate two adults with identical first and last names (duplicate passenger) are handled with a controlled outcome." data-status="PASS" data-cat="business-rule">
+<td data-sort-v="111">111</td>
+<td>TC-PAXNAME-BIZ-24</td>
+<td>[Request] Validate two adults with identical first and last names (duplicate passenger) are handled with a controlled outcome.</td>
+<td><span class="badge PASS">PASS</span></td>
+<td data-sort-v="1793544945356">14:55:45</td>
+<td data-sort-v="1793544956483">14:55:56</td>
+<td class="num" data-sort-v="11095">11.1s</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="536">536 ms</td>
+<td class="num" data-sort-v="11631">11.6s</td>
+</tr>
+<tr data-tcid="TC-PAXNAME-BIZ-25" data-title="[Request] Validate an infant carrying exactly the same first and last name as its adult is handled with a controlled outcome." data-status="FAIL" data-cat="business-rule">
+<td data-sort-v="112">112</td>
+<td>TC-PAXNAME-BIZ-25</td>
+<td>[Request] Validate an infant carrying exactly the same first and last name as its adult is handled with a controlled outcome.</td>
+<td><span class="badge FAIL">FAIL</span></td>
+<td data-sort-v="1793544957464">14:55:57</td>
+<td data-sort-v="1793544971131">14:56:11</td>
+<td class="num" data-sort-v="13642">13.6s</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="459">459 ms</td>
+<td class="num" data-sort-v="14101">14.1s</td>
+</tr>
+<tr data-tcid="TC-PAXNAME-BIZ-26" data-title="[Request] Validate an adult title that contradicts the gender (title Mr with gender female) is handled with a controlled outcome." data-status="PASS" data-cat="business-rule">
+<td data-sort-v="113">113</td>
+<td>TC-PAXNAME-BIZ-26</td>
+<td>[Request] Validate an adult title that contradicts the gender (title Mr with gender female) is handled with a controlled outcome.</td>
+<td><span class="badge PASS">PASS</span></td>
+<td data-sort-v="1793544971972">14:56:11</td>
+<td data-sort-v="1793544978410">14:56:18</td>
+<td class="num" data-sort-v="6410">6.41s</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="557">557 ms</td>
+<td class="num" data-sort-v="6967">6.97s</td>
+</tr>
+<tr data-tcid="TC-PAXNAME-BIZ-27" data-title="[Request] Validate a travel-document name of 26 characters while the passengersList name is short is handled with a controlled outcome." data-status="PASS" data-cat="business-rule">
+<td data-sort-v="114">114</td>
+<td>TC-PAXNAME-BIZ-27</td>
+<td>[Request] Validate a travel-document name of 26 characters while the passengersList name is short is handled with a controlled outcome.</td>
+<td><span class="badge PASS">PASS</span></td>
+<td data-sort-v="1793544979483">14:56:19</td>
+<td data-sort-v="1793544985134">14:56:25</td>
+<td class="num" data-sort-v="5634">5.63s</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="519">519 ms</td>
+<td class="num" data-sort-v="6153">6.15s</td>
+</tr>
+<tr data-tcid="TC-PAXNAME-NEG-17" data-title="[Request] Validate passengersList sent as a JSON array instead of an object is rejected with a controlled 4xx." data-status="PASS" data-cat="negative">
+<td data-sort-v="115">115</td>
+<td>TC-PAXNAME-NEG-17</td>
+<td>[Request] Validate passengersList sent as a JSON array instead of an object is rejected with a controlled 4xx.</td>
+<td><span class="badge PASS">PASS</span></td>
+<td data-sort-v="1793544986108">14:56:26</td>
+<td data-sort-v="1793544986223">14:56:26</td>
+<td class="num" data-sort-v="115">115 ms</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="498">498 ms</td>
+<td class="num" data-sort-v="613">613 ms</td>
+</tr>
+<tr data-tcid="TC-PAXNAME-NEG-18" data-title="[Request] Validate an ADT with the name.middle key omitted is handled with a controlled outcome." data-status="PASS" data-cat="negative">
+<td data-sort-v="116">116</td>
+<td>TC-PAXNAME-NEG-18</td>
+<td>[Request] Validate an ADT with the name.middle key omitted is handled with a controlled outcome.</td>
+<td><span class="badge PASS">PASS</span></td>
+<td data-sort-v="1793544987123">14:56:27</td>
+<td data-sort-v="1793544992010">14:56:32</td>
+<td class="num" data-sort-v="4873">4.87s</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="542">542 ms</td>
+<td class="num" data-sort-v="5415">5.42s</td>
+</tr>
+<tr data-tcid="TC-PAXNAME-NEG-19" data-title="[Request] Validate an adult title outside the supported list (Sir) is rejected or handled in a controlled way." data-status="PASS" data-cat="negative">
+<td data-sort-v="117">117</td>
+<td>TC-PAXNAME-NEG-19</td>
+<td>[Request] Validate an adult title outside the supported list (Sir) is rejected or handled in a controlled way.</td>
+<td><span class="badge PASS">PASS</span></td>
+<td data-sort-v="1793544992934">14:56:32</td>
+<td data-sort-v="1793544997689">14:56:37</td>
+<td class="num" data-sort-v="4739">4.74s</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="487">487 ms</td>
+<td class="num" data-sort-v="5226">5.23s</td>
+</tr>
+<tr data-tcid="TC-PAXNAME-NEG-20" data-title="[Request] Validate a lower-case adult title (mr) is rejected or handled in a controlled way." data-status="PASS" data-cat="negative">
+<td data-sort-v="118">118</td>
+<td>TC-PAXNAME-NEG-20</td>
+<td>[Request] Validate a lower-case adult title (mr) is rejected or handled in a controlled way.</td>
+<td><span class="badge PASS">PASS</span></td>
+<td data-sort-v="1793544998593">14:56:38</td>
+<td data-sort-v="1793545009578">14:56:49</td>
+<td class="num" data-sort-v="10959">11.0s</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="580">580 ms</td>
+<td class="num" data-sort-v="11539">11.5s</td>
+</tr>
+<tr data-tcid="TC-PAXNAME-VAL-25" data-title="[Request] Validate a first name of 24 letters plus an embedded zero-width space (U+200B, 25 code points but 24 visible) is handled with a controlled outcome." data-status="PASS" data-cat="validation">
+<td data-sort-v="119">119</td>
+<td>TC-PAXNAME-VAL-25</td>
+<td>[Request] Validate a first name of 24 letters plus an embedded zero-width space (U+200B, 25 code points but 24 visible) is handled with a controlled outcome.</td>
+<td><span class="badge PASS">PASS</span></td>
+<td data-sort-v="1793545010673">14:56:50</td>
+<td data-sort-v="1793545021302">14:57:01</td>
+<td class="num" data-sort-v="10605">10.6s</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="440">440 ms</td>
+<td class="num" data-sort-v="11045">11.0s</td>
+</tr>
+<tr data-tcid="TC-PAXNAME-VAL-26" data-title="[Request] Validate a last name containing a non-breaking space (U+00A0) is handled with a controlled outcome." data-status="PASS" data-cat="validation">
+<td data-sort-v="120">120</td>
+<td>TC-PAXNAME-VAL-26</td>
+<td>[Request] Validate a last name containing a non-breaking space (U+00A0) is handled with a controlled outcome.</td>
+<td><span class="badge PASS">PASS</span></td>
+<td data-sort-v="1793545022105">14:57:02</td>
+<td data-sort-v="1793545032441">14:57:12</td>
+<td class="num" data-sort-v="10320">10.3s</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="553">553 ms</td>
+<td class="num" data-sort-v="10873">10.9s</td>
+</tr>
+<tr data-tcid="TC-PAXNAME-VAL-27" data-title="[Request] Validate a first name containing a Cyrillic homoglyph (U+0430 in place of Latin a) is handled with a controlled outcome." data-status="FAIL" data-cat="validation">
+<td data-sort-v="121">121</td>
+<td>TC-PAXNAME-VAL-27</td>
+<td>[Request] Validate a first name containing a Cyrillic homoglyph (U+0430 in place of Latin a) is handled with a controlled outcome.</td>
+<td><span class="badge FAIL">FAIL</span></td>
+<td data-sort-v="1793545033689">14:57:13</td>
+<td data-sort-v="1793545043928">14:57:23</td>
+<td class="num" data-sort-v="10212">10.2s</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="552">552 ms</td>
+<td class="num" data-sort-v="10764">10.8s</td>
+</tr>
+<tr data-tcid="TC-PAXNAME-VAL-28" data-title="[Request] Validate a first name containing a right-to-left override character (U+202E) is handled with a controlled outcome." data-status="PASS" data-cat="validation">
+<td data-sort-v="122">122</td>
+<td>TC-PAXNAME-VAL-28</td>
+<td>[Request] Validate a first name containing a right-to-left override character (U+202E) is handled with a controlled outcome.</td>
+<td><span class="badge PASS">PASS</span></td>
+<td data-sort-v="1793545044933">14:57:24</td>
+<td data-sort-v="1793545050304">14:57:30</td>
+<td class="num" data-sort-v="5350">5.35s</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="489">489 ms</td>
+<td class="num" data-sort-v="5839">5.84s</td>
+</tr>
+<tr data-tcid="TC-PAXNAME-VAL-29" data-title="[Request] Validate a short last name with an apostrophe (O'Neil) is handled with a controlled outcome." data-status="PASS" data-cat="validation">
+<td data-sort-v="123">123</td>
+<td>TC-PAXNAME-VAL-29</td>
+<td>[Request] Validate a short last name with an apostrophe (O'Neil) is handled with a controlled outcome.</td>
+<td><span class="badge PASS">PASS</span></td>
+<td data-sort-v="1793545051207">14:57:31</td>
+<td data-sort-v="1793545057651">14:57:37</td>
+<td class="num" data-sort-v="6427">6.43s</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="570">570 ms</td>
+<td class="num" data-sort-v="6997">7.00s</td>
+</tr>
+<tr data-tcid="TC-PAXNAME-VAL-30" data-title="[Request] Validate a short hyphenated first name (Mary-Anne) is handled with a controlled outcome." data-status="PASS" data-cat="validation">
+<td data-sort-v="124">124</td>
+<td>TC-PAXNAME-VAL-30</td>
+<td>[Request] Validate a short hyphenated first name (Mary-Anne) is handled with a controlled outcome.</td>
+<td><span class="badge PASS">PASS</span></td>
+<td data-sort-v="1793545058577">14:57:38</td>
+<td data-sort-v="1793545063618">14:57:43</td>
+<td class="num" data-sort-v="5022">5.02s</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="513">513 ms</td>
+<td class="num" data-sort-v="5535">5.54s</td>
+</tr>
+<tr data-tcid="TC-PAXNAME-VAL-31" data-title="[Request] Validate a last name containing a double quote and a backslash (Abd"el\Rahman) is handled with a controlled outcome and valid JSON back." data-status="PASS" data-cat="validation">
+<td data-sort-v="125">125</td>
+<td>TC-PAXNAME-VAL-31</td>
+<td>[Request] Validate a last name containing a double quote and a backslash (Abd"el\Rahman) is handled with a controlled outcome and valid JSON back.</td>
+<td><span class="badge PASS">PASS</span></td>
+<td data-sort-v="1793545064510">14:57:44</td>
+<td data-sort-v="1793545069946">14:57:49</td>
+<td class="num" data-sort-v="5421">5.42s</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="477">477 ms</td>
+<td class="num" data-sort-v="5898">5.90s</td>
+</tr>
+<tr data-tcid="TC-PAXNAME-SEC-09" data-title="[Request] Validate a passengersList carrying 200 passenger entries is rejected quickly with a controlled 4xx." data-status="PASS" data-cat="security">
+<td data-sort-v="126">126</td>
+<td>TC-PAXNAME-SEC-09</td>
+<td>[Request] Validate a passengersList carrying 200 passenger entries is rejected quickly with a controlled 4xx.</td>
+<td><span class="badge PASS">PASS</span></td>
+<td data-sort-v="1793545070878">14:57:50</td>
+<td data-sort-v="1793545071190">14:57:51</td>
+<td class="num" data-sort-v="309">309 ms</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="398">398 ms</td>
+<td class="num" data-sort-v="707">707 ms</td>
+</tr>
+<tr data-tcid="TC-PAXNAME-SEC-08" data-title="[Response] Verify the name-limit rejection body leaks no supplier request/response, credentials, stack trace or internal type names." data-status="FAIL" data-cat="security">
+<td data-sort-v="127">127</td>
+<td>TC-PAXNAME-SEC-08</td>
+<td>[Response] Verify the name-limit rejection body leaks no supplier request/response, credentials, stack trace or internal type names.</td>
+<td><span class="badge FAIL">FAIL</span></td>
+<td data-sort-v="1793545191434">14:59:51</td>
+<td data-sort-v="1793545221832">15:00:21</td>
+<td class="num" data-sort-v="30326">30.3s</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="490">490 ms</td>
+<td class="num" data-sort-v="30816">30.8s</td>
+</tr>
+<tr data-tcid="TC-PAXNAME-BND-23" data-title="[Request] Validate a CHD passenger string of 60 characters (24 + 25 names, title Miss, 4 delimiters) is rejected with the single-passenger 59-character message." data-status="PASS" data-cat="boundary">
+<td data-sort-v="128">128</td>
+<td>TC-PAXNAME-BND-23</td>
+<td>[Request] Validate a CHD passenger string of 60 characters (24 + 25 names, title Miss, 4 delimiters) is rejected with the single-passenger 59-character message.</td>
+<td><span class="badge PASS">PASS</span></td>
+<td data-sort-v="1793545292987">15:01:32</td>
+<td data-sort-v="1793545308358">15:01:48</td>
+<td class="num" data-sort-v="15298">15.3s</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="375">375 ms</td>
+<td class="num" data-sort-v="15673">15.7s</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="tb-reconcile">Execution column: rows sum to 17m 56s = 17m 56s Test Case Execution (section 1). Each test case is charged only for the time its own API calls were in flight; a call shared by several test cases is split evenly between them, so nothing is counted twice and idle gaps between calls are not charged. Claude column: the run-level analysis (0 ms) split evenly across the 128 test cases, rows sum to 0 ms. Reporting column: rows sum to 29.8s, plus 1.17s of run-level reporting (final HTML and Time Breakdown, not attributable to one test case), = 31s Reporting (section 1).</div>
+
+</details>
+<details class="tb-sec" open><summary>5. Timeline</summary>
+<div class="dashboard-card">
+<div class="tb-timeline">
+<div class="tb-tl-row"><div class="tb-tl-time">14:39:23</div><div class="tb-tl-label"><b>Test Execution</b> started</div></div>
+<div class="tb-tl-row"><div class="tb-tl-time">14:39:23</div><div class="tb-tl-label">TC-CAPCHECK-AMD-01 started</div></div>
+<div class="tb-tl-row"><div class="tb-tl-time">14:39:30</div><div class="tb-tl-label">TC-PAXNAME-POS-01 started</div></div>
+<div class="tb-tl-row"><div class="tb-tl-time">14:39:58</div><div class="tb-tl-label">TC-PAXNAME-POS-02 started</div></div>
+<div class="tb-tl-row"><div class="tb-tl-time">14:40:13</div><div class="tb-tl-label">TC-PAXNAME-POS-03 started</div></div>
+<div class="tb-tl-row"><div class="tb-tl-time">14:40:27</div><div class="tb-tl-label">TC-PAXNAME-POS-04 started</div></div>
+<div class="tb-tl-row"><div class="tb-tl-time">14:40:39</div><div class="tb-tl-label">TC-PAXNAME-POS-05 started</div></div>
+<div class="tb-tl-row"><div class="tb-tl-time">14:40:45</div><div class="tb-tl-label">TC-PAXNAME-BND-01 started</div></div>
+<div class="tb-tl-row"><div class="tb-tl-time">14:40:58</div><div class="tb-tl-label">TC-PAXNAME-BND-02 started</div></div>
+<div class="tb-tl-row"><div class="tb-tl-time">14:41:19</div><div class="tb-tl-label">TC-PAXNAME-BND-03 started</div></div>
+<div class="tb-tl-row"><div class="tb-tl-time">14:41:37</div><div class="tb-tl-label">TC-PAXNAME-BND-04 started</div></div>
+<div class="tb-tl-row"><div class="tb-tl-time">14:42:05</div><div class="tb-tl-label">TC-PAXNAME-BND-05 started</div></div>
+<div class="tb-tl-row"><div class="tb-tl-time">14:42:20</div><div class="tb-tl-label">TC-PAXNAME-BND-06 started</div></div>
+<div class="tb-tl-row"><div class="tb-tl-time">14:42:25</div><div class="tb-tl-label">TC-PAXNAME-BND-07 started</div></div>
+<div class="tb-tl-row"><div class="tb-tl-time">14:42:38</div><div class="tb-tl-label">TC-PAXNAME-BND-08 started</div></div>
+<div class="tb-tl-row"><div class="tb-tl-time">14:42:51</div><div class="tb-tl-label">TC-PAXNAME-BND-09 started</div></div>
+<div class="tb-tl-row"><div class="tb-tl-time">14:43:12</div><div class="tb-tl-label">TC-PAXNAME-BND-10 started</div></div>
+<div class="tb-tl-row"><div class="tb-tl-time">14:43:35</div><div class="tb-tl-label">TC-PAXNAME-BND-11 started</div></div>
+<div class="tb-tl-row"><div class="tb-tl-time">14:43:46</div><div class="tb-tl-label">TC-PAXNAME-BND-12 started</div></div>
+<div class="tb-tl-row"><div class="tb-tl-time">14:44:15</div><div class="tb-tl-label">TC-PAXNAME-BND-13 started</div></div>
+<div class="tb-tl-row"><div class="tb-tl-time">14:44:43</div><div class="tb-tl-label">TC-PAXNAME-BND-14 started</div></div>
+<div class="tb-tl-row"><div class="tb-tl-time">14:44:56</div><div class="tb-tl-label">TC-PAXNAME-BND-15 started</div></div>
+<div class="tb-tl-row"><div class="tb-tl-time">14:44:57</div><div class="tb-tl-label">TC-PAXNAME-BND-16 started</div></div>
+<div class="tb-tl-row"><div class="tb-tl-time">14:45:03</div><div class="tb-tl-label">TC-PAXNAME-BND-17 started</div></div>
+<div class="tb-tl-row"><div class="tb-tl-time">14:45:08</div><div class="tb-tl-label">TC-PAXNAME-BND-18 started</div></div>
+<div class="tb-tl-row"><div class="tb-tl-time">14:45:22</div><div class="tb-tl-label">TC-PAXNAME-BND-19 started</div></div>
+<div class="tb-tl-row"><div class="tb-tl-time">14:45:22</div><div class="tb-tl-label">TC-PAXNAME-BND-20 started</div></div>
+<div class="tb-tl-row"><div class="tb-tl-time">14:45:23</div><div class="tb-tl-label">TC-PAXNAME-BND-21 started</div></div>
+<div class="tb-tl-row"><div class="tb-tl-time">14:45:28</div><div class="tb-tl-label">TC-PAXNAME-BIZ-01 started</div></div>
+<div class="tb-tl-row"><div class="tb-tl-time">14:45:30</div><div class="tb-tl-label">TC-PAXNAME-BIZ-02 started</div></div>
+<div class="tb-tl-row"><div class="tb-tl-time">14:45:30</div><div class="tb-tl-label">TC-PAXNAME-BIZ-03 started</div></div>
+<div class="tb-tl-row"><div class="tb-tl-time">14:45:36</div><div class="tb-tl-label">TC-PAXNAME-BIZ-04 started</div></div>
+<div class="tb-tl-row"><div class="tb-tl-time">14:45:43</div><div class="tb-tl-label">TC-PAXNAME-BIZ-05 started</div></div>
+<div class="tb-tl-row"><div class="tb-tl-time">14:45:57</div><div class="tb-tl-label">TC-PAXNAME-BIZ-06 started</div></div>
+<div class="tb-tl-row"><div class="tb-tl-time">14:46:09</div><div class="tb-tl-label">TC-PAXNAME-BIZ-07 started</div></div>
+<div class="tb-tl-row"><div class="tb-tl-time">14:46:15</div><div class="tb-tl-label">TC-PAXNAME-BIZ-08 started</div></div>
+<div class="tb-tl-row"><div class="tb-tl-time">14:46:28</div><div class="tb-tl-label">TC-PAXNAME-BIZ-09 started</div></div>
+<div class="tb-tl-row"><div class="tb-tl-time">14:46:42</div><div class="tb-tl-label">TC-PAXNAME-BIZ-10 started</div></div>
+<div class="tb-tl-row"><div class="tb-tl-time">14:46:54</div><div class="tb-tl-label">TC-PAXNAME-BIZ-11 started</div></div>
+<div class="tb-tl-row"><div class="tb-tl-time">14:47:07</div><div class="tb-tl-label">TC-PAXNAME-BIZ-12 started</div></div>
+<div class="tb-tl-row"><div class="tb-tl-time">14:47:19</div><div class="tb-tl-label">TC-PAXNAME-BIZ-13 started</div></div>
+<div class="tb-tl-row"><div class="tb-tl-time">14:47:20</div><div class="tb-tl-label">TC-PAXNAME-BIZ-14 started</div></div>
+<div class="tb-tl-row"><div class="tb-tl-time">14:47:31</div><div class="tb-tl-label">TC-PAXNAME-BIZ-15 started</div></div>
+<div class="tb-tl-row"><div class="tb-tl-time">14:47:32</div><div class="tb-tl-label">TC-PAXNAME-BIZ-16 started</div></div>
+<div class="tb-tl-row"><div class="tb-tl-time">14:47:32</div><div class="tb-tl-label">TC-PAXNAME-NEG-01 started</div></div>
+<div class="tb-tl-row"><div class="tb-tl-time">14:47:33</div><div class="tb-tl-label">TC-PAXNAME-NEG-02 started</div></div>
+<div class="tb-tl-row"><div class="tb-tl-time">14:47:33</div><div class="tb-tl-label">TC-PAXNAME-NEG-03 started</div></div>
+<div class="tb-tl-row"><div class="tb-tl-time">14:47:34</div><div class="tb-tl-label">TC-PAXNAME-NEG-04 started</div></div>
+<div class="tb-tl-row"><div class="tb-tl-time">14:47:34</div><div class="tb-tl-label">TC-PAXNAME-NEG-05 started</div></div>
+<div class="tb-tl-row"><div class="tb-tl-time">14:47:34</div><div class="tb-tl-label">TC-PAXNAME-NEG-06 started</div></div>
+<div class="tb-tl-row"><div class="tb-tl-time">14:47:35</div><div class="tb-tl-label">TC-PAXNAME-NEG-07 started</div></div>
+<div class="tb-tl-row"><div class="tb-tl-time">14:47:47</div><div class="tb-tl-label">TC-PAXNAME-NEG-08 started</div></div>
+<div class="tb-tl-row"><div class="tb-tl-time">14:48:00</div><div class="tb-tl-label">TC-PAXNAME-NEG-09 started</div></div>
+<div class="tb-tl-row"><div class="tb-tl-time">14:48:00</div><div class="tb-tl-label">TC-PAXNAME-NEG-10 started</div></div>
+<div class="tb-tl-row"><div class="tb-tl-time">14:48:01</div><div class="tb-tl-label">TC-PAXNAME-NEG-11 started</div></div>
+<div class="tb-tl-row"><div class="tb-tl-time">14:48:01</div><div class="tb-tl-label">TC-PAXNAME-NEG-12 started</div></div>
+<div class="tb-tl-row"><div class="tb-tl-time">14:48:02</div><div class="tb-tl-label">TC-PAXNAME-NEG-13 started</div></div>
+<div class="tb-tl-row"><div class="tb-tl-time">14:48:02</div><div class="tb-tl-label">TC-PAXNAME-NEG-14 started</div></div>
+<div class="tb-tl-row"><div class="tb-tl-time">14:48:03</div><div class="tb-tl-label">TC-PAXNAME-NEG-15 started</div></div>
+<div class="tb-tl-row"><div class="tb-tl-time">14:48:03</div><div class="tb-tl-label">TC-PAXNAME-NEG-16 started</div></div>
+<div class="tb-tl-row"><div class="tb-tl-time">14:48:03</div><div class="tb-tl-label">TC-PAXNAME-VAL-01 started</div></div>
+<div class="tb-tl-row"><div class="tb-tl-time">14:48:15</div><div class="tb-tl-label">TC-PAXNAME-VAL-02 started</div></div>
+<div class="tb-tl-row"><div class="tb-tl-time">14:48:30</div><div class="tb-tl-label">TC-PAXNAME-VAL-03 started</div></div>
+<div class="tb-tl-row"><div class="tb-tl-time">14:48:35</div><div class="tb-tl-label">TC-PAXNAME-VAL-04 started</div></div>
+<div class="tb-tl-row"><div class="tb-tl-time">14:48:40</div><div class="tb-tl-label">TC-PAXNAME-VAL-05 started</div></div>
+<div class="tb-tl-row"><div class="tb-tl-time">14:48:40</div><div class="tb-tl-label">TC-PAXNAME-VAL-06 started</div></div>
+<div class="tb-tl-row"><div class="tb-tl-time">14:48:57</div><div class="tb-tl-label">TC-PAXNAME-VAL-07 started</div></div>
+<div class="tb-tl-row"><div class="tb-tl-time">14:49:13</div><div class="tb-tl-label">TC-PAXNAME-VAL-08 started</div></div>
+<div class="tb-tl-row"><div class="tb-tl-time">14:49:20</div><div class="tb-tl-label">TC-PAXNAME-VAL-09 started</div></div>
+<div class="tb-tl-row"><div class="tb-tl-time">14:49:27</div><div class="tb-tl-label">TC-PAXNAME-VAL-10 started</div></div>
+<div class="tb-tl-row"><div class="tb-tl-time">14:49:35</div><div class="tb-tl-label">TC-PAXNAME-VAL-11 started</div></div>
+<div class="tb-tl-row"><div class="tb-tl-time">14:49:42</div><div class="tb-tl-label">TC-PAXNAME-VAL-12 started</div></div>
+<div class="tb-tl-row"><div class="tb-tl-time">14:49:47</div><div class="tb-tl-label">TC-PAXNAME-VAL-13 started</div></div>
+<div class="tb-tl-row"><div class="tb-tl-time">14:49:52</div><div class="tb-tl-label">TC-PAXNAME-VAL-14 started</div></div>
+<div class="tb-tl-row"><div class="tb-tl-time">14:50:03</div><div class="tb-tl-label">TC-PAXNAME-VAL-15 started</div></div>
+<div class="tb-tl-row"><div class="tb-tl-time">14:50:11</div><div class="tb-tl-label">TC-PAXNAME-VAL-16 started</div></div>
+<div class="tb-tl-row"><div class="tb-tl-time">14:50:17</div><div class="tb-tl-label">TC-PAXNAME-VAL-17 started</div></div>
+<div class="tb-tl-row"><div class="tb-tl-time">14:50:31</div><div class="tb-tl-label">TC-PAXNAME-VAL-18 started</div></div>
+<div class="tb-tl-row"><div class="tb-tl-time">14:50:45</div><div class="tb-tl-label">TC-PAXNAME-VAL-19 started</div></div>
+<div class="tb-tl-row"><div class="tb-tl-time">14:50:53</div><div class="tb-tl-label">TC-PAXNAME-VAL-20 started</div></div>
+<div class="tb-tl-row"><div class="tb-tl-time">14:51:03</div><div class="tb-tl-label">TC-PAXNAME-VAL-21 started</div></div>
+<div class="tb-tl-row"><div class="tb-tl-time">14:51:03</div><div class="tb-tl-label">TC-PAXNAME-VAL-22 started</div></div>
+<div class="tb-tl-row"><div class="tb-tl-time">14:51:19</div><div class="tb-tl-label">TC-PAXNAME-VAL-23 started</div></div>
+<div class="tb-tl-row"><div class="tb-tl-time">14:51:20</div><div class="tb-tl-label">TC-PAXNAME-VAL-24 started</div></div>
+<div class="tb-tl-row"><div class="tb-tl-time">14:51:21</div><div class="tb-tl-label">TC-PAXNAME-SEC-01 started</div></div>
+<div class="tb-tl-row"><div class="tb-tl-time">14:51:21</div><div class="tb-tl-label">TC-PAXNAME-SEC-02 started</div></div>
+<div class="tb-tl-row"><div class="tb-tl-time">14:51:22</div><div class="tb-tl-label">TC-PAXNAME-SEC-03 started</div></div>
+<div class="tb-tl-row"><div class="tb-tl-time">14:51:22</div><div class="tb-tl-label">TC-PAXNAME-SEC-04 started</div></div>
+<div class="tb-tl-row"><div class="tb-tl-time">14:51:27</div><div class="tb-tl-label">TC-PAXNAME-SEC-05 started</div></div>
+<div class="tb-tl-row"><div class="tb-tl-time">14:51:32</div><div class="tb-tl-label">TC-PAXNAME-SEC-06 started</div></div>
+<div class="tb-tl-row"><div class="tb-tl-time">14:51:33</div><div class="tb-tl-label">TC-PAXNAME-SEC-07 started</div></div>
+<div class="tb-tl-row"><div class="tb-tl-time">14:51:50</div><div class="tb-tl-label">TC-PAXNAME-REG-01 started</div></div>
+<div class="tb-tl-row"><div class="tb-tl-time">14:52:00</div><div class="tb-tl-label">TC-PAXNAME-POS-06 started</div></div>
+<div class="tb-tl-row"><div class="tb-tl-time">14:52:13</div><div class="tb-tl-label">TC-PAXNAME-BND-22 started</div></div>
+<div class="tb-tl-row"><div class="tb-tl-time">14:52:40</div><div class="tb-tl-label">TC-PAXNAME-BIZ-17 started</div></div>
+<div class="tb-tl-row"><div class="tb-tl-time">14:52:54</div><div class="tb-tl-label">TC-PAXNAME-BIZ-18 started</div></div>
+<div class="tb-tl-row"><div class="tb-tl-time">14:53:06</div><div class="tb-tl-label">TC-PAXNAME-BIZ-19 started</div></div>
+<div class="tb-tl-row"><div class="tb-tl-time">14:53:22</div><div class="tb-tl-label">TC-PAXNAME-BIZ-20 started</div></div>
+<div class="tb-tl-row"><div class="tb-tl-time">14:53:32</div><div class="tb-tl-label">TC-PAXNAME-POS-07 started</div></div>
+<div class="tb-tl-row"><div class="tb-tl-time">14:53:45</div><div class="tb-tl-label">TC-PAXNAME-POS-08 started</div></div>
+<div class="tb-tl-row"><div class="tb-tl-time">14:53:59</div><div class="tb-tl-label">TC-PAXNAME-POS-09 started</div></div>
+<div class="tb-tl-row"><div class="tb-tl-time">14:54:15</div><div class="tb-tl-label">TC-PAXNAME-POS-10 started</div></div>
+<div class="tb-tl-row"><div class="tb-tl-time">14:54:28</div><div class="tb-tl-label">TC-PAXNAME-BND-24 started</div></div>
+<div class="tb-tl-row"><div class="tb-tl-time">14:54:42</div><div class="tb-tl-label">TC-PAXNAME-BND-25 started</div></div>
+<div class="tb-tl-row"><div class="tb-tl-time">14:54:52</div><div class="tb-tl-label">TC-PAXNAME-BND-26 started</div></div>
+<div class="tb-tl-row"><div class="tb-tl-time">14:55:06</div><div class="tb-tl-label">TC-PAXNAME-BND-27 started</div></div>
+<div class="tb-tl-row"><div class="tb-tl-time">14:55:12</div><div class="tb-tl-label">TC-PAXNAME-BND-28 started</div></div>
+<div class="tb-tl-row"><div class="tb-tl-time">14:55:18</div><div class="tb-tl-label">TC-PAXNAME-BND-29 started</div></div>
+<div class="tb-tl-row"><div class="tb-tl-time">14:55:26</div><div class="tb-tl-label">TC-PAXNAME-BIZ-21 started</div></div>
+<div class="tb-tl-row"><div class="tb-tl-time">14:55:32</div><div class="tb-tl-label">TC-PAXNAME-BIZ-22 started</div></div>
+<div class="tb-tl-row"><div class="tb-tl-time">14:55:39</div><div class="tb-tl-label">TC-PAXNAME-BIZ-23 started</div></div>
+<div class="tb-tl-row"><div class="tb-tl-time">14:55:45</div><div class="tb-tl-label">TC-PAXNAME-BIZ-24 started</div></div>
+<div class="tb-tl-row"><div class="tb-tl-time">14:55:57</div><div class="tb-tl-label">TC-PAXNAME-BIZ-25 started</div></div>
+<div class="tb-tl-row"><div class="tb-tl-time">14:56:11</div><div class="tb-tl-label">TC-PAXNAME-BIZ-26 started</div></div>
+<div class="tb-tl-row"><div class="tb-tl-time">14:56:19</div><div class="tb-tl-label">TC-PAXNAME-BIZ-27 started</div></div>
+<div class="tb-tl-row"><div class="tb-tl-time">14:56:26</div><div class="tb-tl-label">TC-PAXNAME-NEG-17 started</div></div>
+<div class="tb-tl-row"><div class="tb-tl-time">14:56:27</div><div class="tb-tl-label">TC-PAXNAME-NEG-18 started</div></div>
+<div class="tb-tl-row"><div class="tb-tl-time">14:56:32</div><div class="tb-tl-label">TC-PAXNAME-NEG-19 started</div></div>
+<div class="tb-tl-row"><div class="tb-tl-time">14:56:38</div><div class="tb-tl-label">TC-PAXNAME-NEG-20 started</div></div>
+<div class="tb-tl-row"><div class="tb-tl-time">14:56:50</div><div class="tb-tl-label">TC-PAXNAME-VAL-25 started</div></div>
+<div class="tb-tl-row"><div class="tb-tl-time">14:57:02</div><div class="tb-tl-label">TC-PAXNAME-VAL-26 started</div></div>
+<div class="tb-tl-row"><div class="tb-tl-time">14:57:13</div><div class="tb-tl-label">TC-PAXNAME-VAL-27 started</div></div>
+<div class="tb-tl-row"><div class="tb-tl-time">14:57:24</div><div class="tb-tl-label">TC-PAXNAME-VAL-28 started</div></div>
+<div class="tb-tl-row"><div class="tb-tl-time">14:57:31</div><div class="tb-tl-label">TC-PAXNAME-VAL-29 started</div></div>
+<div class="tb-tl-row"><div class="tb-tl-time">14:57:38</div><div class="tb-tl-label">TC-PAXNAME-VAL-30 started</div></div>
+<div class="tb-tl-row"><div class="tb-tl-time">14:57:44</div><div class="tb-tl-label">TC-PAXNAME-VAL-31 started</div></div>
+<div class="tb-tl-row"><div class="tb-tl-time">14:57:50</div><div class="tb-tl-label">TC-PAXNAME-SEC-09 started</div></div>
+<div class="tb-tl-row"><div class="tb-tl-time">14:59:51</div><div class="tb-tl-label">TC-PAXNAME-SEC-08 started</div></div>
+<div class="tb-tl-row"><div class="tb-tl-time">15:01:32</div><div class="tb-tl-label">TC-PAXNAME-BND-23 started</div></div>
+<div class="tb-tl-row"><div class="tb-tl-time">15:03:12</div><div class="tb-tl-label"><b>Test Execution</b> ended</div></div>
+<div class="tb-tl-row"><div class="tb-tl-time">15:04:25</div><div class="tb-tl-label"><b>Report Generation</b> started</div></div>
+<div class="tb-tl-row"><div class="tb-tl-time">15:04:26</div><div class="tb-tl-label"><b>Report Generation</b> ended</div></div>
+<div class="tb-tl-row"><div class="tb-tl-time">15:04:26</div><div class="tb-tl-label">Execution completed</div></div>
+</div>
+</div>
+
+</details>
+<details class="tb-sec" open><summary>6. Other / Overhead</summary>
+<div class="dashboard-card">
+<div class="tb-overhead-box">
+<div class="oh-title">What's in Other / Overhead (6m 37s) &mdash; click a row for details</div>
+<div class="tb-oh-rows">
+<div class="tb-oh-row tb-oh-click" role="button" tabindex="0" data-detail="{&quot;title&quot;:&quot;Short gaps between the per-test-case log writes (561 gaps under 2 seconds)&quot;,&quot;start&quot;:&quot;2026-11-01 14:39:23 UTC&quot;,&quot;end&quot;:&quot;2026-11-01 15:04:26 UTC&quot;,&quot;duration&quot;:&quot;28s&quot;,&quot;share&quot;:&quot;1.9% of total&quot;,&quot;before&quot;:&quot;the per-test-case log writes&quot;,&quot;after&quot;:&quot;the per-test-case log writes&quot;,&quot;steps&quot;:[&quot;Each test case's log line and Markdown re-render ran back to back; these are the sub-2-second pauses between one render finishing and the next one starting.&quot;],&quot;note&quot;:&quot;Sum of many short gaps, spread between 14:39:23 and 15:04:26.&quot;}"><span class="oh-label">Short gaps between the per-test-case log writes (561 gaps under 2 seconds)</span><span class="oh-val">28s</span><span class="oh-more">Details &rsaquo;</span></div>
+<div class="tb-oh-row tb-oh-click" role="button" tabindex="0" data-detail="{&quot;title&quot;:&quot;Gap after TC-PAXNAME-SEC-07 log write, ended 14:51:41 and before TC-PAXNAME-REG-01 hop 1 - V1 Hold (TC-PAXNAME-REG-01), started 14:51:50&quot;,&quot;start&quot;:&quot;2026-11-01 14:51:41 UTC&quot;,&quot;end&quot;:&quot;2026-11-01 14:51:50 UTC&quot;,&quot;duration&quot;:&quot;9s&quot;,&quot;share&quot;:&quot;0.6% of total&quot;,&quot;before&quot;:&quot;TC-PAXNAME-SEC-07 log write, ended 14:51:41&quot;,&quot;after&quot;:&quot;TC-PAXNAME-REG-01 hop 1 - V1 Hold (TC-PAXNAME-REG-01), started 14:51:50&quot;,&quot;steps&quot;:[&quot;No notes were recorded for this window. It is the time between the two events shown above that no test case, wait, AI operation or reporting operation accounts for.&quot;],&quot;note&quot;:&quot;Derived from the log timestamps: the time in this window is not covered by any test-case span, wait, AI operation or reporting operation.&quot;}"><span class="oh-label">Gap after TC-PAXNAME-SEC-07 log write, ended 14:51:41 and before TC-PAXNAME-REG-01 hop 1 - V1 Hold (TC-PAXNAME-REG-01), started 14:51:50</span><span class="oh-val">9s</span><span class="oh-more">Details &rsaquo;</span></div>
+<div class="tb-oh-row tb-oh-click" role="button" tabindex="0" data-detail="{&quot;title&quot;:&quot;Gap after TC-PAXNAME-BND-22 log write, ended 14:52:27 and before TC-PAXNAME-BIZ-17 hop 1 - V1 Search, started 14:52:40&quot;,&quot;start&quot;:&quot;2026-11-01 14:52:27 UTC&quot;,&quot;end&quot;:&quot;2026-11-01 14:52:40 UTC&quot;,&quot;duration&quot;:&quot;13s&quot;,&quot;share&quot;:&quot;0.9% of total&quot;,&quot;before&quot;:&quot;TC-PAXNAME-BND-22 log write, ended 14:52:27&quot;,&quot;after&quot;:&quot;TC-PAXNAME-BIZ-17 hop 1 - V1 Search, started 14:52:40&quot;,&quot;steps&quot;:[&quot;No notes were recorded for this window. It is the time between the two events shown above that no test case, wait, AI operation or reporting operation accounts for.&quot;],&quot;note&quot;:&quot;Derived from the log timestamps: the time in this window is not covered by any test-case span, wait, AI operation or reporting operation.&quot;}"><span class="oh-label">Gap after TC-PAXNAME-BND-22 log write, ended 14:52:27 and before TC-PAXNAME-BIZ-17 hop 1 - V1 Search, started 14:52:40</span><span class="oh-val">13s</span><span class="oh-more">Details &rsaquo;</span></div>
+<div class="tb-oh-row tb-oh-click" role="button" tabindex="0" data-detail="{&quot;title&quot;:&quot;Gap after TC-PAXNAME-SEC-09 log write, ended 14:57:51 and before TC-PAXNAME-SEC-08 hop 1 - V1 Search, started 14:59:51&quot;,&quot;start&quot;:&quot;2026-11-01 14:57:51 UTC&quot;,&quot;end&quot;:&quot;2026-11-01 14:59:51 UTC&quot;,&quot;duration&quot;:&quot;2m 0s&quot;,&quot;share&quot;:&quot;8.0% of total&quot;,&quot;before&quot;:&quot;TC-PAXNAME-SEC-09 log write, ended 14:57:51&quot;,&quot;after&quot;:&quot;TC-PAXNAME-SEC-08 hop 1 - V1 Search, started 14:59:51&quot;,&quot;steps&quot;:[&quot;No notes were recorded for this window. It is the time between the two events shown above that no test case, wait, AI operation or reporting operation accounts for.&quot;],&quot;note&quot;:&quot;Derived from the log timestamps: the time in this window is not covered by any test-case span, wait, AI operation or reporting operation.&quot;}"><span class="oh-label">Gap after TC-PAXNAME-SEC-09 log write, ended 14:57:51 and before TC-PAXNAME-SEC-08 hop 1 - V1 Search, started 14:59:51</span><span class="oh-val">2m 0s</span><span class="oh-more">Details &rsaquo;</span></div>
+<div class="tb-oh-row tb-oh-click" role="button" tabindex="0" data-detail="{&quot;title&quot;:&quot;Gap after TC-PAXNAME-SEC-08 log write, ended 15:00:22 and before TC-PAXNAME-BND-23 hop 1 - V1 Search, started 15:01:32&quot;,&quot;start&quot;:&quot;2026-11-01 15:00:22 UTC&quot;,&quot;end&quot;:&quot;2026-11-01 15:01:32 UTC&quot;,&quot;duration&quot;:&quot;1m 11s&quot;,&quot;share&quot;:&quot;4.7% of total&quot;,&quot;before&quot;:&quot;TC-PAXNAME-SEC-08 log write, ended 15:00:22&quot;,&quot;after&quot;:&quot;TC-PAXNAME-BND-23 hop 1 - V1 Search, started 15:01:32&quot;,&quot;steps&quot;:[&quot;No notes were recorded for this window. It is the time between the two events shown above that no test case, wait, AI operation or reporting operation accounts for.&quot;],&quot;note&quot;:&quot;Derived from the log timestamps: the time in this window is not covered by any test-case span, wait, AI operation or reporting operation.&quot;}"><span class="oh-label">Gap after TC-PAXNAME-SEC-08 log write, ended 15:00:22 and before TC-PAXNAME-BND-23 hop 1 - V1 Search, started 15:01:32</span><span class="oh-val">1m 11s</span><span class="oh-more">Details &rsaquo;</span></div>
+<div class="tb-oh-row tb-oh-click" role="button" tabindex="0" data-detail="{&quot;title&quot;:&quot;Gap after TC-PAXNAME-BND-23 log write, ended 15:01:48 and before Bug Report Generation, started 15:04:25&quot;,&quot;start&quot;:&quot;2026-11-01 15:01:48 UTC&quot;,&quot;end&quot;:&quot;2026-11-01 15:04:25 UTC&quot;,&quot;duration&quot;:&quot;2m 36s&quot;,&quot;share&quot;:&quot;10.4% of total&quot;,&quot;before&quot;:&quot;TC-PAXNAME-BND-23 log write, ended 15:01:48&quot;,&quot;after&quot;:&quot;Bug Report Generation, started 15:04:25&quot;,&quot;steps&quot;:[&quot;No notes were recorded for this window. It is the time between the two events shown above that no test case, wait, AI operation or reporting operation accounts for.&quot;],&quot;note&quot;:&quot;Derived from the log timestamps: the time in this window is not covered by any test-case span, wait, AI operation or reporting operation.&quot;}"><span class="oh-label">Gap after TC-PAXNAME-BND-23 log write, ended 15:01:48 and before Bug Report Generation, started 15:04:25</span><span class="oh-val">2m 36s</span><span class="oh-more">Details &rsaquo;</span></div>
+</div>
+</div>
+</div>
+
+</details>
+<div class="tb-modal js-hidden" id="tbModal" role="dialog" aria-modal="true" aria-labelledby="tbModalTitle">
+<div class="tb-modal-card">
+<div class="tb-modal-head"><div class="tb-modal-title" id="tbModalTitle"></div><button type="button" class="tb-modal-x" id="tbModalClose" aria-label="Close">&times;</button></div>
+<div class="tb-modal-grid" id="tbModalGrid"></div>
+<h4>Right before</h4><p id="tbModalBefore"></p>
+<h4>What happened in this window</h4><ol id="tbModalSteps"></ol>
+<h4>Right after</h4><p id="tbModalAfter"></p>
+<div class="mnote" id="tbModalNote"></div>
+</div>
+</div>
+
+<script>
+(function(){
+  var search = document.getElementById('tcbSearch');
+  var statusFilter = document.getElementById('tcbStatusFilter');
+  var catFilter = document.getElementById('tcbCategoryFilter');
+  var resetBtn = document.getElementById('tcbReset');
+  var countEl = document.getElementById('tcbCount');
+  var noResults = document.getElementById('tcbNoResults');
+  var table = document.getElementById('tcbTable');
+  if(!table) return;
+  var tbody = table.tBodies[0];
+  var allRows = Array.prototype.slice.call(tbody.rows);
+  var total = allRows.length;
+
+  function applyFilter(){
+    var q = (search.value || '').trim().toLowerCase();
+    var st = statusFilter.value;
+    var ct = catFilter ? catFilter.value : '';
+    var shown = 0;
+    allRows.forEach(function(row){
+      var matchesQ = !q || (row.getAttribute('data-tcid').toLowerCase().indexOf(q) !== -1) ||
+                     (row.getAttribute('data-title').toLowerCase().indexOf(q) !== -1);
+      var matchesSt = !st || row.getAttribute('data-status') === st;
+      var matchesCt = !ct || row.getAttribute('data-cat') === ct;
+      var show = matchesQ && matchesSt && matchesCt;
+      row.classList.toggle('js-hidden', !show);
+      if(show) shown++;
+    });
+    countEl.textContent = shown + ' / ' + total + ' shown';
+    noResults.classList.toggle('js-hidden', shown !== 0);
+  }
+
+  search.addEventListener('input', applyFilter);
+  statusFilter.addEventListener('change', applyFilter);
+  if (catFilter) catFilter.addEventListener('change', applyFilter);
+  resetBtn.addEventListener('click', function(){
+    search.value = ''; statusFilter.value = ''; if (catFilter) catFilter.value = ''; applyFilter();
+  });
+
+  var sortState = { key: null, dir: 1 };
+  var headers = Array.prototype.slice.call(table.tHead.rows[0].cells);
+  headers.forEach(function(th, colIdx){
+    var key = th.getAttribute('data-sort');
+    if(!key) return;
+    th.addEventListener('click', function(){
+      var dir = (sortState.key === key) ? -sortState.dir : 1;
+      sortState = { key: key, dir: dir };
+      headers.forEach(function(h){ h.querySelectorAll('.sort-arrow').forEach(function(a){ a.remove(); }); });
+      var arrow = document.createElement('span');
+      arrow.className = 'sort-arrow';
+      arrow.textContent = dir === 1 ? '▴' : '▾';
+      th.appendChild(arrow);
+
+      var type = th.getAttribute('data-type');
+      var rows = Array.prototype.slice.call(tbody.rows);
+      rows.sort(function(a, b){
+        var av = a.cells[colIdx].getAttribute('data-sort-v');
+        var bv = b.cells[colIdx].getAttribute('data-sort-v');
+        if(type === 'num'){
+          av = parseFloat(av); bv = parseFloat(bv);
+          return (av - bv) * dir;
+        }
+        av = a.cells[colIdx].textContent.trim().toLowerCase();
+        bv = b.cells[colIdx].textContent.trim().toLowerCase();
+        return av.localeCompare(bv) * dir;
+      });
+      rows.forEach(function(r){ tbody.appendChild(r); });
+    });
+  });
+
+  applyFilter();
+})();
+</script>
+<script>
+(function(){
+  var reset = document.getElementById('tcbReset');
+  var table = document.getElementById('tcbTable');
+  if (!reset || !table) return;
+  var wrap = table.closest('.tb-table-wrap') || table.parentNode;
+  var noRes = document.getElementById('tcbNoResults');
+  function make(id, label, open){
+    var b = document.createElement('button');
+    b.type = 'button'; b.id = id; b.textContent = label;
+    b.addEventListener('click', function(){
+      wrap.hidden = !open;
+      if (noRes) noRes.style.display = open ? '' : 'none';
+    });
+    return b;
+  }
+  reset.parentNode.insertBefore(make('tcbExpandAll', 'Expand all', true), reset);
+  reset.parentNode.insertBefore(make('tcbCollapseAll', 'Collapse all', false), reset);
+})();
+</script>
+
+<script>
+(function(){
+  var modal=document.getElementById("tbModal"); if(!modal) return;
+  var $=function(i){return document.getElementById(i)};
+  function esc(s){var d=document.createElement("div");d.textContent=s==null?"":s;return d.innerHTML}
+  function open(row){
+    var d=JSON.parse(row.getAttribute("data-detail"));
+    $("tbModalTitle").textContent=d.title;
+    $("tbModalGrid").innerHTML=[["Start",d.start],["End",d.end],["Duration",d.duration],["Share of total",d.share]].map(function(x){return "<div class=\"mg\"><div class=\"k\">"+esc(x[0])+"</div><div class=\"v\">"+esc(x[1])+"</div></div>"}).join("");
+    $("tbModalBefore").textContent=d.before; $("tbModalAfter").textContent=d.after;
+    $("tbModalSteps").innerHTML=d.steps.map(function(s){return "<li>"+esc(s)+"</li>"}).join("");
+    $("tbModalNote").textContent=d.note||"";
+    modal.classList.remove("js-hidden"); $("tbModalClose").focus();
+  }
+  function close(){ modal.classList.add("js-hidden"); }
+  Array.prototype.forEach.call(document.querySelectorAll(".tb-oh-click"),function(r){
+    r.addEventListener("click",function(){open(r)});
+    r.addEventListener("keydown",function(e){ if(e.key==="Enter"||e.key===" "){e.preventDefault();open(r)} });
+  });
+  $("tbModalClose").addEventListener("click",close);
+  modal.addEventListener("click",function(e){ if(e.target===modal) close(); });
+  document.addEventListener("keydown",function(e){ if(e.key==="Escape") close(); });
+})();
+</script>
+
+<script>
+(function(){
+  var secs=function(){return Array.prototype.slice.call(document.querySelectorAll("details.tb-sec"))};
+  var e=document.getElementById("tbExpandAll"), c=document.getElementById("tbCollapseAll");
+  if(e) e.addEventListener("click",function(){secs().forEach(function(d){d.open=true})});
+  if(c) c.addEventListener("click",function(){secs().forEach(function(d){d.open=false})});
+})();
+</script>
+
+</div></body></html>

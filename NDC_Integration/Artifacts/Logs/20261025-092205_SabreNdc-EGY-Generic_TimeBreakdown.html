@@ -1,0 +1,1380 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>NDC Integration - Execution Time Breakdown</title>
+<style>
+  :root{
+    color-scheme: light;
+    --paper:#F3F5F8; --surface:#FFFFFF; --surface-2:#EAEEF4;
+    --ink:#10151F; --ink-2:#45536B; --ink-muted:#7C8AA0;
+    --line:#DDE3EC; --line-strong:#C6CEDC;
+    --accent:#2A78D6; --accent-ink:#1C5CAB; --accent-wash:#E4EEFA;
+    --good:#0CA30C; --warning:#C98A17; --serious:#D9673C; --critical:#D03B3B;
+    --good-wash:rgba(12,163,12,0.12); --warning-wash:rgba(250,178,25,0.16);
+    --serious-wash:rgba(236,131,90,0.14); --critical-wash:rgba(208,59,59,0.12);
+    --shadow:rgba(16,21,31,0.08);
+    --time-exec:#2A78D6; --time-wait:#C98A17; --time-claude:#7C5CE0; --time-report:#0C9488; --time-overhead:#7C8AA0;
+    --font-sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+    --font-mono:ui-monospace,"SF Mono","Cascadia Code","Roboto Mono",Consolas,"Courier New",monospace;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:where(:not([data-theme="light"])){
+      color-scheme: dark;
+      --paper:#0A0E15; --surface:#111826; --surface-2:#16202F;
+      --ink:#EDF1F7; --ink-2:#B7C2D1; --ink-muted:#8290A6;
+      --line:#232E40; --line-strong:#324058;
+      --accent:#3987E5; --accent-ink:#8FBBEF; --accent-wash:#152A45;
+      --good:#35C24A; --warning:#E3A730; --serious:#E88A5E; --critical:#EA5B5B;
+      --good-wash:rgba(53,194,74,0.16); --warning-wash:rgba(227,167,48,0.16);
+      --serious-wash:rgba(232,138,94,0.16); --critical-wash:rgba(234,91,91,0.18);
+      --shadow:rgba(0,0,0,0.5);
+      --time-exec:#3987E5; --time-wait:#E3A730; --time-claude:#9B85F0; --time-report:#2FD1C0; --time-overhead:#8290A6;
+    }
+  }
+  :root[data-theme="dark"]{
+    color-scheme: dark;
+    --paper:#0A0E15; --surface:#111826; --surface-2:#16202F;
+    --ink:#EDF1F7; --ink-2:#B7C2D1; --ink-muted:#8290A6;
+    --line:#232E40; --line-strong:#324058;
+    --accent:#3987E5; --accent-ink:#8FBBEF; --accent-wash:#152A45;
+    --good:#35C24A; --warning:#E3A730; --serious:#E88A5E; --critical:#EA5B5B;
+    --good-wash:rgba(53,194,74,0.16); --warning-wash:rgba(227,167,48,0.16);
+    --serious-wash:rgba(232,138,94,0.16); --critical-wash:rgba(234,91,91,0.18);
+    --shadow:rgba(0,0,0,0.5);
+    --time-exec:#3987E5; --time-wait:#E3A730; --time-claude:#9B85F0; --time-report:#2FD1C0; --time-overhead:#8290A6;
+  }
+  :root[data-theme="light"]{
+    color-scheme: light;
+    --paper:#F3F5F8; --surface:#FFFFFF; --surface-2:#EAEEF4;
+    --ink:#10151F; --ink-2:#45536B; --ink-muted:#7C8AA0;
+    --line:#DDE3EC; --line-strong:#C6CEDC;
+    --accent:#2A78D6; --accent-ink:#1C5CAB; --accent-wash:#E4EEFA;
+    --good:#0CA30C; --warning:#C98A17; --serious:#D9673C; --critical:#D03B3B;
+    --good-wash:rgba(12,163,12,0.12); --warning-wash:rgba(250,178,25,0.16);
+    --serious-wash:rgba(236,131,90,0.14); --critical-wash:rgba(208,59,59,0.12);
+    --shadow:rgba(16,21,31,0.08);
+    --time-exec:#2A78D6; --time-wait:#C98A17; --time-claude:#7C5CE0; --time-report:#0C9488; --time-overhead:#7C8AA0;
+  }
+  *{ box-sizing:border-box; }
+  html,body{ margin:0; padding:0; }
+  body{ background:var(--paper); color:var(--ink); font-family:var(--font-sans);
+        font-size:14px; line-height:1.5; -webkit-font-smoothing:antialiased; }
+  @media (prefers-reduced-motion: reduce){ *{ animation-duration:.001ms !important; transition-duration:.001ms !important; } }
+  a{ color:var(--accent-ink); }
+  .wrap{ max-width:1040px; margin:0 auto; padding:32px 20px 80px; }
+  .dashboard-card{ background:var(--surface); border:1px solid var(--line-strong); border-radius:24px; padding:24px; }
+  code,.mono{ font-family:var(--font-mono); font-size:.92em; }
+  .tb-back{ font-size:13px; color:var(--ink-muted); text-decoration:none; }
+  .tb-back:hover{ text-decoration:underline; }
+  .header{ margin-bottom:20px; }
+  .header h1{ font-size:30px; font-weight:800; margin:10px 0 8px; }
+  .meta-card{ margin-top:8px; }
+  .fields{ display:flex; flex-direction:column; gap:4px; margin:4px 0 6px; }
+  .field-row{ display:flex; flex-wrap:wrap; gap:4px 28px; }
+  .field{ font-size:14px; display:flex; gap:6px; }
+  .field .k{ color:var(--ink-2); font-weight:700; font-size:15px; letter-spacing:normal; text-transform:none; flex-shrink:0; }
+  .field .k::after{ content:':'; }
+  .field .v{ color:var(--ink); }
+  h2.section-num{ font-size:15px; text-transform:uppercase; letter-spacing:.04em; color:var(--ink-2);
+      border-bottom:1px solid var(--line); padding-bottom:6px; margin:32px 0 14px; }
+  .empty{ color:var(--ink-muted); font-size:13px; font-style:italic; }
+
+  .tb-cat-cards{ display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:12px; margin-bottom:22px; }
+  .tb-cat-card{ text-align:center; }
+  .tb-cat-card .val{ font-size:22px; font-weight:700; color:var(--ink); }
+  .tb-cat-card .pct{ font-size:13px; font-weight:600; margin-top:2px; }
+  .tb-cat-card .lbl{ font-size:12px; color:var(--ink-muted); margin-top:4px; }
+  .tb-cat-card .swatch{ display:inline-block; width:10px; height:10px; border-radius:3px; margin-right:6px; vertical-align:middle; }
+  .tb-cat-card.exec .pct{ color:var(--time-exec); }
+  .tb-cat-card.wait .pct{ color:var(--time-wait); }
+  .tb-cat-card.claude .pct{ color:var(--time-claude); }
+  .tb-cat-card.report .pct{ color:var(--time-report); }
+  .tb-cat-card.overhead .pct{ color:var(--time-overhead); }
+
+  .tb-bars{ display:flex; flex-direction:column; gap:10px; margin:18px 0 20px; }
+  .tb-bar-row{ display:flex; align-items:center; gap:14px; }
+  .tb-bar-label{ width:180px; flex-shrink:0; font-size:13px; font-weight:600; color:var(--ink-2); display:flex; align-items:center; gap:8px; }
+  .tb-bar-track{ flex:1 1 auto; background:var(--surface-2); border-radius:7px; height:16px; overflow:hidden; }
+  .tb-bar-fill{ height:100%; border-radius:7px; }
+  .tb-bar-value{ width:170px; flex-shrink:0; text-align:right; font-size:12.5px; color:var(--ink-2); font-family:var(--font-mono); }
+
+  .tb-reconcile{ font-size:13px; color:var(--ink-2); margin-top:14px; padding-top:14px; border-top:1px solid var(--line); }
+  .tb-reconcile b{ color:var(--ink); }
+  .tb-warning{ background:var(--warning-wash); border:1px solid var(--warning); border-radius:12px; padding:12px 14px; margin-top:12px; font-size:13px; color:var(--ink); }
+  .tb-warning .w-title{ font-weight:700; color:var(--warning); margin-bottom:4px; }
+
+  table.tb-table{ width:100%; border-collapse:collapse; font-size:13px; }
+  table.tb-table th{ text-align:left; font-size:11px; text-transform:uppercase; letter-spacing:.04em; color:var(--ink-muted); font-weight:700; padding:8px 10px; border-bottom:1px solid var(--line-strong); white-space:nowrap; }
+  table.tb-table td{ padding:9px 10px; border-bottom:1px solid var(--line); color:var(--ink-2); vertical-align:top; overflow-wrap:anywhere; }
+  table.tb-table tr:last-child td{ border-bottom:none; }
+  table.tb-table td.num, table.tb-table th.num{ text-align:right; font-family:var(--font-mono); white-space:nowrap; }
+  .tb-table-wrap{ overflow-x:auto; }
+  table.tb-table tr.tb-sub td{ background:rgba(127,127,127,.06); font-size:12.5px; }
+  table.tb-table tr.tb-sub td:first-child{ padding-left:28px; }
+  .tb-sub-arrow{ color:var(--ink-muted); margin-right:8px; }
+  table.tb-table tfoot td{ border-top:1px solid var(--line-strong); padding-top:12px; }
+  .tb-foot-note{ font-weight:400; color:var(--ink-muted); font-size:12px; }
+
+  .tc-toolbar{ display:flex; flex-wrap:wrap; align-items:center; gap:8px; margin:0 0 14px; position:sticky; top:0; z-index:5; background:var(--paper); padding:6px 0; }
+  .tc-toolbar input[type="search"]{ flex:1 1 220px; min-width:160px; padding:7px 10px; border-radius:7px; border:1px solid var(--line-strong); background:var(--surface); color:var(--ink); font-size:13px; }
+  .tc-toolbar select{ padding:7px 10px; border-radius:7px; border:1px solid var(--line-strong); background:var(--surface); color:var(--ink); font-size:13px; }
+  .tc-toolbar button{ padding:7px 12px; border-radius:7px; border:1px solid var(--line-strong); background:var(--surface); color:var(--ink-2); font-size:12px; font-weight:600; cursor:pointer; }
+  .tc-toolbar button:hover{ background:var(--surface-2); }
+  #tcbReset{ color:var(--critical); border-color:var(--critical); }
+  #tcbReset:hover{ background:var(--critical-wash); }
+  .tc-toolbar .tc-count{ font-size:12px; color:var(--ink-muted); margin-left:auto; white-space:nowrap; }
+  .tb-no-results{ padding:24px 16px; text-align:center; color:var(--critical); font-size:15px; font-weight:700; background:var(--critical-wash); border:1px solid var(--critical); border-radius:12px; margin-top:8px; }
+  .tb-no-results.js-hidden{ display:none; }
+
+  table.tcb-table{ width:100%; border-collapse:collapse; font-size:12.5px; }
+  table.tcb-table th{ text-align:left; font-size:11px; text-transform:uppercase; letter-spacing:.03em; color:var(--ink-muted); font-weight:700; padding:8px 9px; border-bottom:1px solid var(--line-strong); white-space:nowrap; cursor:pointer; user-select:none; }
+  table.tcb-table th:hover{ color:var(--ink); }
+  table.tcb-table th .sort-arrow{ font-size:9px; margin-left:3px; color:var(--accent-ink); }
+  table.tcb-table td{ padding:8px 9px; border-bottom:1px solid var(--line); color:var(--ink-2); vertical-align:top; overflow-wrap:anywhere; }
+  table.tcb-table td.num{ text-align:right; font-family:var(--font-mono); white-space:nowrap; }
+  table.tcb-table tr.js-hidden{ display:none; }
+  .badge{ font-size:11px; font-weight:700; padding:2px 8px; border-radius:5px; white-space:nowrap; }
+  .badge.PASS{ background:var(--good-wash); color:var(--good); }
+  .badge.FAIL{ background:var(--critical-wash); color:var(--critical); }
+  .badge.BLOCKED{ background:var(--serious-wash); color:var(--serious); }
+  .timing-partial{ font-size:10.5px; font-style:italic; color:var(--warning); display:block; margin-top:2px; }
+
+  .tb-timeline{ display:flex; flex-direction:column; }
+  .tb-tl-row{ display:flex; gap:14px; padding:7px 0; border-bottom:1px solid var(--line); font-size:13px; }
+  .tb-tl-row:last-child{ border-bottom:none; }
+  .tb-tl-time{ width:150px; flex-shrink:0; font-family:var(--font-mono); color:var(--ink-muted); font-size:12px; }
+  .tb-tl-label{ color:var(--ink-2); }
+  .tb-tl-label b{ color:var(--ink); }
+
+  .tb-overhead-box{ margin:0; padding:0; }
+  .tb-overhead-box .oh-title{ font-size:12px; font-weight:700; color:var(--ink-2); margin-bottom:8px; }
+  .tb-oh-rows{ display:flex; flex-direction:column; gap:6px; }
+  .tb-oh-row{ display:grid; grid-template-columns:minmax(0,1fr) 90px 80px; align-items:center; column-gap:16px; font-size:12.5px; color:var(--ink-2); }
+  .tb-oh-row .oh-val{ font-family:var(--font-mono); color:var(--ink); white-space:nowrap; text-align:right; }
+  .tb-phase-note{ font-size:12px; color:var(--ink-muted); margin:-6px 0 14px; }
+
+  /* --- overhead-row detail popup (added 2026-09-30): every .tb-oh-row opens #tbModal --- */
+  .tb-oh-row.tb-oh-click{ cursor:pointer; padding:6px 8px; margin:0 -8px; border-radius:8px; border:1px solid transparent; }
+  .tb-oh-row.tb-oh-click:hover, .tb-oh-row.tb-oh-click:focus-visible{ background:var(--accent-wash); border-color:var(--accent); outline:none; }
+  .tb-table tr.tb-oh-click{ cursor:pointer; }
+  .tb-table tr.tb-oh-click:hover td, .tb-table tr.tb-oh-click:focus-visible td{ background:var(--accent-wash); }
+  .tb-table td.oh-more{ color:var(--accent-ink); font-size:11px; font-weight:700; white-space:nowrap; text-align:right; }
+  .tb-oh-row .oh-more{ color:var(--accent-ink); font-size:11px; font-weight:700; white-space:nowrap; text-align:right; }
+  @media (max-width:560px){ .tb-oh-row{ grid-template-columns:minmax(0,1fr) auto; } .tb-oh-row .oh-more{ display:none; } }
+  .tb-modal{ position:fixed; inset:0; z-index:50; display:flex; align-items:center; justify-content:center; padding:20px; background:rgba(10,14,21,.55); }
+  .tb-modal.js-hidden{ display:none; }
+  .tb-modal-card{ background:var(--surface); color:var(--ink); border:1px solid var(--line-strong); border-radius:14px; box-shadow:0 18px 50px var(--shadow); width:min(720px,100%); max-height:88vh; overflow:auto; padding:20px 22px; }
+  .tb-modal-head{ display:flex; justify-content:space-between; align-items:flex-start; gap:12px; margin-bottom:12px; }
+  .tb-modal-title{ font-size:16px; font-weight:700; }
+  .tb-modal-x{ border:1px solid var(--line-strong); background:var(--surface-2); color:var(--ink); border-radius:8px; padding:2px 10px; font-size:16px; cursor:pointer; }
+  .tb-modal-grid{ display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:10px; margin-bottom:14px; }
+  .tb-modal-grid .mg{ background:var(--surface-2); border-radius:10px; padding:8px 12px; }
+  .tb-modal-grid .mg .k{ font-size:10.5px; text-transform:uppercase; letter-spacing:.04em; color:var(--ink-muted); font-weight:700; }
+  .tb-modal-grid .mg .v{ font-size:13px; font-family:var(--font-mono); margin-top:2px; }
+  .tb-modal h4{ margin:12px 0 4px; font-size:11px; text-transform:uppercase; letter-spacing:.04em; color:var(--ink-2); }
+  .tb-modal p, .tb-modal li{ font-size:13px; line-height:1.55; color:var(--ink-2); margin:0 0 4px; }
+  .tb-modal ol{ margin:0; padding-left:20px; }
+  .tb-modal .mnote{ margin-top:14px; font-size:11.5px; color:var(--ink-muted); }
+  /* --- collapsible sections 2-6 (click the title) --- */
+  details.tb-sec{ margin:0; }
+  details.tb-sec > summary{ font-size:15px; font-weight:700; text-transform:uppercase; letter-spacing:.04em; color:var(--ink-2);
+      border-bottom:1px solid var(--line); padding-bottom:6px; margin:32px 0 14px; cursor:pointer; list-style:none; }
+  details.tb-sec > summary::-webkit-details-marker{ display:none; }
+  details.tb-sec > summary:hover{ color:var(--accent-ink); }
+  /* --- Expand all / Collapse all above section 2 --- */
+.tc-actions{ display:flex; justify-content:flex-end; gap:8px; margin:32px 0 8px; }
+.tc-actions button{ padding:7px 12px; border-radius:7px; border:1px solid var(--line-strong); background:var(--surface); color:var(--ink-2); font-size:12px; font-weight:600; cursor:pointer; }
+.tc-cat-actions{ display:flex; justify-content:flex-end; gap:8px; margin:4px 0 10px; }
+.tc-cat-actions button{ padding:5px 10px; border-radius:7px; border:1px solid var(--line-strong); background:var(--surface); color:var(--ink-2); font-size:11px; font-weight:600; cursor:pointer; }
+.tc-cat-actions button:hover{ background:var(--surface-2); }
+.tc-actions button:hover{ background:var(--surface-2); }
+</style>
+</head><body><div class="wrap">
+
+<a class="tb-back" href="./20261025-092205_SabreNdc-EGY-Generic.html">&larr; Back to QA Execution Report</a>
+
+<div class="header">
+<h1>Execution Time Breakdown</h1>
+</div>
+
+<div class="meta-card dashboard-card">
+<div class="field-row">
+<div class="field"><span class="k">Total Duration</span><span class="v">41m 30s</span></div>
+<div class="field"><span class="k">Execution Start</span><span class="v">2026-10-25 09:22:05 UTC</span></div>
+<div class="field"><span class="k">Execution End</span><span class="v">2026-10-25 10:03:34 UTC</span></div>
+</div>
+</div>
+
+<h2 class="section-num">1. Time Breakdown</h2>
+<div class="tb-cat-cards">
+<div class="tb-cat-card exec dashboard-card"><div class="val">23m 13s</div><div class="pct">55.9%</div><div class="lbl"><span class="swatch" style="background:var(--time-exec)"></span>Test Case Execution</div></div>
+<div class="tb-cat-card wait dashboard-card"><div class="val">1m 30s</div><div class="pct">3.6%</div><div class="lbl"><span class="swatch" style="background:var(--time-wait)"></span>Waiting</div></div>
+<div class="tb-cat-card claude dashboard-card"><div class="val">0s</div><div class="pct">0.0%</div><div class="lbl"><span class="swatch" style="background:var(--time-claude)"></span>Claude / AI Processing</div></div>
+<div class="tb-cat-card report dashboard-card"><div class="val">6s</div><div class="pct">0.2%</div><div class="lbl"><span class="swatch" style="background:var(--time-report)"></span>Reporting</div></div>
+<div class="tb-cat-card overhead dashboard-card"><div class="val">16m 41s</div><div class="pct">40.2%</div><div class="lbl"><span class="swatch" style="background:var(--time-overhead)"></span>Other / Overhead</div></div>
+</div>
+
+<div class="dashboard-card">
+<div class="tb-bars">
+<div class="tb-bar-row"><div class="tb-bar-label"><span class="swatch" style="display:inline-block;width:10px;height:10px;border-radius:3px;background:var(--time-exec)"></span>Test Case Execution</div><div class="tb-bar-track"><div class="tb-bar-fill" style="width:55.9%;background:var(--time-exec)"></div></div><div class="tb-bar-value">23m 13s &middot; 55.9%</div></div>
+<div class="tb-bar-row"><div class="tb-bar-label"><span class="swatch" style="display:inline-block;width:10px;height:10px;border-radius:3px;background:var(--time-wait)"></span>Waiting</div><div class="tb-bar-track"><div class="tb-bar-fill" style="width:3.6%;background:var(--time-wait)"></div></div><div class="tb-bar-value">1m 30s &middot; 3.6%</div></div>
+<div class="tb-bar-row"><div class="tb-bar-label"><span class="swatch" style="display:inline-block;width:10px;height:10px;border-radius:3px;background:var(--time-claude)"></span>Claude / AI Processing</div><div class="tb-bar-track"><div class="tb-bar-fill" style="width:0.0%;background:var(--time-claude)"></div></div><div class="tb-bar-value">0s &middot; 0.0%</div></div>
+<div class="tb-bar-row"><div class="tb-bar-label"><span class="swatch" style="display:inline-block;width:10px;height:10px;border-radius:3px;background:var(--time-report)"></span>Reporting</div><div class="tb-bar-track"><div class="tb-bar-fill" style="width:0.2%;background:var(--time-report)"></div></div><div class="tb-bar-value">6s &middot; 0.2%</div></div>
+<div class="tb-bar-row"><div class="tb-bar-label"><span class="swatch" style="display:inline-block;width:10px;height:10px;border-radius:3px;background:var(--time-overhead)"></span>Other / Overhead</div><div class="tb-bar-track"><div class="tb-bar-fill" style="width:40.2%;background:var(--time-overhead)"></div></div><div class="tb-bar-value">16m 41s &middot; 40.2%</div></div>
+</div>
+
+<div class="tb-reconcile">Accounted Time: <b>41m 30s</b> &nbsp;=&nbsp; Total Duration: <b>41m 30s</b> &nbsp;&#10003;</div>
+</div>
+
+<div class="tc-actions">
+<button type="button" id="tbExpandAll">Expand all</button>
+<button type="button" id="tbCollapseAll">Collapse all</button>
+</div>
+<details class="tb-sec" open><summary>2. Execution Phases</summary>
+<div class="tb-phase-note">Phases are wall-clock stages of the run. The <b>Test Execution</b> phase (38m 57s) is longer than <b>Test Case Execution</b> (23m 13s, section 1) because it also contains idle time between calls. Click a phase row for the breakdown.</div>
+<div class="dashboard-card tb-table-wrap">
+<table class="tb-table">
+<thead><tr><th>Phase</th><th>Start</th><th>End</th><th class="num">Duration</th><th class="num">%</th><th></th></tr></thead>
+<tbody>
+<tr class="tb-oh-click" role="button" tabindex="0" data-detail="{&quot;title&quot;:&quot;Test Execution phase&quot;,&quot;start&quot;:&quot;2026-10-25 09:22:05 UTC&quot;,&quot;end&quot;:&quot;2026-10-25 10:01:02 UTC&quot;,&quot;duration&quot;:&quot;38m 57s&quot;,&quot;share&quot;:&quot;93.9% of total&quot;,&quot;before&quot;:&quot;Run started at 09:22:05.&quot;,&quot;after&quot;:&quot;Next: Bug Reporting phase, starting 10:03:34.&quot;,&quot;steps&quot;:[&quot;Sending the API calls and checking their responses (the test cases themselves), plus the time spent reading results and preparing the next call.&quot;,&quot;API calls in flight: 23m 13s (this is the Test Case Execution card; each call counted once).&quot;,&quot;Idle inside the phase: 15m 45s = phase 38m 57s minus calls 23m 13s. It is counted as Overhead, not as test time.&quot;,&quot;Idle 2m 59s between 09:23:43 and 09:26:42 (TC-BUNDLE-NEG-01 finished; next call had not started).&quot;,&quot;Idle 2m 39s between 09:52:01 and 09:54:40 (TC-CAPCHECK-SpiceJet-01 finished; next call had not started).&quot;,&quot;Idle 2m 17s between 09:58:45 and 10:01:02 (TC-VERSIONDIFF-BIZ-01 finished; next call had not started).&quot;,&quot;Idle 2m 3s between 09:28:07 and 09:30:10 (TC-FARECONFIRM-VAL-01 finished; next call had not started).&quot;,&quot;Idle 1m 30s between 09:42:56 and 09:44:26 (TC-FCAH-BIZ-01 finished; next call had not started).&quot;,&quot;Idle 1m 27s between 09:39:29 and 09:40:56 (TC-RETRIEVE-POS-01 finished; next call had not started).&quot;,&quot;Idle 54s between 09:27:01 and 09:27:55 (TC-FARECONFIRM-NEG-01 finished; next call had not started).&quot;,&quot;Idle 51s between 09:55:11 and 09:56:02 (TC-VERSIONDIFF-VAL-05 finished; next call had not started).&quot;,&quot;...and 3 more idle gaps of 2s or more.&quot;],&quot;note&quot;:&quot;Phase times are wall-clock; they are not the same as the five categories in section 1, and gaps between phases belong to no phase.&quot;}"><td>Test Execution</td><td>09:22:05</td><td>10:01:02</td><td class="num">38m 57s</td><td class="num">93.9%</td><td class="oh-more">Details &rsaquo;</td></tr>
+<tr class="tb-oh-click tb-sub" role="button" tabindex="0" data-detail="{&quot;title&quot;:&quot;Per-test-case JSONL + Markdown writes&quot;,&quot;start&quot;:&quot;2026-10-25 09:22:08 UTC&quot;,&quot;end&quot;:&quot;2026-10-25 09:58:45 UTC&quot;,&quot;duration&quot;:&quot;5.89s&quot;,&quot;share&quot;:&quot;0.2% of total (sum of the 64 windows)&quot;,&quot;before&quot;:&quot;Right before: Phase \&quot;Test Execution\&quot; started at 09:22:05.&quot;,&quot;after&quot;:&quot;Right after: Phase \&quot;Test Execution\&quot; ended at 10:01:02.&quot;,&quot;steps&quot;:[&quot;For each of the 64 test cases: appended its line to the .jsonl, then re-rendered the whole .md from the log. The time is the window around that one append + render.&quot;,&quot;Average 92 ms per test case; shortest 0 ms (TC-VERSIONDIFF-VAL-04), longest 119 ms (TC-SUPPLIER-BIZ-01).&quot;,&quot;Slowest five: TC-SUPPLIER-BIZ-01 119 ms, TC-AUTH-SEC-01 118 ms, TC-VERSIONDIFF-VAL-05 118 ms, TC-RETRIEVE-POS-01 112 ms, TC-VERSIONDIFF-VAL-03 112 ms.&quot;],&quot;note&quot;:&quot;Each write is charged to its own test case in the Reporting column of the Test Case Time table. The time between writes is not counted here (it is in Other / Overhead).&quot;}"><td><span class="tb-sub-arrow">&#8627;</span>Per-test-case JSONL + Markdown writes (64 test cases)</td><td>09:22:08</td><td>09:58:45</td><td class="num">5.89s</td><td class="num">0.2%</td><td class="oh-more">Details &rsaquo;</td></tr>
+<tr class="tb-oh-click" role="button" tabindex="0" data-detail="{&quot;title&quot;:&quot;Bug Reporting phase&quot;,&quot;start&quot;:&quot;2026-10-25 10:03:34 UTC&quot;,&quot;end&quot;:&quot;2026-10-25 10:03:34 UTC&quot;,&quot;duration&quot;:&quot;7 ms&quot;,&quot;share&quot;:&quot;0.0% of total&quot;,&quot;before&quot;:&quot;Idle for 2m 32s after the Test Execution phase ended (no phase was running).&quot;,&quot;after&quot;:&quot;Next: Report Generation phase, starting 10:03:34.&quot;,&quot;steps&quot;:[&quot;Drafting one bug report file per defect finding.&quot;,&quot;Reporting step inside this phase: Bug Report Generation (0s).&quot;],&quot;note&quot;:&quot;Phase times are wall-clock; they are not the same as the five categories in section 1, and gaps between phases belong to no phase.&quot;}"><td>Bug Reporting</td><td>10:03:34</td><td>10:03:34</td><td class="num">7 ms</td><td class="num">0.0%</td><td class="oh-more">Details &rsaquo;</td></tr>
+<tr class="tb-oh-click tb-sub" role="button" tabindex="0" data-detail="{&quot;title&quot;:&quot;Bug Report Generation&quot;,&quot;start&quot;:&quot;2026-10-25 10:03:34 UTC&quot;,&quot;end&quot;:&quot;2026-10-25 10:03:34 UTC&quot;,&quot;duration&quot;:&quot;7 ms&quot;,&quot;share&quot;:&quot;0.0% of total&quot;,&quot;before&quot;:&quot;Right before: Phase \&quot;Bug Reporting\&quot; started at 10:03:34.&quot;,&quot;after&quot;:&quot;Right after: Phase \&quot;Bug Reporting\&quot; ended at 10:03:34.&quot;,&quot;steps&quot;:[&quot;Drafted one Markdown bug report per defect finding, plus an index README, from the log (history, steps, actual/expected JSON, severity, evidence, impact).&quot;],&quot;note&quot;:&quot;Its duration is split evenly across the 5 test cases it was about (TC-FARECONFIRM-NEG-01, TC-FARECONFIRM-NEG-01, TC-BOOK-NEG-05, TC-BOOK-NEG-04, TC-SEARCH-BIZ-02) in the Reporting column of the Test Case Time table.&quot;}"><td><span class="tb-sub-arrow">&#8627;</span>Bug Report Generation</td><td>10:03:34</td><td>10:03:34</td><td class="num">7 ms</td><td class="num">0.0%</td><td class="oh-more">Details &rsaquo;</td></tr>
+<tr class="tb-oh-click" role="button" tabindex="0" data-detail="{&quot;title&quot;:&quot;Report Generation phase&quot;,&quot;start&quot;:&quot;2026-10-25 10:03:34 UTC&quot;,&quot;end&quot;:&quot;2026-10-25 10:03:34 UTC&quot;,&quot;duration&quot;:&quot;351 ms&quot;,&quot;share&quot;:&quot;0.0% of total&quot;,&quot;before&quot;:&quot;Bug Reporting phase ended at 10:03:34.&quot;,&quot;after&quot;:&quot;Run ended at 10:03:34.&quot;,&quot;steps&quot;:[&quot;Rendering the final HTML report and this Time Breakdown page.&quot;,&quot;Reporting step inside this phase: Final HTML Report Generation (0s).&quot;,&quot;Reporting step inside this phase: Time Breakdown Report Generation (0s).&quot;,&quot;Only the instants the log records as reporting count as Reporting time; the phase boundaries here are the moments the renders started and ended.&quot;],&quot;note&quot;:&quot;Phase times are wall-clock; they are not the same as the five categories in section 1, and gaps between phases belong to no phase.&quot;}"><td>Report Generation</td><td>10:03:34</td><td>10:03:34</td><td class="num">351 ms</td><td class="num">0.0%</td><td class="oh-more">Details &rsaquo;</td></tr>
+<tr class="tb-oh-click tb-sub" role="button" tabindex="0" data-detail="{&quot;title&quot;:&quot;Final HTML Report Generation&quot;,&quot;start&quot;:&quot;2026-10-25 10:03:34 UTC&quot;,&quot;end&quot;:&quot;2026-10-25 10:03:34 UTC&quot;,&quot;duration&quot;:&quot;238 ms&quot;,&quot;share&quot;:&quot;0.0% of total&quot;,&quot;before&quot;:&quot;Right before: Phase \&quot;Report Generation\&quot; started at 10:03:34.&quot;,&quot;after&quot;:&quot;Right after: Phase \&quot;Report Generation\&quot; ended at 10:03:34.&quot;,&quot;steps&quot;:[&quot;Rendered the single self-contained QA report (.html) from the finished .jsonl: summary donut, category cards, per-test-case request/response panels, findings, proposed SPEC.md updates and clean-up list.&quot;],&quot;note&quot;:&quot;Run-level work, not attributable to one test case: it appears in the Reporting card but in no test case row.&quot;}"><td><span class="tb-sub-arrow">&#8627;</span>Final HTML Report Generation</td><td>10:03:34</td><td>10:03:34</td><td class="num">238 ms</td><td class="num">0.0%</td><td class="oh-more">Details &rsaquo;</td></tr>
+<tr class="tb-oh-click tb-sub" role="button" tabindex="0" data-detail="{&quot;title&quot;:&quot;Time Breakdown Report Generation&quot;,&quot;start&quot;:&quot;2026-10-25 10:03:34 UTC&quot;,&quot;end&quot;:&quot;2026-10-25 10:03:34 UTC&quot;,&quot;duration&quot;:&quot;111 ms&quot;,&quot;share&quot;:&quot;0.0% of total&quot;,&quot;before&quot;:&quot;Right before: Phase \&quot;Report Generation\&quot; started at 10:03:34.&quot;,&quot;after&quot;:&quot;Right after: Phase \&quot;Report Generation\&quot; ended at 10:03:34.&quot;,&quot;steps&quot;:[&quot;Rendered this Time Breakdown page from the .jsonl timestamps (categories, phases, AI operations, reporting, per-test-case table, timeline, overhead).&quot;],&quot;note&quot;:&quot;Run-level work, not attributable to one test case: it appears in the Reporting card but in no test case row.&quot;}"><td><span class="tb-sub-arrow">&#8627;</span>Time Breakdown Report Generation</td><td>10:03:34</td><td>10:03:34</td><td class="num">111 ms</td><td class="num">0.0%</td><td class="oh-more">Details &rsaquo;</td></tr>
+</tbody>
+<tfoot><tr><td colspan="3"><b>Total Reporting Time</b> <span class="tb-foot-note">(sum of the &#8627; rows above)</span></td><td class="num"><b>6.24s</b></td><td colspan="2" class="num"><span class="tb-foot-note">card: 6s rounded</span></td></tr></tfoot>
+</table>
+</div>
+
+</details>
+<details class="tb-sec" open><summary>3. Claude / AI Operations</summary>
+<div class="dashboard-card tb-table-wrap">
+<table class="tb-table">
+<thead><tr><th>Operation</th><th>Related TC</th><th>Start</th><th>End</th><th class="num">Duration</th><th></th></tr></thead>
+<tbody><tr class="tb-oh-click" role="button" tabindex="0" data-detail="{&quot;title&quot;:&quot;Analyze Execution Results&quot;,&quot;start&quot;:&quot;2026-10-25 10:01:02 UTC&quot;,&quot;end&quot;:&quot;2026-10-25 10:01:02 UTC&quot;,&quot;duration&quot;:&quot;54 ms&quot;,&quot;share&quot;:&quot;0.0% of total&quot;,&quot;before&quot;:&quot;Right before: Phase \&quot;Test Execution\&quot; started at 09:22:05.&quot;,&quot;after&quot;:&quot;Right after: Phase \&quot;Test Execution\&quot; ended at 10:01:02.&quot;,&quot;steps&quot;:[&quot;Counted verdicts per file, checked every CSV row has exactly one logged test case, and audited every PNR created against the Void / CancelAfterHold calls that closed it.&quot;,&quot;Separated defects (contradicting SPEC.md) from newly confirmed facts, and wrote the SPEC.md update proposals.&quot;],&quot;note&quot;:&quot;Counted as Claude / AI Processing, outside any test case's API-call time. In the Test Case Time table this 54 ms is split evenly across all 64 test cases (1 ms each); that split is an allocation, not a per-test-case measurement.&quot;}"><td>Analyze Execution Results</td><td></td><td>10:01:02</td><td>10:01:02</td><td class="num">54 ms</td><td class="oh-more">Details &rsaquo;</td></tr></tbody>
+</table>
+</div>
+
+</details>
+<details class="tb-sec" open><summary>4. Test Case Time</summary>
+<div class="tc-toolbar dashboard-card">
+<input type="search" id="tcbSearch" placeholder="Search test case ID or title...">
+<select id="tcbStatusFilter">
+<option value="">All statuses</option>
+<option value="PASS">Passed</option>
+<option value="FAIL">Failed</option>
+<option value="BLOCKED">Blocked</option>
+</select>
+<select id="tcbCategoryFilter">
+<option value="">All categories</option>
+<option value="positive">Positive</option>
+<option value="negative">Negative</option>
+<option value="boundary">Boundary</option>
+<option value="validation">Validation</option>
+<option value="business-rule">Business Rule</option>
+<option value="security">Security</option>
+<option value="regression">Regression</option>
+<option value="integration">Integration</option>
+</select>
+<button type="button" id="tcbReset">Reset</button>
+<span class="tc-count" id="tcbCount">64 / 64 shown</span>
+</div>
+<div class="tb-no-results js-hidden" id="tcbNoResults">No test cases match the current search/filter.</div>
+<div class="dashboard-card tb-table-wrap">
+<table class="tcb-table" id="tcbTable">
+<thead><tr>
+<th data-sort="idx" data-type="num">#</th>
+<th data-sort="tcid" data-type="text">Test Case ID</th>
+<th data-sort="title" data-type="text">Test Case</th>
+<th data-sort="status" data-type="text">Status</th>
+<th data-sort="start" data-type="num">Start</th>
+<th data-sort="end" data-type="num">End</th>
+<th data-sort="exec" data-type="num" class="num">Execution</th>
+<th data-sort="wait" data-type="num" class="num">Waiting</th>
+<th data-sort="claude" data-type="num" class="num">Claude</th>
+<th data-sort="report" data-type="num" class="num">Reporting</th>
+<th data-sort="total" data-type="num" class="num">Total</th>
+</tr></thead>
+<tbody>
+<tr data-tcid="TC-SEARCH-POS-01" data-title="Verify a valid multi-field Search request returns a non-empty offers array for a supported route." data-status="PASS" data-cat="positive">
+<td data-sort-v="1">1</td>
+<td>TC-SEARCH-POS-01</td>
+<td>Verify a valid multi-field Search request returns a non-empty offers array for a supported route.</td>
+<td><span class="badge PASS">PASS</span></td>
+<td data-sort-v="1792920125158">09:22:05</td>
+<td data-sort-v="1792920128793">09:22:08</td>
+<td class="num" data-sort-v="3633">3.63s</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="1">1 ms</td>
+<td class="num" data-sort-v="81">81 ms</td>
+<td class="num" data-sort-v="3715">3.71s</td>
+</tr>
+<tr data-tcid="TC-SEARCH-NEG-01" data-title="Validate Search request is rejected when the supplier field is omitted." data-status="PASS" data-cat="negative">
+<td data-sort-v="2">2</td>
+<td>TC-SEARCH-NEG-01</td>
+<td>Validate Search request is rejected when the supplier field is omitted.</td>
+<td><span class="badge PASS">PASS</span></td>
+<td data-sort-v="1792920128951">09:22:08</td>
+<td data-sort-v="1792920129146">09:22:09</td>
+<td class="num" data-sort-v="194">194 ms</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="1">1 ms</td>
+<td class="num" data-sort-v="81">81 ms</td>
+<td class="num" data-sort-v="276">276 ms</td>
+</tr>
+<tr data-tcid="TC-SEARCH-NEG-02" data-title="Validate Search request is rejected when searchCriteria is omitted." data-status="PASS" data-cat="negative">
+<td data-sort-v="3">3</td>
+<td>TC-SEARCH-NEG-02</td>
+<td>Validate Search request is rejected when searchCriteria is omitted.</td>
+<td><span class="badge PASS">PASS</span></td>
+<td data-sort-v="1792920129305">09:22:09</td>
+<td data-sort-v="1792920129531">09:22:09</td>
+<td class="num" data-sort-v="226">226 ms</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="1">1 ms</td>
+<td class="num" data-sort-v="86">86 ms</td>
+<td class="num" data-sort-v="313">313 ms</td>
+</tr>
+<tr data-tcid="TC-SEARCH-NEG-03" data-title="Validate Search behavior for an invalid or lowercase IATA origin/destination code." data-status="PASS" data-cat="negative">
+<td data-sort-v="4">4</td>
+<td>TC-SEARCH-NEG-03</td>
+<td>Validate Search behavior for an invalid or lowercase IATA origin/destination code.</td>
+<td><span class="badge PASS">PASS</span></td>
+<td data-sort-v="1792920129690">09:22:09</td>
+<td data-sort-v="1792920132281">09:22:12</td>
+<td class="num" data-sort-v="2584">2.58s</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="1">1 ms</td>
+<td class="num" data-sort-v="75">75 ms</td>
+<td class="num" data-sort-v="2660">2.66s</td>
+</tr>
+<tr data-tcid="TC-SEARCH-BND-02" data-title="Validate Search accepts a total passenger count of exactly 9 (ADT+CHD+INF combined)." data-status="PASS" data-cat="boundary">
+<td data-sort-v="5">5</td>
+<td>TC-SEARCH-BND-02</td>
+<td>Validate Search accepts a total passenger count of exactly 9 (ADT+CHD+INF combined).</td>
+<td><span class="badge PASS">PASS</span></td>
+<td data-sort-v="1792920132429">09:22:12</td>
+<td data-sort-v="1792920136544">09:22:16</td>
+<td class="num" data-sort-v="4111">4.11s</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="1">1 ms</td>
+<td class="num" data-sort-v="77">77 ms</td>
+<td class="num" data-sort-v="4189">4.19s</td>
+</tr>
+<tr data-tcid="TC-SEARCH-BND-03" data-title="Validate Search rejects a total passenger count of 10, one over the confirmed 9-passenger maximum." data-status="PASS" data-cat="boundary">
+<td data-sort-v="6">6</td>
+<td>TC-SEARCH-BND-03</td>
+<td>Validate Search rejects a total passenger count of 10, one over the confirmed 9-passenger maximum.</td>
+<td><span class="badge PASS">PASS</span></td>
+<td data-sort-v="1792920136695">09:22:16</td>
+<td data-sort-v="1792920136958">09:22:16</td>
+<td class="num" data-sort-v="261">261 ms</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="1">1 ms</td>
+<td class="num" data-sort-v="89">89 ms</td>
+<td class="num" data-sort-v="351">351 ms</td>
+</tr>
+<tr data-tcid="TC-SEARCH-VAL-01" data-title="Verify Search response's supplier field matches the request's supplier value verbatim." data-status="PASS" data-cat="validation">
+<td data-sort-v="7">7</td>
+<td>TC-SEARCH-VAL-01</td>
+<td>Verify Search response's supplier field matches the request's supplier value verbatim.</td>
+<td><span class="badge PASS">PASS</span></td>
+<td data-sort-v="1792920137124">09:22:17</td>
+<td data-sort-v="1792920141000">09:22:21</td>
+<td class="num" data-sort-v="3873">3.87s</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="1">1 ms</td>
+<td class="num" data-sort-v="82">82 ms</td>
+<td class="num" data-sort-v="3956">3.96s</td>
+</tr>
+<tr data-tcid="TC-SEARCH-BIZ-02" data-title="Verify the per-passenger-type price-reconciliation formula holds on every returned Search offer." data-status="FAIL" data-cat="business-rule">
+<td data-sort-v="8">8</td>
+<td>TC-SEARCH-BIZ-02</td>
+<td>Verify the per-passenger-type price-reconciliation formula holds on every returned Search offer.</td>
+<td><span class="badge FAIL">FAIL</span></td>
+<td data-sort-v="1792920141158">09:22:21</td>
+<td data-sort-v="1792920144210">09:22:24</td>
+<td class="num" data-sort-v="3049">3.05s</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="1">1 ms</td>
+<td class="num" data-sort-v="72">72 ms</td>
+<td class="num" data-sort-v="3122">3.12s</td>
+</tr>
+<tr data-tcid="TC-SEARCH-SEC-01" data-title="Verify isdebug=true on Search exposes raw supplierRequest/supplierResponse fields, and confirm whether isdebug=false or omitted suppresses them." data-status="PASS" data-cat="security">
+<td data-sort-v="9">9</td>
+<td>TC-SEARCH-SEC-01</td>
+<td>Verify isdebug=true on Search exposes raw supplierRequest/supplierResponse fields, and confirm whether isdebug=false or omitted suppresses them.</td>
+<td><span class="badge PASS">PASS</span></td>
+<td data-sort-v="1792920144361">09:22:24</td>
+<td data-sort-v="1792920155422">09:22:35</td>
+<td class="num" data-sort-v="11031">11.0s</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="1">1 ms</td>
+<td class="num" data-sort-v="83">83 ms</td>
+<td class="num" data-sort-v="11115">11.1s</td>
+</tr>
+<tr data-tcid="TC-SEARCH-REG-01" data-title="Verify Search response schema matches the baseline [Observed example] shape with no unexpected field removal, rename, or retype." data-status="PASS" data-cat="regression">
+<td data-sort-v="10">10</td>
+<td>TC-SEARCH-REG-01</td>
+<td>Verify Search response schema matches the baseline [Observed example] shape with no unexpected field removal, rename, or retype.</td>
+<td><span class="badge PASS">PASS</span></td>
+<td data-sort-v="1792920176596">09:22:56</td>
+<td data-sort-v="1792920180964">09:23:00</td>
+<td class="num" data-sort-v="4365">4.37s</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="1">1 ms</td>
+<td class="num" data-sort-v="98">98 ms</td>
+<td class="num" data-sort-v="4464">4.46s</td>
+</tr>
+<tr data-tcid="TC-FARECONFIRM-POS-01" data-title="Verify FareConfirm returns a re-priced selectedOffer for a valid same-call responseId + selectedOfferId pair." data-status="PASS" data-cat="positive">
+<td data-sort-v="11">11</td>
+<td>TC-FARECONFIRM-POS-01</td>
+<td>Verify FareConfirm returns a re-priced selectedOffer for a valid same-call responseId + selectedOfferId pair.</td>
+<td><span class="badge PASS">PASS</span></td>
+<td data-sort-v="1792920181154">09:23:01</td>
+<td data-sort-v="1792920188302">09:23:08</td>
+<td class="num" data-sort-v="7141">7.14s</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="1">1 ms</td>
+<td class="num" data-sort-v="108">108 ms</td>
+<td class="num" data-sort-v="7250">7.25s</td>
+</tr>
+<tr data-tcid="TC-FARECONFIRM-NEG-01" data-title="Validate FareConfirm rejects a responseId + selectedOfferId pair originating from two different Search calls." data-status="FAIL" data-cat="negative">
+<td data-sort-v="12">12</td>
+<td>TC-FARECONFIRM-NEG-01</td>
+<td>Validate FareConfirm rejects a responseId + selectedOfferId pair originating from two different Search calls.</td>
+<td><span class="badge FAIL">FAIL</span></td>
+<td data-sort-v="1792920402416">09:26:42</td>
+<td data-sort-v="1792920421616">09:27:01</td>
+<td class="num" data-sort-v="19174">19.2s</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="1">1 ms</td>
+<td class="num" data-sort-v="86">86 ms</td>
+<td class="num" data-sort-v="19261">19.3s</td>
+</tr>
+<tr data-tcid="TC-FARECONFIRM-VAL-01" data-title="Validate V1's searchResponseId and V2's ResponseId field names are each accepted only under their own version's contract, not interchangeably." data-status="PASS" data-cat="validation">
+<td data-sort-v="13">13</td>
+<td>TC-FARECONFIRM-VAL-01</td>
+<td>Validate V1's searchResponseId and V2's ResponseId field names are each accepted only under their own version's contract, not interchangeably.</td>
+<td><span class="badge PASS">PASS</span></td>
+<td data-sort-v="1792920475869">09:27:55</td>
+<td data-sort-v="1792920487098">09:28:07</td>
+<td class="num" data-sort-v="11221">11.2s</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="1">1 ms</td>
+<td class="num" data-sort-v="110">110 ms</td>
+<td class="num" data-sort-v="11332">11.3s</td>
+</tr>
+<tr data-tcid="TC-FARECONFIRM-BIZ-02" data-title="[Search]&amp;[FareConfirm] [Response] Verify capability flags (haveBundles/canBeHeld/offerHasAncillary/isSeatMapRequired) stay consistent between Search and FareConfirm for the same offer." data-status="PASS" data-cat="business-rule">
+<td data-sort-v="14">14</td>
+<td>TC-FARECONFIRM-BIZ-02</td>
+<td>[Search]&amp;[FareConfirm] [Response] Verify capability flags (haveBundles/canBeHeld/offerHasAncillary/isSeatMapRequired) stay consistent between Search and FareConfirm for the same offer.</td>
+<td><span class="badge PASS">PASS</span></td>
+<td data-sort-v="1792920204065">09:23:24</td>
+<td data-sort-v="1792920210055">09:23:30</td>
+<td class="num" data-sort-v="5984">5.98s</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="1">1 ms</td>
+<td class="num" data-sort-v="93">93 ms</td>
+<td class="num" data-sort-v="6078">6.08s</td>
+</tr>
+<tr data-tcid="TC-FARECONFIRM-INT-01" data-title="[Search]&amp;[FareConfirm] [Response] Verify Search's responseId and offers[0].offerId hand off correctly into FareConfirm's required fields." data-status="PASS" data-cat="integration">
+<td data-sort-v="15">15</td>
+<td>TC-FARECONFIRM-INT-01</td>
+<td>[Search]&amp;[FareConfirm] [Response] Verify Search's responseId and offers[0].offerId hand off correctly into FareConfirm's required fields.</td>
+<td><span class="badge PASS">PASS</span></td>
+<td data-sort-v="1792920210241">09:23:30</td>
+<td data-sort-v="1792920216207">09:23:36</td>
+<td class="num" data-sort-v="5958">5.96s</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="1">1 ms</td>
+<td class="num" data-sort-v="90">90 ms</td>
+<td class="num" data-sort-v="6049">6.05s</td>
+</tr>
+<tr data-tcid="TC-FARECONFIRM-NEG-02" data-title="Validate FareConfirm behavior when confirming an offer whose underlying inventory sold out between Search and FareConfirm." data-status="BLOCKED" data-cat="negative">
+<td data-sort-v="16">16</td>
+<td>TC-FARECONFIRM-NEG-02</td>
+<td>Validate FareConfirm behavior when confirming an offer whose underlying inventory sold out between Search and FareConfirm.</td>
+<td><span class="badge BLOCKED">BLOCKED</span></td>
+<td data-sort-v="1792920216391">09:23:36</td>
+<td data-sort-v="1792920216391">09:23:36</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="1">1 ms</td>
+<td class="num" data-sort-v="83">83 ms</td>
+<td class="num" data-sort-v="84">84 ms</td>
+</tr>
+<tr data-tcid="TC-BUNDLE-POS-01" data-title="Verify GetOfferBundles returns bundleChoices for an offer with haveBundles=true." data-status="BLOCKED" data-cat="positive">
+<td data-sort-v="17">17</td>
+<td>TC-BUNDLE-POS-01</td>
+<td>Verify GetOfferBundles returns bundleChoices for an offer with haveBundles=true.</td>
+<td><span class="badge BLOCKED">BLOCKED</span></td>
+<td data-sort-v="1792920222999">09:23:42</td>
+<td data-sort-v="1792920222999">09:23:42</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="1">1 ms</td>
+<td class="num" data-sort-v="97">97 ms</td>
+<td class="num" data-sort-v="98">98 ms</td>
+</tr>
+<tr data-tcid="TC-BUNDLE-NEG-01" data-title="Validate GetOfferBundles behavior when called for an offer with haveBundles=false." data-status="PASS" data-cat="negative">
+<td data-sort-v="18">18</td>
+<td>TC-BUNDLE-NEG-01</td>
+<td>Validate GetOfferBundles behavior when called for an offer with haveBundles=false.</td>
+<td><span class="badge PASS">PASS</span></td>
+<td data-sort-v="1792920216562">09:23:36</td>
+<td data-sort-v="1792920222808">09:23:42</td>
+<td class="num" data-sort-v="6238">6.24s</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="1">1 ms</td>
+<td class="num" data-sort-v="93">93 ms</td>
+<td class="num" data-sort-v="6332">6.33s</td>
+</tr>
+<tr data-tcid="TC-BUNDLE-REG-01" data-title="Verify the JourneyKey1 script variable (resp.offerJourneys.key) is undefined against the real offerJourneys shape, in both V1 and V2 collections." data-status="BLOCKED" data-cat="regression">
+<td data-sort-v="19">19</td>
+<td>TC-BUNDLE-REG-01</td>
+<td>Verify the JourneyKey1 script variable (resp.offerJourneys.key) is undefined against the real offerJourneys shape, in both V1 and V2 collections.</td>
+<td><span class="badge BLOCKED">BLOCKED</span></td>
+<td data-sort-v="1792920223193">09:23:43</td>
+<td data-sort-v="1792920223193">09:23:43</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="1">1 ms</td>
+<td class="num" data-sort-v="87">87 ms</td>
+<td class="num" data-sort-v="88">88 ms</td>
+</tr>
+<tr data-tcid="TC-BUNDLE-VAL-02" data-title="Validate bundleChoices keys are a subset of the bundleReferences listed per journey in offerJourneys." data-status="BLOCKED" data-cat="validation">
+<td data-sort-v="20">20</td>
+<td>TC-BUNDLE-VAL-02</td>
+<td>Validate bundleChoices keys are a subset of the bundleReferences listed per journey in offerJourneys.</td>
+<td><span class="badge BLOCKED">BLOCKED</span></td>
+<td data-sort-v="1792920223373">09:23:43</td>
+<td data-sort-v="1792920223373">09:23:43</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="1">1 ms</td>
+<td class="num" data-sort-v="96">96 ms</td>
+<td class="num" data-sort-v="97">97 ms</td>
+</tr>
+<tr data-tcid="TC-BUNDLE-VAL-03" data-title="Validate includedServices mixes machine-readable tags with free-text rule strings, and known tags remain a subset rather than an exact-match set." data-status="BLOCKED" data-cat="validation">
+<td data-sort-v="21">21</td>
+<td>TC-BUNDLE-VAL-03</td>
+<td>Validate includedServices mixes machine-readable tags with free-text rule strings, and known tags remain a subset rather than an exact-match set.</td>
+<td><span class="badge BLOCKED">BLOCKED</span></td>
+<td data-sort-v="1792920223562">09:23:43</td>
+<td data-sort-v="1792920223562">09:23:43</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="1">1 ms</td>
+<td class="num" data-sort-v="89">89 ms</td>
+<td class="num" data-sort-v="90">90 ms</td>
+</tr>
+<tr data-tcid="TC-BOOK-POS-02" data-title="Verify Book commits a confirmed offer to a live PNR and returns pnr/bookingToken/gdsPNR." data-status="FAIL" data-cat="positive">
+<td data-sort-v="22">22</td>
+<td>TC-BOOK-POS-02</td>
+<td>Verify Book commits a confirmed offer to a live PNR and returns pnr/bookingToken/gdsPNR.</td>
+<td><span class="badge FAIL">FAIL</span></td>
+<td data-sort-v="1792920610525">09:30:10</td>
+<td data-sort-v="1792920669350">09:31:09</td>
+<td class="num" data-sort-v="58793">58.8s</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="1">1 ms</td>
+<td class="num" data-sort-v="85">85 ms</td>
+<td class="num" data-sort-v="58879">58.9s</td>
+</tr>
+<tr data-tcid="TC-BOOK-NEG-04" data-title="Validate behavior when booking twice with the same offer reference (double-booking attempt)." data-status="FAIL" data-cat="negative">
+<td data-sort-v="23">23</td>
+<td>TC-BOOK-NEG-04</td>
+<td>Validate behavior when booking twice with the same offer reference (double-booking attempt).</td>
+<td><span class="badge FAIL">FAIL</span></td>
+<td data-sort-v="1792920669530">09:31:09</td>
+<td data-sort-v="1792920776908">09:32:56</td>
+<td class="num" data-sort-v="107337">1m 47s</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="1">1 ms</td>
+<td class="num" data-sort-v="88">88 ms</td>
+<td class="num" data-sort-v="107426">1m 47s</td>
+</tr>
+<tr data-tcid="TC-BOOK-BIZ-03" data-title="Verify the price-reconciliation formula holds on Book's response." data-status="PASS" data-cat="business-rule">
+<td data-sort-v="24">24</td>
+<td>TC-BOOK-BIZ-03</td>
+<td>Verify the price-reconciliation formula holds on Book's response.</td>
+<td><span class="badge PASS">PASS</span></td>
+<td data-sort-v="1792920777089">09:32:57</td>
+<td data-sort-v="1792920848487">09:34:08</td>
+<td class="num" data-sort-v="71380">1m 11s</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="1">1 ms</td>
+<td class="num" data-sort-v="86">86 ms</td>
+<td class="num" data-sort-v="71467">1m 11s</td>
+</tr>
+<tr data-tcid="TC-BOOK-SEC-01" data-title="Verify a Book call against a commercially blacklisted supplier/airline is blocked at the business layer." data-status="BLOCKED" data-cat="security">
+<td data-sort-v="25">25</td>
+<td>TC-BOOK-SEC-01</td>
+<td>Verify a Book call against a commercially blacklisted supplier/airline is blocked at the business layer.</td>
+<td><span class="badge BLOCKED">BLOCKED</span></td>
+<td data-sort-v="1792920848664">09:34:08</td>
+<td data-sort-v="1792920848664">09:34:08</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="1">1 ms</td>
+<td class="num" data-sort-v="86">86 ms</td>
+<td class="num" data-sort-v="87">87 ms</td>
+</tr>
+<tr data-tcid="TC-BOOK-BIZ-04" data-title="[Book] Verify the production-booking auto-skip discipline is enforced as a manual process control before any Book/BookAfterHold execution against a production base URL." data-status="PASS" data-cat="business-rule">
+<td data-sort-v="26">26</td>
+<td>TC-BOOK-BIZ-04</td>
+<td>[Book] Verify the production-booking auto-skip discipline is enforced as a manual process control before any Book/BookAfterHold execution against a production base URL.</td>
+<td><span class="badge PASS">PASS</span></td>
+<td data-sort-v="1792920848842">09:34:08</td>
+<td data-sort-v="1792920848842">09:34:08</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="1">1 ms</td>
+<td class="num" data-sort-v="85">85 ms</td>
+<td class="num" data-sort-v="86">86 ms</td>
+</tr>
+<tr data-tcid="TC-BOOK-NEG-05" data-title="Validate Book rejects a selectedOfferId that does not match the fareConfirmResponseId/ResponseId supplied in the same request." data-status="FAIL" data-cat="negative">
+<td data-sort-v="27">27</td>
+<td>TC-BOOK-NEG-05</td>
+<td>Validate Book rejects a selectedOfferId that does not match the fareConfirmResponseId/ResponseId supplied in the same request.</td>
+<td><span class="badge FAIL">FAIL</span></td>
+<td data-sort-v="1792920849026">09:34:09</td>
+<td data-sort-v="1792920911247">09:35:11</td>
+<td class="num" data-sort-v="62190">1m 2s</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="1">1 ms</td>
+<td class="num" data-sort-v="98">98 ms</td>
+<td class="num" data-sort-v="62289">1m 2s</td>
+</tr>
+<tr data-tcid="TC-BOOK-VAL-02" data-title="Validate V1 Book's capital-S Supplier field is accepted consistently despite every other V1 field using lowercase supplier." data-status="PASS" data-cat="validation">
+<td data-sort-v="28">28</td>
+<td>TC-BOOK-VAL-02</td>
+<td>Validate V1 Book's capital-S Supplier field is accepted consistently despite every other V1 field using lowercase supplier.</td>
+<td><span class="badge PASS">PASS</span></td>
+<td data-sort-v="1792920911437">09:35:11</td>
+<td data-sort-v="1792920968964">09:36:08</td>
+<td class="num" data-sort-v="57511">57.5s</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="1">1 ms</td>
+<td class="num" data-sort-v="86">86 ms</td>
+<td class="num" data-sort-v="57598">57.6s</td>
+</tr>
+<tr data-tcid="TC-HOLD-POS-01" data-title="Verify Hold reserves an offer without immediate ticketing and returns pnr/bookingToken/gdsPNR plus holdExpirationDate." data-status="PASS" data-cat="positive">
+<td data-sort-v="29">29</td>
+<td>TC-HOLD-POS-01</td>
+<td>Verify Hold reserves an offer without immediate ticketing and returns pnr/bookingToken/gdsPNR plus holdExpirationDate.</td>
+<td><span class="badge PASS">PASS</span></td>
+<td data-sort-v="1792920969145">09:36:09</td>
+<td data-sort-v="1792921000374">09:36:40</td>
+<td class="num" data-sort-v="31210">31.2s</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="1">1 ms</td>
+<td class="num" data-sort-v="82">82 ms</td>
+<td class="num" data-sort-v="31293">31.3s</td>
+</tr>
+<tr data-tcid="TC-HOLD-NEG-02" data-title="Validate Hold is rejected for a supplier/offer with canBeHeld=false (e.g. FlyNas, GLC)." data-status="BLOCKED" data-cat="negative">
+<td data-sort-v="30">30</td>
+<td>TC-HOLD-NEG-02</td>
+<td>Validate Hold is rejected for a supplier/offer with canBeHeld=false (e.g. FlyNas, GLC).</td>
+<td><span class="badge BLOCKED">BLOCKED</span></td>
+<td data-sort-v="1792921000558">09:36:40</td>
+<td data-sort-v="1792921000558">09:36:40</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="1">1 ms</td>
+<td class="num" data-sort-v="84">84 ms</td>
+<td class="num" data-sort-v="85">85 ms</td>
+</tr>
+<tr data-tcid="TC-HOLD-BIZ-01" data-title="Verify the price-reconciliation formula holds on Hold's response in both V1 and V2." data-status="PASS" data-cat="business-rule">
+<td data-sort-v="31">31</td>
+<td>TC-HOLD-BIZ-01</td>
+<td>Verify the price-reconciliation formula holds on Hold's response in both V1 and V2.</td>
+<td><span class="badge PASS">PASS</span></td>
+<td data-sort-v="1792921000737">09:36:40</td>
+<td data-sort-v="1792921035686">09:37:15</td>
+<td class="num" data-sort-v="34931">34.9s</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="1">1 ms</td>
+<td class="num" data-sort-v="106">106 ms</td>
+<td class="num" data-sort-v="35038">35.0s</td>
+</tr>
+<tr data-tcid="TC-HOLD-BND-01" data-title="[Hold]&amp;[FareConfirmAfterHold]&amp;[BookAfterHold]&amp;[CancelAfterHold] [Response] Verify behavior when FareConfirmAfterHold, BookAfterHold, or CancelAfterHold is attempted after the booking's holdExpirationDate has passed." data-status="BLOCKED" data-cat="boundary">
+<td data-sort-v="32">32</td>
+<td>TC-HOLD-BND-01</td>
+<td>[Hold]&amp;[FareConfirmAfterHold]&amp;[BookAfterHold]&amp;[CancelAfterHold] [Response] Verify behavior when FareConfirmAfterHold, BookAfterHold, or CancelAfterHold is attempted after the booking's holdExpirationDate has passed.</td>
+<td><span class="badge BLOCKED">BLOCKED</span></td>
+<td data-sort-v="1792921035898">09:37:15</td>
+<td data-sort-v="1792921035898">09:37:15</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="1">1 ms</td>
+<td class="num" data-sort-v="101">101 ms</td>
+<td class="num" data-sort-v="102">102 ms</td>
+</tr>
+<tr data-tcid="TC-RETRIEVE-POS-01" data-title="Verify bookingStatus reflects the correct lifecycle stage (Held after Hold, Booked after Book/BookAfterHold)." data-status="PASS" data-cat="positive">
+<td data-sort-v="33">33</td>
+<td>TC-RETRIEVE-POS-01</td>
+<td>Verify bookingStatus reflects the correct lifecycle stage (Held after Hold, Booked after Book/BookAfterHold).</td>
+<td><span class="badge PASS">PASS</span></td>
+<td data-sort-v="1792921036109">09:37:16</td>
+<td data-sort-v="1792921169108">09:39:29</td>
+<td class="num" data-sort-v="132945">2m 13s</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="1">1 ms</td>
+<td class="num" data-sort-v="112">112 ms</td>
+<td class="num" data-sort-v="133058">2m 13s</td>
+</tr>
+<tr data-tcid="TC-RETRIEVE-REG-01" data-title="[Retrieve] Verify V2 Retrieve has zero test-script assertions, the largest single V1/V2 coverage gap of any endpoint." data-status="PASS" data-cat="regression">
+<td data-sort-v="34">34</td>
+<td>TC-RETRIEVE-REG-01</td>
+<td>[Retrieve] Verify V2 Retrieve has zero test-script assertions, the largest single V1/V2 coverage gap of any endpoint.</td>
+<td><span class="badge PASS">PASS</span></td>
+<td data-sort-v="1792921735507">09:48:55</td>
+<td data-sort-v="1792921812391">09:50:12</td>
+<td class="num" data-sort-v="76855">1m 17s</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="1">1 ms</td>
+<td class="num" data-sort-v="95">95 ms</td>
+<td class="num" data-sort-v="76951">1m 17s</td>
+</tr>
+<tr data-tcid="TC-RETRIEVE-VAL-01" data-title="Validate bookingStatus is one of the currently-known set, or flagged as a newly-observed value rather than hard-failed." data-status="PASS" data-cat="validation">
+<td data-sort-v="35">35</td>
+<td>TC-RETRIEVE-VAL-01</td>
+<td>Validate bookingStatus is one of the currently-known set, or flagged as a newly-observed value rather than hard-failed.</td>
+<td><span class="badge PASS">PASS</span></td>
+<td data-sort-v="1792921256302">09:40:56</td>
+<td data-sort-v="1792921352506">09:42:32</td>
+<td class="num" data-sort-v="96165">1m 36s</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="1">1 ms</td>
+<td class="num" data-sort-v="89">89 ms</td>
+<td class="num" data-sort-v="96255">1m 36s</td>
+</tr>
+<tr data-tcid="TC-RETRIEVE-INT-01" data-title="[Hold]&amp;[Retrieve] [Response] Verify Retrieve immediately after Hold vs. after holdExpirationDate has passed returns the expected bookingStatus transition." data-status="BLOCKED" data-cat="integration">
+<td data-sort-v="36">36</td>
+<td>TC-RETRIEVE-INT-01</td>
+<td>[Hold]&amp;[Retrieve] [Response] Verify Retrieve immediately after Hold vs. after holdExpirationDate has passed returns the expected bookingStatus transition.</td>
+<td><span class="badge BLOCKED">BLOCKED</span></td>
+<td data-sort-v="1792921352697">09:42:32</td>
+<td data-sort-v="1792921352697">09:42:32</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="1">1 ms</td>
+<td class="num" data-sort-v="86">86 ms</td>
+<td class="num" data-sort-v="87">87 ms</td>
+</tr>
+<tr data-tcid="TC-FCAH-BIZ-01" data-title="Verify whether the reported price differs from the original Hold price after a hold-window delay (price-drift exploratory check)." data-status="PASS" data-cat="business-rule">
+<td data-sort-v="37">37</td>
+<td>TC-FCAH-BIZ-01</td>
+<td>Verify whether the reported price differs from the original Hold price after a hold-window delay (price-drift exploratory check).</td>
+<td><span class="badge PASS">PASS</span></td>
+<td data-sort-v="1792921352882">09:42:32</td>
+<td data-sort-v="1792921483756">09:44:43</td>
+<td class="num" data-sort-v="40838">40.8s</td>
+<td class="num" data-sort-v="90015">1m 30s</td>
+<td class="num" data-sort-v="1">1 ms</td>
+<td class="num" data-sort-v="100">100 ms</td>
+<td class="num" data-sort-v="130954">2m 11s</td>
+</tr>
+<tr data-tcid="TC-FCAH-NEG-01" data-title="Validate FareConfirmAfterHold behavior when called after the hold's holdExpirationDate has passed." data-status="BLOCKED" data-cat="negative">
+<td data-sort-v="38">38</td>
+<td>TC-FCAH-NEG-01</td>
+<td>Validate FareConfirmAfterHold behavior when called after the hold's holdExpirationDate has passed.</td>
+<td><span class="badge BLOCKED">BLOCKED</span></td>
+<td data-sort-v="1792921483957">09:44:43</td>
+<td data-sort-v="1792921483957">09:44:43</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="1">1 ms</td>
+<td class="num" data-sort-v="84">84 ms</td>
+<td class="num" data-sort-v="85">85 ms</td>
+</tr>
+<tr data-tcid="TC-BOOKAFTERHOLD-REG-01" data-title="[Hold]&amp;[BookAfterHold] [Response] Verify pnr/bookingToken/gdsPNR returned by BookAfterHold equal the values established at Hold (same-PNR invariant)." data-status="PASS" data-cat="regression">
+<td data-sort-v="39">39</td>
+<td>TC-BOOKAFTERHOLD-REG-01</td>
+<td>[Hold]&amp;[BookAfterHold] [Response] Verify pnr/bookingToken/gdsPNR returned by BookAfterHold equal the values established at Hold (same-PNR invariant).</td>
+<td><span class="badge PASS">PASS</span></td>
+<td data-sort-v="1792921484141">09:44:44</td>
+<td data-sort-v="1792921558285">09:45:58</td>
+<td class="num" data-sort-v="74123">1m 14s</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="1">1 ms</td>
+<td class="num" data-sort-v="89">89 ms</td>
+<td class="num" data-sort-v="74213">1m 14s</td>
+</tr>
+<tr data-tcid="TC-BOOKAFTERHOLD-NEG-01" data-title="Validate BookAfterHold is rejected when attempted on an expired hold." data-status="BLOCKED" data-cat="negative">
+<td data-sort-v="40">40</td>
+<td>TC-BOOKAFTERHOLD-NEG-01</td>
+<td>Validate BookAfterHold is rejected when attempted on an expired hold.</td>
+<td><span class="badge BLOCKED">BLOCKED</span></td>
+<td data-sort-v="1792921558480">09:45:58</td>
+<td data-sort-v="1792921558480">09:45:58</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="1">1 ms</td>
+<td class="num" data-sort-v="85">85 ms</td>
+<td class="num" data-sort-v="86">86 ms</td>
+</tr>
+<tr data-tcid="TC-VOID-BIZ-01" data-title="[Book]&amp;[Void] [Request] Verify Void only succeeds within the window implied by the booking's live voidCapability flag, not merely the static per-supplier Void column." data-status="BLOCKED" data-cat="business-rule">
+<td data-sort-v="41">41</td>
+<td>TC-VOID-BIZ-01</td>
+<td>[Book]&amp;[Void] [Request] Verify Void only succeeds within the window implied by the booking's live voidCapability flag, not merely the static per-supplier Void column.</td>
+<td><span class="badge BLOCKED">BLOCKED</span></td>
+<td data-sort-v="1792921558669">09:45:58</td>
+<td data-sort-v="1792921558669">09:45:58</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="1">1 ms</td>
+<td class="num" data-sort-v="90">90 ms</td>
+<td class="num" data-sort-v="91">91 ms</td>
+</tr>
+<tr data-tcid="TC-VOID-NEG-02" data-title="Validate Void is rejected when surName does not match the booking's passenger record." data-status="FAIL" data-cat="negative">
+<td data-sort-v="42">42</td>
+<td>TC-VOID-NEG-02</td>
+<td>Validate Void is rejected when surName does not match the booking's passenger record.</td>
+<td><span class="badge FAIL">FAIL</span></td>
+<td data-sort-v="1792921558860">09:45:58</td>
+<td data-sort-v="1792921619404">09:46:59</td>
+<td class="num" data-sort-v="60528">1m 1s</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="1">1 ms</td>
+<td class="num" data-sort-v="88">88 ms</td>
+<td class="num" data-sort-v="60617">1m 1s</td>
+</tr>
+<tr data-tcid="TC-CANCELHOLD-REG-01" data-title="[CancelAfterHold] Verify CancelAfterHold is the least-validated endpoint in the API, with zero test-script coverage and no genuine saved example response in either version." data-status="FAIL" data-cat="regression">
+<td data-sort-v="43">43</td>
+<td>TC-CANCELHOLD-REG-01</td>
+<td>[CancelAfterHold] Verify CancelAfterHold is the least-validated endpoint in the API, with zero test-script coverage and no genuine saved example response in either version.</td>
+<td><span class="badge FAIL">FAIL</span></td>
+<td data-sort-v="1792921619599">09:46:59</td>
+<td data-sort-v="1792921654547">09:47:34</td>
+<td class="num" data-sort-v="34923">34.9s</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="1">1 ms</td>
+<td class="num" data-sort-v="98">98 ms</td>
+<td class="num" data-sort-v="35022">35.0s</td>
+</tr>
+<tr data-tcid="TC-CANCELHOLD-NEG-02" data-title="Validate CancelAfterHold is rejected when attempted against an already-booked (non-held) PNR." data-status="PASS" data-cat="negative">
+<td data-sort-v="44">44</td>
+<td>TC-CANCELHOLD-NEG-02</td>
+<td>Validate CancelAfterHold is rejected when attempted against an already-booked (non-held) PNR.</td>
+<td><span class="badge PASS">PASS</span></td>
+<td data-sort-v="1792921654753">09:47:34</td>
+<td data-sort-v="1792921719434">09:48:39</td>
+<td class="num" data-sort-v="64649">1m 5s</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="1">1 ms</td>
+<td class="num" data-sort-v="103">103 ms</td>
+<td class="num" data-sort-v="64753">1m 5s</td>
+</tr>
+<tr data-tcid="TC-AUTH-SEC-01" data-title="Verify request behavior with a valid x-api-key versus an invalid or missing x-api-key header." data-status="PASS" data-cat="security">
+<td data-sort-v="45">45</td>
+<td>TC-AUTH-SEC-01</td>
+<td>Verify request behavior with a valid x-api-key versus an invalid or missing x-api-key header.</td>
+<td><span class="badge PASS">PASS</span></td>
+<td data-sort-v="1792921812789">09:50:12</td>
+<td data-sort-v="1792921816520">09:50:16</td>
+<td class="num" data-sort-v="3712">3.71s</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="1">1 ms</td>
+<td class="num" data-sort-v="118">118 ms</td>
+<td class="num" data-sort-v="3831">3.83s</td>
+</tr>
+<tr data-tcid="TC-AUTH-SEC-02" data-title="Verify request behavior with a valid Client-Id versus an invalid Client-Id header value." data-status="PASS" data-cat="security">
+<td data-sort-v="46">46</td>
+<td>TC-AUTH-SEC-02</td>
+<td>Verify request behavior with a valid Client-Id versus an invalid Client-Id header value.</td>
+<td><span class="badge PASS">PASS</span></td>
+<td data-sort-v="1792921816745">09:50:16</td>
+<td data-sort-v="1792921822092">09:50:22</td>
+<td class="num" data-sort-v="5328">5.33s</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="1">1 ms</td>
+<td class="num" data-sort-v="95">95 ms</td>
+<td class="num" data-sort-v="5424">5.42s</td>
+</tr>
+<tr data-tcid="TC-AUTH-SEC-03" data-title="[Hold]&amp;[Retrieve] [Request] Verify a cross-tenant access attempt -- acting on a pnr/bookingToken using a different supplier/credentialsSelector pair than the one that created it -- is rejected." data-status="PASS" data-cat="security">
+<td data-sort-v="47">47</td>
+<td>TC-AUTH-SEC-03</td>
+<td>[Hold]&amp;[Retrieve] [Request] Verify a cross-tenant access attempt -- acting on a pnr/bookingToken using a different supplier/credentialsSelector pair than the one that created it -- is rejected.</td>
+<td><span class="badge PASS">PASS</span></td>
+<td data-sort-v="1792921822298">09:50:22</td>
+<td data-sort-v="1792921854375">09:50:54</td>
+<td class="num" data-sort-v="32039">32.0s</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="1">1 ms</td>
+<td class="num" data-sort-v="96">96 ms</td>
+<td class="num" data-sort-v="32136">32.1s</td>
+</tr>
+<tr data-tcid="TC-AUTH-SEC-04" data-title="Validate injection-style payloads in free-text fields (passenger name, address, surName) are handled safely and not executed or reflected unsanitized." data-status="PASS" data-cat="security">
+<td data-sort-v="48">48</td>
+<td>TC-AUTH-SEC-04</td>
+<td>Validate injection-style payloads in free-text fields (passenger name, address, surName) are handled safely and not executed or reflected unsanitized.</td>
+<td><span class="badge PASS">PASS</span></td>
+<td data-sort-v="1792921854588">09:50:54</td>
+<td data-sort-v="1792921913168">09:51:53</td>
+<td class="num" data-sort-v="58527">58.5s</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="1">1 ms</td>
+<td class="num" data-sort-v="96">96 ms</td>
+<td class="num" data-sort-v="58624">58.6s</td>
+</tr>
+<tr data-tcid="TC-SUPPLIER-BIZ-01" data-title="[Search]&amp;[FareConfirm] [Response] Verify the generic pre-flow capability-confirmation procedure -- Search's per-offer flags re-confirmed at FareConfirm -- before scheduling any flow against a given supplier." data-status="PASS" data-cat="business-rule">
+<td data-sort-v="49">49</td>
+<td>TC-SUPPLIER-BIZ-01</td>
+<td>[Search]&amp;[FareConfirm] [Response] Verify the generic pre-flow capability-confirmation procedure -- Search's per-offer flags re-confirmed at FareConfirm -- before scheduling any flow against a given supplier.</td>
+<td><span class="badge PASS">PASS</span></td>
+<td data-sort-v="1792921913383">09:51:53</td>
+<td data-sort-v="1792921919950">09:51:59</td>
+<td class="num" data-sort-v="6560">6.56s</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="1">1 ms</td>
+<td class="num" data-sort-v="119">119 ms</td>
+<td class="num" data-sort-v="6680">6.68s</td>
+</tr>
+<tr data-tcid="TC-CAPCHECK-AirCairo-01" data-title="[Search]&amp;[FareConfirm] [Response] Verify AirCairo's live Hold capability, given the direct contradiction between the Integration doc (Hold=Yes) and the PRD's canBeHeld=false listing." data-status="BLOCKED" data-cat="business-rule">
+<td data-sort-v="50">50</td>
+<td>TC-CAPCHECK-AirCairo-01</td>
+<td>[Search]&amp;[FareConfirm] [Response] Verify AirCairo's live Hold capability, given the direct contradiction between the Integration doc (Hold=Yes) and the PRD's canBeHeld=false listing.</td>
+<td><span class="badge BLOCKED">BLOCKED</span></td>
+<td data-sort-v="1792921920184">09:52:00</td>
+<td data-sort-v="1792921920184">09:52:00</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="1">1 ms</td>
+<td class="num" data-sort-v="92">92 ms</td>
+<td class="num" data-sort-v="93">93 ms</td>
+</tr>
+<tr data-tcid="TC-CAPCHECK-EgyptAir-01" data-title="[Search]&amp;[FareConfirm] [Response] Verify EgyptAir's live Hold capability, given the possible contradiction between the Integration doc (Hold=Yes) and the PRD's flag-count pattern suggesting canBeHeld=false." data-status="BLOCKED" data-cat="business-rule">
+<td data-sort-v="51">51</td>
+<td>TC-CAPCHECK-EgyptAir-01</td>
+<td>[Search]&amp;[FareConfirm] [Response] Verify EgyptAir's live Hold capability, given the possible contradiction between the Integration doc (Hold=Yes) and the PRD's flag-count pattern suggesting canBeHeld=false.</td>
+<td><span class="badge BLOCKED">BLOCKED</span></td>
+<td data-sort-v="1792921920383">09:52:00</td>
+<td data-sort-v="1792921920383">09:52:00</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="1">1 ms</td>
+<td class="num" data-sort-v="94">94 ms</td>
+<td class="num" data-sort-v="95">95 ms</td>
+</tr>
+<tr data-tcid="TC-CAPCHECK-Galileo-01" data-title="[Search]&amp;[FareConfirm] [Response] Verify Galileo's live Hold capability, given the possible contradiction between the Integration doc (Hold=Yes) and the PRD's single-flag pattern suggesting canBeHeld=false." data-status="BLOCKED" data-cat="business-rule">
+<td data-sort-v="52">52</td>
+<td>TC-CAPCHECK-Galileo-01</td>
+<td>[Search]&amp;[FareConfirm] [Response] Verify Galileo's live Hold capability, given the possible contradiction between the Integration doc (Hold=Yes) and the PRD's single-flag pattern suggesting canBeHeld=false.</td>
+<td><span class="badge BLOCKED">BLOCKED</span></td>
+<td data-sort-v="1792921920583">09:52:00</td>
+<td data-sort-v="1792921920583">09:52:00</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="1">1 ms</td>
+<td class="num" data-sort-v="95">95 ms</td>
+<td class="num" data-sort-v="96">96 ms</td>
+</tr>
+<tr data-tcid="TC-CAPCHECK-SpiceJet-01" data-title="[Search]&amp;[FareConfirm] [Response] Verify SpiceJet's live Hold and Bundle capability, given conflicting data across sources on both flags." data-status="BLOCKED" data-cat="business-rule">
+<td data-sort-v="53">53</td>
+<td>TC-CAPCHECK-SpiceJet-01</td>
+<td>[Search]&amp;[FareConfirm] [Response] Verify SpiceJet's live Hold and Bundle capability, given conflicting data across sources on both flags.</td>
+<td><span class="badge BLOCKED">BLOCKED</span></td>
+<td data-sort-v="1792921920803">09:52:00</td>
+<td data-sort-v="1792921920803">09:52:00</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="1">1 ms</td>
+<td class="num" data-sort-v="91">91 ms</td>
+<td class="num" data-sort-v="92">92 ms</td>
+</tr>
+<tr data-tcid="TC-CAPCHECK-GLC-01" data-title="[Search]&amp;[FareConfirm] [Response] Verify GLC's live Bundle capability, given the direct contradiction between the Integration doc (Bundle=No, explicit dash) and the PRD's Bundle=true listing." data-status="BLOCKED" data-cat="business-rule">
+<td data-sort-v="54">54</td>
+<td>TC-CAPCHECK-GLC-01</td>
+<td>[Search]&amp;[FareConfirm] [Response] Verify GLC's live Bundle capability, given the direct contradiction between the Integration doc (Bundle=No, explicit dash) and the PRD's Bundle=true listing.</td>
+<td><span class="badge BLOCKED">BLOCKED</span></td>
+<td data-sort-v="1792921920999">09:52:00</td>
+<td data-sort-v="1792921920999">09:52:00</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="1">1 ms</td>
+<td class="num" data-sort-v="97">97 ms</td>
+<td class="num" data-sort-v="98">98 ms</td>
+</tr>
+<tr data-tcid="TC-CAPCHECK-Indigo-01" data-title="[Search]&amp;[FareConfirm] [Response] Verify Indigo's true capability set is not silently reported as unsupported due to the suppliers.json name-mismatch bug (registered as 'Indego')." data-status="BLOCKED" data-cat="validation">
+<td data-sort-v="55">55</td>
+<td>TC-CAPCHECK-Indigo-01</td>
+<td>[Search]&amp;[FareConfirm] [Response] Verify Indigo's true capability set is not silently reported as unsupported due to the suppliers.json name-mismatch bug (registered as 'Indego').</td>
+<td><span class="badge BLOCKED">BLOCKED</span></td>
+<td data-sort-v="1792921921203">09:52:01</td>
+<td data-sort-v="1792921921203">09:52:01</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="1">1 ms</td>
+<td class="num" data-sort-v="97">97 ms</td>
+<td class="num" data-sort-v="98">98 ms</td>
+</tr>
+<tr data-tcid="TC-CAPCHECK-ElJazeera-01" data-title="[Search]&amp;[FareConfirm] [Response] Verify ElJazeera's true capability set is not silently reported as unsupported due to the suppliers.json name-mismatch bug (registered as 'ElJazeeraV4')." data-status="BLOCKED" data-cat="validation">
+<td data-sort-v="56">56</td>
+<td>TC-CAPCHECK-ElJazeera-01</td>
+<td>[Search]&amp;[FareConfirm] [Response] Verify ElJazeera's true capability set is not silently reported as unsupported due to the suppliers.json name-mismatch bug (registered as 'ElJazeeraV4').</td>
+<td><span class="badge BLOCKED">BLOCKED</span></td>
+<td data-sort-v="1792921921405">09:52:01</td>
+<td data-sort-v="1792921921405">09:52:01</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="1">1 ms</td>
+<td class="num" data-sort-v="96">96 ms</td>
+<td class="num" data-sort-v="97">97 ms</td>
+</tr>
+<tr data-tcid="TC-CAPCHECK-OmainAir-01" data-title="[Search]&amp;[FareConfirm] [Response] Verify OmainAir's (Oman Air's) true capability set is not silently reported as unsupported due to the suppliers.json name-mismatch bug (registered as 'OmanAirV17')." data-status="BLOCKED" data-cat="validation">
+<td data-sort-v="57">57</td>
+<td>TC-CAPCHECK-OmainAir-01</td>
+<td>[Search]&amp;[FareConfirm] [Response] Verify OmainAir's (Oman Air's) true capability set is not silently reported as unsupported due to the suppliers.json name-mismatch bug (registered as 'OmanAirV17').</td>
+<td><span class="badge BLOCKED">BLOCKED</span></td>
+<td data-sort-v="1792921921617">09:52:01</td>
+<td data-sort-v="1792921921617">09:52:01</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="1">1 ms</td>
+<td class="num" data-sort-v="95">95 ms</td>
+<td class="num" data-sort-v="96">96 ms</td>
+</tr>
+<tr data-tcid="TC-VERSIONDIFF-BIZ-01" data-title="[Search]&amp;[FareConfirm]&amp;[Book]&amp;[Hold]&amp;[Retrieve]&amp;[FareConfirmAfterHold]&amp;[BookAfterHold] [Response] Verify the V1-vs-V2 price-reconciliation script-coverage asymmetry across the shared endpoint set." data-status="PASS" data-cat="business-rule">
+<td data-sort-v="58">58</td>
+<td>TC-VERSIONDIFF-BIZ-01</td>
+<td>[Search]&amp;[FareConfirm]&amp;[Book]&amp;[Hold]&amp;[Retrieve]&amp;[FareConfirmAfterHold]&amp;[BookAfterHold] [Response] Verify the V1-vs-V2 price-reconciliation script-coverage asymmetry across the shared endpoint set.</td>
+<td><span class="badge PASS">PASS</span></td>
+<td data-sort-v="1792922162607">09:56:02</td>
+<td data-sort-v="1792922325834">09:58:45</td>
+<td class="num" data-sort-v="163162">2m 43s</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="1">1 ms</td>
+<td class="num" data-sort-v="107">107 ms</td>
+<td class="num" data-sort-v="163270">2m 43s</td>
+</tr>
+<tr data-tcid="TC-VERSIONDIFF-VAL-01" data-title="[Search]&amp;[GetOfferBundles]&amp;[BookAfterHold]&amp;[CancelAfterHold]&amp;[Void] [Request] Verify V2's inconsistent V2/v2 path casing does not affect routing." data-status="PASS" data-cat="validation">
+<td data-sort-v="59">59</td>
+<td>TC-VERSIONDIFF-VAL-01</td>
+<td>[Search]&amp;[GetOfferBundles]&amp;[BookAfterHold]&amp;[CancelAfterHold]&amp;[Void] [Request] Verify V2's inconsistent V2/v2 path casing does not affect routing.</td>
+<td><span class="badge PASS">PASS</span></td>
+<td data-sort-v="1792922080273">09:54:40</td>
+<td data-sort-v="1792922090912">09:54:50</td>
+<td class="num" data-sort-v="10594">10.6s</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="1">1 ms</td>
+<td class="num" data-sort-v="106">106 ms</td>
+<td class="num" data-sort-v="10701">10.7s</td>
+</tr>
+<tr data-tcid="TC-VERSIONDIFF-NEG-01" data-title="Verify the actual error-response envelope shape (status code, body structure) for a representative sample of endpoints, since no negative/error example exists in either collection for any endpoint." data-status="PASS" data-cat="negative">
+<td data-sort-v="60">60</td>
+<td>TC-VERSIONDIFF-NEG-01</td>
+<td>Verify the actual error-response envelope shape (status code, body structure) for a representative sample of endpoints, since no negative/error example exists in either collection for any endpoint.</td>
+<td><span class="badge PASS">PASS</span></td>
+<td data-sort-v="1792922091137">09:54:51</td>
+<td data-sort-v="1792922091694">09:54:51</td>
+<td class="num" data-sort-v="521">521 ms</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="1">1 ms</td>
+<td class="num" data-sort-v="105">105 ms</td>
+<td class="num" data-sort-v="627">627 ms</td>
+</tr>
+<tr data-tcid="TC-VERSIONDIFF-NEG-02" data-title="[Search]&amp;[FareConfirm]&amp;[Book] [Response] Verify an identical invalid supplier/credentialsSelector value produces the same error shape across Search, FareConfirm, and Book." data-status="PASS" data-cat="negative">
+<td data-sort-v="61">61</td>
+<td>TC-VERSIONDIFF-NEG-02</td>
+<td>[Search]&amp;[FareConfirm]&amp;[Book] [Response] Verify an identical invalid supplier/credentialsSelector value produces the same error shape across Search, FareConfirm, and Book.</td>
+<td><span class="badge PASS">PASS</span></td>
+<td data-sort-v="1792922091965">09:54:51</td>
+<td data-sort-v="1792922092529">09:54:52</td>
+<td class="num" data-sort-v="553">553 ms</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="1">1 ms</td>
+<td class="num" data-sort-v="99">99 ms</td>
+<td class="num" data-sort-v="653">653 ms</td>
+</tr>
+<tr data-tcid="TC-VERSIONDIFF-VAL-03" data-title="[Book]&amp;[Void] [Response] Validate voidCapability values are constrained to the currently-known set ('VoidNotAllowed' observed) or flagged if a new value appears." data-status="PASS" data-cat="validation">
+<td data-sort-v="62">62</td>
+<td>TC-VERSIONDIFF-VAL-03</td>
+<td>[Book]&amp;[Void] [Response] Validate voidCapability values are constrained to the currently-known set ('VoidNotAllowed' observed) or flagged if a new value appears.</td>
+<td><span class="badge PASS">PASS</span></td>
+<td data-sort-v="1792922092758">09:54:52</td>
+<td data-sort-v="1792922092758">09:54:52</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="1">1 ms</td>
+<td class="num" data-sort-v="112">112 ms</td>
+<td class="num" data-sort-v="113">113 ms</td>
+</tr>
+<tr data-tcid="TC-VERSIONDIFF-VAL-04" data-title="[Search]&amp;[FareConfirm] [Response] Validate refundability values are constrained to the currently-known set (the literal 'UnKnown' value observed, unusual capitalization) or flagged if a new value appears." data-status="PASS" data-cat="validation">
+<td data-sort-v="63">63</td>
+<td>TC-VERSIONDIFF-VAL-04</td>
+<td>[Search]&amp;[FareConfirm] [Response] Validate refundability values are constrained to the currently-known set (the literal 'UnKnown' value observed, unusual capitalization) or flagged if a new value appears.</td>
+<td><span class="badge PASS">PASS</span></td>
+<td data-sort-v="1792922092915">09:54:52</td>
+<td data-sort-v="1792922092915">09:54:52</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="1">1 ms</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="1">1 ms</td>
+</tr>
+<tr data-tcid="TC-VERSIONDIFF-VAL-05" data-title="[Book]&amp;[Hold] [Request] Validate documentType values within passengersList are constrained to the currently-known set ('PASSPORT' observed) or flagged if a new value appears." data-status="PASS" data-cat="validation">
+<td data-sort-v="64">64</td>
+<td>TC-VERSIONDIFF-VAL-05</td>
+<td>[Book]&amp;[Hold] [Request] Validate documentType values within passengersList are constrained to the currently-known set ('PASSPORT' observed) or flagged if a new value appears.</td>
+<td><span class="badge PASS">PASS</span></td>
+<td data-sort-v="1792922093024">09:54:53</td>
+<td data-sort-v="1792922111263">09:55:11</td>
+<td class="num" data-sort-v="18219">18.2s</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="1">1 ms</td>
+<td class="num" data-sort-v="118">118 ms</td>
+<td class="num" data-sort-v="18338">18.3s</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="tb-reconcile">Execution column: rows sum to 23m 13s = 23m 13s Test Case Execution (section 1). Each test case is charged only for the time its own API calls were in flight; a call shared by several test cases is split evenly between them, so nothing is counted twice and idle gaps between calls are not charged. Claude column: the run-level analysis (54 ms) split evenly across the 64 test cases, rows sum to 54 ms. Reporting column: rows sum to 5.89s, plus 349 ms of run-level reporting (final HTML and Time Breakdown, not attributable to one test case), = 6s Reporting (section 1).</div>
+
+</details>
+<details class="tb-sec" open><summary>5. Timeline</summary>
+<div class="dashboard-card">
+<div class="tb-timeline">
+<div class="tb-tl-row"><div class="tb-tl-time">09:22:05</div><div class="tb-tl-label"><b>Test Execution</b> started</div></div>
+<div class="tb-tl-row"><div class="tb-tl-time">09:22:05</div><div class="tb-tl-label">TC-SEARCH-POS-01 started</div></div>
+<div class="tb-tl-row"><div class="tb-tl-time">09:22:08</div><div class="tb-tl-label">TC-SEARCH-NEG-01 started</div></div>
+<div class="tb-tl-row"><div class="tb-tl-time">09:22:09</div><div class="tb-tl-label">TC-SEARCH-NEG-02 started</div></div>
+<div class="tb-tl-row"><div class="tb-tl-time">09:22:09</div><div class="tb-tl-label">TC-SEARCH-NEG-03 started</div></div>
+<div class="tb-tl-row"><div class="tb-tl-time">09:22:12</div><div class="tb-tl-label">TC-SEARCH-BND-02 started</div></div>
+<div class="tb-tl-row"><div class="tb-tl-time">09:22:16</div><div class="tb-tl-label">TC-SEARCH-BND-03 started</div></div>
+<div class="tb-tl-row"><div class="tb-tl-time">09:22:17</div><div class="tb-tl-label">TC-SEARCH-VAL-01 started</div></div>
+<div class="tb-tl-row"><div class="tb-tl-time">09:22:21</div><div class="tb-tl-label">TC-SEARCH-BIZ-02 started</div></div>
+<div class="tb-tl-row"><div class="tb-tl-time">09:22:24</div><div class="tb-tl-label">TC-SEARCH-SEC-01 started</div></div>
+<div class="tb-tl-row"><div class="tb-tl-time">09:22:56</div><div class="tb-tl-label">TC-SEARCH-REG-01 started</div></div>
+<div class="tb-tl-row"><div class="tb-tl-time">09:23:01</div><div class="tb-tl-label">TC-FARECONFIRM-POS-01 started</div></div>
+<div class="tb-tl-row"><div class="tb-tl-time">09:23:24</div><div class="tb-tl-label">TC-FARECONFIRM-BIZ-02 started</div></div>
+<div class="tb-tl-row"><div class="tb-tl-time">09:23:30</div><div class="tb-tl-label">TC-FARECONFIRM-INT-01 started</div></div>
+<div class="tb-tl-row"><div class="tb-tl-time">09:23:36</div><div class="tb-tl-label">TC-FARECONFIRM-NEG-02 started</div></div>
+<div class="tb-tl-row"><div class="tb-tl-time">09:23:36</div><div class="tb-tl-label">TC-BUNDLE-NEG-01 started</div></div>
+<div class="tb-tl-row"><div class="tb-tl-time">09:23:42</div><div class="tb-tl-label">TC-BUNDLE-POS-01 started</div></div>
+<div class="tb-tl-row"><div class="tb-tl-time">09:23:43</div><div class="tb-tl-label">TC-BUNDLE-REG-01 started</div></div>
+<div class="tb-tl-row"><div class="tb-tl-time">09:23:43</div><div class="tb-tl-label">TC-BUNDLE-VAL-02 started</div></div>
+<div class="tb-tl-row"><div class="tb-tl-time">09:23:43</div><div class="tb-tl-label">TC-BUNDLE-VAL-03 started</div></div>
+<div class="tb-tl-row"><div class="tb-tl-time">09:26:42</div><div class="tb-tl-label">TC-FARECONFIRM-NEG-01 started</div></div>
+<div class="tb-tl-row"><div class="tb-tl-time">09:27:55</div><div class="tb-tl-label">TC-FARECONFIRM-VAL-01 started</div></div>
+<div class="tb-tl-row"><div class="tb-tl-time">09:30:10</div><div class="tb-tl-label">TC-BOOK-POS-02 started</div></div>
+<div class="tb-tl-row"><div class="tb-tl-time">09:31:09</div><div class="tb-tl-label">TC-BOOK-NEG-04 started</div></div>
+<div class="tb-tl-row"><div class="tb-tl-time">09:32:57</div><div class="tb-tl-label">TC-BOOK-BIZ-03 started</div></div>
+<div class="tb-tl-row"><div class="tb-tl-time">09:34:08</div><div class="tb-tl-label">TC-BOOK-SEC-01 started</div></div>
+<div class="tb-tl-row"><div class="tb-tl-time">09:34:08</div><div class="tb-tl-label">TC-BOOK-BIZ-04 started</div></div>
+<div class="tb-tl-row"><div class="tb-tl-time">09:34:09</div><div class="tb-tl-label">TC-BOOK-NEG-05 started</div></div>
+<div class="tb-tl-row"><div class="tb-tl-time">09:35:11</div><div class="tb-tl-label">TC-BOOK-VAL-02 started</div></div>
+<div class="tb-tl-row"><div class="tb-tl-time">09:36:09</div><div class="tb-tl-label">TC-HOLD-POS-01 started</div></div>
+<div class="tb-tl-row"><div class="tb-tl-time">09:36:40</div><div class="tb-tl-label">TC-HOLD-NEG-02 started</div></div>
+<div class="tb-tl-row"><div class="tb-tl-time">09:36:40</div><div class="tb-tl-label">TC-HOLD-BIZ-01 started</div></div>
+<div class="tb-tl-row"><div class="tb-tl-time">09:37:15</div><div class="tb-tl-label">TC-HOLD-BND-01 started</div></div>
+<div class="tb-tl-row"><div class="tb-tl-time">09:37:16</div><div class="tb-tl-label">TC-RETRIEVE-POS-01 started</div></div>
+<div class="tb-tl-row"><div class="tb-tl-time">09:40:56</div><div class="tb-tl-label">TC-RETRIEVE-VAL-01 started</div></div>
+<div class="tb-tl-row"><div class="tb-tl-time">09:42:32</div><div class="tb-tl-label">TC-RETRIEVE-INT-01 started</div></div>
+<div class="tb-tl-row"><div class="tb-tl-time">09:42:32</div><div class="tb-tl-label">TC-FCAH-BIZ-01 started</div></div>
+<div class="tb-tl-row"><div class="tb-tl-time">09:44:43</div><div class="tb-tl-label">TC-FCAH-NEG-01 started</div></div>
+<div class="tb-tl-row"><div class="tb-tl-time">09:44:44</div><div class="tb-tl-label">TC-BOOKAFTERHOLD-REG-01 started</div></div>
+<div class="tb-tl-row"><div class="tb-tl-time">09:45:58</div><div class="tb-tl-label">TC-BOOKAFTERHOLD-NEG-01 started</div></div>
+<div class="tb-tl-row"><div class="tb-tl-time">09:45:58</div><div class="tb-tl-label">TC-VOID-BIZ-01 started</div></div>
+<div class="tb-tl-row"><div class="tb-tl-time">09:45:58</div><div class="tb-tl-label">TC-VOID-NEG-02 started</div></div>
+<div class="tb-tl-row"><div class="tb-tl-time">09:46:59</div><div class="tb-tl-label">TC-CANCELHOLD-REG-01 started</div></div>
+<div class="tb-tl-row"><div class="tb-tl-time">09:47:34</div><div class="tb-tl-label">TC-CANCELHOLD-NEG-02 started</div></div>
+<div class="tb-tl-row"><div class="tb-tl-time">09:48:55</div><div class="tb-tl-label">TC-RETRIEVE-REG-01 started</div></div>
+<div class="tb-tl-row"><div class="tb-tl-time">09:50:12</div><div class="tb-tl-label">TC-AUTH-SEC-01 started</div></div>
+<div class="tb-tl-row"><div class="tb-tl-time">09:50:16</div><div class="tb-tl-label">TC-AUTH-SEC-02 started</div></div>
+<div class="tb-tl-row"><div class="tb-tl-time">09:50:22</div><div class="tb-tl-label">TC-AUTH-SEC-03 started</div></div>
+<div class="tb-tl-row"><div class="tb-tl-time">09:50:54</div><div class="tb-tl-label">TC-AUTH-SEC-04 started</div></div>
+<div class="tb-tl-row"><div class="tb-tl-time">09:51:53</div><div class="tb-tl-label">TC-SUPPLIER-BIZ-01 started</div></div>
+<div class="tb-tl-row"><div class="tb-tl-time">09:52:00</div><div class="tb-tl-label">TC-CAPCHECK-AirCairo-01 started</div></div>
+<div class="tb-tl-row"><div class="tb-tl-time">09:52:00</div><div class="tb-tl-label">TC-CAPCHECK-EgyptAir-01 started</div></div>
+<div class="tb-tl-row"><div class="tb-tl-time">09:52:00</div><div class="tb-tl-label">TC-CAPCHECK-Galileo-01 started</div></div>
+<div class="tb-tl-row"><div class="tb-tl-time">09:52:00</div><div class="tb-tl-label">TC-CAPCHECK-SpiceJet-01 started</div></div>
+<div class="tb-tl-row"><div class="tb-tl-time">09:52:00</div><div class="tb-tl-label">TC-CAPCHECK-GLC-01 started</div></div>
+<div class="tb-tl-row"><div class="tb-tl-time">09:52:01</div><div class="tb-tl-label">TC-CAPCHECK-Indigo-01 started</div></div>
+<div class="tb-tl-row"><div class="tb-tl-time">09:52:01</div><div class="tb-tl-label">TC-CAPCHECK-ElJazeera-01 started</div></div>
+<div class="tb-tl-row"><div class="tb-tl-time">09:52:01</div><div class="tb-tl-label">TC-CAPCHECK-OmainAir-01 started</div></div>
+<div class="tb-tl-row"><div class="tb-tl-time">09:54:40</div><div class="tb-tl-label">TC-VERSIONDIFF-VAL-01 started</div></div>
+<div class="tb-tl-row"><div class="tb-tl-time">09:54:51</div><div class="tb-tl-label">TC-VERSIONDIFF-NEG-01 started</div></div>
+<div class="tb-tl-row"><div class="tb-tl-time">09:54:51</div><div class="tb-tl-label">TC-VERSIONDIFF-NEG-02 started</div></div>
+<div class="tb-tl-row"><div class="tb-tl-time">09:54:52</div><div class="tb-tl-label">TC-VERSIONDIFF-VAL-03 started</div></div>
+<div class="tb-tl-row"><div class="tb-tl-time">09:54:52</div><div class="tb-tl-label">TC-VERSIONDIFF-VAL-04 started</div></div>
+<div class="tb-tl-row"><div class="tb-tl-time">09:54:53</div><div class="tb-tl-label">TC-VERSIONDIFF-VAL-05 started</div></div>
+<div class="tb-tl-row"><div class="tb-tl-time">09:56:02</div><div class="tb-tl-label">TC-VERSIONDIFF-BIZ-01 started</div></div>
+<div class="tb-tl-row"><div class="tb-tl-time">10:01:02</div><div class="tb-tl-label"><b>Test Execution</b> ended</div></div>
+<div class="tb-tl-row"><div class="tb-tl-time">10:03:34</div><div class="tb-tl-label"><b>Bug Reporting</b> started</div></div>
+<div class="tb-tl-row"><div class="tb-tl-time">10:03:34</div><div class="tb-tl-label"><b>Bug Reporting</b> ended</div></div>
+<div class="tb-tl-row"><div class="tb-tl-time">10:03:34</div><div class="tb-tl-label"><b>Report Generation</b> started</div></div>
+<div class="tb-tl-row"><div class="tb-tl-time">10:03:34</div><div class="tb-tl-label"><b>Report Generation</b> ended</div></div>
+<div class="tb-tl-row"><div class="tb-tl-time">10:03:34</div><div class="tb-tl-label">Execution completed</div></div>
+</div>
+</div>
+
+</details>
+<details class="tb-sec" open><summary>6. Other / Overhead</summary>
+<div class="dashboard-card">
+<div class="tb-overhead-box">
+<div class="oh-title">What's in Other / Overhead (16m 41s) &mdash; click a row for details</div>
+<div class="tb-oh-rows">
+<div class="tb-oh-row tb-oh-click" role="button" tabindex="0" data-detail="{&quot;title&quot;:&quot;Short gaps between the per-test-case log writes (432 gaps under 2 seconds)&quot;,&quot;start&quot;:&quot;2026-10-25 09:22:05 UTC&quot;,&quot;end&quot;:&quot;2026-10-25 10:03:34 UTC&quot;,&quot;duration&quot;:&quot;7s&quot;,&quot;share&quot;:&quot;0.3% of total&quot;,&quot;before&quot;:&quot;the per-test-case log writes&quot;,&quot;after&quot;:&quot;the per-test-case log writes&quot;,&quot;steps&quot;:[&quot;Each test case's log line and Markdown re-render ran back to back; these are the sub-2-second pauses between one render finishing and the next one starting.&quot;],&quot;note&quot;:&quot;Sum of many short gaps, spread between 09:22:05 and 10:03:34.&quot;}"><span class="oh-label">Short gaps between the per-test-case log writes (432 gaps under 2 seconds)</span><span class="oh-val">7s</span><span class="oh-more">Details &rsaquo;</span></div>
+<div class="tb-oh-row tb-oh-click" role="button" tabindex="0" data-detail="{&quot;title&quot;:&quot;Gap after TC-SEARCH-SEC-01 log write, ended 09:22:35 and before TC-SEARCH-REG-01 (whole test case), started 09:22:56&quot;,&quot;start&quot;:&quot;2026-10-25 09:22:35 UTC&quot;,&quot;end&quot;:&quot;2026-10-25 09:22:56 UTC&quot;,&quot;duration&quot;:&quot;21s&quot;,&quot;share&quot;:&quot;0.8% of total&quot;,&quot;before&quot;:&quot;TC-SEARCH-SEC-01 log write, ended 09:22:35&quot;,&quot;after&quot;:&quot;TC-SEARCH-REG-01 (whole test case), started 09:22:56&quot;,&quot;steps&quot;:[&quot;No notes were recorded for this window. It is the time between the two events shown above that no test case, wait, AI operation or reporting operation accounts for.&quot;],&quot;note&quot;:&quot;Derived from the log timestamps: the time in this window is not covered by any test-case span, wait, AI operation or reporting operation.&quot;}"><span class="oh-label">Gap after TC-SEARCH-SEC-01 log write, ended 09:22:35 and before TC-SEARCH-REG-01 (whole test case), started 09:22:56</span><span class="oh-val">21s</span><span class="oh-more">Details &rsaquo;</span></div>
+<div class="tb-oh-row tb-oh-click" role="button" tabindex="0" data-detail="{&quot;title&quot;:&quot;Gap after TC-FARECONFIRM-POS-01 log write, ended 09:23:08 and before TC-FARECONFIRM-BIZ-02 hop 1 - V1 Search, started 09:23:24&quot;,&quot;start&quot;:&quot;2026-10-25 09:23:08 UTC&quot;,&quot;end&quot;:&quot;2026-10-25 09:23:24 UTC&quot;,&quot;duration&quot;:&quot;16s&quot;,&quot;share&quot;:&quot;0.6% of total&quot;,&quot;before&quot;:&quot;TC-FARECONFIRM-POS-01 log write, ended 09:23:08&quot;,&quot;after&quot;:&quot;TC-FARECONFIRM-BIZ-02 hop 1 - V1 Search, started 09:23:24&quot;,&quot;steps&quot;:[&quot;No notes were recorded for this window. It is the time between the two events shown above that no test case, wait, AI operation or reporting operation accounts for.&quot;],&quot;note&quot;:&quot;Derived from the log timestamps: the time in this window is not covered by any test-case span, wait, AI operation or reporting operation.&quot;}"><span class="oh-label">Gap after TC-FARECONFIRM-POS-01 log write, ended 09:23:08 and before TC-FARECONFIRM-BIZ-02 hop 1 - V1 Search, started 09:23:24</span><span class="oh-val">16s</span><span class="oh-more">Details &rsaquo;</span></div>
+<div class="tb-oh-row tb-oh-click" role="button" tabindex="0" data-detail="{&quot;title&quot;:&quot;Gap after TC-BUNDLE-VAL-03 log write, ended 09:23:43 and before TC-FARECONFIRM-NEG-01 (whole test case), started 09:26:42&quot;,&quot;start&quot;:&quot;2026-10-25 09:23:43 UTC&quot;,&quot;end&quot;:&quot;2026-10-25 09:26:42 UTC&quot;,&quot;duration&quot;:&quot;2m 59s&quot;,&quot;share&quot;:&quot;7.2% of total&quot;,&quot;before&quot;:&quot;TC-BUNDLE-VAL-03 log write, ended 09:23:43&quot;,&quot;after&quot;:&quot;TC-FARECONFIRM-NEG-01 (whole test case), started 09:26:42&quot;,&quot;steps&quot;:[&quot;No notes were recorded for this window. It is the time between the two events shown above that no test case, wait, AI operation or reporting operation accounts for.&quot;],&quot;note&quot;:&quot;Derived from the log timestamps: the time in this window is not covered by any test-case span, wait, AI operation or reporting operation.&quot;}"><span class="oh-label">Gap after TC-BUNDLE-VAL-03 log write, ended 09:23:43 and before TC-FARECONFIRM-NEG-01 (whole test case), started 09:26:42</span><span class="oh-val">2m 59s</span><span class="oh-more">Details &rsaquo;</span></div>
+<div class="tb-oh-row tb-oh-click" role="button" tabindex="0" data-detail="{&quot;title&quot;:&quot;Gap after TC-FARECONFIRM-NEG-01 log write, ended 09:27:01 and before TC-FARECONFIRM-VAL-01 (whole test case), started 09:27:55&quot;,&quot;start&quot;:&quot;2026-10-25 09:27:01 UTC&quot;,&quot;end&quot;:&quot;2026-10-25 09:27:55 UTC&quot;,&quot;duration&quot;:&quot;54s&quot;,&quot;share&quot;:&quot;2.2% of total&quot;,&quot;before&quot;:&quot;TC-FARECONFIRM-NEG-01 log write, ended 09:27:01&quot;,&quot;after&quot;:&quot;TC-FARECONFIRM-VAL-01 (whole test case), started 09:27:55&quot;,&quot;steps&quot;:[&quot;No notes were recorded for this window. It is the time between the two events shown above that no test case, wait, AI operation or reporting operation accounts for.&quot;],&quot;note&quot;:&quot;Derived from the log timestamps: the time in this window is not covered by any test-case span, wait, AI operation or reporting operation.&quot;}"><span class="oh-label">Gap after TC-FARECONFIRM-NEG-01 log write, ended 09:27:01 and before TC-FARECONFIRM-VAL-01 (whole test case), started 09:27:55</span><span class="oh-val">54s</span><span class="oh-more">Details &rsaquo;</span></div>
+<div class="tb-oh-row tb-oh-click" role="button" tabindex="0" data-detail="{&quot;title&quot;:&quot;Gap after TC-FARECONFIRM-VAL-01 log write, ended 09:28:07 and before TC-BOOK-POS-02 hop 1 - V1 Search, started 09:30:10&quot;,&quot;start&quot;:&quot;2026-10-25 09:28:07 UTC&quot;,&quot;end&quot;:&quot;2026-10-25 09:30:10 UTC&quot;,&quot;duration&quot;:&quot;2m 3s&quot;,&quot;share&quot;:&quot;4.9% of total&quot;,&quot;before&quot;:&quot;TC-FARECONFIRM-VAL-01 log write, ended 09:28:07&quot;,&quot;after&quot;:&quot;TC-BOOK-POS-02 hop 1 - V1 Search, started 09:30:10&quot;,&quot;steps&quot;:[&quot;No notes were recorded for this window. It is the time between the two events shown above that no test case, wait, AI operation or reporting operation accounts for.&quot;],&quot;note&quot;:&quot;Derived from the log timestamps: the time in this window is not covered by any test-case span, wait, AI operation or reporting operation.&quot;}"><span class="oh-label">Gap after TC-FARECONFIRM-VAL-01 log write, ended 09:28:07 and before TC-BOOK-POS-02 hop 1 - V1 Search, started 09:30:10</span><span class="oh-val">2m 3s</span><span class="oh-more">Details &rsaquo;</span></div>
+<div class="tb-oh-row tb-oh-click" role="button" tabindex="0" data-detail="{&quot;title&quot;:&quot;Gap after TC-RETRIEVE-POS-01 log write, ended 09:39:29 and before TC-RETRIEVE-VAL-01 hop 1 - V1 Search (held), started 09:40:56&quot;,&quot;start&quot;:&quot;2026-10-25 09:39:29 UTC&quot;,&quot;end&quot;:&quot;2026-10-25 09:40:56 UTC&quot;,&quot;duration&quot;:&quot;1m 27s&quot;,&quot;share&quot;:&quot;3.5% of total&quot;,&quot;before&quot;:&quot;TC-RETRIEVE-POS-01 log write, ended 09:39:29&quot;,&quot;after&quot;:&quot;TC-RETRIEVE-VAL-01 hop 1 - V1 Search (held), started 09:40:56&quot;,&quot;steps&quot;:[&quot;No notes were recorded for this window. It is the time between the two events shown above that no test case, wait, AI operation or reporting operation accounts for.&quot;],&quot;note&quot;:&quot;Derived from the log timestamps: the time in this window is not covered by any test-case span, wait, AI operation or reporting operation.&quot;}"><span class="oh-label">Gap after TC-RETRIEVE-POS-01 log write, ended 09:39:29 and before TC-RETRIEVE-VAL-01 hop 1 - V1 Search (held), started 09:40:56</span><span class="oh-val">1m 27s</span><span class="oh-more">Details &rsaquo;</span></div>
+<div class="tb-oh-row tb-oh-click" role="button" tabindex="0" data-detail="{&quot;title&quot;:&quot;Gap after TC-FCAH-BIZ-01 hop 7 - V2 Hold, ended 09:42:56 and before TC-FCAH-BIZ-01 hop 8 - V1 PnrReprice (FCAH), started 09:44:26&quot;,&quot;start&quot;:&quot;2026-10-25 09:42:56 UTC&quot;,&quot;end&quot;:&quot;2026-10-25 09:44:26 UTC&quot;,&quot;duration&quot;:&quot;1m 30s&quot;,&quot;share&quot;:&quot;3.6% of total&quot;,&quot;before&quot;:&quot;TC-FCAH-BIZ-01 hop 7 - V2 Hold, ended 09:42:56&quot;,&quot;after&quot;:&quot;TC-FCAH-BIZ-01 hop 8 - V1 PnrReprice (FCAH), started 09:44:26&quot;,&quot;steps&quot;:[&quot;No notes were recorded for this window. It is the time between the two events shown above that no test case, wait, AI operation or reporting operation accounts for.&quot;],&quot;note&quot;:&quot;Derived from the log timestamps: the time in this window is not covered by any test-case span, wait, AI operation or reporting operation.&quot;}"><span class="oh-label">Gap after TC-FCAH-BIZ-01 hop 7 - V2 Hold, ended 09:42:56 and before TC-FCAH-BIZ-01 hop 8 - V1 PnrReprice (FCAH), started 09:44:26</span><span class="oh-val">1m 30s</span><span class="oh-more">Details &rsaquo;</span></div>
+<div class="tb-oh-row tb-oh-click" role="button" tabindex="0" data-detail="{&quot;title&quot;:&quot;Gap after TC-CANCELHOLD-NEG-02 log write, ended 09:48:39 and before TC-RETRIEVE-REG-01 hop 1 - V1 Search, started 09:48:55&quot;,&quot;start&quot;:&quot;2026-10-25 09:48:39 UTC&quot;,&quot;end&quot;:&quot;2026-10-25 09:48:55 UTC&quot;,&quot;duration&quot;:&quot;16s&quot;,&quot;share&quot;:&quot;0.6% of total&quot;,&quot;before&quot;:&quot;TC-CANCELHOLD-NEG-02 log write, ended 09:48:39&quot;,&quot;after&quot;:&quot;TC-RETRIEVE-REG-01 hop 1 - V1 Search, started 09:48:55&quot;,&quot;steps&quot;:[&quot;No notes were recorded for this window. It is the time between the two events shown above that no test case, wait, AI operation or reporting operation accounts for.&quot;],&quot;note&quot;:&quot;Derived from the log timestamps: the time in this window is not covered by any test-case span, wait, AI operation or reporting operation.&quot;}"><span class="oh-label">Gap after TC-CANCELHOLD-NEG-02 log write, ended 09:48:39 and before TC-RETRIEVE-REG-01 hop 1 - V1 Search, started 09:48:55</span><span class="oh-val">16s</span><span class="oh-more">Details &rsaquo;</span></div>
+<div class="tb-oh-row tb-oh-click" role="button" tabindex="0" data-detail="{&quot;title&quot;:&quot;Gap after TC-CAPCHECK-OmainAir-01 log write, ended 09:52:01 and before TC-VERSIONDIFF-VAL-01 (whole test case), started 09:54:40&quot;,&quot;start&quot;:&quot;2026-10-25 09:52:01 UTC&quot;,&quot;end&quot;:&quot;2026-10-25 09:54:40 UTC&quot;,&quot;duration&quot;:&quot;2m 39s&quot;,&quot;share&quot;:&quot;6.4% of total&quot;,&quot;before&quot;:&quot;TC-CAPCHECK-OmainAir-01 log write, ended 09:52:01&quot;,&quot;after&quot;:&quot;TC-VERSIONDIFF-VAL-01 (whole test case), started 09:54:40&quot;,&quot;steps&quot;:[&quot;No notes were recorded for this window. It is the time between the two events shown above that no test case, wait, AI operation or reporting operation accounts for.&quot;],&quot;note&quot;:&quot;Derived from the log timestamps: the time in this window is not covered by any test-case span, wait, AI operation or reporting operation.&quot;}"><span class="oh-label">Gap after TC-CAPCHECK-OmainAir-01 log write, ended 09:52:01 and before TC-VERSIONDIFF-VAL-01 (whole test case), started 09:54:40</span><span class="oh-val">2m 39s</span><span class="oh-more">Details &rsaquo;</span></div>
+<div class="tb-oh-row tb-oh-click" role="button" tabindex="0" data-detail="{&quot;title&quot;:&quot;Gap after TC-VERSIONDIFF-VAL-05 log write, ended 09:55:11 and before TC-VERSIONDIFF-BIZ-01 hop 1 - V1 Search, started 09:56:02&quot;,&quot;start&quot;:&quot;2026-10-25 09:55:11 UTC&quot;,&quot;end&quot;:&quot;2026-10-25 09:56:02 UTC&quot;,&quot;duration&quot;:&quot;51s&quot;,&quot;share&quot;:&quot;2.0% of total&quot;,&quot;before&quot;:&quot;TC-VERSIONDIFF-VAL-05 log write, ended 09:55:11&quot;,&quot;after&quot;:&quot;TC-VERSIONDIFF-BIZ-01 hop 1 - V1 Search, started 09:56:02&quot;,&quot;steps&quot;:[&quot;No notes were recorded for this window. It is the time between the two events shown above that no test case, wait, AI operation or reporting operation accounts for.&quot;],&quot;note&quot;:&quot;Derived from the log timestamps: the time in this window is not covered by any test-case span, wait, AI operation or reporting operation.&quot;}"><span class="oh-label">Gap after TC-VERSIONDIFF-VAL-05 log write, ended 09:55:11 and before TC-VERSIONDIFF-BIZ-01 hop 1 - V1 Search, started 09:56:02</span><span class="oh-val">51s</span><span class="oh-more">Details &rsaquo;</span></div>
+<div class="tb-oh-row tb-oh-click" role="button" tabindex="0" data-detail="{&quot;title&quot;:&quot;Gap after TC-VERSIONDIFF-BIZ-01 log write, ended 09:58:45 and before Bug Report Generation, started 10:03:34&quot;,&quot;start&quot;:&quot;2026-10-25 09:58:45 UTC&quot;,&quot;end&quot;:&quot;2026-10-25 10:03:34 UTC&quot;,&quot;duration&quot;:&quot;3m 18s&quot;,&quot;share&quot;:&quot;8.0% of total&quot;,&quot;before&quot;:&quot;TC-VERSIONDIFF-BIZ-01 log write, ended 09:58:45&quot;,&quot;after&quot;:&quot;Bug Report Generation, started 10:03:34&quot;,&quot;steps&quot;:[&quot;No notes were recorded for this window. It is the time between the two events shown above that no test case, wait, AI operation or reporting operation accounts for.&quot;],&quot;note&quot;:&quot;Derived from the log timestamps: the time in this window is not covered by any test-case span, wait, AI operation or reporting operation.&quot;}"><span class="oh-label">Gap after TC-VERSIONDIFF-BIZ-01 log write, ended 09:58:45 and before Bug Report Generation, started 10:03:34</span><span class="oh-val">3m 18s</span><span class="oh-more">Details &rsaquo;</span></div>
+</div>
+</div>
+</div>
+
+</details>
+<div class="tb-modal js-hidden" id="tbModal" role="dialog" aria-modal="true" aria-labelledby="tbModalTitle">
+<div class="tb-modal-card">
+<div class="tb-modal-head"><div class="tb-modal-title" id="tbModalTitle"></div><button type="button" class="tb-modal-x" id="tbModalClose" aria-label="Close">&times;</button></div>
+<div class="tb-modal-grid" id="tbModalGrid"></div>
+<h4>Right before</h4><p id="tbModalBefore"></p>
+<h4>What happened in this window</h4><ol id="tbModalSteps"></ol>
+<h4>Right after</h4><p id="tbModalAfter"></p>
+<div class="mnote" id="tbModalNote"></div>
+</div>
+</div>
+
+<script>
+(function(){
+  var search = document.getElementById('tcbSearch');
+  var statusFilter = document.getElementById('tcbStatusFilter');
+  var catFilter = document.getElementById('tcbCategoryFilter');
+  var resetBtn = document.getElementById('tcbReset');
+  var countEl = document.getElementById('tcbCount');
+  var noResults = document.getElementById('tcbNoResults');
+  var table = document.getElementById('tcbTable');
+  if(!table) return;
+  var tbody = table.tBodies[0];
+  var allRows = Array.prototype.slice.call(tbody.rows);
+  var total = allRows.length;
+
+  function applyFilter(){
+    var q = (search.value || '').trim().toLowerCase();
+    var st = statusFilter.value;
+    var ct = catFilter ? catFilter.value : '';
+    var shown = 0;
+    allRows.forEach(function(row){
+      var matchesQ = !q || (row.getAttribute('data-tcid').toLowerCase().indexOf(q) !== -1) ||
+                     (row.getAttribute('data-title').toLowerCase().indexOf(q) !== -1);
+      var matchesSt = !st || row.getAttribute('data-status') === st;
+      var matchesCt = !ct || row.getAttribute('data-cat') === ct;
+      var show = matchesQ && matchesSt && matchesCt;
+      row.classList.toggle('js-hidden', !show);
+      if(show) shown++;
+    });
+    countEl.textContent = shown + ' / ' + total + ' shown';
+    noResults.classList.toggle('js-hidden', shown !== 0);
+  }
+
+  search.addEventListener('input', applyFilter);
+  statusFilter.addEventListener('change', applyFilter);
+  if (catFilter) catFilter.addEventListener('change', applyFilter);
+  resetBtn.addEventListener('click', function(){
+    search.value = ''; statusFilter.value = ''; if (catFilter) catFilter.value = ''; applyFilter();
+  });
+
+  var sortState = { key: null, dir: 1 };
+  var headers = Array.prototype.slice.call(table.tHead.rows[0].cells);
+  headers.forEach(function(th, colIdx){
+    var key = th.getAttribute('data-sort');
+    if(!key) return;
+    th.addEventListener('click', function(){
+      var dir = (sortState.key === key) ? -sortState.dir : 1;
+      sortState = { key: key, dir: dir };
+      headers.forEach(function(h){ h.querySelectorAll('.sort-arrow').forEach(function(a){ a.remove(); }); });
+      var arrow = document.createElement('span');
+      arrow.className = 'sort-arrow';
+      arrow.textContent = dir === 1 ? '▴' : '▾';
+      th.appendChild(arrow);
+
+      var type = th.getAttribute('data-type');
+      var rows = Array.prototype.slice.call(tbody.rows);
+      rows.sort(function(a, b){
+        var av = a.cells[colIdx].getAttribute('data-sort-v');
+        var bv = b.cells[colIdx].getAttribute('data-sort-v');
+        if(type === 'num'){
+          av = parseFloat(av); bv = parseFloat(bv);
+          return (av - bv) * dir;
+        }
+        av = a.cells[colIdx].textContent.trim().toLowerCase();
+        bv = b.cells[colIdx].textContent.trim().toLowerCase();
+        return av.localeCompare(bv) * dir;
+      });
+      rows.forEach(function(r){ tbody.appendChild(r); });
+    });
+  });
+
+  applyFilter();
+})();
+</script>
+<script>
+(function(){
+  var reset = document.getElementById('tcbReset');
+  var table = document.getElementById('tcbTable');
+  if (!reset || !table) return;
+  var wrap = table.closest('.tb-table-wrap') || table.parentNode;
+  var noRes = document.getElementById('tcbNoResults');
+  function make(id, label, open){
+    var b = document.createElement('button');
+    b.type = 'button'; b.id = id; b.textContent = label;
+    b.addEventListener('click', function(){
+      wrap.hidden = !open;
+      if (noRes) noRes.style.display = open ? '' : 'none';
+    });
+    return b;
+  }
+  reset.parentNode.insertBefore(make('tcbExpandAll', 'Expand all', true), reset);
+  reset.parentNode.insertBefore(make('tcbCollapseAll', 'Collapse all', false), reset);
+})();
+</script>
+
+<script>
+(function(){
+  var modal=document.getElementById("tbModal"); if(!modal) return;
+  var $=function(i){return document.getElementById(i)};
+  function esc(s){var d=document.createElement("div");d.textContent=s==null?"":s;return d.innerHTML}
+  function open(row){
+    var d=JSON.parse(row.getAttribute("data-detail"));
+    $("tbModalTitle").textContent=d.title;
+    $("tbModalGrid").innerHTML=[["Start",d.start],["End",d.end],["Duration",d.duration],["Share of total",d.share]].map(function(x){return "<div class=\"mg\"><div class=\"k\">"+esc(x[0])+"</div><div class=\"v\">"+esc(x[1])+"</div></div>"}).join("");
+    $("tbModalBefore").textContent=d.before; $("tbModalAfter").textContent=d.after;
+    $("tbModalSteps").innerHTML=d.steps.map(function(s){return "<li>"+esc(s)+"</li>"}).join("");
+    $("tbModalNote").textContent=d.note||"";
+    modal.classList.remove("js-hidden"); $("tbModalClose").focus();
+  }
+  function close(){ modal.classList.add("js-hidden"); }
+  Array.prototype.forEach.call(document.querySelectorAll(".tb-oh-click"),function(r){
+    r.addEventListener("click",function(){open(r)});
+    r.addEventListener("keydown",function(e){ if(e.key==="Enter"||e.key===" "){e.preventDefault();open(r)} });
+  });
+  $("tbModalClose").addEventListener("click",close);
+  modal.addEventListener("click",function(e){ if(e.target===modal) close(); });
+  document.addEventListener("keydown",function(e){ if(e.key==="Escape") close(); });
+})();
+</script>
+
+<script>
+(function(){
+  var secs=function(){return Array.prototype.slice.call(document.querySelectorAll("details.tb-sec"))};
+  var e=document.getElementById("tbExpandAll"), c=document.getElementById("tbCollapseAll");
+  if(e) e.addEventListener("click",function(){secs().forEach(function(d){d.open=true})});
+  if(c) c.addEventListener("click",function(){secs().forEach(function(d){d.open=false})});
+})();
+</script>
+
+</div></body></html>

@@ -1,0 +1,21 @@
+{
+  "label": "hold V1 JED-CAI #11 Hold",
+  "status": 409,
+  "durationMs": 2928,
+  "requestedAtUtc": "2026-11-05T10:47:13.430Z",
+  "respondedAtUtc": "2026-11-05T10:47:16.358Z",
+  "body": {
+    "Status": 409,
+    "TransactionId": "e4910b8d-7ecb-41f1-96dd-5d898f2c20e2",
+    "ErrorCode": "NDC-INT-UNC-Z9999",
+    "ErrorMessage": "NDC-INT-UNC-Z9999",
+    "Context": [
+      {
+        "Name": "050002",
+        "Value": "External service returned error in orderViewRS (code: [911] message: [NOT AVAILABLE IN THIS CONNECTION])."
+      }
+    ],
+    "OriginalSupplierRequest": "[REDACTED - raw supplier payload, per SPEC.md 7.14]",
+    "OriginalSupplierResponse": "[REDACTED - raw supplier payload, per SPEC.md 7.14]"
+  }
+}

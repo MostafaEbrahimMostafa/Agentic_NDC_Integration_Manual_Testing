@@ -1,0 +1,21 @@
+{
+  "label": "book V1 DMM-CAI #1 Book",
+  "status": 409,
+  "durationMs": 44140,
+  "requestedAtUtc": "2026-11-05T10:48:26.535Z",
+  "respondedAtUtc": "2026-11-05T10:49:10.675Z",
+  "body": {
+    "Status": 409,
+    "TransactionId": "c26b1a0f-94c7-484e-b4ee-975cb06f3b4e",
+    "ErrorCode": "NDC-INT-UNC-Z9999",
+    "ErrorMessage": "NDC-INT-UNC-Z9999",
+    "Context": [
+      {
+        "Name": "050007",
+        "Value": "Error while invoking external client: [Not all requested items have been processed by airline on time]"
+      }
+    ],
+    "OriginalSupplierRequest": "[REDACTED - raw supplier payload, per SPEC.md 7.14]",
+    "OriginalSupplierResponse": "[REDACTED - raw supplier payload, per SPEC.md 7.14]"
+  }
+}

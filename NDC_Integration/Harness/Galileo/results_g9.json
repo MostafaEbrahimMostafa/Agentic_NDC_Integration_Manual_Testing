@@ -1,0 +1,15 @@
+{
+ "RES": {},
+ "ERRS": {},
+ "DEF": [
+  {
+   "tc": "TC-RTMC-04",
+   "actual": "Page 2 of the round trip failed twice: HTTP 409; ErrorCode NDC-INT-UNC-Z9999; ErrorMessage \"NDC-INT-UNC-Z9999\"; Context [{\"Name\":\"18\",\"Value\":\"A bad availability specification was found. - A bad availability specifica...; envelope Pasca...",
+   "hops": [
+    "00001_1794740173268",
+    "00002_1794740183721",
+    "00003_1794740188379"
+   ]
+  }
+ ]
+}

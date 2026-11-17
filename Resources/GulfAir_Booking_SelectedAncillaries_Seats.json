@@ -1,0 +1,130 @@
+{
+    "passengersSelectedAncillaries": {
+        "PAX1": {
+            "setSegmentsAncillaries": {},
+            "setJourneysAncillaries": {
+                "GF-GF80-1": [
+                    {
+                        "additionalServiceCategory": "Baggage",
+                        "ancillaryCode": "GF-GF80-GF80-2026120404-2026120408-O-OfferItem-2",
+                        "quantity": "1"
+                    }
+                ],
+                "GF-GF79-1": [
+                    {
+                        "additionalServiceCategory": "Baggage",
+                        "ancillaryCode": "GF-GF79-GF79-2026121101-2026121103-O-OfferItem-2",
+                        "quantity": "1"
+                    }
+                ]
+            }
+        },
+        "PAX2": {
+            "setSegmentsAncillaries": {},
+            "setJourneysAncillaries": {
+                "GF-GF80-1": [
+                    {
+                        "additionalServiceCategory": "Baggage",
+                        "ancillaryCode": "GF-GF80-GF80-2026120404-2026120408-O-OfferItem-2",
+                        "quantity": "1"
+                    }
+                ],
+                "GF-GF79-1": [
+                    {
+                        "additionalServiceCategory": "Baggage",
+                        "ancillaryCode": "GF-GF79-GF79-2026121101-2026121103-O-OfferItem-2",
+                        "quantity": "1"
+                    }
+                ]
+            }
+        },
+        "PAX3": {
+            "setSegmentsAncillaries": {},
+            "setJourneysAncillaries": {
+                "GF-GF80-1": [
+                    {
+                        "additionalServiceCategory": "Baggage",
+                        "ancillaryCode": "GF-GF80-GF80-2026120404-2026120408-O-OfferItem-2",
+                        "quantity": "1"
+                    }
+                ],
+                "GF-GF79-1": [
+                    {
+                        "additionalServiceCategory": "Baggage",
+                        "ancillaryCode": "GF-GF79-GF79-2026121101-2026121103-O-OfferItem-2",
+                        "quantity": "1"
+                    }
+                ]
+            }
+        },
+        "PAX4": {
+            "setSegmentsAncillaries": {},
+            "setJourneysAncillaries": {
+                "GF-GF80-1": [
+                    {
+                        "additionalServiceCategory": "Baggage",
+                        "ancillaryCode": "GF-GF80-GF80-2026120404-2026120408-O-OfferItem-2",
+                        "quantity": "1"
+                    }
+                ],
+                "GF-GF79-1": [
+                    {
+                        "additionalServiceCategory": "Baggage",
+                        "ancillaryCode": "GF-GF79-GF79-2026121101-2026121103-O-OfferItem-2",
+                        "quantity": "1"
+                    }
+                ]
+            }
+        }
+    },
+    "passengersSelectedSeats": {
+        "PAX1": {
+            "setSegmentsSeats": {
+                "GF-GF80-GF80-2026120404-2026120408-O": {
+                    "cellCode": "20A",
+                    "cellId": "GF-GF80-GF80-2026120404-2026120408-O&laJHRtkkOTU4N2I0YjMtNDc5Yy00Mjg1LWIxNDMtMGQxZDNhMDViNTVm2SRHRi1HRjgwLUdGODAtMjAyNjEyMDQwNC0yMDI2MTIwNDA4LU+EpFBBWDGarkdGLVNlYXRPZmZlcjU0wMDZJEdGLUdGODAtR0Y4MC0yMDI2MTIwNDA0LTIwMjYxMjA0MDgtT6U0MC4wMKNTQVKjQ0FJo0JBSNb/axI/cKMyMEGkUEFYMpquR0YtU2VhdE9mZmVyNTTAwNkkR0YtR0Y4MC1HRjgwLTIwMjYxMjA0MDQtMjAyNjEyMDQwOC1PpTQwLjAwo1NBUqNDQUmjQkFI1v9rEj9wozIwQaRQQVgzmq5HRi1TZWF0T2ZmZXI1NMDA2SRHRi1HRjgwLUdGODAtMjAyNjEyMDQwNC0yMDI2MTIwNDA4LU+lNDAuMDCjU0FSo0NBSaNCQUjW/2sSP3CjMjBBpFBBWDSarkdGLVNlYXRPZmZlcjU0wMDZJEdGLUdGODAtR0Y4MC0yMDI2MTIwNDA0LTIwMjYxMjA0MDgtT6U0MC4wMKNTQVKjQ0FJo0JBSNb/axI/cKMyMEHZJGUwYmU5MjZlLTY4M2UtNGNkYS1hMTA1LTk4OWFlMDhjN2ZmNQ=="
+                },
+                "GF-GF79-GF79-2026121101-2026121103-O": {
+                    "cellCode": "20A",
+                    "cellId": "GF-GF79-GF79-2026121101-2026121103-O&laJHRtkkOTU4N2I0YjMtNDc5Yy00Mjg1LWIxNDMtMGQxZDNhMDViNTVm2SRHRi1HRjc5LUdGNzktMjAyNjEyMTEwMS0yMDI2MTIxMTAzLU+EpFBBWDGarkdGLVNlYXRPZmZlcjU0wMDZJEdGLUdGNzktR0Y3OS0yMDI2MTIxMTAxLTIwMjYxMjExMDMtT6U0MC4wMKNTQVKjQkFIo0NBSdb/axtMPKMyMEGkUEFYMpquR0YtU2VhdE9mZmVyNTTAwNkkR0YtR0Y3OS1HRjc5LTIwMjYxMjExMDEtMjAyNjEyMTEwMy1PpTQwLjAwo1NBUqNCQUijQ0FJ1v9rG0w8ozIwQaRQQVgzmq5HRi1TZWF0T2ZmZXI1NMDA2SRHRi1HRjc5LUdGNzktMjAyNjEyMTEwMS0yMDI2MTIxMTAzLU+lNDAuMDCjU0FSo0JBSKNDQUnW/2sbTDyjMjBBpFBBWDSarkdGLVNlYXRPZmZlcjU0wMDZJEdGLUdGNzktR0Y3OS0yMDI2MTIxMTAxLTIwMjYxMjExMDMtT6U0MC4wMKNTQVKjQkFIo0NBSdb/axtMPKMyMEHZJGUwYmU5MjZlLTY4M2UtNGNkYS1hMTA1LTk4OWFlMDhjN2ZmNQ=="
+                }
+            }
+        },
+        "PAX2": {
+            "setSegmentsSeats": {
+                "GF-GF80-GF80-2026120404-2026120408-O": {
+                    "cellCode": "20B",
+                    "cellId": "GF-GF80-GF80-2026120404-2026120408-O&laJHRtkkOTU4N2I0YjMtNDc5Yy00Mjg1LWIxNDMtMGQxZDNhMDViNTVm2SRHRi1HRjgwLUdGODAtMjAyNjEyMDQwNC0yMDI2MTIwNDA4LU+EpFBBWDGarkdGLVNlYXRPZmZlcjU0wMDZJEdGLUdGODAtR0Y4MC0yMDI2MTIwNDA0LTIwMjYxMjA0MDgtT6U0MC4wMKNTQVKjQ0FJo0JBSNb/axI/cKMyMEKkUEFYMpquR0YtU2VhdE9mZmVyNTTAwNkkR0YtR0Y4MC1HRjgwLTIwMjYxMjA0MDQtMjAyNjEyMDQwOC1PpTQwLjAwo1NBUqNDQUmjQkFI1v9rEj9wozIwQqRQQVgzmq5HRi1TZWF0T2ZmZXI1NMDA2SRHRi1HRjgwLUdGODAtMjAyNjEyMDQwNC0yMDI2MTIwNDA4LU+lNDAuMDCjU0FSo0NBSaNCQUjW/2sSP3CjMjBCpFBBWDSarkdGLVNlYXRPZmZlcjU0wMDZJEdGLUdGODAtR0Y4MC0yMDI2MTIwNDA0LTIwMjYxMjA0MDgtT6U0MC4wMKNTQVKjQ0FJo0JBSNb/axI/cKMyMELZJGUwYmU5MjZlLTY4M2UtNGNkYS1hMTA1LTk4OWFlMDhjN2ZmNQ=="
+                },
+                "GF-GF79-GF79-2026121101-2026121103-O": {
+                    "cellCode": "20B",
+                    "cellId": "GF-GF79-GF79-2026121101-2026121103-O&laJHRtkkOTU4N2I0YjMtNDc5Yy00Mjg1LWIxNDMtMGQxZDNhMDViNTVm2SRHRi1HRjc5LUdGNzktMjAyNjEyMTEwMS0yMDI2MTIxMTAzLU+EpFBBWDGarkdGLVNlYXRPZmZlcjU0wMDZJEdGLUdGNzktR0Y3OS0yMDI2MTIxMTAxLTIwMjYxMjExMDMtT6U0MC4wMKNTQVKjQkFIo0NBSdb/axtMPKMyMEKkUEFYMpquR0YtU2VhdE9mZmVyNTTAwNkkR0YtR0Y3OS1HRjc5LTIwMjYxMjExMDEtMjAyNjEyMTEwMy1PpTQwLjAwo1NBUqNCQUijQ0FJ1v9rG0w8ozIwQqRQQVgzmq5HRi1TZWF0T2ZmZXI1NMDA2SRHRi1HRjc5LUdGNzktMjAyNjEyMTEwMS0yMDI2MTIxMTAzLU+lNDAuMDCjU0FSo0JBSKNDQUnW/2sbTDyjMjBCpFBBWDSarkdGLVNlYXRPZmZlcjU0wMDZJEdGLUdGNzktR0Y3OS0yMDI2MTIxMTAxLTIwMjYxMjExMDMtT6U0MC4wMKNTQVKjQkFIo0NBSdb/axtMPKMyMELZJGUwYmU5MjZlLTY4M2UtNGNkYS1hMTA1LTk4OWFlMDhjN2ZmNQ=="
+                }
+            }
+        },
+        "PAX3": {
+            "setSegmentsSeats": {
+                "GF-GF80-GF80-2026120404-2026120408-O": {
+                    "cellCode": "20C",
+                    "cellId": "GF-GF80-GF80-2026120404-2026120408-O&laJHRtkkOTU4N2I0YjMtNDc5Yy00Mjg1LWIxNDMtMGQxZDNhMDViNTVm2SRHRi1HRjgwLUdGODAtMjAyNjEyMDQwNC0yMDI2MTIwNDA4LU+EpFBBWDGarkdGLVNlYXRPZmZlcjU0wMDZJEdGLUdGODAtR0Y4MC0yMDI2MTIwNDA0LTIwMjYxMjA0MDgtT6U0MC4wMKNTQVKjQ0FJo0JBSNb/axI/cKMyMEOkUEFYMpquR0YtU2VhdE9mZmVyNTTAwNkkR0YtR0Y4MC1HRjgwLTIwMjYxMjA0MDQtMjAyNjEyMDQwOC1PpTQwLjAwo1NBUqNDQUmjQkFI1v9rEj9wozIwQ6RQQVgzmq5HRi1TZWF0T2ZmZXI1NMDA2SRHRi1HRjgwLUdGODAtMjAyNjEyMDQwNC0yMDI2MTIwNDA4LU+lNDAuMDCjU0FSo0NBSaNCQUjW/2sSP3CjMjBDpFBBWDSarkdGLVNlYXRPZmZlcjU0wMDZJEdGLUdGODAtR0Y4MC0yMDI2MTIwNDA0LTIwMjYxMjA0MDgtT6U0MC4wMKNTQVKjQ0FJo0JBSNb/axI/cKMyMEPZJGUwYmU5MjZlLTY4M2UtNGNkYS1hMTA1LTk4OWFlMDhjN2ZmNQ=="
+                },
+                "GF-GF79-GF79-2026121101-2026121103-O": {
+                    "cellCode": "20C",
+                    "cellId": "GF-GF79-GF79-2026121101-2026121103-O&laJHRtkkOTU4N2I0YjMtNDc5Yy00Mjg1LWIxNDMtMGQxZDNhMDViNTVm2SRHRi1HRjc5LUdGNzktMjAyNjEyMTEwMS0yMDI2MTIxMTAzLU+EpFBBWDGarkdGLVNlYXRPZmZlcjU0wMDZJEdGLUdGNzktR0Y3OS0yMDI2MTIxMTAxLTIwMjYxMjExMDMtT6U0MC4wMKNTQVKjQkFIo0NBSdb/axtMPKMyMEOkUEFYMpquR0YtU2VhdE9mZmVyNTTAwNkkR0YtR0Y3OS1HRjc5LTIwMjYxMjExMDEtMjAyNjEyMTEwMy1PpTQwLjAwo1NBUqNCQUijQ0FJ1v9rG0w8ozIwQ6RQQVgzmq5HRi1TZWF0T2ZmZXI1NMDA2SRHRi1HRjc5LUdGNzktMjAyNjEyMTEwMS0yMDI2MTIxMTAzLU+lNDAuMDCjU0FSo0JBSKNDQUnW/2sbTDyjMjBDpFBBWDSarkdGLVNlYXRPZmZlcjU0wMDZJEdGLUdGNzktR0Y3OS0yMDI2MTIxMTAxLTIwMjYxMjExMDMtT6U0MC4wMKNTQVKjQkFIo0NBSdb/axtMPKMyMEPZJGUwYmU5MjZlLTY4M2UtNGNkYS1hMTA1LTk4OWFlMDhjN2ZmNQ=="
+                }
+            }
+        },
+        "PAX4": {
+            "setSegmentsSeats": {
+                "GF-GF80-GF80-2026120404-2026120408-O": {
+                    "cellCode": "20D",
+                    "cellId": "GF-GF80-GF80-2026120404-2026120408-O&laJHRtkkOTU4N2I0YjMtNDc5Yy00Mjg1LWIxNDMtMGQxZDNhMDViNTVm2SRHRi1HRjgwLUdGODAtMjAyNjEyMDQwNC0yMDI2MTIwNDA4LU+EpFBBWDGarkdGLVNlYXRPZmZlcjU0wMDZJEdGLUdGODAtR0Y4MC0yMDI2MTIwNDA0LTIwMjYxMjA0MDgtT6U0MC4wMKNTQVKjQ0FJo0JBSNb/axI/cKMyMESkUEFYMpquR0YtU2VhdE9mZmVyNTTAwNkkR0YtR0Y4MC1HRjgwLTIwMjYxMjA0MDQtMjAyNjEyMDQwOC1PpTQwLjAwo1NBUqNDQUmjQkFI1v9rEj9wozIwRKRQQVgzmq5HRi1TZWF0T2ZmZXI1NMDA2SRHRi1HRjgwLUdGODAtMjAyNjEyMDQwNC0yMDI2MTIwNDA4LU+lNDAuMDCjU0FSo0NBSaNCQUjW/2sSP3CjMjBEpFBBWDSarkdGLVNlYXRPZmZlcjU0wMDZJEdGLUdGODAtR0Y4MC0yMDI2MTIwNDA0LTIwMjYxMjA0MDgtT6U0MC4wMKNTQVKjQ0FJo0JBSNb/axI/cKMyMETZJGUwYmU5MjZlLTY4M2UtNGNkYS1hMTA1LTk4OWFlMDhjN2ZmNQ=="
+                },
+                "GF-GF79-GF79-2026121101-2026121103-O": {
+                    "cellCode": "20D",
+                    "cellId": "GF-GF79-GF79-2026121101-2026121103-O&laJHRtkkOTU4N2I0YjMtNDc5Yy00Mjg1LWIxNDMtMGQxZDNhMDViNTVm2SRHRi1HRjc5LUdGNzktMjAyNjEyMTEwMS0yMDI2MTIxMTAzLU+EpFBBWDGarkdGLVNlYXRPZmZlcjU0wMDZJEdGLUdGNzktR0Y3OS0yMDI2MTIxMTAxLTIwMjYxMjExMDMtT6U0MC4wMKNTQVKjQkFIo0NBSdb/axtMPKMyMESkUEFYMpquR0YtU2VhdE9mZmVyNTTAwNkkR0YtR0Y3OS1HRjc5LTIwMjYxMjExMDEtMjAyNjEyMTEwMy1PpTQwLjAwo1NBUqNCQUijQ0FJ1v9rG0w8ozIwRKRQQVgzmq5HRi1TZWF0T2ZmZXI1NMDA2SRHRi1HRjc5LUdGNzktMjAyNjEyMTEwMS0yMDI2MTIxMTAzLU+lNDAuMDCjU0FSo0JBSKNDQUnW/2sbTDyjMjBEpFBBWDSarkdGLVNlYXRPZmZlcjU0wMDZJEdGLUdGNzktR0Y3OS0yMDI2MTIxMTAxLTIwMjYxMjExMDMtT6U0MC4wMKNTQVKjQkFIo0NBSdb/axtMPKMyMETZJGUwYmU5MjZlLTY4M2UtNGNkYS1hMTA1LTk4OWFlMDhjN2ZmNQ=="
+                }
+            }
+        }
+    }
+}

@@ -1,7 +1,7 @@
 // Re-renders the run's .md from its .jsonl (pure function of the JSONL). Usage: node render-md.js <slug>
 const fs = require('fs'), path = require('path');
 const slug = process.argv[2];
-const dir = 'C:/Users/sheen/Desktop/resources/NDC Manual Testing/NDC_Integration/Artifacts/Logs';
+const dir = require('path').resolve(__dirname, '../../../..', 'NDC_Integration/Artifacts/Logs');
 const L = fs.readFileSync(path.join(dir, slug + '.jsonl'), 'utf8').split('\n').filter(Boolean).map(l => JSON.parse(l));
 const esc = s => String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 const rs = L.find(x => x.type === 'run_start'), re = L.find(x => x.type === 'run_end');
@@ -14,12 +14,12 @@ const fmtDur = ms => { const s = Math.round(ms / 1000); const h = Math.floor(s /
 const ended = re ? new Date(maxTs).toISOString() : null;
 let o = [];
 const ids = tcs.map(t => t.tc_id).join(', ');
-o.push(`# QA Execution Report — Round 12 targeted run — SeatMap_TestCases.csv (NDC_Integration/TestCases/SeatMap_TestCases.csv) — ${rs.total_test_cases_planned} test cases: ${ids || 'in progress'}`, '');
-o.push(`**Environment:** staging &middot; ${rs.baseUrl}`, `**Supplier:** ${rs.supplier}  **Credentials Selector:** ${rs.credentials_selector}`, `**Started:** ${rs.started_at}`);
+o.push(`# QA Execution Report — ${rs.title_line || ('SeatMap_TestCases.csv (NDC_Integration/TestCases/SeatMap_TestCases.csv) — ' + rs.total_test_cases_planned + ' test cases: ' + (ids || 'in progress'))}`, '');
+o.push(`**Environment:** ${rs.environment_text || 'staging'} &middot; ${rs.baseUrl}`, `**Supplier:** ${rs.supplier}  **Credentials Selector:** ${rs.credentials_selector}`, `**Started:** ${rs.started_at}`);
 if (re) { o.push(`**Ended:** ${ended}`, `**Status:** ${re.status === 'complete' ? 'COMPLETE' : 'INTERRUPTED (after ' + re.interrupted_after_tc + ')'}`);
   if (L.some(x => x.type === 'reporting_op' && /Time Breakdown/.test(x.operation))) o.push(`**Execution Duration:** ${fmtDur(maxTs - Date.parse(rs.started_at))} ([View Time Breakdown](${slug}_TimeBreakdown.html))`);
 } else o.push('**Status:** RUNNING');
-o.push('**Prior runs:** Rounds 1-11 (see NDC_Integration/Artifacts/Logs/)', '');
+o.push('**Prior runs:** ' + (rs.prior_runs || 'see NDC_Integration/Artifacts/Logs/') + ' (see NDC_Integration/Artifacts/Logs/)', '');
 const sn = L.find(x => x.type === 'scope_note'); if (sn) { o.push('## Scope note', '', sn.text, ''); }
 o.push('## Summary', '', `- Test cases logged: ${tcs.length} of ${rs.total_test_cases_planned} planned`, `- Passed: ${cnt('PASS')}`, `- Failed: ${cnt('FAIL')}`, `- Blocked: ${cnt('BLOCKED')}`);
 const fl = tcs.filter(t => t.verdict === 'FAIL').map(t => t.tc_id); if (fl.length) o.push(`- Failed test cases: ${fl.join(', ')}`);

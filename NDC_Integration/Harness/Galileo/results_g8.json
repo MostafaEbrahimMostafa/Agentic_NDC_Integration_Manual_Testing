@@ -1,0 +1,23 @@
+{
+ "RES": {},
+ "ERRS": {},
+ "DEF": [
+  {
+   "tc": "TC-FLOW-V2-GALBOOK-15",
+   "actual": "[A bookingToken that is not a booking token (INVALID-TOKEN) on a live hold] PROBLEM: HTTP 200 cancelled=true — the hold was cancelled with a wrong bookingToken (token not validated) | [C cancel the same booking again] PROBLEM: HTTP 409 HTTP 409; ErrorCode NDC-INT-UNC-Z9999; ErrorMessage \"NDC-INT-UNC-Z9999\"; Context [{\"Name\":\"200\",\"Value\":\"This PNR has been cancelled\"}]; envelope P... — PROBLEM: raw supplier request/response in the error body (OriginalSupplierRequest/OriginalSupplierResponse) | [D no pnr and no gdsPNR] ok: HTTP 400 HTTP 400; ErrorCode NDC-INT-TEC-A0001; ErrorMessage \"Invalid request. Please check the request parameters and try again.\"; Context [{\"Name\":\"Predic... | [E BookAfterHold on the cancelled hold] PROBLEM: HTTP 409 HTTP 409; ErrorCode NDC-INT-UNC-Z9999; ErrorMessage \"NDC-INT-UNC-Z9999\"; Context [{\"Name\":\"200\",\"Value\":\"This PNR has been cancelled\"}]; envelope P... — PROBLEM: raw supplier request/response in the error body (OriginalSupplierRequest/OriginalSupplierResponse)",
+   "hops": [
+    "00001_1794732450757",
+    "00002_1794732450878",
+    "00003_1794732454319",
+    "00004_1794732454651",
+    "00005_1794732460129",
+    "00006_1794732465192",
+    "00007_1794732466776",
+    "00008_1794732469544",
+    "00009_1794732517140",
+    "00010_1794732517246",
+    "00011_1794732564776"
+   ]
+  }
+ ]
+}

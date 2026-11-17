@@ -1,0 +1,14 @@
+{
+  "label": "isolated 500 BookAfterHold",
+  "status": 500,
+  "durationMs": 618,
+  "requestedAtUtc": "2026-11-05T09:08:26.152Z",
+  "respondedAtUtc": "2026-11-05T09:08:26.770Z",
+  "body": {
+    "Status": 500,
+    "TransactionId": "103d8f4c-13a5-4c88-bc70-5b233cc12a6b",
+    "ErrorCode": "ServerError",
+    "ErrorMessage": "Unknown error occured. Please keep the transaction id as a reference.",
+    "Context": []
+  }
+}

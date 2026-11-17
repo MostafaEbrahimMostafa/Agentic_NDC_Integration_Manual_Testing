@@ -1,0 +1,3430 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>NDC Integration - QA Execution Report</title>
+<style>
+  :root{
+    color-scheme: light;
+    --paper:#F3F5F8; --surface:#FFFFFF; --surface-2:#EAEEF4;
+    --ink:#10151F; --ink-2:#45536B; --ink-muted:#7C8AA0;
+    --line:#DDE3EC; --line-strong:#C6CEDC;
+    --accent:#2A78D6; --accent-ink:#1C5CAB; --accent-wash:#E4EEFA;
+    --good:#0CA30C; --warning:#C98A17; --serious:#D9673C; --critical:#D03B3B;
+    --good-wash:rgba(12,163,12,0.12); --warning-wash:rgba(250,178,25,0.16);
+    --serious-wash:rgba(236,131,90,0.14); --critical-wash:rgba(208,59,59,0.12);
+    --shadow:rgba(16,21,31,0.08);
+    --font-sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+    --font-mono:ui-monospace,"SF Mono","Cascadia Code","Roboto Mono",Consolas,"Courier New",monospace;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:where(:not([data-theme="light"])){
+      color-scheme: dark;
+      --paper:#0A0E15; --surface:#111826; --surface-2:#16202F;
+      --ink:#EDF1F7; --ink-2:#B7C2D1; --ink-muted:#8290A6;
+      --line:#232E40; --line-strong:#324058;
+      --accent:#3987E5; --accent-ink:#8FBBEF; --accent-wash:#152A45;
+      --good:#35C24A; --warning:#E3A730; --serious:#E88A5E; --critical:#EA5B5B;
+      --good-wash:rgba(53,194,74,0.16); --warning-wash:rgba(227,167,48,0.16);
+      --serious-wash:rgba(232,138,94,0.16); --critical-wash:rgba(234,91,91,0.18);
+      --shadow:rgba(0,0,0,0.5);
+    }
+  }
+  :root[data-theme="dark"]{
+    color-scheme: dark;
+    --paper:#0A0E15; --surface:#111826; --surface-2:#16202F;
+    --ink:#EDF1F7; --ink-2:#B7C2D1; --ink-muted:#8290A6;
+    --line:#232E40; --line-strong:#324058;
+    --accent:#3987E5; --accent-ink:#8FBBEF; --accent-wash:#152A45;
+    --good:#35C24A; --warning:#E3A730; --serious:#E88A5E; --critical:#EA5B5B;
+    --good-wash:rgba(53,194,74,0.16); --warning-wash:rgba(227,167,48,0.16);
+    --serious-wash:rgba(232,138,94,0.16); --critical-wash:rgba(234,91,91,0.18);
+    --shadow:rgba(0,0,0,0.5);
+  }
+  :root[data-theme="light"]{
+    color-scheme: light;
+    --paper:#F3F5F8; --surface:#FFFFFF; --surface-2:#EAEEF4;
+    --ink:#10151F; --ink-2:#45536B; --ink-muted:#7C8AA0;
+    --line:#DDE3EC; --line-strong:#C6CEDC;
+    --accent:#2A78D6; --accent-ink:#1C5CAB; --accent-wash:#E4EEFA;
+    --good:#0CA30C; --warning:#C98A17; --serious:#D9673C; --critical:#D03B3B;
+    --good-wash:rgba(12,163,12,0.12); --warning-wash:rgba(250,178,25,0.16);
+    --serious-wash:rgba(236,131,90,0.14); --critical-wash:rgba(208,59,59,0.12);
+    --shadow:rgba(16,21,31,0.08);
+  }
+  *{ box-sizing:border-box; }
+  html,body{ margin:0; padding:0; }
+  body{ background:var(--paper); color:var(--ink); font-family:var(--font-sans);
+        font-size:14px; line-height:1.5; -webkit-font-smoothing:antialiased; }
+  @media (prefers-reduced-motion: reduce){ *{ animation-duration:.001ms !important; transition-duration:.001ms !important; } }
+  a{ color:var(--accent-ink); }
+  .wrap{ max-width:960px; margin:0 auto; padding:32px 20px 80px; }
+  .dashboard-card{ background:var(--surface); border:1px solid var(--line-strong); border-radius:24px; padding:24px; }
+  code,.mono{ font-family:var(--font-mono); font-size:.92em; }
+  .header{ display:flex; flex-wrap:wrap; align-items:baseline; justify-content:space-between; gap:12px; margin-bottom:24px; }
+  .header-main{ flex:1 1 auto; min-width:280px; }
+  .header h1{ font-size:32px; font-weight:800; margin:0 0 8px; }
+  .header .meta{ color:var(--ink-muted); font-size:13px; }
+  .section-num{ font-size:17px; font-weight:700; color:var(--ink); margin:32px 0 14px; text-transform:none; letter-spacing:normal; border-bottom:none; padding-bottom:0; }
+  .summary-layout{ display:flex; align-items:center; gap:36px; flex-wrap:wrap; margin-bottom:28px; }
+  .donut-block{ display:flex; align-items:center; gap:20px; flex-shrink:0; }
+  .stats-block{ flex:1 1 360px; min-width:280px; display:flex; flex-direction:column; gap:14px; }
+  .scard{ text-align:center; }
+  .scard .lbl{ font-size:15px; font-weight:700; color:var(--ink-muted); margin-top:4px; }
+  .scard .val{ font-size:24px; font-weight:700; color:var(--ink); }
+  .scard .val.pass{ color:var(--good); }
+  .scard .val.fail{ color:var(--critical); }
+  .scard .val.blocked{ color:var(--serious); }
+  .scard-total .lbl{ font-size:17px; margin-top:6px; }
+  .scard-total .val{ font-size:28px; }
+  .time-breakdown-link{ display:inline-block; margin-top:6px; font-size:12px; font-weight:600; color:var(--accent-ink); text-decoration:underline; }
+  summary.section-summary-flex > .section-count-badges,
+  summary.section-summary-flex > .section-count-badge{ float:right; }
+  .section-count-badge{ display:flex; flex-direction:column; align-items:center; justify-content:center;
+      background:var(--surface); border:1px solid var(--line-strong); border-radius:12px; padding:6px 20px;
+      text-transform:none; letter-spacing:normal; flex-shrink:0; }
+  .section-count-badge .scb-val{ font-size:20px; font-weight:700; color:var(--accent-ink); line-height:1.2; }
+  .section-count-badge .scb-lbl{ font-size:11px; color:var(--ink-muted); margin-top:1px; }
+  .section-count-badges{ display:flex; gap:10px; flex-shrink:0; }
+  .scb-val.serious{ color:var(--serious); }
+  .scb-val.accent{ color:var(--accent-ink); }
+  .summary-cards{ display:grid; grid-template-columns:repeat(auto-fit,minmax(120px,1fr)); gap:12px; }
+  .donut{ width:280px; height:280px; border-radius:50%; flex-shrink:0; display:flex; align-items:center; justify-content:center; }
+  .donut-hole{ width:190px; height:190px; border-radius:50%; background:var(--paper); display:flex; flex-direction:column; align-items:center; justify-content:center; }
+  .donut-pct{ font-size:34px; font-weight:800; color:var(--ink); }
+  .donut-sub{ font-size:15px; color:var(--ink-muted); }
+  .donut-legend{ display:flex; flex-direction:column; gap:10px; }
+  .litem{ display:flex; align-items:center; gap:8px; font-size:13px; color:var(--ink-2); white-space:nowrap; }
+  .litem .lcount{ margin-left:4px; color:var(--ink-muted); }
+  .swatch{ width:12px; height:12px; border-radius:3px; flex-shrink:0; }
+  .swatch.pass{ background:var(--good); }
+  .swatch.fail{ background:var(--critical); }
+  .swatch.blocked{ background:var(--serious); }
+  h2{ font-size:15px; text-transform:uppercase; letter-spacing:.04em; color:var(--ink-2);
+      border-bottom:1px solid var(--line); padding-bottom:6px; margin:32px 0 12px; }
+  .section-collapse{ margin:0; }
+  .section-collapse > summary{ font-size:15px; text-transform:uppercase; letter-spacing:.04em; color:var(--ink-2);
+      border-bottom:1px solid var(--line); padding-bottom:6px; margin:32px 0 12px; cursor:pointer; }
+  .section-collapse > summary::-webkit-details-marker{ color:var(--ink-muted); }
+  .tc-section > summary{ margin-top:0; }
+  .tc-category{ background:var(--surface); border:1px solid var(--line-strong); border-radius:12px; margin-bottom:10px; }
+  .tc-category > summary{ display:flex; align-items:center; gap:10px; padding:14px 16px; cursor:pointer; list-style:none; }
+  .tc-category > summary::-webkit-details-marker{ display:none; }
+  .cat-icon{ font-size:16px; flex-shrink:0; width:22px; display:inline-flex; align-items:center; justify-content:center; }
+  .cat-name{ font-weight:700; color:var(--ink); flex-shrink:0; }
+  .cat-counts{ display:flex; gap:14px; margin-left:auto; font-size:12px; }
+  .cc{ font-weight:600; }
+  .cc.pass{ color:var(--good); }
+  .cc.fail{ color:var(--critical); }
+  .cc.blocked{ color:var(--serious); }
+  .cat-chev{ display:inline-block; width:9px; flex-shrink:0; color:var(--ink-muted); font-size:10px; transition:transform .15s ease; }
+  .cat-chev::before{ content:'\25B8'; }
+  details.tc-category[open] > summary .cat-chev{ transform:rotate(90deg); }
+  .tc-category-body{ padding:0 16px 16px; }
+  .tc-category.cat-empty{ display:none; }
+  .tc{ background:var(--surface); border:1px solid var(--line-strong); border-left-width:4px; border-radius:12px; padding:16px 18px; margin-bottom:8px; }
+  .tc.PASS{ border-left-color:var(--good); }
+  .tc.FAIL{ border-left-color:var(--critical); }
+  .tc.BLOCKED{ border-left-color:var(--serious); }
+  .tc-head{ display:flex; justify-content:space-between; gap:10px; font-weight:600; }
+  .badge{ font-size:11px; font-weight:700; padding:2px 8px; border-radius:5px; }
+  .badge.PASS{ background:var(--good-wash); color:var(--good); }
+  .badge.FAIL{ background:var(--critical-wash); color:var(--critical); }
+  .badge.BLOCKED{ background:var(--serious-wash); color:var(--serious); }
+  .tc .row{ margin-top:6px; font-size:13px; color:var(--ink-2); overflow-wrap:anywhere; }
+  .tc .row b{ color:var(--ink); }
+  .view-tc-wrap{ margin-top:10px; }
+  .view-tc > summary{ display:block; text-align:right; color:var(--accent-ink); text-decoration:underline; cursor:pointer; font-size:12px; font-weight:600; list-style:none; }
+  .view-tc > summary::-webkit-details-marker{ display:none; }
+  .view-tc-body{ margin-top:8px; padding:14px 16px; background:var(--surface-2); border:1px solid var(--line); border-radius:8px; font-size:13px; }
+  .vtc-h{ font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.04em; color:var(--ink-muted); margin:12px 0 4px; }
+  .vtc-h:first-child{ margin-top:0; }
+  .vtc-p{ color:var(--ink-2); overflow-wrap:anywhere; }
+  .vtc-steps{ margin:0; padding-left:18px; color:var(--ink-2); }
+  .vtc-steps li{ margin-bottom:4px; overflow-wrap:anywhere; }
+  details.evidence, details.hops{ margin-top:6px; }
+  details.evidence summary, details.hops summary{ cursor:pointer; font-size:12px; color:var(--accent-ink); }
+  details.evidence .ev-body{ margin-top:4px; padding:8px 10px; background:var(--surface-2); border-radius:6px; font-size:12px; overflow-wrap:anywhere; }
+  .hop{ padding:6px 0; border-top:1px solid var(--line); font-size:12px; }
+  .hop:first-child{ border-top:none; }
+  .hop-endpoint{ font-weight:600; color:var(--ink); }
+  .hop .hd{ color:var(--ink-muted); margin-top:2px; overflow-wrap:anywhere; }
+  .hop .hd.hop-reqres.js-hidden{ display:none; }
+  .hop-reqres-toggle{ margin-left:8px; font-size:11px; font-weight:600; color:var(--accent-ink); text-decoration:underline; cursor:pointer; }
+  .hop-reqres-panel{ margin-top:10px; display:flex; flex-direction:column; gap:18px; }
+  .hop-reqres-panel.js-hidden{ display:none; }
+  .rr-title{ font-size:15px; font-weight:700; color:var(--ink); margin-bottom:6px; }
+  .rr-line{ font-size:13px; color:var(--ink-2); margin-bottom:10px; font-family:var(--font-mono); overflow-wrap:anywhere; }
+  .rr-label{ font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.05em; color:var(--ink-muted); margin:10px 0 6px; }
+  .rr-box{ background:#0B0E15; color:#D7DEE8; border-radius:10px; padding:14px 16px; font-family:var(--font-mono); font-size:12.5px; overflow:auto; }
+  .rr-headers-box .rr-h-line{ margin-bottom:14px; white-space:pre-wrap; overflow-wrap:anywhere; }
+  .rr-headers-box .rr-h-line:last-child{ margin-bottom:0; }
+  .rr-body-box{ max-height:340px; }
+  .rr-body-box pre{ margin:0; white-space:pre; }
+  .rr-redacted{ color:#8290A6; }
+  .rr-note{ font-size:11px; color:var(--ink-muted); font-style:italic; margin-top:6px; }
+  .tc-status-row{ display:flex; align-items:center; gap:10px; }
+  .tc-reqres-toggle{ margin-left:auto; }
+  .tc-reqres-panel{ margin-top:10px; display:flex; flex-direction:column; gap:18px; }
+  .tc-reqres-panel.js-hidden{ display:none; }
+  .finding{ border-radius:12px; padding:10px 12px; margin-bottom:8px; font-size:13px; overflow-wrap:anywhere; }
+  .finding.defect{ background:var(--serious-wash); border:1px solid var(--serious); }
+  .finding.unknown_resolution{ background:var(--accent-wash); border:1px solid var(--accent); }
+  .finding .kind{ font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.03em; }
+  .cleanup{ background:var(--warning-wash); border:1px solid var(--warning); border-radius:12px; padding:12px 14px; }
+  .cleanup ul{ margin:6px 0 0; padding-left:18px; }
+  .cleanup li{ margin-bottom:6px; overflow-wrap:anywhere; }
+  .empty{ color:var(--ink-muted); font-size:13px; font-style:italic; }
+.meta-card{ margin-top:8px; }
+.fields{ display:flex; flex-direction:column; gap:4px; margin:4px 0 6px; }
+.fields.run-meta{ margin-top:10px; padding-top:10px; border-top:1px solid var(--line); }
+.field-row{ display:flex; flex-wrap:wrap; gap:4px 28px; }
+.field{ font-size:14px; display:flex; gap:6px; }
+.field .k{ color:var(--ink-2); font-weight:700; font-size:15px; letter-spacing:normal; text-transform:none; flex-shrink:0; }
+.field .k::after{ content:':'; }
+.field .v{ color:var(--ink); }
+.tc-actions{ display:flex; justify-content:flex-end; gap:8px; margin:32px 0 8px; }
+.tc-actions button{ padding:7px 12px; border-radius:7px; border:1px solid var(--line-strong); background:var(--surface); color:var(--ink-2); font-size:12px; font-weight:600; cursor:pointer; }
+.tc-cat-actions{ display:flex; justify-content:flex-end; gap:8px; margin:4px 0 10px; }
+.tc-cat-actions button{ padding:5px 10px; border-radius:7px; border:1px solid var(--line-strong); background:var(--surface); color:var(--ink-2); font-size:11px; font-weight:600; cursor:pointer; }
+.tc-cat-actions button:hover{ background:var(--surface-2); }
+.tc-actions button:hover{ background:var(--surface-2); }
+.tc-toolbar{ display:flex; flex-wrap:wrap; align-items:center; gap:8px; margin:0 0 14px; position:sticky; top:0; z-index:5; }
+.tc-toolbar input[type="search"]{ flex:1 1 240px; min-width:180px; padding:7px 10px; border-radius:7px; border:1px solid var(--line-strong); background:var(--surface); color:var(--ink); font-size:13px; }
+.tc-toolbar select{ padding:7px 10px; border-radius:7px; border:1px solid var(--line-strong); background:var(--surface); color:var(--ink); font-size:13px; }
+.tc-toolbar button{ padding:7px 12px; border-radius:7px; border:1px solid var(--line-strong); background:var(--surface); color:var(--ink-2); font-size:12px; font-weight:600; cursor:pointer; }
+.tc-toolbar button:hover{ background:var(--surface-2); }
+#tcResetFilters{ color:var(--critical); border-color:var(--critical); }
+#tcResetFilters:hover{ background:var(--critical-wash); }
+.tc-toolbar .tc-count{ font-size:12px; color:var(--ink-muted); margin-left:auto; white-space:nowrap; }
+details.tc > summary.tc-head{ cursor:pointer; list-style:none; }
+details.tc > summary.tc-head::-webkit-details-marker{ display:none; }
+.tc-head .chev{ display:inline-block; width:9px; flex-shrink:0; color:var(--ink-muted); font-size:10px; transition:transform .15s ease; align-self:center; }
+.tc-head .chev::before{ content:'\25B8'; }
+details.tc[open] > summary.tc-head .chev{ transform:rotate(90deg); }
+details.tc.js-hidden{ display:none; }
+.tc-no-results{ padding:28px 20px; text-align:center; color:var(--critical); font-size:18px; font-weight:700; background:var(--critical-wash); border:1px solid var(--critical); border-radius:12px; margin-bottom:10px; }
+.tc-no-results.js-hidden{ display:none; }
+.erratum{ background:var(--warning-wash); border:1px solid var(--warning); border-radius:12px; padding:14px 18px; margin-bottom:24px; font-size:13px; color:var(--ink); line-height:1.55; }
+.erratum .e-title{ font-weight:700; color:var(--warning); margin-bottom:4px; font-size:13px; }
+/* --- optional-block CSS (kept so every run's report can use them; unused rules are harmless) --- */
+.scard .val.accent{ color:var(--accent-ink); }
+.tc-subhead{ display:flex; align-items:center; justify-content:space-between; gap:10px; margin:14px 0 8px; padding-bottom:4px; border-bottom:1px solid var(--line); }
+.tc-subhead:first-child{ margin-top:4px; }
+.tc-subhead-label{ font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.04em; }
+.tc-subhead-label.pos{ color:var(--good); }
+.tc-subhead-label.neg{ color:var(--critical); }
+.tc-subhead-counts{ display:flex; gap:12px; font-size:11px; }
+.rr-attempt-label{ font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.04em; color:var(--accent-ink); margin:0 0 4px; }
+</style>
+</head><body><div class="wrap">
+
+<div class="header"><div class="header-main">
+<h1>QA Execution Report</h1>
+</div></div>
+
+<div class="meta-card dashboard-card">
+<div class="fields">
+<div class="field"><span class="k">Scope</span><span class="v">Round 16 targeted run &mdash; 3 test cases from SeatMap_TestCases.csv: TC-SEATMAP-POS-02, TC-SEATMAP-VAL-03, TC-SEATMAP-VAL-04</span></div>
+<div class="field-row">
+<div class="field"><span class="k">Coverage</span><span class="v">3 of 63 SeatMap test cases (partial, user-requested)</span></div>
+<div class="field"><span class="k">Description</span><span class="v">POS-02, VAL-03 and VAL-04 re-run against staging. All three Book calls returned a clean 200 (BUG-16 did not reproduce) and a valid seat selection was attached again (BUG-19 did not reproduce). VAL-04 still fails (BUG-07). Run note: in each chain the harness called FareConfirm on up to 6 offers looking for isSeatMapRequired=true (never true for GulfAir; GetSeatMap works regardless); only the last FareConfirm of each chain was used and logged as the hop. All 149 AvailablePaid cells on the VAL-03 flight (GF163) priced 0 SAR, so the attach was proven via the cellCode echo plus Retrieve, not a seat fee</span></div>
+</div>
+</div>
+<div class="fields run-meta">
+<div class="field-row">
+<div class="field"><span class="k">Supplier</span><span class="v">GulfAir</span></div>
+<div class="field"><span class="k">Credentials Selector</span><span class="v">KSA</span></div>
+<div class="field"><span class="k">Environment</span><span class="v">staging (ndc-integration-stg-ne-3) &middot; https://ndc-integration-stg-ne-3.azurewebsites.net/</span></div>
+</div>
+<div class="field"><span class="k">Started</span><span class="v">2026-10-07 14:24:13 UTC</span></div>
+<div class="field"><span class="k">Ended</span><span class="v">2026-10-07 14:35:48 UTC</span></div>
+<div class="field"><span class="k">Status</span><span class="v">COMPLETE</span></div>
+</div>
+</div>
+
+<h2 class="section-num">1. Executive Summary</h2>
+<div class="summary-layout">
+<div class="donut-block">
+<div class="donut" style="background:conic-gradient(var(--good) 0% 66.67%, var(--critical) 66.67% 100.00%)">
+<div class="donut-hole"><div class="donut-pct">67%</div><div class="donut-sub">pass rate</div></div>
+</div>
+<div class="donut-legend">
+<div class="litem"><span class="swatch pass"></span>Passed <span class="lcount">2 / 3</span></div>
+<div class="litem"><span class="swatch fail"></span>Failed <span class="lcount">1 / 3</span></div>
+<div class="litem"><span class="swatch blocked"></span>Blocked <span class="lcount">0 / 3</span></div>
+</div>
+</div>
+<div class="stats-block">
+<div class="scard scard-total dashboard-card"><div class="val">3</div><div class="lbl">Total Executed Test Cases</div></div>
+<div class="summary-cards">
+<div class="scard dashboard-card"><div class="val pass">2</div><div class="lbl">Passed</div></div>
+<div class="scard dashboard-card"><div class="val fail">1</div><div class="lbl">Failed</div></div>
+<div class="scard dashboard-card"><div class="val blocked">0</div><div class="lbl">Blocked</div></div>
+</div>
+<div class="scard scard-total dashboard-card"><div class="val">11m 35s</div><div class="lbl">Execution Duration</div><a class="time-breakdown-link" href="./20261007-172413_SeatMap-GulfAir-KSA-Round16_TimeBreakdown.html">View Time Breakdown</a></div>
+</div>
+</div>
+
+<div class="tc-actions">
+<button type="button" id="tcExpandAll">Expand all</button>
+<button type="button" id="tcCollapseAll">Collapse all</button>
+</div>
+
+<details class="section-collapse tc-section" open>
+<summary>Test case results</summary>
+
+<div class="tc-toolbar dashboard-card">
+<input type="search" id="tcSearch" placeholder="Search by ID, title, endpoint, PNR...">
+<select id="tcStatusFilter">
+<option value="">All statuses</option>
+<option value="PASS">PASS</option>
+<option value="FAIL">FAIL</option>
+<option value="BLOCKED">BLOCKED</option>
+</select>
+<select id="tcCategoryFilter">
+<option value="">All categories</option>
+<option value="positive">Positive</option>
+<option value="validation">Validation</option>
+</select>
+<button type="button" id="tcResetFilters">Reset</button>
+<span id="tcCount" class="tc-count"></span>
+</div>
+<div id="tcNoResults" class="tc-no-results js-hidden">No test cases match your search. Try a different keyword, or clear the search/filters above.</div>
+
+<details class="tc-category" data-cat="positive" open>
+<summary><span class="cat-icon">&#9989;</span><span class="cat-name">Positive</span><span class="cat-counts"><span class="cc pass">1 passed</span><span class="cc fail">0 failed</span></span><span class="cat-chev"></span></summary>
+<div class="tc-category-body">
+<div class="tc-cat-actions"><button type="button" class="tc-cat-expand">Expand all</button><button type="button" class="tc-cat-collapse">Collapse all</button></div>
+<details class="tc PASS">
+<summary class="tc-head"><span><span class="chev"></span><span class="mono">TC-SEATMAP-POS-02</span> - Verify GetSeatMap now sets getSeatMapOfferId and getSeatMapResponceID collection variables and that Book consumes them as its ResponseId/selectedOfferId when SeatMap precedes it.</span><span class="badge PASS">PASS</span></summary>
+<div class="row"><b>Endpoint Name:</b> Confirm the seat-map step hands a usable reference to the booking step, and that booking accepts it</div>
+<div class="row"><b>Request:</b> Searched a one-way flight from Bahrain to Riyadh (13 June 2027) for one adult, opened the seat map, then booked using the seat map&#39;s own reference (no seat chosen)</div>
+<div class="row"><b>Response:</b> The seat map opened with a valid reference; the booking was accepted after about 30 seconds and returned booking reference OWOYWN with ticket 722137002457</div>
+<div class="row"><b>Expected:</b> The booking should be accepted and return its booking reference and ticket details</div>
+<div class="row"><b>Actual:</b> Confirmed. The seat map&#39;s reference is identical to the one from the passenger step, and booking accepted it and created a real ticketed booking. The earlier intermittent booking error (BUG-16) did not happen</div>
+<div class="row"><b>Status:</b> <span class="badge PASS">PASS</span></div>
+<details class="evidence"><summary>Evidence</summary><div class="ev-body">GetSeatMap responseId == AddPassenger responseId; offerId equal; Book echoed pnr OWOYWN, ticket 722137002457, Book latency 30.1s</div></details>
+<details class="hops"><summary>Hops (5)</summary>
+<div class="hop"><span class="badge PASS">PASS</span> <span class="hop-endpoint">1. Search</span>
+<div class="hd"><b>Request:</b> Search GulfAir/KSA BAH-RUH 2027-06-13, 1 ADT</div>
+<div class="hd"><b>Response:</b> 200 - 25 offers</div>
+<div class="hd"><b>Expected:</b> 200 with non-empty offers[]</div>
+<div class="hd"><b>Actual:</b> 200, 25 offers</div>
+<div class="hd"><b>Evidence:</b> offers[] non-empty</div>
+<div class="hop-reqres-panel">
+<div class="rr-title">Request</div>
+<div class="rr-line">POST to https://ndc-integration-stg-ne-3.azurewebsites.net/api/V2/FlightSearch/Search</div>
+<div class="rr-label">HEADERS</div>
+<div class="rr-box rr-headers-box">
+<div class="rr-h-line">x-api-key: <span class="rr-redacted">&#8226;&#8226;&#8226;&#8226;&#8226;&#8226;&#8226;&#8226;(redacted)</span></div>
+<div class="rr-h-line">Client-Id: NDC-Core</div>
+<div class="rr-h-line">Content-Type: application/json</div>
+</div>
+<div class="rr-label">BODY</div>
+<div class="rr-box rr-body-box"><pre>{
+    "isDebug": false,
+    "credentialsSelector": "KSA",
+    "searchCriteria": [
+        {
+            "destination": "RUH",
+            "origin": "BAH",
+            "date": "2027-06-13"
+        }
+    ],
+    "supplier": "GulfAir",
+    "passengers": [
+        {
+            "count": "1",
+            "passengerTypeCode": "ADT"
+        }
+    ]
+}</pre></div>
+<div class="rr-title" style="margin-top:18px;">Response</div>
+<div class="rr-line">Status code 200</div>
+<div class="rr-label">BODY</div>
+<div class="rr-box rr-body-box"><pre>{
+    "responseId": "bc1bdfce-b130-4961-ab81-1a1846b1864e",
+    "supplier": "GulfAir",
+    "offers": "[25 offers - first shown]",
+    "firstOffer": {
+        "offerId": "GF-OFFER-2&amp;3AAUwKJHRtkkZTQxMTJlYzktZDM1MS00ZGJkLWJhYzItNTk0ODUwOGE4YTdhga5HRi1PRkZFUklURU0tMZGkUEFYMaY5MzMuMDCjU0FS2SRlN...[truncated]",
+        "offerJourneys": [
+            "GF-GF161-1"
+        ],
+        "passengerFareBreakdown": [
+            {
+                "paxTotalAmount": {
+                    "amount": 933,
+                    "currency": "SAR"
+                },
+                "passengerTypeCode": "ADT",
+                "paxTotalTaxAmount": {
+                    "amount": 353,
+                    "currency": "SAR"
+                },
+                "paxBaseAmount": {
+                    "amount": 580,
+                    "currency": "SAR"
+                },
+                "taxesAndFees": [
+                    {
+                        "code": "YQF",
+                        "amount": {
+                            "amount": 220,
+                            "currency": "SAR"
+                        }
+                    },
+                    {
+                        "code": "BH",
+                        "amount": {
+                            "amount": 120,
+                            "currency": "SAR"
+                        }
+                    },
+                    {
+                        "code": "HM",
+                        "amount": {
+                            "amount": 5,
+                            "currency": "SAR"
+                        }
+                    },
+                    {
+                        "code": "E32",
+                        "amount": {
+                            "amount": 8,
+                            "currency": "SAR"
+                        }
+                    }
+                ],
+                "segmentDetails": [
+                    {
+                        "segmentRefId": "GF-GF161-GF161-2027061302-2027061304-O",
+                        "priceClassRefId": "ECONOMY LIGHT_GF-GF161-GF161-2027061302-2027061304-O_ADT",
+                        "baggageDetailsRefId": "ECONOMY LIGHT_GF-GF161-GF161-2027061302-2027061304-O_ADT",
+                        "cabinCode": "ECONOMY",
+                        "rbd": "E"
+                    }
+                ],
+                "discount": null
+            }
+        ],
+        "priceDetails": {
+            "totalAmount": {
+                "amount": 933,
+                "currency": "SAR"
+            },
+            "totalTaxAmount": {
+                "amount": 353,
+                "currency": "SAR"
+            },
+            "totalBaseAmount": {
+                "amount": 580,
+                "currency": "SAR"
+            },
+            "taxesAndFees": [
+                {
+                    "code": "YQF",
+                    "amount": {
+                        "amount": 220,
+                        "currency": "SAR"
+                    }
+                },
+                {
+                    "code": "BH",
+                    "amount": {
+                        "amount": 120,
+                        "currency": "SAR"
+                    }
+                },
+                {
+                    "code": "HM",
+                    "amount": {
+                        "amount": 5,
+                        "currency": "SAR"
+                    }
+                },
+                {
+                    "code": "E32",
+                    "amount": {
+                        "amount": 8,
+                        "currency": "SAR"
+                    }
+                }
+            ],
+            "discount": null
+        },
+        "refundability": "UnKnown",
+        "haveBundles": false,
+        "canBeHeld": true,
+        "isDealCodeApplied": false,
+        "appliedDealCode": "",
+        "isPromoted": false,
+        "appliedPromotionCode": "",
+        "isAncillaryRequired": false,
+        "offerHasAncillary": true,
+        "offerHasSeat": true,
+        "isBaggageRequired": false,
+        "isMealRequired": false,
+        "isSeatMapRequired": false,
+        "isBundleRequired": false,
+        "sellBundleRequiresAncillary": null
+    }
+}</pre></div>
+<div class="rr-note">Large arrays, objects and long opaque tokens are truncated for report length (marked "__omitted__" / "[truncated]"); the full payload was inspected live. Raw supplier payloads are redacted per SPEC.md &sect;7.14.</div>
+</div>
+</div>
+<div class="hop"><span class="badge PASS">PASS</span> <span class="hop-endpoint">2. FareConfirm</span>
+<div class="hd"><b>Request:</b> FareConfirm on a returned offer</div>
+<div class="hd"><b>Response:</b> 200 - selectedOffer returned</div>
+<div class="hd"><b>Expected:</b> 200, selectedOffer</div>
+<div class="hd"><b>Actual:</b> 200, selectedOffer returned (isSeatMapRequired=false, offerHasSeat=true)</div>
+<div class="hd"><b>Evidence:</b> selectedOffer.offerId present</div>
+<div class="hop-reqres-panel">
+<div class="rr-title">Request</div>
+<div class="rr-line">POST to https://ndc-integration-stg-ne-3.azurewebsites.net/api/v2/FlightSearch/FareConfirm</div>
+<div class="rr-label">HEADERS</div>
+<div class="rr-box rr-headers-box">
+<div class="rr-h-line">x-api-key: <span class="rr-redacted">&#8226;&#8226;&#8226;&#8226;&#8226;&#8226;&#8226;&#8226;(redacted)</span></div>
+<div class="rr-h-line">Client-Id: NDC-Core</div>
+<div class="rr-h-line">Content-Type: application/json</div>
+</div>
+<div class="rr-label">BODY</div>
+<div class="rr-box rr-body-box"><pre>{
+    "selectedOfferId": "GF-OFFER-11&amp;3AAUwKJHRtkkZTQxMTJlYzktZDM1MS00ZGJkLWJhYzItNTk0ODUwOGE4YTdhga5HRi1PRkZFUklURU0tMZGkUEFYMacxMTMzLjAwo1NBUtkk...[truncated]",
+    "credentialsSelector": "KSA",
+    "ResponseId": "bc1bdfce-b130-4961-ab81-1a1846b1864e",
+    "supplier": "GulfAir"
+}</pre></div>
+<div class="rr-title" style="margin-top:18px;">Response</div>
+<div class="rr-line">Status code 200</div>
+<div class="rr-label">BODY</div>
+<div class="rr-box rr-body-box"><pre>{
+    "responseId": "bc1bdfce-b130-4961-ab81-1a1846b1864e",
+    "selectedOffer": {
+        "offerId": "6a4bd13e-9d15-4a27-b860-a5e5753d37cb&amp;3AAUq0dGLU9GRkVSLTExokdG2SRlNDExMmVjOS1kMzUxLTRkYmQtYmFjMi01OTQ4NTA4YThhN2GBrkdGLU9...[truncated]",
+        "offerJourneys": [
+            "GF-GF163-1"
+        ],
+        "passengerFareBreakdown": [
+            {
+                "paxTotalAmount": {
+                    "amount": 1133,
+                    "currency": "SAR"
+                },
+                "passengerTypeCode": "ADT",
+                "paxTotalTaxAmount": {
+                    "amount": 353,
+                    "currency": "SAR"
+                },
+                "paxBaseAmount": {
+                    "amount": 780,
+                    "currency": "SAR"
+                },
+                "taxesAndFees": [
+                    {
+                        "code": "YQF",
+                        "amount": {
+                            "amount": 220,
+                            "currency": "SAR"
+                        }
+                    },
+                    {
+                        "code": "E32",
+                        "amount": {
+                            "amount": 8,
+                            "currency": "SAR"
+                        }
+                    },
+                    {
+                        "code": "BH",
+                        "amount": {
+                            "amount": 120,
+                            "currency": "SAR"
+                        }
+                    },
+                    {
+                        "code": "HM",
+                        "amount": {
+                            "amount": 5,
+                            "currency": "SAR"
+                        }
+                    }
+                ],
+                "segmentDetails": [
+                    {
+                        "segmentRefId": "GF-GF163-GF163-2027061309-2027061310-O",
+                        "priceClassRefId": "ECONOMY FLEX&amp;GF-GF163-GF163-2027061309-2027061310-O&amp;ADT",
+                        "baggageDetailsRefId": "6KG,KG40",
+                        "cabinCode": "ECONOMY",
+                        "rbd": "E"
+                    }
+                ],
+                "discount": null
+            }
+        ],
+        "priceDetails": {
+            "totalAmount": {
+                "amount": 1133,
+                "currency": "SAR"
+            },
+            "totalTaxAmount": {
+                "amount": 353,
+                "currency": "SAR"
+            },
+            "totalBaseAmount": {
+                "amount": 780,
+                "currency": "SAR"
+            },
+            "taxesAndFees": [
+                {
+                    "code": "YQF",
+                    "amount": {
+                        "amount": 220,
+                        "currency": "SAR"
+                    }
+                },
+                {
+                    "code": "E32",
+                    "amount": {
+                        "amount": 8,
+                        "currency": "SAR"
+                    }
+                },
+                {
+                    "code": "BH",
+                    "amount": {
+                        "amount": 120,
+                        "currency": "SAR"
+                    }
+                },
+                {
+                    "code": "HM",
+                    "amount": {
+                        "amount": 5,
+                        "currency": "SAR"
+                    }
+                }
+            ],
+            "discount": null
+        },
+        "refundability": "UnKnown",
+        "haveBundles": false,
+        "canBeHeld": true,
+        "isDealCodeApplied": false,
+        "appliedDealCode": "",
+        "isPromoted": false,
+        "appliedPromotionCode": "",
+        "isAncillaryRequired": false,
+        "offerHasAncillary": true,
+        "offerHasSeat": true,
+        "isBaggageRequired": false,
+        "isMealRequired": false,
+        "isSeatMapRequired": false,
+        "isBundleRequired": false,
+        "sellBundleRequiresAncillary": null
+    }
+}</pre></div>
+<div class="rr-note">Large arrays, objects and long opaque tokens are truncated for report length (marked "__omitted__" / "[truncated]"); the full payload was inspected live. Raw supplier payloads are redacted per SPEC.md &sect;7.14.</div>
+</div>
+</div>
+<div class="hop"><span class="badge PASS">PASS</span> <span class="hop-endpoint">3. AddPassenger</span>
+<div class="hd"><b>Request:</b> AddPassenger 1 ADT</div>
+<div class="hd"><b>Response:</b> 200 - offerId/responseId returned</div>
+<div class="hd"><b>Expected:</b> 200, offerId/responseId</div>
+<div class="hd"><b>Actual:</b> 200, offerId/responseId returned</div>
+<div class="hd"><b>Evidence:</b> offerId + responseId present</div>
+<div class="hop-reqres-panel">
+<div class="rr-title">Request</div>
+<div class="rr-line">POST to https://ndc-integration-stg-ne-3.azurewebsites.net/api/v2/Passenger/AddPassengerDetails</div>
+<div class="rr-label">HEADERS</div>
+<div class="rr-box rr-headers-box">
+<div class="rr-h-line">x-api-key: <span class="rr-redacted">&#8226;&#8226;&#8226;&#8226;&#8226;&#8226;&#8226;&#8226;(redacted)</span></div>
+<div class="rr-h-line">Client-Id: NDC-Core</div>
+<div class="rr-h-line">Content-Type: application/json</div>
+</div>
+<div class="rr-label">BODY</div>
+<div class="rr-box rr-body-box"><pre>{
+    "ResponseId": "bc1bdfce-b130-4961-ab81-1a1846b1864e",
+    "contactsList": {
+        "0": {
+            "Email": "NDC_CI@gmail.com",
+            "phone": {
+                "phoneNumber": "0121574236",
+                "countryDialingCode": "+20",
+                "type": "Personal"
+            },
+            "Address": {
+                "City": "CAIRO",
+                "CountryCode": "EG",
+                "Line2": "Al Nahda Floor eight",
+                "Line1": "New Cairo Maddi"
+            }
+        }
+    },
+    "selectedOfferId": "6a4bd13e-9d15-4a27-b860-a5e5753d37cb&amp;3AAUq0dGLU9GRkVSLTExokdG2SRlNDExMmVjOS1kMzUxLTRkYmQtYmFjMi01OTQ4NTA4YThhN2GBrkdGLU9...[truncated]",
+    "passengersList": {
+        "Pax1": {
+            "contactRefId": "0",
+            "passengerTypeCode": "ADT",
+            "residentCountry": "EG",
+            "travelDocument": {
+                "documentType": "PASSPORT",
+                "issuanceDate": "2023-10-01T00:00:00.000Z",
+                "issuanceCountryCode": "EG",
+                "nationality": "EG",
+                "name": {
+                    "last": "Ibrahim",
+                    "first": "Mostafa",
+                    "middle": ""
+                },
+                "birthDate": "2000-02-15T00:00:00.000Z",
+                "documentNumber": "A1234561",
+                "gender": "male",
+                "birthCountry": "EG",
+                "expirationDate": "2029-10-01T00:00:00.000Z"
+            },
+            "nationality": "EG",
+            "name": {
+                "last": "Ibrahim",
+                "first": "Mostafa",
+                "middle": ""
+            },
+            "gender": "male",
+            "title": "Mr",
+            "birthDate": "2000-02-15T00:00:00.000Z"
+        }
+    },
+    "credentialsSelector": "KSA",
+    "supplier": "GulfAir"
+}</pre></div>
+<div class="rr-title" style="margin-top:18px;">Response</div>
+<div class="rr-line">Status code 200</div>
+<div class="rr-label">BODY</div>
+<div class="rr-box rr-body-box"><pre>{
+    "offerId": "GF-OFFER-11&amp;yAGbY9IAAAH39CvcABSrR0YtT0ZGRVItMTGiR0bZJGU0MTEyZWM5LWQzNTEtNGRiZC1iYWMyLTU5NDg1MDhhOGE3YYGuNgD/CUlURU0tMZGk...[truncated]",
+    "responseId": "bc1bdfce-b130-4961-ab81-1a1846b1864e"
+}</pre></div>
+<div class="rr-note">Large arrays, objects and long opaque tokens are truncated for report length (marked "__omitted__" / "[truncated]"); the full payload was inspected live. Raw supplier payloads are redacted per SPEC.md &sect;7.14.</div>
+</div>
+</div>
+<div class="hop"><span class="badge PASS">PASS</span> <span class="hop-endpoint">4. GetSeatMap</span>
+<div class="hd"><b>Request:</b> GetSeatMap with AddPassenger offerId/responseId</div>
+<div class="hd"><b>Response:</b> 200 - seatMapDetails, offerId/responseId returned</div>
+<div class="hd"><b>Expected:</b> 200 with non-empty offerId/responseId (these feed getSeatMapOfferId/getSeatMapResponceID)</div>
+<div class="hd"><b>Actual:</b> 200; offerId and responseId non-empty and identical to the AddPassenger values</div>
+<div class="hd"><b>Evidence:</b> sm.offerId===ap.offerId; sm.responseId===ap.responseId</div>
+<div class="hop-reqres-panel">
+<div class="rr-title">Request</div>
+<div class="rr-line">POST to https://ndc-integration-stg-ne-3.azurewebsites.net/api/V2/SeatMap/Seat</div>
+<div class="rr-label">HEADERS</div>
+<div class="rr-box rr-headers-box">
+<div class="rr-h-line">x-api-key: <span class="rr-redacted">&#8226;&#8226;&#8226;&#8226;&#8226;&#8226;&#8226;&#8226;(redacted)</span></div>
+<div class="rr-h-line">Client-Id: NDC-Core</div>
+<div class="rr-h-line">Content-Type: application/json</div>
+</div>
+<div class="rr-label">BODY</div>
+<div class="rr-box rr-body-box"><pre>{
+    "selectedOfferId": "GF-OFFER-11&amp;yAGbY9IAAAH39CvcABSrR0YtT0ZGRVItMTGiR0bZJGU0MTEyZWM5LWQzNTEtNGRiZC1iYWMyLTU5NDg1MDhhOGE3YYGuNgD/CUlURU0tMZGk...[truncated]",
+    "credentialsSelector": "KSA",
+    "ResponseId": "bc1bdfce-b130-4961-ab81-1a1846b1864e",
+    "supplier": "GulfAir"
+}</pre></div>
+<div class="rr-title" style="margin-top:18px;">Response</div>
+<div class="rr-line">Status code 200</div>
+<div class="rr-label">BODY</div>
+<div class="rr-box rr-body-box"><pre>{
+    "supplier": "GulfAir",
+    "offerId": "GF-OFFER-11&amp;yAGbY9IAAAH39CvcABSrR0YtT0ZGRVItMTGiR0bZJGU0MTEyZWM5LWQzNTEtNGRiZC1iYWMyLTU5NDg1MDhhOGE3YYGuNgD/CUlURU0tMZGk...[truncated]",
+    "responseId": "bc1bdfce-b130-4961-ab81-1a1846b1864e",
+    "isFareCheckRequired": false,
+    "seatMapDetails": "[elided - 1 segment(s), 175 cells]"
+}</pre></div>
+<div class="rr-note">Large arrays, objects and long opaque tokens are truncated for report length (marked "__omitted__" / "[truncated]"); the full payload was inspected live. Raw supplier payloads are redacted per SPEC.md &sect;7.14.</div>
+</div>
+</div>
+<div class="hop"><span class="badge PASS">PASS</span> <span class="hop-endpoint">5. Book</span>
+<div class="hd"><b>Request:</b> Book with ResponseId/selectedOfferId taken from the GetSeatMap response, no seat</div>
+<div class="hd"><b>Response:</b> 200 - pnr OWOYWN, bookingToken TPC60517147661D7102026, ticket 722137002457 (30.1s)</div>
+<div class="hd"><b>Expected:</b> 200 with pnr/bookingToken/gdsPNR</div>
+<div class="hd"><b>Actual:</b> 200, real ticketed PNR created from the GetSeatMap IDs alone</div>
+<div class="hd"><b>Evidence:</b> pnr OWOYWN, ticket 722137002457, gdsPNR "", Book latency 30.1s</div>
+<div class="hop-reqres-panel">
+<div class="rr-title">Request</div>
+<div class="rr-line">POST to https://ndc-integration-stg-ne-3.azurewebsites.net/api/v2/FlightBooking/Book</div>
+<div class="rr-label">HEADERS</div>
+<div class="rr-box rr-headers-box">
+<div class="rr-h-line">x-api-key: <span class="rr-redacted">&#8226;&#8226;&#8226;&#8226;&#8226;&#8226;&#8226;&#8226;(redacted)</span></div>
+<div class="rr-h-line">Client-Id: NDC-Core</div>
+<div class="rr-h-line">Content-Type: application/json</div>
+</div>
+<div class="rr-label">BODY</div>
+<div class="rr-box rr-body-box"><pre>{
+    "selectedOfferId": "GF-OFFER-11&amp;yAGbY9IAAAH39CvcABSrR0YtT0ZGRVItMTGiR0bZJGU0MTEyZWM5LWQzNTEtNGRiZC1iYWMyLTU5NDg1MDhhOGE3YYGuNgD/CUlURU0tMZGk...[truncated]",
+    "credentialsSelector": "KSA",
+    "ResponseId": "bc1bdfce-b130-4961-ab81-1a1846b1864e",
+    "supplier": "GulfAir"
+}</pre></div>
+<div class="rr-title" style="margin-top:18px;">Response</div>
+<div class="rr-line">Status code 200</div>
+<div class="rr-label">BODY</div>
+<div class="rr-box rr-body-box"><pre>{
+    "supplier": "GulfAir",
+    "pnr": "OWOYWN",
+    "gdsPNR": "",
+    "bookingToken": "TPC60517147661D7102026",
+    "voidCapability": "FullVoidOnlyAllowed",
+    "creationDate": "2026-10-07T00:00:00",
+    "ticketingDate": "2026-10-07T00:00:00",
+    "tickets": {
+        "PAX1": {
+            "ticketStatus": "Booked",
+            "ticketNumber": "722137002457",
+            "carrierCode": "GF"
+        }
+    },
+    "passengersSelectedAncillaries": {},
+    "passengersSelectedSeats": {},
+    "journeys": {
+        "GF-GF163-1": {
+            "origin": "BAH",
+            "destination": "RUH",
+            "numberOfStops": 0,
+            "segmentRefIds": [
+                "GF-GF163-GF163-2027061309-2027061310-O"
+            ]
+        }
+    },
+    "flightSegments": {
+        "GF-GF163-GF163-2027061309-2027061310-O": {
+            "origin": "BAH",
+            "destination": "RUH",
+            "departureDateTime": "2027-06-13T09:40:00",
+            "arrivalDateTime": "2027-06-13T10:55:00",
+            "departureTerminal": null,
+            "arrivalTerminal": "TERMINAL 5",
+            "flightTime": 75,
+            "operatingCarrierCode": "GF",
+            "operatingFlightNumber": "163",
+            "marketingCarrierCode": "GF",
+            "marketingFlightNumber": "163",
+            "equipment": "32Q"
+        }
+    },
+    "priceClasses": {
+        "ECONOMY FLEX": {
+            "priceClassName": "ECONOMY FLEX",
+            "fareDescription": "PublicFare",
+            "rulesAndPenalties": []
+        }
+    },
+    "baggageDetails": {
+        "40KG,6KG": {
+            "carryOnBaggage": "6.00 KG",
+            "checkInBaggage": "40.00 KG"
+        }
+    },
+    "passengersList": {
+        "PAX1": {
+            "title": "MR",
+            "name": {
+                "first": "MOSTAFA",
+                "middle": null,
+                "last": "IBRAHIM"
+            },
+            "birthDate": "2000-02-15T00:00:00",
+            "gender": "Male",
+            "passengerTypeCode": "ADT",
+            "contactRefId": "CNCT-1",
+            "travelDocument": {
+                "name": {
+                    "first": "MOSTAFA",
+                    "middle": null,
+                    "last": "IBRAHIM"
+                },
+                "nationality": "EG",
+                "expirationDate": "2029-10-01T00:00:00",
+                "issuanceDate": null,
+                "documentNumber": "A1234561",
+                "documentType": "Passport",
+                "gender": "Male",
+                "birthCountry": "EG",
+                "birthDate": "2000-02-15T00:00:00",
+                "issuanceCountryCode": "EG"
+            },
+            "parentPaxRefId": null,
+            "nationality": "EG",
+            "residentCountry": null,
+            "age": 26
+        }
+    },
+    "contacts": {
+        "CNCT-1": {
+            "email": "NDC_CI@GMAIL.COM",
+            "phone": {
+                "type": "",
+                "countryDialingCode": "20",
+                "phoneNumber": "121574236"
+            },
+            "address": {
+                "line1": null,
+                "line2": null,
+                "city": "",
+                "countryCode": ""
+            }
+        }
+    },
+    "selectedOffer": {
+        "offerId": "01d442f8-c414-4ee5-b489-3964bbf28dd0",
+        "offerJourneys": [
+            "GF-GF163-1"
+        ],
+        "passengerFareBreakdown": [
+            {
+                "passengerRefId": "PAX1",
+                "paxTotalAmount": {
+                    "amount": 1133,
+                    "currency": "SAR"
+                },
+                "paxTotalAncillaryAmount": {
+                    "amount": 0,
+                    "currency": "SAR"
+                },
+                "passengerAncillaries": [],
+                "paxTotalSeatAmount": {
+                    "amount": 0,
+                    "currency": "SAR"
+                },
+                "passengerSeats": [],
+                "passengerTypeCode": "ADT",
+                "paxTotalTaxAmount": {
+                    "amount": 353,
+                    "currency": "SAR"
+                },
+                "paxBaseAmount": {
+                    "amount": 780,
+                    "currency": "SAR"
+                },
+                "taxesAndFees": [
+                    {
+                        "code": "YQ",
+                        "amount": {
+                            "amount": 220,
+                            "currency": "SAR"
+                        }
+                    },
+                    {
+                        "code": "E3",
+                        "amount": {
+                            "amount": 8,
+                            "currency": "SAR"
+                        }
+                    },
+                    {
+                        "code": "BH",
+                        "amount": {
+                            "amount": 120,
+                            "currency": "SAR"
+                        }
+                    },
+                    {
+                        "code": "HM",
+                        "amount": {
+                            "amount": 5,
+                            "currency": "SAR"
+                        }
+                    }
+                ],
+                "segmentDetails": [
+                    {
+                        "segmentRefId": "GF-GF163-GF163-2027061309-2027061310-O",
+                        "priceClassRefId": "ECONOMY FLEX",
+                        "baggageDetailsRefId": "40KG,6KG",
+                        "cabinCode": "ECONOMY",
+                        "rbd": "E"
+                    }
+                ],
+                "discount": null
+            }
+        ],
+        "priceDetails": {
+            "totalAncillariesAmount": {
+                "amount": 0,
+                "currency": "SAR"
+            },
+            "totalPassengersAncillaries": [],
+            "totalSelectedSeatsAmount": {
+                "amount": 0,
+                "currency": "SAR"
+            },
+            "totalSelectedSeats": [],
+            "totalAmount": {
+                "amount": 1133,
+                "currency": "SAR"
+            },
+            "totalTaxAmount": {
+                "amount": 353,
+                "currency": "SAR"
+            },
+            "totalBaseAmount": {
+                "amount": 780,
+                "currency": "SAR"
+            },
+            "taxesAndFees": [
+                {
+                    "code": "YQ",
+                    "amount": {
+                        "amount": 220,
+                        "currency": "SAR"
+                    }
+                },
+                {
+                    "code": "E3",
+                    "amount": {
+                        "amount": 8,
+                        "currency": "SAR"
+                    }
+                },
+                {
+                    "code": "BH",
+                    "amount": {
+                        "amount": 120,
+                        "currency": "SAR"
+                    }
+                },
+                {
+                    "code": "HM",
+                    "amount": {
+                        "amount": 5,
+                        "currency": "SAR"
+                    }
+                }
+            ],
+            "discount": null
+        },
+        "refundability": "UnKnown",
+        "isDealCodeApplied": null,
+        "appliedDealCode": null,
+        "isPromoted": false,
+        "appliedPromotionCode": ""
+    },
+    "isBspCommissionApplied": false,
+    "diRemarks": [],
+    "emdTickets": null
+}</pre></div>
+<div class="rr-note">Large arrays, objects and long opaque tokens are truncated for report length (marked "__omitted__" / "[truncated]"); the full payload was inspected live. Raw supplier payloads are redacted per SPEC.md &sect;7.14.</div>
+</div>
+</div>
+</details>
+<div class="view-tc-wrap"><details class="view-tc"><summary>View Test Case</summary><div class="view-tc-body"><div class="vtc-h">Preconditions</div><div class="vtc-p">AddPassenger completed; getAddPaxOfferId/getAddPaxResponceID available. Collection variables reset before starting (SPEC.md §6.1).</div><div class="vtc-h">Steps</div><ol class="vtc-steps"><li>AddPassenger -&gt; GetSeatMap (send ResponseId/selectedOfferId = AddPassenger's IDs) -&gt; capture resp.offerId/resp.responseId -&gt; Book (send ResponseId=getSeatMapResponceID, selectedOfferId=getSeatMapOfferId).</li></ol><div class="vtc-h">Expected Result</div><div class="vtc-p">GetSeatMap returns HTTP 200 with a non-empty offerId/responseId; the collection variables getSeatMapOfferId and getSeatMapResponceID (note the collection's own "Responce" spelling) are populated from these; Book accepts them and returns pnr/bookingToken/gdsPNR without needing AddPassenger's IDs re-sent -- this is a behavior change from before 2026-08-10, when GetSeatMap set no variables at all and Book still read AddPassenger's IDs.</div><div class="vtc-h">Actual Result</div><div class="vtc-p">Confirmed. GetSeatMap returned non-empty offerId/responseId (identical to the AddPassenger values); Book accepted them and created a real ticketed PNR. The Postman collection-variable assignment itself is script-side and not observable over raw HTTP - verified the field mapping it relies on (resp.offerId/resp.responseId) instead. BUG-16 did not reproduce on this call. Unchanged from Rounds 1-15.</div></div></details></div>
+</details>
+
+</div>
+</details>
+
+<details class="tc-category" data-cat="validation" open>
+<summary><span class="cat-icon">&#9745;&#65039;</span><span class="cat-name">Validation</span><span class="cat-counts"><span class="cc pass">1 passed</span><span class="cc fail">1 failed</span></span><span class="cat-chev"></span></summary>
+<div class="tc-category-body">
+<div class="tc-cat-actions"><button type="button" class="tc-cat-expand">Expand all</button><button type="button" class="tc-cat-collapse">Collapse all</button></div>
+<details class="tc PASS">
+<summary class="tc-head"><span><span class="chev"></span><span class="mono">TC-SEATMAP-VAL-03</span> - Verify the cellID value in cellDetails.cellID round-trips correctly into Book's passengersSelectedSeats.setSegmentsSeats.cellId (casing differs: cellID vs cellId).</span><span class="badge PASS">PASS</span></summary>
+<div class="row"><b>Endpoint Name:</b> Confirm the seat code copied from the seat map is accepted when booking a specific seat</div>
+<div class="row"><b>Request:</b> Booked seat 17C on a Bahrain to Riyadh flight (14 June 2027, GF163) using the exact seat code copied from that offer&#39;s seat map, then looked the booking up again</div>
+<div class="row"><b>Response:</b> The booking was accepted and ticketed (reference RKMCKV, ticket 722137002584); the confirmation lists seat 17C and the booking lookup shows the same seat</div>
+<div class="row"><b>Expected:</b> The booking should accept the seat code and attach that seat, showing it in the confirmation</div>
+<div class="row"><b>Actual:</b> Confirmed &mdash; the seat is attached and persists. The earlier defect where a valid seat was silently not attached (BUG-19, Round 15) did <b>not</b> reproduce, on one attempt. Note: every bookable seat on this flight costs 0 SAR, so the attach is proven by the seat code appearing in the confirmation and the lookup, not by a seat charge; re-check on a flight with paid seats before closing BUG-19</div>
+<div class="row"><b>Status:</b> <span class="badge PASS">PASS</span></div>
+<details class="evidence"><summary>Evidence</summary><div class="ev-body">Book 200, pnr RKMCKV, ticket 722137002584; passengersSelectedSeats.PAX1.GF-GF163-GF163-2027061409-2027061410-O.cellCode=17C; passengerSeats=[{17C}]; Retrieve repeats 17C; request cellId equals GetSeatMap cellID byte for byte</div></details>
+<details class="hops"><summary>Hops (6)</summary>
+<div class="hop"><span class="badge PASS">PASS</span> <span class="hop-endpoint">1. Search</span>
+<div class="hd"><b>Request:</b> Search GulfAir/KSA BAH-RUH 2027-06-14, 1 ADT</div>
+<div class="hd"><b>Response:</b> 200 - 25 offers</div>
+<div class="hd"><b>Expected:</b> 200 with non-empty offers[]</div>
+<div class="hd"><b>Actual:</b> 200, 25 offers</div>
+<div class="hd"><b>Evidence:</b> offers[] non-empty</div>
+<div class="hop-reqres-panel">
+<div class="rr-title">Request</div>
+<div class="rr-line">POST to https://ndc-integration-stg-ne-3.azurewebsites.net/api/V2/FlightSearch/Search</div>
+<div class="rr-label">HEADERS</div>
+<div class="rr-box rr-headers-box">
+<div class="rr-h-line">x-api-key: <span class="rr-redacted">&#8226;&#8226;&#8226;&#8226;&#8226;&#8226;&#8226;&#8226;(redacted)</span></div>
+<div class="rr-h-line">Client-Id: NDC-Core</div>
+<div class="rr-h-line">Content-Type: application/json</div>
+</div>
+<div class="rr-label">BODY</div>
+<div class="rr-box rr-body-box"><pre>{
+    "isDebug": false,
+    "credentialsSelector": "KSA",
+    "searchCriteria": [
+        {
+            "destination": "RUH",
+            "origin": "BAH",
+            "date": "2027-06-14"
+        }
+    ],
+    "supplier": "GulfAir",
+    "passengers": [
+        {
+            "count": "1",
+            "passengerTypeCode": "ADT"
+        }
+    ]
+}</pre></div>
+<div class="rr-title" style="margin-top:18px;">Response</div>
+<div class="rr-line">Status code 200</div>
+<div class="rr-label">BODY</div>
+<div class="rr-box rr-body-box"><pre>{
+    "responseId": "77d4d534-cbf1-437c-9eb0-363d7d362ba7",
+    "supplier": "GulfAir",
+    "offers": "[25 offers - first shown]",
+    "firstOffer": {
+        "offerId": "GF-OFFER-2&amp;3AAUwKJHRtkkNTI4NDU3MjYtODA5ZS00YTQ1LTk0NTEtNjk2NjkyN2VmYzNjga5HRi1PRkZFUklURU0tMZGkUEFYMaY5MzMuMDCjU0FS2SQ1M...[truncated]",
+        "offerJourneys": [
+            "GF-GF161-1"
+        ],
+        "passengerFareBreakdown": [
+            {
+                "paxTotalAmount": {
+                    "amount": 933,
+                    "currency": "SAR"
+                },
+                "passengerTypeCode": "ADT",
+                "paxTotalTaxAmount": {
+                    "amount": 353,
+                    "currency": "SAR"
+                },
+                "paxBaseAmount": {
+                    "amount": 580,
+                    "currency": "SAR"
+                },
+                "taxesAndFees": [
+                    {
+                        "code": "YQF",
+                        "amount": {
+                            "amount": 220,
+                            "currency": "SAR"
+                        }
+                    },
+                    {
+                        "code": "BH",
+                        "amount": {
+                            "amount": 120,
+                            "currency": "SAR"
+                        }
+                    },
+                    {
+                        "code": "HM",
+                        "amount": {
+                            "amount": 5,
+                            "currency": "SAR"
+                        }
+                    },
+                    {
+                        "code": "E32",
+                        "amount": {
+                            "amount": 8,
+                            "currency": "SAR"
+                        }
+                    }
+                ],
+                "segmentDetails": [
+                    {
+                        "segmentRefId": "GF-GF161-GF161-2027061402-2027061404-O",
+                        "priceClassRefId": "ECONOMY LIGHT_GF-GF161-GF161-2027061402-2027061404-O_ADT",
+                        "baggageDetailsRefId": "ECONOMY LIGHT_GF-GF161-GF161-2027061402-2027061404-O_ADT",
+                        "cabinCode": "ECONOMY",
+                        "rbd": "E"
+                    }
+                ],
+                "discount": null
+            }
+        ],
+        "priceDetails": {
+            "totalAmount": {
+                "amount": 933,
+                "currency": "SAR"
+            },
+            "totalTaxAmount": {
+                "amount": 353,
+                "currency": "SAR"
+            },
+            "totalBaseAmount": {
+                "amount": 580,
+                "currency": "SAR"
+            },
+            "taxesAndFees": [
+                {
+                    "code": "YQF",
+                    "amount": {
+                        "amount": 220,
+                        "currency": "SAR"
+                    }
+                },
+                {
+                    "code": "BH",
+                    "amount": {
+                        "amount": 120,
+                        "currency": "SAR"
+                    }
+                },
+                {
+                    "code": "HM",
+                    "amount": {
+                        "amount": 5,
+                        "currency": "SAR"
+                    }
+                },
+                {
+                    "code": "E32",
+                    "amount": {
+                        "amount": 8,
+                        "currency": "SAR"
+                    }
+                }
+            ],
+            "discount": null
+        },
+        "refundability": "UnKnown",
+        "haveBundles": false,
+        "canBeHeld": true,
+        "isDealCodeApplied": false,
+        "appliedDealCode": "",
+        "isPromoted": false,
+        "appliedPromotionCode": "",
+        "isAncillaryRequired": false,
+        "offerHasAncillary": true,
+        "offerHasSeat": true,
+        "isBaggageRequired": false,
+        "isMealRequired": false,
+        "isSeatMapRequired": false,
+        "isBundleRequired": false,
+        "sellBundleRequiresAncillary": null
+    }
+}</pre></div>
+<div class="rr-note">Large arrays, objects and long opaque tokens are truncated for report length (marked "__omitted__" / "[truncated]"); the full payload was inspected live. Raw supplier payloads are redacted per SPEC.md &sect;7.14.</div>
+</div>
+</div>
+<div class="hop"><span class="badge PASS">PASS</span> <span class="hop-endpoint">2. FareConfirm</span>
+<div class="hd"><b>Request:</b> FareConfirm on a returned offer</div>
+<div class="hd"><b>Response:</b> 200 - selectedOffer returned</div>
+<div class="hd"><b>Expected:</b> 200, selectedOffer</div>
+<div class="hd"><b>Actual:</b> 200, selectedOffer returned</div>
+<div class="hd"><b>Evidence:</b> selectedOffer.offerId present</div>
+<div class="hop-reqres-panel">
+<div class="rr-title">Request</div>
+<div class="rr-line">POST to https://ndc-integration-stg-ne-3.azurewebsites.net/api/v2/FlightSearch/FareConfirm</div>
+<div class="rr-label">HEADERS</div>
+<div class="rr-box rr-headers-box">
+<div class="rr-h-line">x-api-key: <span class="rr-redacted">&#8226;&#8226;&#8226;&#8226;&#8226;&#8226;&#8226;&#8226;(redacted)</span></div>
+<div class="rr-h-line">Client-Id: NDC-Core</div>
+<div class="rr-h-line">Content-Type: application/json</div>
+</div>
+<div class="rr-label">BODY</div>
+<div class="rr-box rr-body-box"><pre>{
+    "selectedOfferId": "GF-OFFER-11&amp;3AAUwKJHRtkkNTI4NDU3MjYtODA5ZS00YTQ1LTk0NTEtNjk2NjkyN2VmYzNjga5HRi1PRkZFUklURU0tMZGkUEFYMacxMTMzLjAwo1NBUtkk...[truncated]",
+    "credentialsSelector": "KSA",
+    "ResponseId": "77d4d534-cbf1-437c-9eb0-363d7d362ba7",
+    "supplier": "GulfAir"
+}</pre></div>
+<div class="rr-title" style="margin-top:18px;">Response</div>
+<div class="rr-line">Status code 200</div>
+<div class="rr-label">BODY</div>
+<div class="rr-box rr-body-box"><pre>{
+    "responseId": "77d4d534-cbf1-437c-9eb0-363d7d362ba7",
+    "selectedOffer": {
+        "offerId": "3576bbe2-f7cd-4072-b873-b3e7f9a384ae&amp;3AAUq0dGLU9GRkVSLTExokdG2SQ1Mjg0NTcyNi04MDllLTRhNDUtOTQ1MS02OTY2OTI3ZWZjM2OBrkdGLU9...[truncated]",
+        "offerJourneys": [
+            "GF-GF163-1"
+        ],
+        "passengerFareBreakdown": [
+            {
+                "paxTotalAmount": {
+                    "amount": 1133,
+                    "currency": "SAR"
+                },
+                "passengerTypeCode": "ADT",
+                "paxTotalTaxAmount": {
+                    "amount": 353,
+                    "currency": "SAR"
+                },
+                "paxBaseAmount": {
+                    "amount": 780,
+                    "currency": "SAR"
+                },
+                "taxesAndFees": [
+                    {
+                        "code": "YQF",
+                        "amount": {
+                            "amount": 220,
+                            "currency": "SAR"
+                        }
+                    },
+                    {
+                        "code": "E32",
+                        "amount": {
+                            "amount": 8,
+                            "currency": "SAR"
+                        }
+                    },
+                    {
+                        "code": "BH",
+                        "amount": {
+                            "amount": 120,
+                            "currency": "SAR"
+                        }
+                    },
+                    {
+                        "code": "HM",
+                        "amount": {
+                            "amount": 5,
+                            "currency": "SAR"
+                        }
+                    }
+                ],
+                "segmentDetails": [
+                    {
+                        "segmentRefId": "GF-GF163-GF163-2027061409-2027061410-O",
+                        "priceClassRefId": "ECONOMY FLEX&amp;GF-GF163-GF163-2027061409-2027061410-O&amp;ADT",
+                        "baggageDetailsRefId": "6KG,KG40",
+                        "cabinCode": "ECONOMY",
+                        "rbd": "E"
+                    }
+                ],
+                "discount": null
+            }
+        ],
+        "priceDetails": {
+            "totalAmount": {
+                "amount": 1133,
+                "currency": "SAR"
+            },
+            "totalTaxAmount": {
+                "amount": 353,
+                "currency": "SAR"
+            },
+            "totalBaseAmount": {
+                "amount": 780,
+                "currency": "SAR"
+            },
+            "taxesAndFees": [
+                {
+                    "code": "YQF",
+                    "amount": {
+                        "amount": 220,
+                        "currency": "SAR"
+                    }
+                },
+                {
+                    "code": "E32",
+                    "amount": {
+                        "amount": 8,
+                        "currency": "SAR"
+                    }
+                },
+                {
+                    "code": "BH",
+                    "amount": {
+                        "amount": 120,
+                        "currency": "SAR"
+                    }
+                },
+                {
+                    "code": "HM",
+                    "amount": {
+                        "amount": 5,
+                        "currency": "SAR"
+                    }
+                }
+            ],
+            "discount": null
+        },
+        "refundability": "UnKnown",
+        "haveBundles": false,
+        "canBeHeld": true,
+        "isDealCodeApplied": false,
+        "appliedDealCode": "",
+        "isPromoted": false,
+        "appliedPromotionCode": "",
+        "isAncillaryRequired": false,
+        "offerHasAncillary": true,
+        "offerHasSeat": true,
+        "isBaggageRequired": false,
+        "isMealRequired": false,
+        "isSeatMapRequired": false,
+        "isBundleRequired": false,
+        "sellBundleRequiresAncillary": null
+    }
+}</pre></div>
+<div class="rr-note">Large arrays, objects and long opaque tokens are truncated for report length (marked "__omitted__" / "[truncated]"); the full payload was inspected live. Raw supplier payloads are redacted per SPEC.md &sect;7.14.</div>
+</div>
+</div>
+<div class="hop"><span class="badge PASS">PASS</span> <span class="hop-endpoint">3. AddPassenger</span>
+<div class="hd"><b>Request:</b> AddPassenger 1 ADT</div>
+<div class="hd"><b>Response:</b> 200 - offerId/responseId returned</div>
+<div class="hd"><b>Expected:</b> 200, offerId/responseId</div>
+<div class="hd"><b>Actual:</b> 200, offerId/responseId returned</div>
+<div class="hd"><b>Evidence:</b> offerId + responseId present</div>
+<div class="hop-reqres-panel">
+<div class="rr-title">Request</div>
+<div class="rr-line">POST to https://ndc-integration-stg-ne-3.azurewebsites.net/api/v2/Passenger/AddPassengerDetails</div>
+<div class="rr-label">HEADERS</div>
+<div class="rr-box rr-headers-box">
+<div class="rr-h-line">x-api-key: <span class="rr-redacted">&#8226;&#8226;&#8226;&#8226;&#8226;&#8226;&#8226;&#8226;(redacted)</span></div>
+<div class="rr-h-line">Client-Id: NDC-Core</div>
+<div class="rr-h-line">Content-Type: application/json</div>
+</div>
+<div class="rr-label">BODY</div>
+<div class="rr-box rr-body-box"><pre>{
+    "ResponseId": "77d4d534-cbf1-437c-9eb0-363d7d362ba7",
+    "contactsList": {
+        "0": {
+            "Email": "NDC_CI@gmail.com",
+            "phone": {
+                "phoneNumber": "0121574236",
+                "countryDialingCode": "+20",
+                "type": "Personal"
+            },
+            "Address": {
+                "City": "CAIRO",
+                "CountryCode": "EG",
+                "Line2": "Al Nahda Floor eight",
+                "Line1": "New Cairo Maddi"
+            }
+        }
+    },
+    "selectedOfferId": "3576bbe2-f7cd-4072-b873-b3e7f9a384ae&amp;3AAUq0dGLU9GRkVSLTExokdG2SQ1Mjg0NTcyNi04MDllLTRhNDUtOTQ1MS02OTY2OTI3ZWZjM2OBrkdGLU9...[truncated]",
+    "passengersList": {
+        "Pax1": {
+            "contactRefId": "0",
+            "passengerTypeCode": "ADT",
+            "residentCountry": "EG",
+            "travelDocument": {
+                "documentType": "PASSPORT",
+                "issuanceDate": "2023-10-01T00:00:00.000Z",
+                "issuanceCountryCode": "EG",
+                "nationality": "EG",
+                "name": {
+                    "last": "Ibrahim",
+                    "first": "Mostafa",
+                    "middle": ""
+                },
+                "birthDate": "2000-02-15T00:00:00.000Z",
+                "documentNumber": "A1234561",
+                "gender": "male",
+                "birthCountry": "EG",
+                "expirationDate": "2029-10-01T00:00:00.000Z"
+            },
+            "nationality": "EG",
+            "name": {
+                "last": "Ibrahim",
+                "first": "Mostafa",
+                "middle": ""
+            },
+            "gender": "male",
+            "title": "Mr",
+            "birthDate": "2000-02-15T00:00:00.000Z"
+        }
+    },
+    "credentialsSelector": "KSA",
+    "supplier": "GulfAir"
+}</pre></div>
+<div class="rr-title" style="margin-top:18px;">Response</div>
+<div class="rr-line">Status code 200</div>
+<div class="rr-label">BODY</div>
+<div class="rr-box rr-body-box"><pre>{
+    "offerId": "GF-OFFER-11&amp;yAGbY9IAAAH39CvcABSrR0YtT0ZGRVItMTGiR0bZJDUyODQ1NzI2LTgwOWUtNGE0NS05NDUxLTY5NjY5MjdlZmMzY4GuNgD/CUlURU0tMZGk...[truncated]",
+    "responseId": "77d4d534-cbf1-437c-9eb0-363d7d362ba7"
+}</pre></div>
+<div class="rr-note">Large arrays, objects and long opaque tokens are truncated for report length (marked "__omitted__" / "[truncated]"); the full payload was inspected live. Raw supplier payloads are redacted per SPEC.md &sect;7.14.</div>
+</div>
+</div>
+<div class="hop"><span class="badge PASS">PASS</span> <span class="hop-endpoint">4. GetSeatMap</span>
+<div class="hd"><b>Request:</b> GetSeatMap</div>
+<div class="hd"><b>Response:</b> 200 - seatMapDetails with 149 AvailablePaid cells (GF163)</div>
+<div class="hd"><b>Expected:</b> 200 with seat cells incl. cellDetails.cellID</div>
+<div class="hd"><b>Actual:</b> 200; chose AvailablePaid seat 17C, recorded cellDetails.cellID (319 chars)</div>
+<div class="hd"><b>Evidence:</b> cell 17C: cellAvailability AvailablePaid, paxCellAvailability AvailableFree, totalPrice 0 SAR</div>
+<div class="hop-reqres-panel">
+<div class="rr-title">Request</div>
+<div class="rr-line">POST to https://ndc-integration-stg-ne-3.azurewebsites.net/api/V2/SeatMap/Seat</div>
+<div class="rr-label">HEADERS</div>
+<div class="rr-box rr-headers-box">
+<div class="rr-h-line">x-api-key: <span class="rr-redacted">&#8226;&#8226;&#8226;&#8226;&#8226;&#8226;&#8226;&#8226;(redacted)</span></div>
+<div class="rr-h-line">Client-Id: NDC-Core</div>
+<div class="rr-h-line">Content-Type: application/json</div>
+</div>
+<div class="rr-label">BODY</div>
+<div class="rr-box rr-body-box"><pre>{
+    "selectedOfferId": "GF-OFFER-11&amp;yAGbY9IAAAH39CvcABSrR0YtT0ZGRVItMTGiR0bZJDUyODQ1NzI2LTgwOWUtNGE0NS05NDUxLTY5NjY5MjdlZmMzY4GuNgD/CUlURU0tMZGk...[truncated]",
+    "credentialsSelector": "KSA",
+    "ResponseId": "77d4d534-cbf1-437c-9eb0-363d7d362ba7",
+    "supplier": "GulfAir"
+}</pre></div>
+<div class="rr-title" style="margin-top:18px;">Response</div>
+<div class="rr-line">Status code 200</div>
+<div class="rr-label">BODY</div>
+<div class="rr-box rr-body-box"><pre>{
+    "supplier": "GulfAir",
+    "offerId": "GF-OFFER-11&amp;yAGbY9IAAAH39CvcABSrR0YtT0ZGRVItMTGiR0bZJDUyODQ1NzI2LTgwOWUtNGE0NS05NDUxLTY5NjY5MjdlZmMzY4GuNgD/CUlURU0tMZGk...[truncated]",
+    "responseId": "77d4d534-cbf1-437c-9eb0-363d7d362ba7",
+    "isFareCheckRequired": false,
+    "seatMapDetails": "[elided - 1 segment(s), 175 cells]"
+}</pre></div>
+<div class="rr-note">Large arrays, objects and long opaque tokens are truncated for report length (marked "__omitted__" / "[truncated]"); the full payload was inspected live. Raw supplier payloads are redacted per SPEC.md &sect;7.14.</div>
+</div>
+</div>
+<div class="hop"><span class="badge PASS">PASS</span> <span class="hop-endpoint">5. Book</span>
+<div class="hd"><b>Request:</b> Book with passengersSelectedSeats.PAX1.setSegmentsSeats.&lt;GF163 segment&gt; = {cellCode 17C, cellId = verbatim cellDetails.cellID}</div>
+<div class="hd"><b>Response:</b> 200 - pnr RKMCKV, ticket 722137002584; passengersSelectedSeats PAX1/&lt;segment&gt;/17C price 0 SAR (36.9s)</div>
+<div class="hd"><b>Expected:</b> 200; seat attached and echoed in passengersSelectedSeats and passengerFareBreakdown[].passengerSeats</div>
+<div class="hd"><b>Actual:</b> 200; seat 17C attached and echoed in both places; totalSelectedSeatsAmount 0.00 SAR, matching the seat map price of 0</div>
+<div class="hd"><b>Evidence:</b> pnr RKMCKV, ticket 722137002584; passengersSelectedSeats.PAX1.GF-GF163-GF163-2027061409-2027061410-O={cellCode:17C,price:0 SAR}; passengerSeats=[{17C,0 SAR}]</div>
+<div class="hop-reqres-panel">
+<div class="rr-title">Request</div>
+<div class="rr-line">POST to https://ndc-integration-stg-ne-3.azurewebsites.net/api/v2/FlightBooking/Book</div>
+<div class="rr-label">HEADERS</div>
+<div class="rr-box rr-headers-box">
+<div class="rr-h-line">x-api-key: <span class="rr-redacted">&#8226;&#8226;&#8226;&#8226;&#8226;&#8226;&#8226;&#8226;(redacted)</span></div>
+<div class="rr-h-line">Client-Id: NDC-Core</div>
+<div class="rr-h-line">Content-Type: application/json</div>
+</div>
+<div class="rr-label">BODY</div>
+<div class="rr-box rr-body-box"><pre>{
+    "selectedOfferId": "GF-OFFER-11&amp;yAGbY9IAAAH39CvcABSrR0YtT0ZGRVItMTGiR0bZJDUyODQ1NzI2LTgwOWUtNGE0NS05NDUxLTY5NjY5MjdlZmMzY4GuNgD/CUlURU0tMZGk...[truncated]",
+    "credentialsSelector": "KSA",
+    "ResponseId": "77d4d534-cbf1-437c-9eb0-363d7d362ba7",
+    "supplier": "GulfAir",
+    "passengersSelectedSeats": {
+        "PAX1": {
+            "setSegmentsSeats": {
+                "GF-GF163-GF163-2027061409-2027061410-O": {
+                    "cellCode": "17C",
+                    "cellId": "GF-GF163-GF163-2027061409-2027061410-O&amp;laJHRtkkNTI4NDU3MjYtODA5ZS00YTQ1LTk0NTEtNjk2NjkyN2VmYzNj2SZHRi1HRjE2My1HRjE2My0yM...[truncated]"
+                }
+            }
+        }
+    }
+}</pre></div>
+<div class="rr-title" style="margin-top:18px;">Response</div>
+<div class="rr-line">Status code 200</div>
+<div class="rr-label">BODY</div>
+<div class="rr-box rr-body-box"><pre>{
+    "supplier": "GulfAir",
+    "pnr": "RKMCKV",
+    "gdsPNR": "",
+    "bookingToken": "TPC60517147662D7102026",
+    "voidCapability": "FullVoidOnlyAllowed",
+    "creationDate": "2026-10-07T00:00:00",
+    "ticketingDate": "2026-10-07T00:00:00",
+    "tickets": {
+        "PAX1": {
+            "ticketStatus": "Booked",
+            "ticketNumber": "722137002584",
+            "carrierCode": "GF"
+        }
+    },
+    "passengersSelectedAncillaries": {},
+    "passengersSelectedSeats": {
+        "PAX1": {
+            "GF-GF163-GF163-2027061409-2027061410-O": {
+                "cellCode": "17C",
+                "price": {
+                    "amount": 0,
+                    "currency": "SAR"
+                }
+            }
+        }
+    },
+    "journeys": {
+        "GF-GF163-1": {
+            "origin": "BAH",
+            "destination": "RUH",
+            "numberOfStops": 0,
+            "segmentRefIds": [
+                "GF-GF163-GF163-2027061409-2027061410-O"
+            ]
+        }
+    },
+    "flightSegments": {
+        "GF-GF163-GF163-2027061409-2027061410-O": {
+            "origin": "BAH",
+            "destination": "RUH",
+            "departureDateTime": "2027-06-14T09:40:00",
+            "arrivalDateTime": "2027-06-14T10:55:00",
+            "departureTerminal": null,
+            "arrivalTerminal": "TERMINAL 5",
+            "flightTime": 75,
+            "operatingCarrierCode": "GF",
+            "operatingFlightNumber": "163",
+            "marketingCarrierCode": "GF",
+            "marketingFlightNumber": "163",
+            "equipment": "32Q"
+        }
+    },
+    "priceClasses": {
+        "ECONOMY FLEX": {
+            "priceClassName": "ECONOMY FLEX",
+            "fareDescription": "PublicFare",
+            "rulesAndPenalties": []
+        }
+    },
+    "baggageDetails": {
+        "40KG,6KG": {
+            "carryOnBaggage": "6.00 KG",
+            "checkInBaggage": "40.00 KG"
+        }
+    },
+    "passengersList": {
+        "PAX1": {
+            "title": "MR",
+            "name": {
+                "first": "MOSTAFA",
+                "middle": null,
+                "last": "IBRAHIM"
+            },
+            "birthDate": "2000-02-15T00:00:00",
+            "gender": "Male",
+            "passengerTypeCode": "ADT",
+            "contactRefId": "CNCT-1",
+            "travelDocument": {
+                "name": {
+                    "first": "MOSTAFA",
+                    "middle": null,
+                    "last": "IBRAHIM"
+                },
+                "nationality": "EG",
+                "expirationDate": "2029-10-01T00:00:00",
+                "issuanceDate": null,
+                "documentNumber": "A1234561",
+                "documentType": "Passport",
+                "gender": "Male",
+                "birthCountry": "EG",
+                "birthDate": "2000-02-15T00:00:00",
+                "issuanceCountryCode": "EG"
+            },
+            "parentPaxRefId": null,
+            "nationality": "EG",
+            "residentCountry": null,
+            "age": 26
+        }
+    },
+    "contacts": {
+        "CNCT-1": {
+            "email": "NDC_CI@GMAIL.COM",
+            "phone": {
+                "type": "",
+                "countryDialingCode": "20",
+                "phoneNumber": "121574236"
+            },
+            "address": {
+                "line1": null,
+                "line2": null,
+                "city": "",
+                "countryCode": ""
+            }
+        }
+    },
+    "selectedOffer": {
+        "offerId": "b5f9144a-424d-4ff7-ae73-2eb13b158cfc",
+        "offerJourneys": [
+            "GF-GF163-1"
+        ],
+        "passengerFareBreakdown": [
+            {
+                "passengerRefId": "PAX1",
+                "paxTotalAmount": {
+                    "amount": 1133,
+                    "currency": "SAR"
+                },
+                "paxTotalAncillaryAmount": {
+                    "amount": 0,
+                    "currency": "SAR"
+                },
+                "passengerAncillaries": [],
+                "paxTotalSeatAmount": {
+                    "amount": 0,
+                    "currency": "SAR"
+                },
+                "passengerSeats": [
+                    {
+                        "cellCode": "17C",
+                        "price": {
+                            "amount": 0,
+                            "currency": "SAR"
+                        }
+                    }
+                ],
+                "passengerTypeCode": "ADT",
+                "paxTotalTaxAmount": {
+                    "amount": 353,
+                    "currency": "SAR"
+                },
+                "paxBaseAmount": {
+                    "amount": 780,
+                    "currency": "SAR"
+                },
+                "taxesAndFees": [
+                    {
+                        "code": "YQ",
+                        "amount": {
+                            "amount": 220,
+                            "currency": "SAR"
+                        }
+                    },
+                    {
+                        "code": "E3",
+                        "amount": {
+                            "amount": 8,
+                            "currency": "SAR"
+                        }
+                    },
+                    {
+                        "code": "BH",
+                        "amount": {
+                            "amount": 120,
+                            "currency": "SAR"
+                        }
+                    },
+                    {
+                        "code": "HM",
+                        "amount": {
+                            "amount": 5,
+                            "currency": "SAR"
+                        }
+                    }
+                ],
+                "segmentDetails": [
+                    {
+                        "segmentRefId": "GF-GF163-GF163-2027061409-2027061410-O",
+                        "priceClassRefId": "ECONOMY FLEX",
+                        "baggageDetailsRefId": "40KG,6KG",
+                        "cabinCode": "ECONOMY",
+                        "rbd": "E"
+                    }
+                ],
+                "discount": null
+            }
+        ],
+        "priceDetails": {
+            "totalAncillariesAmount": {
+                "amount": 0,
+                "currency": "SAR"
+            },
+            "totalPassengersAncillaries": [],
+            "totalSelectedSeatsAmount": {
+                "amount": 0,
+                "currency": "SAR"
+            },
+            "totalSelectedSeats": [
+                {
+                    "cellCode": "17C",
+                    "price": {
+                        "amount": 0,
+                        "currency": "SAR"
+                    }
+                }
+            ],
+            "totalAmount": {
+                "amount": 1133,
+                "currency": "SAR"
+            },
+            "totalTaxAmount": {
+                "amount": 353,
+                "currency": "SAR"
+            },
+            "totalBaseAmount": {
+                "amount": 780,
+                "currency": "SAR"
+            },
+            "taxesAndFees": [
+                {
+                    "code": "YQ",
+                    "amount": {
+                        "amount": 220,
+                        "currency": "SAR"
+                    }
+                },
+                {
+                    "code": "E3",
+                    "amount": {
+                        "amount": 8,
+                        "currency": "SAR"
+                    }
+                },
+                {
+                    "code": "BH",
+                    "amount": {
+                        "amount": 120,
+                        "currency": "SAR"
+                    }
+                },
+                {
+                    "code": "HM",
+                    "amount": {
+                        "amount": 5,
+                        "currency": "SAR"
+                    }
+                }
+            ],
+            "discount": null
+        },
+        "refundability": "UnKnown",
+        "isDealCodeApplied": null,
+        "appliedDealCode": null,
+        "isPromoted": false,
+        "appliedPromotionCode": ""
+    },
+    "isBspCommissionApplied": false,
+    "diRemarks": [],
+    "emdTickets": null
+}</pre></div>
+<div class="rr-note">Large arrays, objects and long opaque tokens are truncated for report length (marked "__omitted__" / "[truncated]"); the full payload was inspected live. Raw supplier payloads are redacted per SPEC.md &sect;7.14.</div>
+</div>
+</div>
+<div class="hop"><span class="badge PASS">PASS</span> <span class="hop-endpoint">6. Retrieve</span>
+<div class="hd"><b>Request:</b> Retrieve pnr RKMCKV</div>
+<div class="hd"><b>Response:</b> 200 - seat 17C persisted</div>
+<div class="hd"><b>Expected:</b> 200; seat still present on the stored booking</div>
+<div class="hd"><b>Actual:</b> 200; passengersSelectedSeats and passengerSeats still show 17C</div>
+<div class="hd"><b>Evidence:</b> Retrieve passengersSelectedSeats.PAX1.&lt;segment&gt;.cellCode = 17C</div>
+<div class="hop-reqres-panel">
+<div class="rr-title">Request</div>
+<div class="rr-line">POST to https://ndc-integration-stg-ne-3.azurewebsites.net/api/v2/FlightBooking/Retrieve</div>
+<div class="rr-label">HEADERS</div>
+<div class="rr-box rr-headers-box">
+<div class="rr-h-line">x-api-key: <span class="rr-redacted">&#8226;&#8226;&#8226;&#8226;&#8226;&#8226;&#8226;&#8226;(redacted)</span></div>
+<div class="rr-h-line">Client-Id: NDC-Core</div>
+<div class="rr-h-line">Content-Type: application/json</div>
+</div>
+<div class="rr-label">BODY</div>
+<div class="rr-box rr-body-box"><pre>{
+    "supplier": "GulfAir",
+    "credentialsSelector": "KSA",
+    "pnr": "RKMCKV",
+    "bookingToken": "TPC60517147662D7102026"
+}</pre></div>
+<div class="rr-title" style="margin-top:18px;">Response</div>
+<div class="rr-line">Status code 200</div>
+<div class="rr-label">BODY</div>
+<div class="rr-box rr-body-box"><pre>{
+    "fareType": null,
+    "bookedCredentialsSelector": "KSA",
+    "holdExpirationDate": null,
+    "bookingStatus": "Booked",
+    "pcc": "",
+    "supplier": "GulfAir",
+    "pnr": "RKMCKV",
+    "gdsPNR": "",
+    "bookingToken": "TPC60517147662D7102026",
+    "creationDate": "2026-10-07T00:00:00",
+    "ticketingDate": "2026-10-07T00:00:00",
+    "tickets": {
+        "PAX1": {
+            "ticketStatus": "Booked",
+            "ticketNumber": "722137002584",
+            "carrierCode": "GF"
+        }
+    },
+    "passengersSelectedAncillaries": {},
+    "passengersSelectedSeats": {
+        "PAX1": {
+            "GF-GF163-GF163-2027061409-2027061410-O": {
+                "cellCode": "17C",
+                "price": {
+                    "amount": 0,
+                    "currency": "SAR"
+                }
+            }
+        }
+    },
+    "journeys": {
+        "GF-GF163-1": {
+            "origin": "BAH",
+            "destination": "RUH",
+            "numberOfStops": 0,
+            "segmentRefIds": [
+                "GF-GF163-GF163-2027061409-2027061410-O"
+            ]
+        }
+    },
+    "flightSegments": {
+        "GF-GF163-GF163-2027061409-2027061410-O": {
+            "origin": "BAH",
+            "destination": "RUH",
+            "departureDateTime": "2027-06-14T09:40:00",
+            "arrivalDateTime": "2027-06-14T10:55:00",
+            "departureTerminal": null,
+            "arrivalTerminal": "TERMINAL 5",
+            "flightTime": 75,
+            "operatingCarrierCode": "GF",
+            "operatingFlightNumber": "0163",
+            "marketingCarrierCode": "GF",
+            "marketingFlightNumber": "0163",
+            "equipment": "32Q"
+        }
+    },
+    "priceClasses": {
+        "ECONOMY FLEX": {
+            "priceClassName": "ECONOMY FLEX",
+            "fareDescription": "PublicFare",
+            "rulesAndPenalties": []
+        }
+    },
+    "baggageDetails": {
+        "40KG,6KG": {
+            "carryOnBaggage": "6.00 KG",
+            "checkInBaggage": "40.00 KG"
+        }
+    },
+    "passengersList": {
+        "PAX1": {
+            "title": "MR",
+            "name": {
+                "first": "MOSTAFA",
+                "middle": null,
+                "last": "IBRAHIM"
+            },
+            "birthDate": "2000-02-15T00:00:00",
+            "gender": "Male",
+            "passengerTypeCode": "ADT",
+            "contactRefId": "CNCT-1",
+            "travelDocument": {
+                "name": {
+                    "first": "MOSTAFA",
+                    "middle": null,
+                    "last": "IBRAHIM"
+                },
+                "nationality": "EG",
+                "expirationDate": "2029-10-01T00:00:00",
+                "issuanceDate": null,
+                "documentNumber": "A1234561",
+                "documentType": "Passport",
+                "gender": "Male",
+                "birthCountry": "EG",
+                "birthDate": "2000-02-15T00:00:00",
+                "issuanceCountryCode": "EG"
+            },
+            "parentPaxRefId": null,
+            "nationality": "EG",
+            "residentCountry": "EG",
+            "age": 26
+        }
+    },
+    "contacts": {
+        "CNCT-1": {
+            "email": "NDC_CI@GMAIL.COM",
+            "phone": {
+                "type": "",
+                "countryDialingCode": "20",
+                "phoneNumber": "121574236"
+            },
+            "address": {
+                "line1": null,
+                "line2": null,
+                "city": "",
+                "countryCode": ""
+            }
+        }
+    },
+    "selectedOffer": {
+        "offerId": "437eca60-d257-4995-b18c-26fa4bf0156e",
+        "offerJourneys": [
+            "GF-GF163-1"
+        ],
+        "passengerFareBreakdown": [
+            {
+                "passengerRefId": "PAX1",
+                "paxTotalAmount": {
+                    "amount": 1133,
+                    "currency": "SAR"
+                },
+                "paxTotalAncillaryAmount": {
+                    "amount": 0,
+                    "currency": "SAR"
+                },
+                "passengerAncillaries": [],
+                "paxTotalSeatAmount": {
+                    "amount": 0,
+                    "currency": "SAR"
+                },
+                "passengerSeats": [
+                    {
+                        "cellCode": "17C",
+                        "price": {
+                            "amount": 0,
+                            "currency": "SAR"
+                        }
+                    }
+                ],
+                "passengerTypeCode": "ADT",
+                "paxTotalTaxAmount": {
+                    "amount": 353,
+                    "currency": "SAR"
+                },
+                "paxBaseAmount": {
+                    "amount": 780,
+                    "currency": "SAR"
+                },
+                "taxesAndFees": [
+                    {
+                        "code": "BH",
+                        "amount": {
+                            "amount": 120,
+                            "currency": "SAR"
+                        }
+                    },
+                    {
+                        "code": "E3",
+                        "amount": {
+                            "amount": 8,
+                            "currency": "SAR"
+                        }
+                    },
+                    {
+                        "code": "HM",
+                        "amount": {
+                            "amount": 5,
+                            "currency": "SAR"
+                        }
+                    },
+                    {
+                        "code": "YQ",
+                        "amount": {
+                            "amount": 220,
+                            "currency": "SAR"
+                        }
+                    }
+                ],
+                "segmentDetails": [
+                    {
+                        "segmentRefId": "GF-GF163-GF163-2027061409-2027061410-O",
+                        "priceClassRefId": "ECONOMY FLEX",
+                        "baggageDetailsRefId": "40KG,6KG",
+                        "cabinCode": "ECONOMY",
+                        "rbd": "E"
+                    }
+                ],
+                "discount": null
+            }
+        ],
+        "priceDetails": {
+            "totalAncillariesAmount": {
+                "amount": 0,
+                "currency": "SAR"
+            },
+            "totalPassengersAncillaries": [],
+            "totalSelectedSeatsAmount": {
+                "amount": 0,
+                "currency": "SAR"
+            },
+            "totalSelectedSeats": [
+                {
+                    "cellCode": "17C",
+                    "price": {
+                        "amount": 0,
+                        "currency": "SAR"
+                    }
+                }
+            ],
+            "totalAmount": {
+                "amount": 1133,
+                "currency": "SAR"
+            },
+            "totalTaxAmount": {
+                "amount": 353,
+                "currency": "SAR"
+            },
+            "totalBaseAmount": {
+                "amount": 780,
+                "currency": "SAR"
+            },
+            "taxesAndFees": [
+                {
+                    "code": "BH",
+                    "amount": {
+                        "amount": 120,
+                        "currency": "SAR"
+                    }
+                },
+                {
+                    "code": "E3",
+                    "amount": {
+                        "amount": 8,
+                        "currency": "SAR"
+                    }
+                },
+                {
+                    "code": "HM",
+                    "amount": {
+                        "amount": 5,
+                        "currency": "SAR"
+                    }
+                },
+                {
+                    "code": "YQ",
+                    "amount": {
+                        "amount": 220,
+                        "currency": "SAR"
+                    }
+                }
+            ],
+            "discount": null
+        },
+        "refundability": "UnKnown",
+        "isDealCodeApplied": null,
+        "appliedDealCode": null,
+        "isPromoted": false,
+        "appliedPromotionCode": ""
+    },
+    "isBspCommissionApplied": false,
+    "diRemarks": []
+}</pre></div>
+</div>
+</div>
+</details>
+<div class="view-tc-wrap"><details class="view-tc"><summary>View Test Case</summary><div class="view-tc-body"><div class="vtc-h">Preconditions</div><div class="vtc-p">GetSeatMap completed for a confirmed offer; a specific AvailablePaid cell identified in the response.</div><div class="vtc-h">Steps</div><ol class="vtc-steps"><li>GetSeatMap -&gt; record cellDetails.cellID (capital ID) for a chosen AvailablePaid cell, plus its cellCode -&gt; Book (submit passengersSelectedSeats with cellCode and cellId=&lt;the recorded cellID value&gt;).</li></ol><div class="vtc-h">Expected Result</div><div class="vtc-p">Book accepts the token despite the field-name casing difference between the response (cellID) and the request (cellId) and attaches the correct seat, echoed back in the response's passengersSelectedSeats/selectedOffer.passengerFareBreakdown[].passengerSeats.</div><div class="vtc-h">Actual Result</div><div class="vtc-p">Confirmed. The cellID was accepted verbatim under the lowercase-d cellId request key and seat 17C was attached and echoed in passengersSelectedSeats and passengerFareBreakdown[].passengerSeats; Retrieve confirms it persisted. Casing difference is cosmetic. BUG-19 (Round 15: valid seat silently dropped) did NOT reproduce. Note: all 149 AvailablePaid cells on this flight are priced 0 SAR (paxCellAvailability AvailableFree), so the attach is proven by the cellCode echo, not by a seat fee.</div></div></details></div>
+</details>
+
+<details class="tc FAIL">
+<summary class="tc-head"><span><span class="chev"></span><span class="mono">TC-SEATMAP-VAL-04</span> - Validate a cellID obtained from one offer's GetSeatMap response is rejected when submitted in Book for a different offer.</span><span class="badge FAIL">FAIL</span></summary>
+<div class="row"><b>Endpoint Name:</b> Confirm a seat code taken from one flight offer is refused when used on a different offer</div>
+<div class="row"><b>Request:</b> Opened seat maps for two separate offers (Bahrain to Jeddah, 19 and 20 June 2027), then tried to book on the second offer with seat 8A but using the seat code copied from the first offer&#39;s seat 19A</div>
+<div class="row"><b>Response:</b> After about 31 seconds the booking was accepted and ticketed (reference OOQACT, ticket 722137002461) with no seat attached and no error</div>
+<div class="row"><b>Expected:</b> The booking should have been refused straight away, because the seat code belongs to another offer</div>
+<div class="row"><b>Actual:</b> <b>BUG-07, 11th confirmed occurrence (not new)</b> &mdash; the foreign seat code was not rejected; a real ticketed booking was created and the seat silently dropped. New diagnostic: because a valid seat code from the same offer does attach (previous test), the system appears to notice the foreign code but swallows it instead of returning an error</div>
+<div class="row"><b>Status:</b> <span class="badge FAIL">FAIL</span></div>
+<details class="evidence"><summary>Evidence</summary><div class="ev-body">Book 200 in 30502ms; pnr OOQACT, ticket 722137002461; passengersSelectedSeats {}; totalSelectedSeatsAmount 0 SAR</div></details>
+<details class="hops"><summary>Hops (9)</summary>
+<div class="hop"><span class="badge PASS">PASS</span> <span class="hop-endpoint">1. Search</span>
+<div class="hd"><b>Request:</b> Search - offer E1 (BAH-JED 2027-06-19)</div>
+<div class="hd"><b>Response:</b> 200 - 20 offers</div>
+<div class="hd"><b>Expected:</b> 200</div>
+<div class="hd"><b>Actual:</b> 200</div>
+<div class="hd"><b>Evidence:</b> response present</div>
+<div class="hop-reqres-panel">
+<div class="rr-title">Request</div>
+<div class="rr-line">POST to https://ndc-integration-stg-ne-3.azurewebsites.net/api/V2/FlightSearch/Search</div>
+<div class="rr-label">HEADERS</div>
+<div class="rr-box rr-headers-box">
+<div class="rr-h-line">x-api-key: <span class="rr-redacted">&#8226;&#8226;&#8226;&#8226;&#8226;&#8226;&#8226;&#8226;(redacted)</span></div>
+<div class="rr-h-line">Client-Id: NDC-Core</div>
+<div class="rr-h-line">Content-Type: application/json</div>
+</div>
+<div class="rr-label">BODY</div>
+<div class="rr-box rr-body-box"><pre>{
+    "isDebug": false,
+    "credentialsSelector": "KSA",
+    "searchCriteria": [
+        {
+            "destination": "JED",
+            "origin": "BAH",
+            "date": "2027-06-19"
+        }
+    ],
+    "supplier": "GulfAir",
+    "passengers": [
+        {
+            "count": "1",
+            "passengerTypeCode": "ADT"
+        }
+    ]
+}</pre></div>
+<div class="rr-title" style="margin-top:18px;">Response</div>
+<div class="rr-line">Status code 200</div>
+<div class="rr-label">BODY</div>
+<div class="rr-box rr-body-box"><pre>{
+    "responseId": "8acc9f86-8fdc-4ba8-8a1c-04e2694a3b35",
+    "supplier": "GulfAir",
+    "offers": "[20 offers - first shown]",
+    "firstOffer": {
+        "offerId": "GF-OFFER-2&amp;3AAUwKJHRtkkMWFiZTAzM2ItOTM2NC00YTJhLTgwNDItMTc0Y2MwNWQzOWJhga5HRi1PRkZFUklURU0tMZGkUEFYMacxMTQzLjAwo1NBUtkkM...[truncated]",
+        "offerJourneys": [
+            "GF-GF181-1"
+        ],
+        "passengerFareBreakdown": [
+            {
+                "paxTotalAmount": {
+                    "amount": 1143,
+                    "currency": "SAR"
+                },
+                "passengerTypeCode": "ADT",
+                "paxTotalTaxAmount": {
+                    "amount": 353,
+                    "currency": "SAR"
+                },
+                "paxBaseAmount": {
+                    "amount": 790,
+                    "currency": "SAR"
+                },
+                "taxesAndFees": [
+                    {
+                        "code": "YQF",
+                        "amount": {
+                            "amount": 220,
+                            "currency": "SAR"
+                        }
+                    },
+                    {
+                        "code": "BH",
+                        "amount": {
+                            "amount": 120,
+                            "currency": "SAR"
+                        }
+                    },
+                    {
+                        "code": "HM",
+                        "amount": {
+                            "amount": 5,
+                            "currency": "SAR"
+                        }
+                    },
+                    {
+                        "code": "E32",
+                        "amount": {
+                            "amount": 8,
+                            "currency": "SAR"
+                        }
+                    }
+                ],
+                "segmentDetails": [
+                    {
+                        "segmentRefId": "GF-GF181-GF181-2027061901-2027061904-O",
+                        "priceClassRefId": "ECONOMY LIGHT_GF-GF181-GF181-2027061901-2027061904-O_ADT",
+                        "baggageDetailsRefId": "ECONOMY LIGHT_GF-GF181-GF181-2027061901-2027061904-O_ADT",
+                        "cabinCode": "ECONOMY",
+                        "rbd": "E"
+                    }
+                ],
+                "discount": null
+            }
+        ],
+        "priceDetails": {
+            "totalAmount": {
+                "amount": 1143,
+                "currency": "SAR"
+            },
+            "totalTaxAmount": {
+                "amount": 353,
+                "currency": "SAR"
+            },
+            "totalBaseAmount": {
+                "amount": 790,
+                "currency": "SAR"
+            },
+            "taxesAndFees": [
+                {
+                    "code": "YQF",
+                    "amount": {
+                        "amount": 220,
+                        "currency": "SAR"
+                    }
+                },
+                {
+                    "code": "BH",
+                    "amount": {
+                        "amount": 120,
+                        "currency": "SAR"
+                    }
+                },
+                {
+                    "code": "HM",
+                    "amount": {
+                        "amount": 5,
+                        "currency": "SAR"
+                    }
+                },
+                {
+                    "code": "E32",
+                    "amount": {
+                        "amount": 8,
+                        "currency": "SAR"
+                    }
+                }
+            ],
+            "discount": null
+        },
+        "refundability": "UnKnown",
+        "haveBundles": false,
+        "canBeHeld": true,
+        "isDealCodeApplied": false,
+        "appliedDealCode": "",
+        "isPromoted": false,
+        "appliedPromotionCode": "",
+        "isAncillaryRequired": false,
+        "offerHasAncillary": true,
+        "offerHasSeat": true,
+        "isBaggageRequired": false,
+        "isMealRequired": false,
+        "isSeatMapRequired": false,
+        "isBundleRequired": false,
+        "sellBundleRequiresAncillary": null
+    }
+}</pre></div>
+<div class="rr-note">Large arrays, objects and long opaque tokens are truncated for report length (marked "__omitted__" / "[truncated]"); the full payload was inspected live. Raw supplier payloads are redacted per SPEC.md &sect;7.14.</div>
+</div>
+</div>
+<div class="hop"><span class="badge PASS">PASS</span> <span class="hop-endpoint">2. FareConfirm</span>
+<div class="hd"><b>Request:</b> FareConfirm - offer E1 (BAH-JED 2027-06-19)</div>
+<div class="hd"><b>Response:</b> 200 - selectedOffer returned</div>
+<div class="hd"><b>Expected:</b> 200</div>
+<div class="hd"><b>Actual:</b> 200</div>
+<div class="hd"><b>Evidence:</b> response present</div>
+<div class="hop-reqres-panel">
+<div class="rr-title">Request</div>
+<div class="rr-line">POST to https://ndc-integration-stg-ne-3.azurewebsites.net/api/v2/FlightSearch/FareConfirm</div>
+<div class="rr-label">HEADERS</div>
+<div class="rr-box rr-headers-box">
+<div class="rr-h-line">x-api-key: <span class="rr-redacted">&#8226;&#8226;&#8226;&#8226;&#8226;&#8226;&#8226;&#8226;(redacted)</span></div>
+<div class="rr-h-line">Client-Id: NDC-Core</div>
+<div class="rr-h-line">Content-Type: application/json</div>
+</div>
+<div class="rr-label">BODY</div>
+<div class="rr-box rr-body-box"><pre>{
+    "selectedOfferId": "GF-OFFER-11&amp;3AAUwKJHRtkkMWFiZTAzM2ItOTM2NC00YTJhLTgwNDItMTc0Y2MwNWQzOWJhga5HRi1PRkZFUklURU0tMZGkUEFYMacxMzQyLjAwo1NBUtkk...[truncated]",
+    "credentialsSelector": "KSA",
+    "ResponseId": "8acc9f86-8fdc-4ba8-8a1c-04e2694a3b35",
+    "supplier": "GulfAir"
+}</pre></div>
+<div class="rr-title" style="margin-top:18px;">Response</div>
+<div class="rr-line">Status code 200</div>
+<div class="rr-label">BODY</div>
+<div class="rr-box rr-body-box"><pre>{
+    "responseId": "8acc9f86-8fdc-4ba8-8a1c-04e2694a3b35",
+    "selectedOffer": {
+        "offerId": "2b2130cd-2845-4b30-a5dc-2f2446e5523c&amp;3AAUq0dGLU9GRkVSLTExokdG2SQxYWJlMDMzYi05MzY0LTRhMmEtODA0Mi0xNzRjYzA1ZDM5YmGBrkdGLU9...[truncated]",
+        "offerJourneys": [
+            "GF-GF171-1"
+        ],
+        "passengerFareBreakdown": [
+            {
+                "paxTotalAmount": {
+                    "amount": 1342,
+                    "currency": "SAR"
+                },
+                "passengerTypeCode": "ADT",
+                "paxTotalTaxAmount": {
+                    "amount": 353,
+                    "currency": "SAR"
+                },
+                "paxBaseAmount": {
+                    "amount": 989,
+                    "currency": "SAR"
+                },
+                "taxesAndFees": [
+                    {
+                        "code": "YQF",
+                        "amount": {
+                            "amount": 220,
+                            "currency": "SAR"
+                        }
+                    },
+                    {
+                        "code": "E32",
+                        "amount": {
+                            "amount": 8,
+                            "currency": "SAR"
+                        }
+                    },
+                    {
+                        "code": "BH",
+                        "amount": {
+                            "amount": 120,
+                            "currency": "SAR"
+                        }
+                    },
+                    {
+                        "code": "HM",
+                        "amount": {
+                            "amount": 5,
+                            "currency": "SAR"
+                        }
+                    }
+                ],
+                "segmentDetails": [
+                    {
+                        "segmentRefId": "GF-GF171-GF171-2027061910-2027061912-O",
+                        "priceClassRefId": "ECONOMY FLEX&amp;GF-GF171-GF171-2027061910-2027061912-O&amp;ADT",
+                        "baggageDetailsRefId": "6KG,KG40",
+                        "cabinCode": "ECONOMY",
+                        "rbd": "E"
+                    }
+                ],
+                "discount": null
+            }
+        ],
+        "priceDetails": {
+            "totalAmount": {
+                "amount": 1342,
+                "currency": "SAR"
+            },
+            "totalTaxAmount": {
+                "amount": 353,
+                "currency": "SAR"
+            },
+            "totalBaseAmount": {
+                "amount": 989,
+                "currency": "SAR"
+            },
+            "taxesAndFees": [
+                {
+                    "code": "YQF",
+                    "amount": {
+                        "amount": 220,
+                        "currency": "SAR"
+                    }
+                },
+                {
+                    "code": "E32",
+                    "amount": {
+                        "amount": 8,
+                        "currency": "SAR"
+                    }
+                },
+                {
+                    "code": "BH",
+                    "amount": {
+                        "amount": 120,
+                        "currency": "SAR"
+                    }
+                },
+                {
+                    "code": "HM",
+                    "amount": {
+                        "amount": 5,
+                        "currency": "SAR"
+                    }
+                }
+            ],
+            "discount": null
+        },
+        "refundability": "UnKnown",
+        "haveBundles": false,
+        "canBeHeld": true,
+        "isDealCodeApplied": false,
+        "appliedDealCode": "",
+        "isPromoted": false,
+        "appliedPromotionCode": "",
+        "isAncillaryRequired": false,
+        "offerHasAncillary": true,
+        "offerHasSeat": true,
+        "isBaggageRequired": false,
+        "isMealRequired": false,
+        "isSeatMapRequired": false,
+        "isBundleRequired": false,
+        "sellBundleRequiresAncillary": null
+    }
+}</pre></div>
+<div class="rr-note">Large arrays, objects and long opaque tokens are truncated for report length (marked "__omitted__" / "[truncated]"); the full payload was inspected live. Raw supplier payloads are redacted per SPEC.md &sect;7.14.</div>
+</div>
+</div>
+<div class="hop"><span class="badge PASS">PASS</span> <span class="hop-endpoint">3. AddPassenger</span>
+<div class="hd"><b>Request:</b> AddPassenger - offer E1 (BAH-JED 2027-06-19)</div>
+<div class="hd"><b>Response:</b> 200 - offerId/responseId returned</div>
+<div class="hd"><b>Expected:</b> 200</div>
+<div class="hd"><b>Actual:</b> 200</div>
+<div class="hd"><b>Evidence:</b> response present</div>
+<div class="hop-reqres-panel">
+<div class="rr-title">Request</div>
+<div class="rr-line">POST to https://ndc-integration-stg-ne-3.azurewebsites.net/api/v2/Passenger/AddPassengerDetails</div>
+<div class="rr-label">HEADERS</div>
+<div class="rr-box rr-headers-box">
+<div class="rr-h-line">x-api-key: <span class="rr-redacted">&#8226;&#8226;&#8226;&#8226;&#8226;&#8226;&#8226;&#8226;(redacted)</span></div>
+<div class="rr-h-line">Client-Id: NDC-Core</div>
+<div class="rr-h-line">Content-Type: application/json</div>
+</div>
+<div class="rr-label">BODY</div>
+<div class="rr-box rr-body-box"><pre>{
+    "ResponseId": "8acc9f86-8fdc-4ba8-8a1c-04e2694a3b35",
+    "contactsList": {
+        "0": {
+            "Email": "NDC_CI@gmail.com",
+            "phone": {
+                "phoneNumber": "0121574236",
+                "countryDialingCode": "+20",
+                "type": "Personal"
+            },
+            "Address": {
+                "City": "CAIRO",
+                "CountryCode": "EG",
+                "Line2": "Al Nahda Floor eight",
+                "Line1": "New Cairo Maddi"
+            }
+        }
+    },
+    "selectedOfferId": "2b2130cd-2845-4b30-a5dc-2f2446e5523c&amp;3AAUq0dGLU9GRkVSLTExokdG2SQxYWJlMDMzYi05MzY0LTRhMmEtODA0Mi0xNzRjYzA1ZDM5YmGBrkdGLU9...[truncated]",
+    "passengersList": {
+        "Pax1": {
+            "contactRefId": "0",
+            "passengerTypeCode": "ADT",
+            "residentCountry": "EG",
+            "travelDocument": {
+                "documentType": "PASSPORT",
+                "issuanceDate": "2023-10-01T00:00:00.000Z",
+                "issuanceCountryCode": "EG",
+                "nationality": "EG",
+                "name": {
+                    "last": "Ibrahim",
+                    "first": "Mostafa",
+                    "middle": ""
+                },
+                "birthDate": "2000-02-15T00:00:00.000Z",
+                "documentNumber": "A1234561",
+                "gender": "male",
+                "birthCountry": "EG",
+                "expirationDate": "2029-10-01T00:00:00.000Z"
+            },
+            "nationality": "EG",
+            "name": {
+                "last": "Ibrahim",
+                "first": "Mostafa",
+                "middle": ""
+            },
+            "gender": "male",
+            "title": "Mr",
+            "birthDate": "2000-02-15T00:00:00.000Z"
+        }
+    },
+    "credentialsSelector": "KSA",
+    "supplier": "GulfAir"
+}</pre></div>
+<div class="rr-title" style="margin-top:18px;">Response</div>
+<div class="rr-line">Status code 200</div>
+<div class="rr-label">BODY</div>
+<div class="rr-box rr-body-box"><pre>{
+    "offerId": "GF-OFFER-11&amp;yAGcY9IAAAH49CvcABSrR0YtT0ZGRVItMTGiR0bZJDFhYmUwMzNiLTkzNjQtNGEyYS04MDQyLTE3NGNjMDVkMzliYYGuNgD/CUlURU0tMZGk...[truncated]",
+    "responseId": "8acc9f86-8fdc-4ba8-8a1c-04e2694a3b35"
+}</pre></div>
+<div class="rr-note">Large arrays, objects and long opaque tokens are truncated for report length (marked "__omitted__" / "[truncated]"); the full payload was inspected live. Raw supplier payloads are redacted per SPEC.md &sect;7.14.</div>
+</div>
+</div>
+<div class="hop"><span class="badge PASS">PASS</span> <span class="hop-endpoint">4. GetSeatMap</span>
+<div class="hd"><b>Request:</b> GetSeatMap - offer E1 (BAH-JED 2027-06-19)</div>
+<div class="hd"><b>Response:</b> 200 - seatMapDetails (offer E1)</div>
+<div class="hd"><b>Expected:</b> 200</div>
+<div class="hd"><b>Actual:</b> 200</div>
+<div class="hd"><b>Evidence:</b> seat map returned with AvailablePaid cells</div>
+<div class="hop-reqres-panel">
+<div class="rr-title">Request</div>
+<div class="rr-line">POST to https://ndc-integration-stg-ne-3.azurewebsites.net/api/V2/SeatMap/Seat</div>
+<div class="rr-label">HEADERS</div>
+<div class="rr-box rr-headers-box">
+<div class="rr-h-line">x-api-key: <span class="rr-redacted">&#8226;&#8226;&#8226;&#8226;&#8226;&#8226;&#8226;&#8226;(redacted)</span></div>
+<div class="rr-h-line">Client-Id: NDC-Core</div>
+<div class="rr-h-line">Content-Type: application/json</div>
+</div>
+<div class="rr-label">BODY</div>
+<div class="rr-box rr-body-box"><pre>{
+    "selectedOfferId": "GF-OFFER-11&amp;yAGcY9IAAAH49CvcABSrR0YtT0ZGRVItMTGiR0bZJDFhYmUwMzNiLTkzNjQtNGEyYS04MDQyLTE3NGNjMDVkMzliYYGuNgD/CUlURU0tMZGk...[truncated]",
+    "credentialsSelector": "KSA",
+    "ResponseId": "8acc9f86-8fdc-4ba8-8a1c-04e2694a3b35",
+    "supplier": "GulfAir"
+}</pre></div>
+<div class="rr-title" style="margin-top:18px;">Response</div>
+<div class="rr-line">Status code 200</div>
+<div class="rr-label">BODY</div>
+<div class="rr-box rr-body-box"><pre>{
+    "supplier": "GulfAir",
+    "offerId": "GF-OFFER-11&amp;yAGcY9IAAAH49CvcABSrR0YtT0ZGRVItMTGiR0bZJDFhYmUwMzNiLTkzNjQtNGEyYS04MDQyLTE3NGNjMDVkMzliYYGuNgD/CUlURU0tMZGk...[truncated]",
+    "responseId": "8acc9f86-8fdc-4ba8-8a1c-04e2694a3b35",
+    "isFareCheckRequired": false,
+    "seatMapDetails": "[elided - 1 segment(s), 210 cells]"
+}</pre></div>
+<div class="rr-note">Large arrays, objects and long opaque tokens are truncated for report length (marked "__omitted__" / "[truncated]"); the full payload was inspected live. Raw supplier payloads are redacted per SPEC.md &sect;7.14.</div>
+</div>
+</div>
+<div class="hop"><span class="badge PASS">PASS</span> <span class="hop-endpoint">5. Search</span>
+<div class="hd"><b>Request:</b> Search - offer E2 (BAH-JED 2027-06-20)</div>
+<div class="hd"><b>Response:</b> 200 - 20 offers</div>
+<div class="hd"><b>Expected:</b> 200</div>
+<div class="hd"><b>Actual:</b> 200</div>
+<div class="hd"><b>Evidence:</b> response present</div>
+<div class="hop-reqres-panel">
+<div class="rr-title">Request</div>
+<div class="rr-line">POST to https://ndc-integration-stg-ne-3.azurewebsites.net/api/V2/FlightSearch/Search</div>
+<div class="rr-label">HEADERS</div>
+<div class="rr-box rr-headers-box">
+<div class="rr-h-line">x-api-key: <span class="rr-redacted">&#8226;&#8226;&#8226;&#8226;&#8226;&#8226;&#8226;&#8226;(redacted)</span></div>
+<div class="rr-h-line">Client-Id: NDC-Core</div>
+<div class="rr-h-line">Content-Type: application/json</div>
+</div>
+<div class="rr-label">BODY</div>
+<div class="rr-box rr-body-box"><pre>{
+    "isDebug": false,
+    "credentialsSelector": "KSA",
+    "searchCriteria": [
+        {
+            "destination": "JED",
+            "origin": "BAH",
+            "date": "2027-06-20"
+        }
+    ],
+    "supplier": "GulfAir",
+    "passengers": [
+        {
+            "count": "1",
+            "passengerTypeCode": "ADT"
+        }
+    ]
+}</pre></div>
+<div class="rr-title" style="margin-top:18px;">Response</div>
+<div class="rr-line">Status code 200</div>
+<div class="rr-label">BODY</div>
+<div class="rr-box rr-body-box"><pre>{
+    "responseId": "f5956de9-b4da-4543-8b4b-a2170789320b",
+    "supplier": "GulfAir",
+    "offers": "[20 offers - first shown]",
+    "firstOffer": {
+        "offerId": "GF-OFFER-2&amp;3AAUwKJHRtkkMDNkM2IwNzItZDY1YS00ZTE1LWEzNGQtYTdhMjdmMjExYmZkga5HRi1PRkZFUklURU0tMZGkUEFYMacxMTQzLjAwo1NBUtkkM...[truncated]",
+        "offerJourneys": [
+            "GF-GF181-1"
+        ],
+        "passengerFareBreakdown": [
+            {
+                "paxTotalAmount": {
+                    "amount": 1143,
+                    "currency": "SAR"
+                },
+                "passengerTypeCode": "ADT",
+                "paxTotalTaxAmount": {
+                    "amount": 353,
+                    "currency": "SAR"
+                },
+                "paxBaseAmount": {
+                    "amount": 790,
+                    "currency": "SAR"
+                },
+                "taxesAndFees": [
+                    {
+                        "code": "YQF",
+                        "amount": {
+                            "amount": 220,
+                            "currency": "SAR"
+                        }
+                    },
+                    {
+                        "code": "BH",
+                        "amount": {
+                            "amount": 120,
+                            "currency": "SAR"
+                        }
+                    },
+                    {
+                        "code": "HM",
+                        "amount": {
+                            "amount": 5,
+                            "currency": "SAR"
+                        }
+                    },
+                    {
+                        "code": "E32",
+                        "amount": {
+                            "amount": 8,
+                            "currency": "SAR"
+                        }
+                    }
+                ],
+                "segmentDetails": [
+                    {
+                        "segmentRefId": "GF-GF181-GF181-2027062001-2027062004-O",
+                        "priceClassRefId": "ECONOMY LIGHT_GF-GF181-GF181-2027062001-2027062004-O_ADT",
+                        "baggageDetailsRefId": "ECONOMY LIGHT_GF-GF181-GF181-2027062001-2027062004-O_ADT",
+                        "cabinCode": "ECONOMY",
+                        "rbd": "E"
+                    }
+                ],
+                "discount": null
+            }
+        ],
+        "priceDetails": {
+            "totalAmount": {
+                "amount": 1143,
+                "currency": "SAR"
+            },
+            "totalTaxAmount": {
+                "amount": 353,
+                "currency": "SAR"
+            },
+            "totalBaseAmount": {
+                "amount": 790,
+                "currency": "SAR"
+            },
+            "taxesAndFees": [
+                {
+                    "code": "YQF",
+                    "amount": {
+                        "amount": 220,
+                        "currency": "SAR"
+                    }
+                },
+                {
+                    "code": "BH",
+                    "amount": {
+                        "amount": 120,
+                        "currency": "SAR"
+                    }
+                },
+                {
+                    "code": "HM",
+                    "amount": {
+                        "amount": 5,
+                        "currency": "SAR"
+                    }
+                },
+                {
+                    "code": "E32",
+                    "amount": {
+                        "amount": 8,
+                        "currency": "SAR"
+                    }
+                }
+            ],
+            "discount": null
+        },
+        "refundability": "UnKnown",
+        "haveBundles": false,
+        "canBeHeld": true,
+        "isDealCodeApplied": false,
+        "appliedDealCode": "",
+        "isPromoted": false,
+        "appliedPromotionCode": "",
+        "isAncillaryRequired": false,
+        "offerHasAncillary": true,
+        "offerHasSeat": true,
+        "isBaggageRequired": false,
+        "isMealRequired": false,
+        "isSeatMapRequired": false,
+        "isBundleRequired": false,
+        "sellBundleRequiresAncillary": null
+    }
+}</pre></div>
+<div class="rr-note">Large arrays, objects and long opaque tokens are truncated for report length (marked "__omitted__" / "[truncated]"); the full payload was inspected live. Raw supplier payloads are redacted per SPEC.md &sect;7.14.</div>
+</div>
+</div>
+<div class="hop"><span class="badge PASS">PASS</span> <span class="hop-endpoint">6. FareConfirm</span>
+<div class="hd"><b>Request:</b> FareConfirm - offer E2 (BAH-JED 2027-06-20)</div>
+<div class="hd"><b>Response:</b> 200 - selectedOffer returned</div>
+<div class="hd"><b>Expected:</b> 200</div>
+<div class="hd"><b>Actual:</b> 200</div>
+<div class="hd"><b>Evidence:</b> response present</div>
+<div class="hop-reqres-panel">
+<div class="rr-title">Request</div>
+<div class="rr-line">POST to https://ndc-integration-stg-ne-3.azurewebsites.net/api/v2/FlightSearch/FareConfirm</div>
+<div class="rr-label">HEADERS</div>
+<div class="rr-box rr-headers-box">
+<div class="rr-h-line">x-api-key: <span class="rr-redacted">&#8226;&#8226;&#8226;&#8226;&#8226;&#8226;&#8226;&#8226;(redacted)</span></div>
+<div class="rr-h-line">Client-Id: NDC-Core</div>
+<div class="rr-h-line">Content-Type: application/json</div>
+</div>
+<div class="rr-label">BODY</div>
+<div class="rr-box rr-body-box"><pre>{
+    "selectedOfferId": "GF-OFFER-11&amp;3AAUwKJHRtkkMDNkM2IwNzItZDY1YS00ZTE1LWEzNGQtYTdhMjdmMjExYmZkga5HRi1PRkZFUklURU0tMZGkUEFYMacxMzQyLjAwo1NBUtkk...[truncated]",
+    "credentialsSelector": "KSA",
+    "ResponseId": "f5956de9-b4da-4543-8b4b-a2170789320b",
+    "supplier": "GulfAir"
+}</pre></div>
+<div class="rr-title" style="margin-top:18px;">Response</div>
+<div class="rr-line">Status code 200</div>
+<div class="rr-label">BODY</div>
+<div class="rr-box rr-body-box"><pre>{
+    "responseId": "f5956de9-b4da-4543-8b4b-a2170789320b",
+    "selectedOffer": {
+        "offerId": "934b9ef0-23e0-4105-991a-f95da601b14f&amp;3AAUq0dGLU9GRkVSLTExokdG2SQwM2QzYjA3Mi1kNjVhLTRlMTUtYTM0ZC1hN2EyN2YyMTFiZmSBrkdGLU9...[truncated]",
+        "offerJourneys": [
+            "GF-GF171-1"
+        ],
+        "passengerFareBreakdown": [
+            {
+                "paxTotalAmount": {
+                    "amount": 1342,
+                    "currency": "SAR"
+                },
+                "passengerTypeCode": "ADT",
+                "paxTotalTaxAmount": {
+                    "amount": 353,
+                    "currency": "SAR"
+                },
+                "paxBaseAmount": {
+                    "amount": 989,
+                    "currency": "SAR"
+                },
+                "taxesAndFees": [
+                    {
+                        "code": "YQF",
+                        "amount": {
+                            "amount": 220,
+                            "currency": "SAR"
+                        }
+                    },
+                    {
+                        "code": "E32",
+                        "amount": {
+                            "amount": 8,
+                            "currency": "SAR"
+                        }
+                    },
+                    {
+                        "code": "BH",
+                        "amount": {
+                            "amount": 120,
+                            "currency": "SAR"
+                        }
+                    },
+                    {
+                        "code": "HM",
+                        "amount": {
+                            "amount": 5,
+                            "currency": "SAR"
+                        }
+                    }
+                ],
+                "segmentDetails": [
+                    {
+                        "segmentRefId": "GF-GF171-GF171-2027062010-2027062012-O",
+                        "priceClassRefId": "ECONOMY FLEX&amp;GF-GF171-GF171-2027062010-2027062012-O&amp;ADT",
+                        "baggageDetailsRefId": "6KG,KG40",
+                        "cabinCode": "ECONOMY",
+                        "rbd": "E"
+                    }
+                ],
+                "discount": null
+            }
+        ],
+        "priceDetails": {
+            "totalAmount": {
+                "amount": 1342,
+                "currency": "SAR"
+            },
+            "totalTaxAmount": {
+                "amount": 353,
+                "currency": "SAR"
+            },
+            "totalBaseAmount": {
+                "amount": 989,
+                "currency": "SAR"
+            },
+            "taxesAndFees": [
+                {
+                    "code": "YQF",
+                    "amount": {
+                        "amount": 220,
+                        "currency": "SAR"
+                    }
+                },
+                {
+                    "code": "E32",
+                    "amount": {
+                        "amount": 8,
+                        "currency": "SAR"
+                    }
+                },
+                {
+                    "code": "BH",
+                    "amount": {
+                        "amount": 120,
+                        "currency": "SAR"
+                    }
+                },
+                {
+                    "code": "HM",
+                    "amount": {
+                        "amount": 5,
+                        "currency": "SAR"
+                    }
+                }
+            ],
+            "discount": null
+        },
+        "refundability": "UnKnown",
+        "haveBundles": false,
+        "canBeHeld": true,
+        "isDealCodeApplied": false,
+        "appliedDealCode": "",
+        "isPromoted": false,
+        "appliedPromotionCode": "",
+        "isAncillaryRequired": false,
+        "offerHasAncillary": true,
+        "offerHasSeat": true,
+        "isBaggageRequired": false,
+        "isMealRequired": false,
+        "isSeatMapRequired": false,
+        "isBundleRequired": false,
+        "sellBundleRequiresAncillary": null
+    }
+}</pre></div>
+<div class="rr-note">Large arrays, objects and long opaque tokens are truncated for report length (marked "__omitted__" / "[truncated]"); the full payload was inspected live. Raw supplier payloads are redacted per SPEC.md &sect;7.14.</div>
+</div>
+</div>
+<div class="hop"><span class="badge PASS">PASS</span> <span class="hop-endpoint">7. AddPassenger</span>
+<div class="hd"><b>Request:</b> AddPassenger - offer E2 (BAH-JED 2027-06-20)</div>
+<div class="hd"><b>Response:</b> 200 - offerId/responseId returned</div>
+<div class="hd"><b>Expected:</b> 200</div>
+<div class="hd"><b>Actual:</b> 200</div>
+<div class="hd"><b>Evidence:</b> response present</div>
+<div class="hop-reqres-panel">
+<div class="rr-title">Request</div>
+<div class="rr-line">POST to https://ndc-integration-stg-ne-3.azurewebsites.net/api/v2/Passenger/AddPassengerDetails</div>
+<div class="rr-label">HEADERS</div>
+<div class="rr-box rr-headers-box">
+<div class="rr-h-line">x-api-key: <span class="rr-redacted">&#8226;&#8226;&#8226;&#8226;&#8226;&#8226;&#8226;&#8226;(redacted)</span></div>
+<div class="rr-h-line">Client-Id: NDC-Core</div>
+<div class="rr-h-line">Content-Type: application/json</div>
+</div>
+<div class="rr-label">BODY</div>
+<div class="rr-box rr-body-box"><pre>{
+    "ResponseId": "f5956de9-b4da-4543-8b4b-a2170789320b",
+    "contactsList": {
+        "0": {
+            "Email": "NDC_CI@gmail.com",
+            "phone": {
+                "phoneNumber": "0121574236",
+                "countryDialingCode": "+20",
+                "type": "Personal"
+            },
+            "Address": {
+                "City": "CAIRO",
+                "CountryCode": "EG",
+                "Line2": "Al Nahda Floor eight",
+                "Line1": "New Cairo Maddi"
+            }
+        }
+    },
+    "selectedOfferId": "934b9ef0-23e0-4105-991a-f95da601b14f&amp;3AAUq0dGLU9GRkVSLTExokdG2SQwM2QzYjA3Mi1kNjVhLTRlMTUtYTM0ZC1hN2EyN2YyMTFiZmSBrkdGLU9...[truncated]",
+    "passengersList": {
+        "Pax1": {
+            "contactRefId": "0",
+            "passengerTypeCode": "ADT",
+            "residentCountry": "EG",
+            "travelDocument": {
+                "documentType": "PASSPORT",
+                "issuanceDate": "2023-10-01T00:00:00.000Z",
+                "issuanceCountryCode": "EG",
+                "nationality": "EG",
+                "name": {
+                    "last": "Ibrahim",
+                    "first": "Mostafa",
+                    "middle": ""
+                },
+                "birthDate": "2000-02-15T00:00:00.000Z",
+                "documentNumber": "A1234561",
+                "gender": "male",
+                "birthCountry": "EG",
+                "expirationDate": "2029-10-01T00:00:00.000Z"
+            },
+            "nationality": "EG",
+            "name": {
+                "last": "Ibrahim",
+                "first": "Mostafa",
+                "middle": ""
+            },
+            "gender": "male",
+            "title": "Mr",
+            "birthDate": "2000-02-15T00:00:00.000Z"
+        }
+    },
+    "credentialsSelector": "KSA",
+    "supplier": "GulfAir"
+}</pre></div>
+<div class="rr-title" style="margin-top:18px;">Response</div>
+<div class="rr-line">Status code 200</div>
+<div class="rr-label">BODY</div>
+<div class="rr-box rr-body-box"><pre>{
+    "offerId": "GF-OFFER-11&amp;yAGcY9IAAAH49CvcABSrR0YtT0ZGRVItMTGiR0bZJDAzZDNiMDcyLWQ2NWEtNGUxNS1hMzRkLWE3YTI3ZjIxMWJmZIGuNgD/CUlURU0tMZGk...[truncated]",
+    "responseId": "f5956de9-b4da-4543-8b4b-a2170789320b"
+}</pre></div>
+<div class="rr-note">Large arrays, objects and long opaque tokens are truncated for report length (marked "__omitted__" / "[truncated]"); the full payload was inspected live. Raw supplier payloads are redacted per SPEC.md &sect;7.14.</div>
+</div>
+</div>
+<div class="hop"><span class="badge PASS">PASS</span> <span class="hop-endpoint">8. GetSeatMap</span>
+<div class="hd"><b>Request:</b> GetSeatMap - offer E2 (BAH-JED 2027-06-20)</div>
+<div class="hd"><b>Response:</b> 200 - seatMapDetails (offer E2)</div>
+<div class="hd"><b>Expected:</b> 200</div>
+<div class="hd"><b>Actual:</b> 200</div>
+<div class="hd"><b>Evidence:</b> seat map returned with AvailablePaid cells</div>
+<div class="hop-reqres-panel">
+<div class="rr-title">Request</div>
+<div class="rr-line">POST to https://ndc-integration-stg-ne-3.azurewebsites.net/api/V2/SeatMap/Seat</div>
+<div class="rr-label">HEADERS</div>
+<div class="rr-box rr-headers-box">
+<div class="rr-h-line">x-api-key: <span class="rr-redacted">&#8226;&#8226;&#8226;&#8226;&#8226;&#8226;&#8226;&#8226;(redacted)</span></div>
+<div class="rr-h-line">Client-Id: NDC-Core</div>
+<div class="rr-h-line">Content-Type: application/json</div>
+</div>
+<div class="rr-label">BODY</div>
+<div class="rr-box rr-body-box"><pre>{
+    "selectedOfferId": "GF-OFFER-11&amp;yAGcY9IAAAH49CvcABSrR0YtT0ZGRVItMTGiR0bZJDAzZDNiMDcyLWQ2NWEtNGUxNS1hMzRkLWE3YTI3ZjIxMWJmZIGuNgD/CUlURU0tMZGk...[truncated]",
+    "credentialsSelector": "KSA",
+    "ResponseId": "f5956de9-b4da-4543-8b4b-a2170789320b",
+    "supplier": "GulfAir"
+}</pre></div>
+<div class="rr-title" style="margin-top:18px;">Response</div>
+<div class="rr-line">Status code 200</div>
+<div class="rr-label">BODY</div>
+<div class="rr-box rr-body-box"><pre>{
+    "supplier": "GulfAir",
+    "offerId": "GF-OFFER-11&amp;yAGcY9IAAAH49CvcABSrR0YtT0ZGRVItMTGiR0bZJDAzZDNiMDcyLWQ2NWEtNGUxNS1hMzRkLWE3YTI3ZjIxMWJmZIGuNgD/CUlURU0tMZGk...[truncated]",
+    "responseId": "f5956de9-b4da-4543-8b4b-a2170789320b",
+    "isFareCheckRequired": false,
+    "seatMapDetails": "[elided - 1 segment(s), 196 cells]"
+}</pre></div>
+<div class="rr-note">Large arrays, objects and long opaque tokens are truncated for report length (marked "__omitted__" / "[truncated]"); the full payload was inspected live. Raw supplier payloads are redacted per SPEC.md &sect;7.14.</div>
+</div>
+</div>
+<div class="hop"><span class="badge FAIL">FAIL</span> <span class="hop-endpoint">9. Book</span>
+<div class="hd"><b>Request:</b> Book on offer E2 (BAH-JED 2027-06-20) with seat cellCode 8A but cellId = the cellID issued for seat 19A on a different offer E1 (BAH-JED 2027-06-19)</div>
+<div class="hd"><b>Response:</b> 200 - pnr OOQACT ticketed (722137002461) after 31s; passengersSelectedSeats {} ; totalSelectedSeatsAmount 0.00; no error</div>
+<div class="hd"><b>Expected:</b> 4xx validation error rejecting a cellId that belongs to another offer, no booking created</div>
+<div class="hd"><b>Actual:</b> 200 - foreign cellId not rejected; real booking created and seat silently dropped</div>
+<div class="hd"><b>Evidence:</b> Book 200 in 30502ms; pnr OOQACT, ticket 722137002461; passengersSelectedSeats {}; totalSelectedSeatsAmount 0</div>
+<div class="hop-reqres-panel">
+<div class="rr-title">Request</div>
+<div class="rr-line">POST to https://ndc-integration-stg-ne-3.azurewebsites.net/api/v2/FlightBooking/Book</div>
+<div class="rr-label">HEADERS</div>
+<div class="rr-box rr-headers-box">
+<div class="rr-h-line">x-api-key: <span class="rr-redacted">&#8226;&#8226;&#8226;&#8226;&#8226;&#8226;&#8226;&#8226;(redacted)</span></div>
+<div class="rr-h-line">Client-Id: NDC-Core</div>
+<div class="rr-h-line">Content-Type: application/json</div>
+</div>
+<div class="rr-label">BODY</div>
+<div class="rr-box rr-body-box"><pre>{
+    "selectedOfferId": "GF-OFFER-11&amp;yAGcY9IAAAH49CvcABSrR0YtT0ZGRVItMTGiR0bZJDAzZDNiMDcyLWQ2NWEtNGUxNS1hMzRkLWE3YTI3ZjIxMWJmZIGuNgD/CUlURU0tMZGk...[truncated]",
+    "credentialsSelector": "KSA",
+    "ResponseId": "f5956de9-b4da-4543-8b4b-a2170789320b",
+    "supplier": "GulfAir",
+    "passengersSelectedSeats": {
+        "PAX1": {
+            "setSegmentsSeats": {
+                "GF-GF171-GF171-2027062010-2027062012-O": {
+                    "cellCode": "8A",
+                    "cellId": "GF-GF171-GF171-2027061910-2027061912-O&amp;laJHRtkkMWFiZTAzM2ItOTM2NC00YTJhLTgwNDItMTc0Y2MwNWQzOWJh2SZHRi1HRjE3MS1HRjE3MS0yM...[truncated]"
+                }
+            }
+        }
+    }
+}</pre></div>
+<div class="rr-title" style="margin-top:18px;">Response</div>
+<div class="rr-line">Status code 200</div>
+<div class="rr-label">BODY</div>
+<div class="rr-box rr-body-box"><pre>{
+    "supplier": "GulfAir",
+    "pnr": "OOQACT",
+    "gdsPNR": "",
+    "bookingToken": "TPC60517147664D7102026",
+    "voidCapability": "FullVoidOnlyAllowed",
+    "creationDate": "2026-10-07T00:00:00",
+    "ticketingDate": "2026-10-07T00:00:00",
+    "tickets": {
+        "PAX1": {
+            "ticketStatus": "Booked",
+            "ticketNumber": "722137002461",
+            "carrierCode": "GF"
+        }
+    },
+    "passengersSelectedAncillaries": {},
+    "passengersSelectedSeats": {},
+    "journeys": {
+        "GF-GF171-1": {
+            "origin": "BAH",
+            "destination": "JED",
+            "numberOfStops": 0,
+            "segmentRefIds": [
+                "GF-GF171-GF171-2027062010-2027062012-O"
+            ]
+        }
+    },
+    "flightSegments": {
+        "GF-GF171-GF171-2027062010-2027062012-O": {
+            "origin": "BAH",
+            "destination": "JED",
+            "departureDateTime": "2027-06-20T10:05:00",
+            "arrivalDateTime": "2027-06-20T12:40:00",
+            "departureTerminal": null,
+            "arrivalTerminal": "TERMINAL 1",
+            "flightTime": 155,
+            "operatingCarrierCode": "GF",
+            "operatingFlightNumber": "171",
+            "marketingCarrierCode": "GF",
+            "marketingFlightNumber": "171",
+            "equipment": "321"
+        }
+    },
+    "priceClasses": {
+        "ECONOMY FLEX": {
+            "priceClassName": "ECONOMY FLEX",
+            "fareDescription": "PublicFare",
+            "rulesAndPenalties": []
+        }
+    },
+    "baggageDetails": {
+        "40KG,6KG": {
+            "carryOnBaggage": "6.00 KG",
+            "checkInBaggage": "40.00 KG"
+        }
+    },
+    "passengersList": {
+        "PAX1": {
+            "title": "MR",
+            "name": {
+                "first": "MOSTAFA",
+                "middle": null,
+                "last": "IBRAHIM"
+            },
+            "birthDate": "2000-02-15T00:00:00",
+            "gender": "Male",
+            "passengerTypeCode": "ADT",
+            "contactRefId": "CNCT-1",
+            "travelDocument": {
+                "name": {
+                    "first": "MOSTAFA",
+                    "middle": null,
+                    "last": "IBRAHIM"
+                },
+                "nationality": "EG",
+                "expirationDate": "2029-10-01T00:00:00",
+                "issuanceDate": null,
+                "documentNumber": "A1234561",
+                "documentType": "Passport",
+                "gender": "Male",
+                "birthCountry": "EG",
+                "birthDate": "2000-02-15T00:00:00",
+                "issuanceCountryCode": "EG"
+            },
+            "parentPaxRefId": null,
+            "nationality": "EG",
+            "residentCountry": null,
+            "age": 26
+        }
+    },
+    "contacts": {
+        "CNCT-1": {
+            "email": "NDC_CI@GMAIL.COM",
+            "phone": {
+                "type": "",
+                "countryDialingCode": "20",
+                "phoneNumber": "121574236"
+            },
+            "address": {
+                "line1": null,
+                "line2": null,
+                "city": "",
+                "countryCode": ""
+            }
+        }
+    },
+    "selectedOffer": {
+        "offerId": "a05e54b8-02c8-4d34-b30e-d78d7555f523",
+        "offerJourneys": [
+            "GF-GF171-1"
+        ],
+        "passengerFareBreakdown": [
+            {
+                "passengerRefId": "PAX1",
+                "paxTotalAmount": {
+                    "amount": 1342,
+                    "currency": "SAR"
+                },
+                "paxTotalAncillaryAmount": {
+                    "amount": 0,
+                    "currency": "SAR"
+                },
+                "passengerAncillaries": [],
+                "paxTotalSeatAmount": {
+                    "amount": 0,
+                    "currency": "SAR"
+                },
+                "passengerSeats": [],
+                "passengerTypeCode": "ADT",
+                "paxTotalTaxAmount": {
+                    "amount": 353,
+                    "currency": "SAR"
+                },
+                "paxBaseAmount": {
+                    "amount": 989,
+                    "currency": "SAR"
+                },
+                "taxesAndFees": [
+                    {
+                        "code": "YQ",
+                        "amount": {
+                            "amount": 220,
+                            "currency": "SAR"
+                        }
+                    },
+                    {
+                        "code": "E3",
+                        "amount": {
+                            "amount": 8,
+                            "currency": "SAR"
+                        }
+                    },
+                    {
+                        "code": "BH",
+                        "amount": {
+                            "amount": 120,
+                            "currency": "SAR"
+                        }
+                    },
+                    {
+                        "code": "HM",
+                        "amount": {
+                            "amount": 5,
+                            "currency": "SAR"
+                        }
+                    }
+                ],
+                "segmentDetails": [
+                    {
+                        "segmentRefId": "GF-GF171-GF171-2027062010-2027062012-O",
+                        "priceClassRefId": "ECONOMY FLEX",
+                        "baggageDetailsRefId": "40KG,6KG",
+                        "cabinCode": "ECONOMY",
+                        "rbd": "E"
+                    }
+                ],
+                "discount": null
+            }
+        ],
+        "priceDetails": {
+            "totalAncillariesAmount": {
+                "amount": 0,
+                "currency": "SAR"
+            },
+            "totalPassengersAncillaries": [],
+            "totalSelectedSeatsAmount": {
+                "amount": 0,
+                "currency": "SAR"
+            },
+            "totalSelectedSeats": [],
+            "totalAmount": {
+                "amount": 1342,
+                "currency": "SAR"
+            },
+            "totalTaxAmount": {
+                "amount": 353,
+                "currency": "SAR"
+            },
+            "totalBaseAmount": {
+                "amount": 989,
+                "currency": "SAR"
+            },
+            "taxesAndFees": [
+                {
+                    "code": "YQ",
+                    "amount": {
+                        "amount": 220,
+                        "currency": "SAR"
+                    }
+                },
+                {
+                    "code": "E3",
+                    "amount": {
+                        "amount": 8,
+                        "currency": "SAR"
+                    }
+                },
+                {
+                    "code": "BH",
+                    "amount": {
+                        "amount": 120,
+                        "currency": "SAR"
+                    }
+                },
+                {
+                    "code": "HM",
+                    "amount": {
+                        "amount": 5,
+                        "currency": "SAR"
+                    }
+                }
+            ],
+            "discount": null
+        },
+        "refundability": "UnKnown",
+        "isDealCodeApplied": null,
+        "appliedDealCode": null,
+        "isPromoted": false,
+        "appliedPromotionCode": ""
+    },
+    "isBspCommissionApplied": false,
+    "diRemarks": [],
+    "emdTickets": null
+}</pre></div>
+<div class="rr-note">Large arrays, objects and long opaque tokens are truncated for report length (marked "__omitted__" / "[truncated]"); the full payload was inspected live. Raw supplier payloads are redacted per SPEC.md &sect;7.14.</div>
+</div>
+</div>
+</details>
+<div class="view-tc-wrap"><details class="view-tc"><summary>View Test Case</summary><div class="view-tc-body"><div class="vtc-h">Preconditions</div><div class="vtc-p">Two independent, completed Search-&gt;FareConfirm-&gt;AddPassenger-&gt;GetSeatMap chains (Offer A and Offer B) for the same supplier/credentialsSelector.</div><div class="vtc-h">Steps</div><ol class="vtc-steps"><li>Chain A: Search-&gt;FareConfirm-&gt;AddPassenger-&gt;GetSeatMap, record cellID_A. Chain B: Search-&gt;FareConfirm-&gt;AddPassenger-&gt;GetSeatMap, obtain getSeatMapResponceID_B/getSeatMapOfferId_B. Book using Chain B's ResponseId/selectedOfferId but passengersSelectedSeats.cellId=cellID_A.</li></ol><div class="vtc-h">Expected Result</div><div class="vtc-p">Request is rejected (exact status UNKNOWN -- confirm live per §7.9), since cellID appears (per its base64-decoded contents) to embed the originating ResponseId/OfferId/passenger-ref metadata and is presumably bound to the offer it was issued for.</div><div class="vtc-h">Actual Result</div><div class="vtc-p">STILL REPRODUCES (BUG-07). The foreign cellId was not rejected: Book ran the full supplier round-trip, created and ticketed a real booking, and silently dropped the seat instead of returning an error. New diagnostic this round: VAL-03 shows a valid same-offer cellId DOES attach (BUG-19 gone), so the drop here suggests the foreign token is detected as not-matching but is swallowed instead of rejected - the defect is the missing error.</div></div></details></div>
+</details>
+
+</div>
+</details>
+
+</details>
+
+<details class="section-collapse" open>
+<summary class="section-summary-flex">Findings<span class="section-count-badges"><span class="section-count-badge"><span class="scb-val serious">1</span><span class="scb-lbl">Defects</span></span><span class="section-count-badge"><span class="scb-val accent">0</span><span class="scb-lbl">Unknown-resolution</span></span></span></summary>
+<div class="finding defect"><div class="kind">Defect &mdash; BUG-07, 11th confirmed occurrence (not new)</div>
+Book accepts a cellId that was issued for a different offer's seat: it runs the full booking, tickets it, and silently drops the seat (empty passengersSelectedSeats, no fee) instead of returning an error. <span class="mono">(SPEC.md &sect;2.7, &sect;2.9, &sect;7.7, TC-SEATMAP-VAL-04)</span>
+<div><b>Field:</b> <code>passengersSelectedSeats.&lt;paxRef&gt;.setSegmentsSeats.&lt;segmentRefId&gt;.cellId</code></div>
+<div><b>Expected value:</b> <code>4xx validation error rejecting a cellId that does not belong to this offer, with no booking created</code></div>
+<div><b>History:</b> First observed Round 1 (2026-08-25); confirmed Rounds 1, 2, 3, 5, 6, 7, 11, 12, 13, 15 (Round 4 blocked by an outage); reproduced again Round 16 (2026-10-07).</div>
+<div><b>Impact:</b> A stale or foreign seat token yields a real ticketed booking with no seat and no error, so the caller believes the seat selection succeeded. With BUG-19 not reproducing this round, VAL-03 shows valid tokens attach, so the foreign token is evidently detected but swallowed rather than rejected. See <a href="../BugReports/20261007-172413_SeatMap-GulfAir-KSA-Round16/BUG-07_Book_CrossOfferCellId_NotRejected.md">full bug report</a>.</div>
+<div><b>Evidence:</b> Book on offer E2 (cellCode 8A) with the cellId of seat 19A from offer E1: 200, pnr OOQACT, ticket 722137002461, passengersSelectedSeats {}, totalSelectedSeatsAmount 0, no error.</div>
+</div>
+</details>
+
+<details class="section-collapse" open>
+<summary>Not reproduced</summary>
+<p style="font-size:13px; color:var(--ink-2); margin:0;"><b>BUG-19</b> (Book silently drops a valid same-offer seat selection) &mdash; exercised by TC-SEATMAP-VAL-03. Round 15 reproduced 2 of 2 (seats 12D, 10C dropped). Round 16 VAL-03 seat 17C on GF163 attached and persisted through Retrieve on the first attempt. Caveat: this flight prices every seat at 0 SAR, unlike the 60 SAR seats of Rounds 13/15, so re-verify on a flight with paid seats before closing; only 1 attempt this round.</p>
+<p style="font-size:13px; color:var(--ink-2); margin:0;"><b>BUG-16</b> (Book returns an error while silently creating the booking) &mdash; exercised by TC-SEATMAP-POS-02, TC-SEATMAP-VAL-03, TC-SEATMAP-VAL-04. All 3 Book calls (30-37 seconds each) returned a clean HTTP 200 with a pnr and bookingToken; none returned 409 NDC-INT-UNC-Z9999 or 500. Intermittent across rounds, so recommend a wider re-verification before closing.</p>
+</details>
+
+<details class="section-collapse" open>
+<summary class="section-summary-flex">Proposed SPEC.md updates<span class="section-count-badge"><span class="scb-val">0</span><span class="scb-lbl">Proposed Updates</span></span></summary>
+<div style="font-size:13px; color:var(--ink-2);">
+<p class="empty">No SPEC.md updates proposed this run. Earlier pending proposals are unchanged.</p>
+</div>
+</details>
+
+<details class="section-collapse" open>
+<summary>Cleanup / follow-up</summary>
+<div class="cleanup"><b>Live artifacts left behind this run (3):</b><ul>
+<li>needs_void_cancel &mdash; PNR <span class="mono">OWOYWN</span> (<span class="mono">TC-SEATMAP-POS-02</span>) &mdash; Real ticketed GulfAir/KSA booking (BAH-RUH 2027-06-13, 1 ADT, ticket 722137002457, no seat). Staging test booking; void/cancel via the platform team if it should not remain.</li>
+<li>needs_void_cancel &mdash; PNR <span class="mono">RKMCKV</span> (<span class="mono">TC-SEATMAP-VAL-03</span>) &mdash; Real ticketed booking (BAH-RUH 2027-06-14, 1 ADT, ticket 722137002584) with seat 17C attached (0 SAR).</li>
+<li>needs_void_cancel &mdash; PNR <span class="mono">OOQACT</span> (<span class="mono">TC-SEATMAP-VAL-04</span>) &mdash; Real ticketed booking (BAH-JED 2027-06-20, 1 ADT, ticket 722137002461, no seat attached). Evidence for BUG-07 - keep until triaged.</li>
+</ul></div>
+</details>
+
+</div>
+<script>
+(function(){
+  var cards = Array.prototype.slice.call(document.querySelectorAll('details.tc'));
+  var sections = Array.prototype.slice.call(document.querySelectorAll('details.section-collapse'));
+  var categories = Array.prototype.slice.call(document.querySelectorAll('details.tc-category'));
+  var search = document.getElementById('tcSearch');
+  var statusSel = document.getElementById('tcStatusFilter');
+  var categorySel = document.getElementById('tcCategoryFilter');
+  var countEl = document.getElementById('tcCount');
+  var noResultsEl = document.getElementById('tcNoResults');
+  var resetBtn = document.getElementById('tcResetFilters');
+  var expandBtn = document.getElementById('tcExpandAll');
+  var collapseBtn = document.getElementById('tcCollapseAll');
+
+  function applyFilter(){
+    var q = search.value.trim().toLowerCase();
+    var status = statusSel.value;
+    var category = categorySel.value;
+    var visible = 0;
+    cards.forEach(function(card){
+      var matchesStatus = !status || card.classList.contains(status);
+      var matchesText = !q || card.textContent.toLowerCase().indexOf(q) !== -1;
+      var matchesCategory = !category || card.closest('details.tc-category').getAttribute('data-cat') === category;
+      var show = matchesStatus && matchesText && matchesCategory;
+      card.classList.toggle('js-hidden', !show);
+      if (show) visible++;
+      if (show && q) card.open = true;
+    });
+    categories.forEach(function(cat){
+      var anyVisible = cat.querySelector('details.tc:not(.js-hidden)');
+      var matchesCategory = !category || cat.getAttribute('data-cat') === category;
+      cat.classList.toggle('cat-empty', !anyVisible || !matchesCategory);
+      if (anyVisible && matchesCategory && (q || status || category)) cat.open = true;
+    });
+    countEl.textContent = visible + ' / ' + cards.length + ' shown';
+    noResultsEl.classList.toggle('js-hidden', visible !== 0);
+  }
+
+  search.addEventListener('input', applyFilter);
+  statusSel.addEventListener('change', applyFilter);
+  categorySel.addEventListener('change', applyFilter);
+  resetBtn.addEventListener('click', function(e){
+    e.preventDefault(); e.stopPropagation();
+    search.value = '';
+    statusSel.value = '';
+    categorySel.value = '';
+    applyFilter();
+  });
+  expandBtn.addEventListener('click', function(e){
+    e.preventDefault(); e.stopPropagation();
+    cards.forEach(function(c){ c.open = true; });
+    sections.forEach(function(s){ s.open = true; });
+    categories.forEach(function(c){ c.open = true; });
+    Array.prototype.forEach.call(document.querySelectorAll('details.tc details'), function(d){ d.open = true; });
+  });
+  collapseBtn.addEventListener('click', function(e){
+    e.preventDefault(); e.stopPropagation();
+    cards.forEach(function(c){ c.open = false; });
+    sections.forEach(function(s){ s.open = false; });
+    categories.forEach(function(c){ c.open = false; });
+    Array.prototype.forEach.call(document.querySelectorAll('details.tc details'), function(d){ d.open = false; });
+  });
+
+  categories.forEach(function(cat){
+    var catCards = Array.prototype.slice.call(cat.querySelectorAll('details.tc'));
+    var catExpandBtn = cat.querySelector('.tc-cat-expand');
+    var catCollapseBtn = cat.querySelector('.tc-cat-collapse');
+    catExpandBtn.addEventListener('click', function(e){
+      e.preventDefault(); e.stopPropagation();
+      catCards.forEach(function(c){ c.open = true; });
+    });
+    catCollapseBtn.addEventListener('click', function(e){
+      e.preventDefault(); e.stopPropagation();
+      catCards.forEach(function(c){ c.open = false; });
+    });
+  });
+
+  applyFilter();
+
+  Array.prototype.slice.call(document.querySelectorAll('.hop')).forEach(function(hop){
+    var panel = hop.querySelector('.hop-reqres-panel');
+    var endpointSpan = hop.querySelector('.hop-endpoint');
+    var toggle = document.createElement('a');
+    toggle.href = '#';
+    toggle.className = 'hop-reqres-toggle';
+    toggle.textContent = 'View req & response';
+
+    if (panel) {
+      panel.classList.add('js-hidden');
+      toggle.addEventListener('click', function(e){
+        e.preventDefault(); e.stopPropagation();
+        var hidden = panel.classList.toggle('js-hidden');
+        toggle.textContent = hidden ? 'View req & response' : 'Hide req & response';
+      });
+      endpointSpan.parentNode.insertBefore(toggle, endpointSpan.nextSibling);
+      return;
+    }
+
+    var hds = Array.prototype.slice.call(hop.querySelectorAll('.hd'));
+    var reqEl = hds[0];
+    var resEl = hds[1];
+    if (!reqEl || !resEl) return;
+    reqEl.classList.add('hop-reqres', 'js-hidden');
+    resEl.classList.add('hop-reqres', 'js-hidden');
+    toggle.addEventListener('click', function(e){
+      e.preventDefault(); e.stopPropagation();
+      var hidden = reqEl.classList.toggle('js-hidden');
+      resEl.classList.toggle('js-hidden', hidden);
+      toggle.textContent = hidden ? 'View req & response' : 'Hide req & response';
+    });
+    endpointSpan.parentNode.insertBefore(toggle, endpointSpan.nextSibling);
+  });
+
+  Array.prototype.slice.call(document.querySelectorAll('.tc-reqres-anchor')).forEach(function(anchor){
+    var card = anchor.closest('details.tc');
+    var panel = card ? card.querySelector(':scope > .tc-reqres-panel') : null;
+    if (!panel) return;
+    panel.classList.add('js-hidden');
+    var toggle = document.createElement('a');
+    toggle.href = '#';
+    toggle.className = 'hop-reqres-toggle tc-reqres-toggle';
+    toggle.textContent = 'View req & response';
+    toggle.addEventListener('click', function(e){
+      e.preventDefault(); e.stopPropagation();
+      var hidden = panel.classList.toggle('js-hidden');
+      toggle.textContent = hidden ? 'View req & response' : 'Hide req & response';
+    });
+    anchor.parentNode.insertBefore(toggle, anchor.nextSibling);
+  });
+})();
+</script>
+</body></html>

@@ -10,7 +10,9 @@ description: >-
   the user to confirm before touching SPEC.md — never edits the spec silently. On confirmation, applies
   the edit to SPEC.md and appends an `applied` status line for that proposal to the run's JSONL (then
   re-renders that run's `.md`); on decline, appends `declined` instead and leaves SPEC.md untouched.
-  Use when asked to "update SPEC.md from the report," "apply the proposed spec updates," "reconcile the
+  As a final step it proposes updates to the project Knowledge Base (NDC_Integration/KB/: supplier
+  facts, environments, lessons) from the same run, with the same confirm-before-edit rule.
+  Use when asked to "update the KB from the last run," or when asked to "update SPEC.md from the report," "apply the proposed spec updates," "reconcile the
   spec with the last run," or after a QA run's report is closed out and its pending proposals need a
   decision. Not for deciding whether something is confirmed-live in the first place (that's
   execute-test-cases's call) and not for editing SPEC.md for any reason outside a logged
@@ -37,6 +39,14 @@ conversation.
   reading anything — do not guess "the most recent" silently, since an older run's proposals may still
   be legitimately pending.
 - `NDC_Integration/SPEC.md` — the file being reconciled.
+
+**AI guardrails** ([`../_shared/AI_Guardrails.md`](../_shared/AI_Guardrails.md)): when you show a
+proposal, show the evidence behind it. That is the run's `<slug>_evidence.md` (run
+`verify-evidence.js` if it is missing) and the related test case's evidence status. A proposal whose
+test case is `UNVERIFIED` or `CONTRADICTED` gets that status stated next to the diff, so the user
+decides knowingly. Never turn an `INFERRED` statement into a fact without a live-confirmed,
+evidence-backed result. Every KB fact you propose keeps `Last verified: <date> / <env> / <run slug>`,
+plus the build when known.
 
 ## Process
 
@@ -70,6 +80,18 @@ conversation.
 8. **Report a final tally**: N applied, N declined, N deferred (still pending, not addressed this
    pass), N skipped (text mismatch). Never leave a proposal in limbo without it showing up in this
    tally.
+9. **Propose Knowledge Base updates** (final step, always offered after step 8 — even when the run
+   had no pending SPEC proposals). Read the same run's `.jsonl` and bug-report folder, compare with
+   `NDC_Integration/KB/02_Suppliers/<Supplier>.md` (and `03_Technical/Environments.md`,
+   `04_Decisions_and_Lessons.md` where relevant), and propose only real changes: capabilities,
+   routes/test data, supplier rules, defect status (open / still reproduces / fixed / retracted),
+   gotchas, a new Run history row. Every proposed fact carries
+   `Last verified: <date> / <env> / <run key>`. Follow
+   [references/kb-update-procedure.md](references/kb-update-procedure.md) for where each fact goes,
+   the exact-diff presentation, and the **no secrets / no PNRs / no passenger names** rule.
+   Same human-in-the-loop contract as SPEC: present the batch, get per-item confirmation, apply only
+   what was confirmed, then report a KB tally (applied / declined / deferred). Never edit the KB
+   silently, and never copy SPEC text into it — link the SPEC section instead.
 
 ## Non-goals
 

@@ -1,0 +1,18 @@
+{
+  "label": "V1 PnrReprice",
+  "method": "POST",
+  "url": "https://ndc-integration-stg-ne-3.azurewebsites.net/api/FlightBooking/PnrReprice",
+  "headers": {
+    "x-api-key": "[REDACTED]",
+    "Client-Id": "NDC-Core",
+    "Content-Type": "application/json"
+  },
+  "body": {
+    "supplier": "SabreNdc",
+    "credentialsSelector": "EGY",
+    "pnr": "PRTZGG",
+    "gdsPNR": "PRTZGG",
+    "bookingToken": "1SXXXCX2UJV52",
+    "surName": ""
+  }
+}

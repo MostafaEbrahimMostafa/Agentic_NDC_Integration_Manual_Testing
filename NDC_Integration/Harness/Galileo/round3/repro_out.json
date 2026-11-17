@@ -1,0 +1,144 @@
+{
+ "next": [
+  {
+   "r": "CAI-JED+30",
+   "p2": 409,
+   "ms": 11078,
+   "code": "NDC-INT-UNC-Z9999"
+  },
+  {
+   "r": "CAI-JED+30",
+   "p2": 409,
+   "ms": 10297,
+   "code": "NDC-INT-UNC-Z9999"
+  },
+  {
+   "r": "CAI-JED+30",
+   "p2": 409,
+   "ms": 10289,
+   "code": "NDC-INT-UNC-Z9999"
+  },
+  {
+   "r": "CAI-DXB+30",
+   "p2": 409,
+   "ms": 10929,
+   "code": "NDC-INT-UNC-Z9999"
+  },
+  {
+   "r": "CAI-DXB+30",
+   "p2": 409,
+   "ms": 10406,
+   "code": "NDC-INT-UNC-Z9999"
+  },
+  {
+   "r": "JED-CAI+30",
+   "p2": 200,
+   "ms": 2840,
+   "code": ""
+  },
+  {
+   "r": "JED-CAI+30",
+   "p2": 200,
+   "ms": 2690,
+   "code": ""
+  },
+  {
+   "r": "JED-CAI+30",
+   "p2": 200,
+   "ms": 2816,
+   "code": ""
+  },
+  {
+   "r": "CAI-JED+60",
+   "p2": 200,
+   "ms": 1984,
+   "code": ""
+  },
+  {
+   "r": "CAI-JED+60",
+   "p2": 200,
+   "ms": 2075,
+   "code": ""
+  },
+  {
+   "r": "FRA-JNB+30",
+   "p2": 409,
+   "ms": 10212,
+   "code": "NDC-INT-UNC-Z9999"
+  },
+  {
+   "r": "FRA-JNB+30",
+   "p2": 200,
+   "ms": 2179,
+   "code": ""
+  },
+  {
+   "r": "RT JED-CAI+30/CAI-JED+37",
+   "p2": 409,
+   "ms": 10313,
+   "code": "NDC-INT-UNC-Z9999"
+  },
+  {
+   "r": "RT FRA-JNB+30/JNB-FRA+37",
+   "p2": 200,
+   "ms": 4967,
+   "code": ""
+  }
+ ],
+ "sel": [
+  {
+   "lab": "selection A (valid)",
+   "st": 200,
+   "priced": "MS673@2026-12-10T00:50:00"
+  },
+  {
+   "lab": "journeyRefId P1-J999 with A's segment+class",
+   "st": 200,
+   "priced": "MS673@2026-12-10T00:50:00"
+  },
+  {
+   "lab": "segmentRefId P1-S999 with A's class",
+   "st": 200,
+   "priced": "MS673@2026-12-10T00:50:00"
+  },
+  {
+   "lab": "B's bookingClassId under A's journey+segment",
+   "st": 200,
+   "priced": "NE172@2026-12-10T00:55:00"
+  },
+  {
+   "A": "MS673@2026-12-10T00:50:00",
+   "B": "NE172@2026-12-10T00:55:00"
+  }
+ ],
+ "fc": [
+  {
+   "lab": "RT JED-CAI/CAI-JED",
+   "fc": 409,
+   "ms": 1105,
+   "err": "HTTP 409; ErrorCode NDC-INT-UNC-Z9999; ErrorMessage \"NDC-INT-UNC-Z9999\"; Context [{\"Name\":\"4522\",\"Value\":\"NO VALID FARE FOR INPUT CRITERIA - NO VALID FARE FOR INPUT CRITERIA\"}]; envelope PascalCase",
+   "ctx": "[{\"Name\":\"4522\",\"Value\":\"NO VALID FARE FOR INPUT CRITERIA - NO VALID FARE FOR INPUT CRITERIA\"}]"
+  },
+  {
+   "lab": "RT FRA-JNB/JNB-FRA",
+   "fc": 200,
+   "ms": 5884,
+   "err": "",
+   "ctx": ""
+  },
+  {
+   "lab": "one-way connecting FRA-JNB",
+   "fc": 200,
+   "ms": 2141,
+   "err": "",
+   "ctx": ""
+  },
+  {
+   "lab": "RT CAI-JED/JED-CAI (3rd run)",
+   "fc": 409,
+   "ms": 1258,
+   "err": "HTTP 409; ErrorCode NDC-INT-UNC-Z9999; ErrorMessage \"NDC-INT-UNC-Z9999\"; Context [{\"Name\":\"4522\",\"Value\":\"NO VALID FARE FOR INPUT CRITERIA - NO VALID FARE FOR INPUT CRITERIA\"}]; envelope PascalCase",
+   "ctx": "[{\"Name\":\"4522\",\"Value\":\"NO VALID FARE FOR INPUT CRITERIA - NO VALID FARE FOR INPUT CRITERIA\"}]"
+  }
+ ]
+}

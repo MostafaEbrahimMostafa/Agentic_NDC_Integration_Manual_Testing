@@ -1,0 +1,21 @@
+{
+  "label": "V2 Void unknown order",
+  "status": 409,
+  "durationMs": 651,
+  "requestedAtUtc": "2026-11-05T11:01:17.219Z",
+  "respondedAtUtc": "2026-11-05T11:01:17.870Z",
+  "body": {
+    "Status": 409,
+    "TransactionId": "a295fd8c-9ed5-401d-9e0c-b8ccc67731f6",
+    "ErrorCode": "NDC-INT-UNC-Z9999",
+    "ErrorMessage": "NDC-INT-UNC-Z9999",
+    "Context": [
+      {
+        "Name": "060004",
+        "Value": "Order not found: orderId=[unknown]"
+      }
+    ],
+    "OriginalSupplierRequest": "[REDACTED - raw supplier payload, per SPEC.md 7.14]",
+    "OriginalSupplierResponse": "[REDACTED - raw supplier payload, per SPEC.md 7.14]"
+  }
+}

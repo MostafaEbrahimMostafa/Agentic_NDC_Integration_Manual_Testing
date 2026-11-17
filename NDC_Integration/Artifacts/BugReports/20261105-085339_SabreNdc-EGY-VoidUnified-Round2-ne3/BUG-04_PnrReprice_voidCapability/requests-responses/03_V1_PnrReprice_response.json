@@ -1,0 +1,366 @@
+{
+  "label": "V1 PnrReprice",
+  "status": 200,
+  "durationMs": 13373,
+  "requestedAtUtc": "2026-11-05T10:37:10.962Z",
+  "respondedAtUtc": "2026-11-05T10:37:24.335Z",
+  "body": {
+    "voidCapability": null,
+    "supplier": "SabreNdc",
+    "journeys": {
+      "4AA9630C-720B-4F1A-BF18-3D04DA3D1FF4": {
+        "origin": "CAI",
+        "destination": "JED",
+        "numberOfStops": 1,
+        "segmentRefIds": [
+          "876DA97F-B781-40DA-8D25-3AC13CBCE2B1",
+          "B06B8223-22EA-414C-92A8-BBF9C83A6D22"
+        ]
+      }
+    },
+    "flightSegments": {
+      "876DA97F-B781-40DA-8D25-3AC13CBCE2B1": {
+        "origin": "CAI",
+        "destination": "DOH",
+        "departureDateTime": "2026-12-05T19:35:00",
+        "arrivalDateTime": "2026-12-05T23:40:00",
+        "departureTerminal": "2",
+        "arrivalTerminal": null,
+        "flightTime": 245,
+        "operatingCarrierCode": "QR",
+        "operatingFlightNumber": "1302",
+        "marketingCarrierCode": "QR",
+        "marketingFlightNumber": "1302",
+        "equipment": "77W"
+      },
+      "B06B8223-22EA-414C-92A8-BBF9C83A6D22": {
+        "origin": "DOH",
+        "destination": "JED",
+        "departureDateTime": "2026-12-06T07:25:00",
+        "arrivalDateTime": "2026-12-06T10:05:00",
+        "departureTerminal": null,
+        "arrivalTerminal": "1",
+        "flightTime": 160,
+        "operatingCarrierCode": "QR",
+        "operatingFlightNumber": "1190",
+        "marketingCarrierCode": "QR",
+        "marketingFlightNumber": "1190",
+        "equipment": "77W"
+      }
+    },
+    "priceClasses": {
+      "0C0A1D69-BA70-41AF-86CC-F1B33E24C6B2": {
+        "priceClassName": "ECONOMY CLASSIC",
+        "fareDescription": "PublicFare",
+        "rulesAndPenalties": []
+      }
+    },
+    "baggageDetails": {
+      "0": {
+        "carryOnBaggage": "",
+        "checkInBaggage": "Pieces: 2; Applicable party: Traveler"
+      }
+    },
+    "selectedOffer": {
+      "offerId": "1SXXXCX2UJV52",
+      "offerJourneys": [
+        "4AA9630C-720B-4F1A-BF18-3D04DA3D1FF4"
+      ],
+      "passengerFareBreakdown": [
+        {
+          "passengerTypeCode": "ADT",
+          "paxTotalTaxAmount": {
+            "amount": 11029.8,
+            "currency": "EGP"
+          },
+          "paxBaseAmount": {
+            "amount": 6536,
+            "currency": "EGP"
+          },
+          "taxesAndFees": [
+            {
+              "code": "YQ",
+              "amount": {
+                "amount": 5539,
+                "currency": "EGP"
+              }
+            },
+            {
+              "code": "YR",
+              "amount": {
+                "amount": 1220,
+                "currency": "EGP"
+              }
+            },
+            {
+              "code": "EG",
+              "amount": {
+                "amount": 150,
+                "currency": "EGP"
+              }
+            },
+            {
+              "code": "EQ",
+              "amount": {
+                "amount": 111,
+                "currency": "EGP"
+              }
+            },
+            {
+              "code": "JK",
+              "amount": {
+                "amount": 100,
+                "currency": "EGP"
+              }
+            },
+            {
+              "code": "O2",
+              "amount": {
+                "amount": 15,
+                "currency": "EGP"
+              }
+            },
+            {
+              "code": "O9",
+              "amount": {
+                "amount": 56,
+                "currency": "EGP"
+              }
+            },
+            {
+              "code": "Q7",
+              "amount": {
+                "amount": 2,
+                "currency": "EGP"
+              }
+            },
+            {
+              "code": "QH",
+              "amount": {
+                "amount": 1385,
+                "currency": "EGP"
+              }
+            },
+            {
+              "code": "S4",
+              "amount": {
+                "amount": 111,
+                "currency": "EGP"
+              }
+            },
+            {
+              "code": "XK",
+              "amount": {
+                "amount": 150,
+                "currency": "EGP"
+              }
+            },
+            {
+              "code": "XL",
+              "amount": {
+                "amount": 10.8,
+                "currency": "EGP"
+              }
+            },
+            {
+              "code": "G4",
+              "amount": {
+                "amount": 913,
+                "currency": "EGP"
+              }
+            },
+            {
+              "code": "PZ",
+              "amount": {
+                "amount": 83,
+                "currency": "EGP"
+              }
+            },
+            {
+              "code": "QA",
+              "amount": {
+                "amount": 913,
+                "currency": "EGP"
+              }
+            },
+            {
+              "code": "R9",
+              "amount": {
+                "amount": 153,
+                "currency": "EGP"
+              }
+            },
+            {
+              "code": "E3",
+              "amount": {
+                "amount": 118,
+                "currency": "EGP"
+              }
+            }
+          ],
+          "segmentDetails": [
+            {
+              "segmentRefId": "876DA97F-B781-40DA-8D25-3AC13CBCE2B1",
+              "priceClassRefId": "0C0A1D69-BA70-41AF-86CC-F1B33E24C6B2",
+              "baggageDetailsRefId": "0",
+              "cabinCode": "ECONOMY",
+              "rbd": "N"
+            },
+            {
+              "segmentRefId": "B06B8223-22EA-414C-92A8-BBF9C83A6D22",
+              "priceClassRefId": "0C0A1D69-BA70-41AF-86CC-F1B33E24C6B2",
+              "baggageDetailsRefId": "0",
+              "cabinCode": "ECONOMY",
+              "rbd": "N"
+            }
+          ],
+          "discount": null
+        }
+      ],
+      "priceDetails": {
+        "totalAmount": {
+          "amount": 17565.8,
+          "currency": "EGP"
+        },
+        "totalTaxAmount": {
+          "amount": 11029.8,
+          "currency": "EGP"
+        },
+        "totalBaseAmount": {
+          "amount": 6536,
+          "currency": "EGP"
+        },
+        "taxesAndFees": [
+          {
+            "code": "YQ",
+            "amount": {
+              "amount": 5539,
+              "currency": "EGP"
+            }
+          },
+          {
+            "code": "YR",
+            "amount": {
+              "amount": 1220,
+              "currency": "EGP"
+            }
+          },
+          {
+            "code": "EG",
+            "amount": {
+              "amount": 150,
+              "currency": "EGP"
+            }
+          },
+          {
+            "code": "EQ",
+            "amount": {
+              "amount": 111,
+              "currency": "EGP"
+            }
+          },
+          {
+            "code": "JK",
+            "amount": {
+              "amount": 100,
+              "currency": "EGP"
+            }
+          },
+          {
+            "code": "O2",
+            "amount": {
+              "amount": 15,
+              "currency": "EGP"
+            }
+          },
+          {
+            "code": "O9",
+            "amount": {
+              "amount": 56,
+              "currency": "EGP"
+            }
+          },
+          {
+            "code": "Q7",
+            "amount": {
+              "amount": 2,
+              "currency": "EGP"
+            }
+          },
+          {
+            "code": "QH",
+            "amount": {
+              "amount": 1385,
+              "currency": "EGP"
+            }
+          },
+          {
+            "code": "S4",
+            "amount": {
+              "amount": 111,
+              "currency": "EGP"
+            }
+          },
+          {
+            "code": "XK",
+            "amount": {
+              "amount": 150,
+              "currency": "EGP"
+            }
+          },
+          {
+            "code": "XL",
+            "amount": {
+              "amount": 10.8,
+              "currency": "EGP"
+            }
+          },
+          {
+            "code": "G4",
+            "amount": {
+              "amount": 913,
+              "currency": "EGP"
+            }
+          },
+          {
+            "code": "PZ",
+            "amount": {
+              "amount": 83,
+              "currency": "EGP"
+            }
+          },
+          {
+            "code": "QA",
+            "amount": {
+              "amount": 913,
+              "currency": "EGP"
+            }
+          },
+          {
+            "code": "R9",
+            "amount": {
+              "amount": 153,
+              "currency": "EGP"
+            }
+          },
+          {
+            "code": "E3",
+            "amount": {
+              "amount": 118,
+              "currency": "EGP"
+            }
+          }
+        ],
+        "discount": null,
+        "isDealCodeApplied": false,
+        "appliedDealCode": null,
+        "isPromoted": false,
+        "appliedPromotionCode": "",
+        "offerAncillaries": null
+      },
+      "refundability": "UnKnown",
+      "haveBundles": false,
+      "canBeHeld": false
+    }
+  }
+}

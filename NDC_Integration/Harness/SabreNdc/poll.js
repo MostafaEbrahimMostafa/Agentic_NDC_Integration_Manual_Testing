@@ -1,0 +1,1 @@
+(async()=>{const t0=Date.now();for(let i=0;i<40;i++){try{const r=await fetch("https://ndc-integration-stg-ne-7.azurewebsites.net/swagger/index.html");console.log(new Date().toISOString(),r.status);if(r.status!==503){process.exit(0)}}catch(e){console.log('ERR',e.message)}await new Promise(r=>setTimeout(r,30000))}process.exit(1)})()

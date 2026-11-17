@@ -1,0 +1,21 @@
+{
+  "label": "hold V1 RUH-CAI #10 Hold",
+  "status": 409,
+  "durationMs": 2962,
+  "requestedAtUtc": "2026-11-05T11:16:28.340Z",
+  "respondedAtUtc": "2026-11-05T11:16:31.302Z",
+  "body": {
+    "Status": 409,
+    "TransactionId": "34dfad29-f197-4560-abbf-564ef35de168",
+    "ErrorCode": "NDC-INT-UNC-Z9999",
+    "ErrorMessage": "NDC-INT-UNC-Z9999",
+    "Context": [
+      {
+        "Name": "050002",
+        "Value": "External service returned error in orderViewRS (code: [911] message: [NOT AVAILABLE IN THIS CONNECTION])."
+      }
+    ],
+    "OriginalSupplierRequest": "[REDACTED - raw supplier payload, per SPEC.md 7.14]",
+    "OriginalSupplierResponse": "[REDACTED - raw supplier payload, per SPEC.md 7.14]"
+  }
+}

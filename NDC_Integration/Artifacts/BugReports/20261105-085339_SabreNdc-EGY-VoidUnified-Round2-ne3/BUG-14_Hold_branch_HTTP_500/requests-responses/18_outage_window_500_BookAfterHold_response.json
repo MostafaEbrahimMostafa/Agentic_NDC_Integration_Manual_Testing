@@ -1,0 +1,8 @@
+{
+  "label": "outage window 500 BookAfterHold",
+  "status": 500,
+  "durationMs": 84,
+  "requestedAtUtc": "2026-11-05T09:51:10.490Z",
+  "respondedAtUtc": "2026-11-05T09:51:10.574Z",
+  "body": "(empty body)"
+}

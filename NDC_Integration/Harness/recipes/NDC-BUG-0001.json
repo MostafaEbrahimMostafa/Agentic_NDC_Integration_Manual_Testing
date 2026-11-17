@@ -1,0 +1,96 @@
+{
+  "id": "NDC-BUG-0001",
+  "title": "[V2][AirArabiaPlus][Retrieve] – A Booking Created Under USA Is Readable Under credentialsSelector EGY",
+  "source": "Resources/AirArabiaPlus_bugs.xlsx row 2; KB/02_Suppliers/AirArabiaPlus.md §4",
+  "supplier": "AirArabiaPlus",
+  "selector": "USA",
+  "version": "V2",
+  "testData": "TestData/AAP_1ADT_MCT-SHJ_OW.json",
+  "chain": [
+    {
+      "step": "Search",
+      "offer": {
+        "direct": true
+      }
+    },
+    "FareConfirm",
+    "AddPassenger",
+    "Book",
+    {
+      "step": "Retrieve",
+      "as": "Retrieve_USA"
+    },
+    {
+      "step": "Retrieve",
+      "as": "Retrieve_EGY",
+      "override": {
+        "credentialsSelector": "EGY"
+      },
+      "allowFail": true
+    }
+  ],
+  "preconditions": [
+    {
+      "step": "Book",
+      "path": "$.pnr",
+      "op": "exists"
+    },
+    {
+      "step": "Retrieve_USA",
+      "path": "$status",
+      "op": "equals",
+      "value": 200
+    },
+    {
+      "step": "Retrieve_USA",
+      "path": "$.pnr",
+      "op": "equalsStep",
+      "other": {
+        "step": "Book",
+        "path": "$.pnr"
+      }
+    }
+  ],
+  "assert": [
+    {
+      "step": "Retrieve_EGY",
+      "path": "$status",
+      "op": "notIn",
+      "value": [
+        200
+      ]
+    },
+    {
+      "step": "Retrieve_EGY",
+      "path": "$.pnr",
+      "op": "allNull"
+    }
+  ],
+  "reproduces": [
+    {
+      "step": "Retrieve_EGY",
+      "path": "$status",
+      "op": "equals",
+      "value": 200
+    },
+    {
+      "step": "Retrieve_EGY",
+      "path": "$.pnr",
+      "op": "equalsStep",
+      "other": {
+        "step": "Book",
+        "path": "$.pnr"
+      }
+    }
+  ],
+  "fixedWhen": "all asserts pass",
+  "neighbours": [
+    "FLOW-V2-26"
+  ],
+  "notes": "Same repro as the 2026-11-16 check (a Book booking, then Retrieve under EGY). Book leaves a live ticket: AirArabiaPlus cannot Void. Whether a Hold would reproduce it too is not verified, so Book is kept.",
+  "approved": {
+    "by": "Mostafa Ebrahim Mostafa",
+    "date": "2026-11-17",
+    "sha": "cfd7ad051b7a4fc3"
+  }
+}

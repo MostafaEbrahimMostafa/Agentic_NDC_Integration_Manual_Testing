@@ -1,0 +1,4 @@
+M264_66589_try1 ok=false bundle 66589 pnr null failedAt GetAncillary ancillary not selectable after retries: A1/G9$COK/SHJ$3281725$20261212034000$20261212062000/Meal; C2
+M264_66589_try2 ok=false bundle 66580 pnr null failedAt GetAncillary ancillary not selectable after retries: A1/G9$COK/SHJ$3281729$20261216034000$20261216062000/Meal; C2
+M264_66589_try3 ok=true bundle 66589 pnr 69MBNT sameAnc=false totalsEqual=true recon={"farecheck":[{"ref":"A1","calc":4982.01,"reported":4879.93},{"ref":"C2","calc":4982.01,"reported":4879.93}],"book":[{"ref":"A1","calc":4982.01,"reported":4879.
+verify10b done {"66589":1}

@@ -1,0 +1,39 @@
+{
+ "RES": {
+  "TC-COLLECTION-VAL-01": "PASS",
+  "TC-COLLECTION-VAL-02": "FAIL",
+  "TC-COLLECTION-VAL-03": "PASS",
+  "TC-COLLECTION-VAL-04": "FAIL",
+  "FLOW-V2-SABAVAIL-01": "FAIL",
+  "FLOW-V2-SABAVAIL-02": "FAIL"
+ },
+ "ERRS": {},
+ "DEF": [
+  {
+   "tc": "TC-COLLECTION-VAL-02",
+   "actual": "As saved, the collection resolves the Availability/NextAvailability/SelectAvailability/FareConfirm requests ({{localUrl}}api/V2/FlightSearch/Availability, {{localUrl}}api/V2/FlightSearch/Availability, {{localUrl}}api/V2/FlightSearch/SelectAvailability, {{localUrl}}api/v2/FlightSearch/FareConfirm) against {{localUrl}} = https://localhost:7194/; {{baseUrl}} = https://ndc-supplier-integration.azurewebsites.net/ (the old ndc-supplier-integration host). Neither is the supplied host https://ndc-integration-stg-ne-7.azurewebsites.net/. A CLI run without an override sent POST https://localhost:7194/api/V2/FlightSearch/Availability which errored (no listener on localhost). The tester must override {{localUrl}} before every run (SPEC §1.6 warns about stale hosts).",
+   "hops": []
+  },
+  {
+   "tc": "TC-COLLECTION-VAL-04",
+   "actual": "Stale examples: CI_FlightAvailabilityRequest: saved example \"CI_FlightSearchRequest\" was captured from {{localUrl}}api/FlightSearch/Search, top-level keys [responseId, supplier, journeys, flightSegments, priceClasses, baggageDetails, offers, supplierRequest, supplierResponse], missing [availabilityId, hasMoreResults, originDestinations] || CI_FlightSelectAvailabilityRequest: saved example \"CI_FlightSearchRequest\" was captured from {{localUrl}}api/FlightSearch/Search, top-level keys [responseId, supplier, journeys, flightSegments, priceClasses, baggageDetails, offers, supplierRequest, supplierResponse], missing [offerId]. The live Availability response has availabilityId/responseId/hasMoreResults/originDestinations and the SelectAvailability response responseId/offerId (captured in this run).",
+   "hops": []
+  },
+  {
+   "tc": "FLOW-V2-SABAVAIL-01",
+   "actual": "Hop 2 (SelectAvailability) failed: HTTP 400; ErrorCode 1001; ErrorMessage \"Validation errors occurred. Please check your request.\"; Context [{\"name\":\"selectAvailabilityRequestDto\",\"value\":\"The selectAvailabilityRequestDto field is requir...; envelope camelCase.",
+   "hops": [
+    "00001_1794513504401",
+    "00002_1794513504500"
+   ]
+  },
+  {
+   "tc": "FLOW-V2-SABAVAIL-02",
+   "actual": "Hop 2 (SelectAvailability) failed: HTTP 400; ErrorCode 1001; ErrorMessage \"Validation errors occurred. Please check your request.\"; Context [{\"name\":\"selectAvailabilityRequestDto\",\"value\":\"The selectAvailabilityRequestDto field is requir...; envelope camelCase.",
+   "hops": [
+    "00003_1794513510836",
+    "00004_1794513510928"
+   ]
+  }
+ ]
+}

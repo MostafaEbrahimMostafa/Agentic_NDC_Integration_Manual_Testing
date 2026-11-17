@@ -1,0 +1,1269 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>NDC Integration - Execution Time Breakdown</title>
+<style>
+  :root{
+    color-scheme: light;
+    --paper:#F3F5F8; --surface:#FFFFFF; --surface-2:#EAEEF4;
+    --ink:#10151F; --ink-2:#45536B; --ink-muted:#7C8AA0;
+    --line:#DDE3EC; --line-strong:#C6CEDC;
+    --accent:#2A78D6; --accent-ink:#1C5CAB; --accent-wash:#E4EEFA;
+    --good:#0CA30C; --warning:#C98A17; --serious:#D9673C; --critical:#D03B3B;
+    --good-wash:rgba(12,163,12,0.12); --warning-wash:rgba(250,178,25,0.16);
+    --serious-wash:rgba(236,131,90,0.14); --critical-wash:rgba(208,59,59,0.12);
+    --shadow:rgba(16,21,31,0.08);
+    --time-exec:#2A78D6; --time-wait:#C98A17; --time-claude:#7C5CE0; --time-report:#0C9488; --time-overhead:#7C8AA0;
+    --font-sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+    --font-mono:ui-monospace,"SF Mono","Cascadia Code","Roboto Mono",Consolas,"Courier New",monospace;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:where(:not([data-theme="light"])){
+      color-scheme: dark;
+      --paper:#0A0E15; --surface:#111826; --surface-2:#16202F;
+      --ink:#EDF1F7; --ink-2:#B7C2D1; --ink-muted:#8290A6;
+      --line:#232E40; --line-strong:#324058;
+      --accent:#3987E5; --accent-ink:#8FBBEF; --accent-wash:#152A45;
+      --good:#35C24A; --warning:#E3A730; --serious:#E88A5E; --critical:#EA5B5B;
+      --good-wash:rgba(53,194,74,0.16); --warning-wash:rgba(227,167,48,0.16);
+      --serious-wash:rgba(232,138,94,0.16); --critical-wash:rgba(234,91,91,0.18);
+      --shadow:rgba(0,0,0,0.5);
+      --time-exec:#3987E5; --time-wait:#E3A730; --time-claude:#9B85F0; --time-report:#2FD1C0; --time-overhead:#8290A6;
+    }
+  }
+  :root[data-theme="dark"]{
+    color-scheme: dark;
+    --paper:#0A0E15; --surface:#111826; --surface-2:#16202F;
+    --ink:#EDF1F7; --ink-2:#B7C2D1; --ink-muted:#8290A6;
+    --line:#232E40; --line-strong:#324058;
+    --accent:#3987E5; --accent-ink:#8FBBEF; --accent-wash:#152A45;
+    --good:#35C24A; --warning:#E3A730; --serious:#E88A5E; --critical:#EA5B5B;
+    --good-wash:rgba(53,194,74,0.16); --warning-wash:rgba(227,167,48,0.16);
+    --serious-wash:rgba(232,138,94,0.16); --critical-wash:rgba(234,91,91,0.18);
+    --shadow:rgba(0,0,0,0.5);
+    --time-exec:#3987E5; --time-wait:#E3A730; --time-claude:#9B85F0; --time-report:#2FD1C0; --time-overhead:#8290A6;
+  }
+  :root[data-theme="light"]{
+    color-scheme: light;
+    --paper:#F3F5F8; --surface:#FFFFFF; --surface-2:#EAEEF4;
+    --ink:#10151F; --ink-2:#45536B; --ink-muted:#7C8AA0;
+    --line:#DDE3EC; --line-strong:#C6CEDC;
+    --accent:#2A78D6; --accent-ink:#1C5CAB; --accent-wash:#E4EEFA;
+    --good:#0CA30C; --warning:#C98A17; --serious:#D9673C; --critical:#D03B3B;
+    --good-wash:rgba(12,163,12,0.12); --warning-wash:rgba(250,178,25,0.16);
+    --serious-wash:rgba(236,131,90,0.14); --critical-wash:rgba(208,59,59,0.12);
+    --shadow:rgba(16,21,31,0.08);
+    --time-exec:#2A78D6; --time-wait:#C98A17; --time-claude:#7C5CE0; --time-report:#0C9488; --time-overhead:#7C8AA0;
+  }
+  *{ box-sizing:border-box; }
+  html,body{ margin:0; padding:0; }
+  body{ background:var(--paper); color:var(--ink); font-family:var(--font-sans);
+        font-size:14px; line-height:1.5; -webkit-font-smoothing:antialiased; }
+  @media (prefers-reduced-motion: reduce){ *{ animation-duration:.001ms !important; transition-duration:.001ms !important; } }
+  a{ color:var(--accent-ink); }
+  .wrap{ max-width:1040px; margin:0 auto; padding:32px 20px 80px; }
+  .dashboard-card{ background:var(--surface); border:1px solid var(--line-strong); border-radius:24px; padding:24px; }
+  code,.mono{ font-family:var(--font-mono); font-size:.92em; }
+  .tb-back{ font-size:13px; color:var(--ink-muted); text-decoration:none; }
+  .tb-back:hover{ text-decoration:underline; }
+  .header{ margin-bottom:20px; }
+  .header h1{ font-size:30px; font-weight:800; margin:10px 0 8px; }
+  .meta-card{ margin-top:8px; }
+  .fields{ display:flex; flex-direction:column; gap:4px; margin:4px 0 6px; }
+  .field-row{ display:flex; flex-wrap:wrap; gap:4px 28px; }
+  .field{ font-size:14px; display:flex; gap:6px; }
+  .field .k{ color:var(--ink-2); font-weight:700; font-size:15px; letter-spacing:normal; text-transform:none; flex-shrink:0; }
+  .field .k::after{ content:':'; }
+  .field .v{ color:var(--ink); }
+  h2.section-num{ font-size:15px; text-transform:uppercase; letter-spacing:.04em; color:var(--ink-2);
+      border-bottom:1px solid var(--line); padding-bottom:6px; margin:32px 0 14px; }
+  .empty{ color:var(--ink-muted); font-size:13px; font-style:italic; }
+
+  .tb-cat-cards{ display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:12px; margin-bottom:22px; }
+  .tb-cat-card{ text-align:center; }
+  .tb-cat-card .val{ font-size:22px; font-weight:700; color:var(--ink); }
+  .tb-cat-card .pct{ font-size:13px; font-weight:600; margin-top:2px; }
+  .tb-cat-card .lbl{ font-size:12px; color:var(--ink-muted); margin-top:4px; }
+  .tb-cat-card .swatch{ display:inline-block; width:10px; height:10px; border-radius:3px; margin-right:6px; vertical-align:middle; }
+  .tb-cat-card.exec .pct{ color:var(--time-exec); }
+  .tb-cat-card.wait .pct{ color:var(--time-wait); }
+  .tb-cat-card.claude .pct{ color:var(--time-claude); }
+  .tb-cat-card.report .pct{ color:var(--time-report); }
+  .tb-cat-card.overhead .pct{ color:var(--time-overhead); }
+
+  .tb-bars{ display:flex; flex-direction:column; gap:10px; margin:18px 0 20px; }
+  .tb-bar-row{ display:flex; align-items:center; gap:14px; }
+  .tb-bar-label{ width:180px; flex-shrink:0; font-size:13px; font-weight:600; color:var(--ink-2); display:flex; align-items:center; gap:8px; }
+  .tb-bar-track{ flex:1 1 auto; background:var(--surface-2); border-radius:7px; height:16px; overflow:hidden; }
+  .tb-bar-fill{ height:100%; border-radius:7px; }
+  .tb-bar-value{ width:170px; flex-shrink:0; text-align:right; font-size:12.5px; color:var(--ink-2); font-family:var(--font-mono); }
+
+  .tb-reconcile{ font-size:13px; color:var(--ink-2); margin-top:14px; padding-top:14px; border-top:1px solid var(--line); }
+  .tb-reconcile b{ color:var(--ink); }
+  .tb-warning{ background:var(--warning-wash); border:1px solid var(--warning); border-radius:12px; padding:12px 14px; margin-top:12px; font-size:13px; color:var(--ink); }
+  .tb-warning .w-title{ font-weight:700; color:var(--warning); margin-bottom:4px; }
+
+  table.tb-table{ width:100%; border-collapse:collapse; font-size:13px; }
+  table.tb-table th{ text-align:left; font-size:11px; text-transform:uppercase; letter-spacing:.04em; color:var(--ink-muted); font-weight:700; padding:8px 10px; border-bottom:1px solid var(--line-strong); white-space:nowrap; }
+  table.tb-table td{ padding:9px 10px; border-bottom:1px solid var(--line); color:var(--ink-2); vertical-align:top; overflow-wrap:anywhere; }
+  table.tb-table tr:last-child td{ border-bottom:none; }
+  table.tb-table td.num, table.tb-table th.num{ text-align:right; font-family:var(--font-mono); white-space:nowrap; }
+  .tb-table-wrap{ overflow-x:auto; }
+  table.tb-table tr.tb-sub td{ background:rgba(127,127,127,.06); font-size:12.5px; }
+  table.tb-table tr.tb-sub td:first-child{ padding-left:28px; }
+  .tb-sub-arrow{ color:var(--ink-muted); margin-right:8px; }
+  table.tb-table tfoot td{ border-top:1px solid var(--line-strong); padding-top:12px; }
+  .tb-foot-note{ font-weight:400; color:var(--ink-muted); font-size:12px; }
+
+  .tc-toolbar{ display:flex; flex-wrap:wrap; align-items:center; gap:8px; margin:0 0 14px; position:sticky; top:0; z-index:5; background:var(--paper); padding:6px 0; }
+  .tc-toolbar input[type="search"]{ flex:1 1 220px; min-width:160px; padding:7px 10px; border-radius:7px; border:1px solid var(--line-strong); background:var(--surface); color:var(--ink); font-size:13px; }
+  .tc-toolbar select{ padding:7px 10px; border-radius:7px; border:1px solid var(--line-strong); background:var(--surface); color:var(--ink); font-size:13px; }
+  .tc-toolbar button{ padding:7px 12px; border-radius:7px; border:1px solid var(--line-strong); background:var(--surface); color:var(--ink-2); font-size:12px; font-weight:600; cursor:pointer; }
+  .tc-toolbar button:hover{ background:var(--surface-2); }
+  #tcbReset{ color:var(--critical); border-color:var(--critical); }
+  #tcbReset:hover{ background:var(--critical-wash); }
+  .tc-toolbar .tc-count{ font-size:12px; color:var(--ink-muted); margin-left:auto; white-space:nowrap; }
+  .tb-no-results{ padding:24px 16px; text-align:center; color:var(--critical); font-size:15px; font-weight:700; background:var(--critical-wash); border:1px solid var(--critical); border-radius:12px; margin-top:8px; }
+  .tb-no-results.js-hidden{ display:none; }
+
+  table.tcb-table{ width:100%; border-collapse:collapse; font-size:12.5px; }
+  table.tcb-table th{ text-align:left; font-size:11px; text-transform:uppercase; letter-spacing:.03em; color:var(--ink-muted); font-weight:700; padding:8px 9px; border-bottom:1px solid var(--line-strong); white-space:nowrap; cursor:pointer; user-select:none; }
+  table.tcb-table th:hover{ color:var(--ink); }
+  table.tcb-table th .sort-arrow{ font-size:9px; margin-left:3px; color:var(--accent-ink); }
+  table.tcb-table td{ padding:8px 9px; border-bottom:1px solid var(--line); color:var(--ink-2); vertical-align:top; overflow-wrap:anywhere; }
+  table.tcb-table td.num{ text-align:right; font-family:var(--font-mono); white-space:nowrap; }
+  table.tcb-table tr.js-hidden{ display:none; }
+  .badge{ font-size:11px; font-weight:700; padding:2px 8px; border-radius:5px; white-space:nowrap; }
+  .badge.PASS{ background:var(--good-wash); color:var(--good); }
+  .badge.FAIL{ background:var(--critical-wash); color:var(--critical); }
+  .badge.BLOCKED{ background:var(--serious-wash); color:var(--serious); }
+  .timing-partial{ font-size:10.5px; font-style:italic; color:var(--warning); display:block; margin-top:2px; }
+
+  .tb-timeline{ display:flex; flex-direction:column; }
+  .tb-tl-row{ display:flex; gap:14px; padding:7px 0; border-bottom:1px solid var(--line); font-size:13px; }
+  .tb-tl-row:last-child{ border-bottom:none; }
+  .tb-tl-time{ width:150px; flex-shrink:0; font-family:var(--font-mono); color:var(--ink-muted); font-size:12px; }
+  .tb-tl-label{ color:var(--ink-2); }
+  .tb-tl-label b{ color:var(--ink); }
+
+  .tb-overhead-box{ margin:0; padding:0; }
+  .tb-overhead-box .oh-title{ font-size:12px; font-weight:700; color:var(--ink-2); margin-bottom:8px; }
+  .tb-oh-rows{ display:flex; flex-direction:column; gap:6px; }
+  .tb-oh-row{ display:grid; grid-template-columns:minmax(0,1fr) 90px 80px; align-items:center; column-gap:16px; font-size:12.5px; color:var(--ink-2); }
+  .tb-oh-row .oh-val{ font-family:var(--font-mono); color:var(--ink); white-space:nowrap; text-align:right; }
+  .tb-phase-note{ font-size:12px; color:var(--ink-muted); margin:-6px 0 14px; }
+
+  /* --- overhead-row detail popup (added 2026-09-30): every .tb-oh-row opens #tbModal --- */
+  .tb-oh-row.tb-oh-click{ cursor:pointer; padding:6px 8px; margin:0 -8px; border-radius:8px; border:1px solid transparent; }
+  .tb-oh-row.tb-oh-click:hover, .tb-oh-row.tb-oh-click:focus-visible{ background:var(--accent-wash); border-color:var(--accent); outline:none; }
+  .tb-table tr.tb-oh-click{ cursor:pointer; }
+  .tb-table tr.tb-oh-click:hover td, .tb-table tr.tb-oh-click:focus-visible td{ background:var(--accent-wash); }
+  .tb-table td.oh-more{ color:var(--accent-ink); font-size:11px; font-weight:700; white-space:nowrap; text-align:right; }
+  .tb-oh-row .oh-more{ color:var(--accent-ink); font-size:11px; font-weight:700; white-space:nowrap; text-align:right; }
+  @media (max-width:560px){ .tb-oh-row{ grid-template-columns:minmax(0,1fr) auto; } .tb-oh-row .oh-more{ display:none; } }
+  .tb-modal{ position:fixed; inset:0; z-index:50; display:flex; align-items:center; justify-content:center; padding:20px; background:rgba(10,14,21,.55); }
+  .tb-modal.js-hidden{ display:none; }
+  .tb-modal-card{ background:var(--surface); color:var(--ink); border:1px solid var(--line-strong); border-radius:14px; box-shadow:0 18px 50px var(--shadow); width:min(720px,100%); max-height:88vh; overflow:auto; padding:20px 22px; }
+  .tb-modal-head{ display:flex; justify-content:space-between; align-items:flex-start; gap:12px; margin-bottom:12px; }
+  .tb-modal-title{ font-size:16px; font-weight:700; }
+  .tb-modal-x{ border:1px solid var(--line-strong); background:var(--surface-2); color:var(--ink); border-radius:8px; padding:2px 10px; font-size:16px; cursor:pointer; }
+  .tb-modal-grid{ display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:10px; margin-bottom:14px; }
+  .tb-modal-grid .mg{ background:var(--surface-2); border-radius:10px; padding:8px 12px; }
+  .tb-modal-grid .mg .k{ font-size:10.5px; text-transform:uppercase; letter-spacing:.04em; color:var(--ink-muted); font-weight:700; }
+  .tb-modal-grid .mg .v{ font-size:13px; font-family:var(--font-mono); margin-top:2px; }
+  .tb-modal h4{ margin:12px 0 4px; font-size:11px; text-transform:uppercase; letter-spacing:.04em; color:var(--ink-2); }
+  .tb-modal p, .tb-modal li{ font-size:13px; line-height:1.55; color:var(--ink-2); margin:0 0 4px; }
+  .tb-modal ol{ margin:0; padding-left:20px; }
+  .tb-modal .mnote{ margin-top:14px; font-size:11.5px; color:var(--ink-muted); }
+  /* --- collapsible sections 2-6 (click the title) --- */
+  details.tb-sec{ margin:0; }
+  details.tb-sec > summary{ font-size:15px; font-weight:700; text-transform:uppercase; letter-spacing:.04em; color:var(--ink-2);
+      border-bottom:1px solid var(--line); padding-bottom:6px; margin:32px 0 14px; cursor:pointer; list-style:none; }
+  details.tb-sec > summary::-webkit-details-marker{ display:none; }
+  details.tb-sec > summary:hover{ color:var(--accent-ink); }
+  /* --- Expand all / Collapse all above section 2 --- */
+.tc-actions{ display:flex; justify-content:flex-end; gap:8px; margin:32px 0 8px; }
+.tc-actions button{ padding:7px 12px; border-radius:7px; border:1px solid var(--line-strong); background:var(--surface); color:var(--ink-2); font-size:12px; font-weight:600; cursor:pointer; }
+.tc-cat-actions{ display:flex; justify-content:flex-end; gap:8px; margin:4px 0 10px; }
+.tc-cat-actions button{ padding:5px 10px; border-radius:7px; border:1px solid var(--line-strong); background:var(--surface); color:var(--ink-2); font-size:11px; font-weight:600; cursor:pointer; }
+.tc-cat-actions button:hover{ background:var(--surface-2); }
+.tc-actions button:hover{ background:var(--surface-2); }
+</style>
+</head><body><div class="wrap">
+
+<a class="tb-back" href="./20261026-105925_TravelportNdc-Void-UAE-V1V2.html">&larr; Back to QA Execution Report</a>
+
+<div class="header">
+<h1>Execution Time Breakdown</h1>
+</div>
+
+<div class="meta-card dashboard-card">
+<div class="field-row">
+<div class="field"><span class="k">Total Duration</span><span class="v">43m 59s</span></div>
+<div class="field"><span class="k">Execution Start</span><span class="v">2026-10-26 10:59:25 UTC</span></div>
+<div class="field"><span class="k">Execution End</span><span class="v">2026-10-26 11:43:24 UTC</span></div>
+</div>
+</div>
+
+<h2 class="section-num">1. Time Breakdown</h2>
+<div class="tb-cat-cards">
+<div class="tb-cat-card exec dashboard-card"><div class="val">11m 51s</div><div class="pct">26.9%</div><div class="lbl"><span class="swatch" style="background:var(--time-exec)"></span>Test Case Execution</div></div>
+<div class="tb-cat-card wait dashboard-card"><div class="val">0s</div><div class="pct">0.0%</div><div class="lbl"><span class="swatch" style="background:var(--time-wait)"></span>Waiting</div></div>
+<div class="tb-cat-card claude dashboard-card"><div class="val">0s</div><div class="pct">0.0%</div><div class="lbl"><span class="swatch" style="background:var(--time-claude)"></span>Claude / AI Processing</div></div>
+<div class="tb-cat-card report dashboard-card"><div class="val">5s</div><div class="pct">0.2%</div><div class="lbl"><span class="swatch" style="background:var(--time-report)"></span>Reporting</div></div>
+<div class="tb-cat-card overhead dashboard-card"><div class="val">32m 3s</div><div class="pct">72.9%</div><div class="lbl"><span class="swatch" style="background:var(--time-overhead)"></span>Other / Overhead</div></div>
+</div>
+
+<div class="dashboard-card">
+<div class="tb-bars">
+<div class="tb-bar-row"><div class="tb-bar-label"><span class="swatch" style="display:inline-block;width:10px;height:10px;border-radius:3px;background:var(--time-exec)"></span>Test Case Execution</div><div class="tb-bar-track"><div class="tb-bar-fill" style="width:26.9%;background:var(--time-exec)"></div></div><div class="tb-bar-value">11m 51s &middot; 26.9%</div></div>
+<div class="tb-bar-row"><div class="tb-bar-label"><span class="swatch" style="display:inline-block;width:10px;height:10px;border-radius:3px;background:var(--time-wait)"></span>Waiting</div><div class="tb-bar-track"><div class="tb-bar-fill" style="width:0.0%;background:var(--time-wait)"></div></div><div class="tb-bar-value">0s &middot; 0.0%</div></div>
+<div class="tb-bar-row"><div class="tb-bar-label"><span class="swatch" style="display:inline-block;width:10px;height:10px;border-radius:3px;background:var(--time-claude)"></span>Claude / AI Processing</div><div class="tb-bar-track"><div class="tb-bar-fill" style="width:0.0%;background:var(--time-claude)"></div></div><div class="tb-bar-value">0s &middot; 0.0%</div></div>
+<div class="tb-bar-row"><div class="tb-bar-label"><span class="swatch" style="display:inline-block;width:10px;height:10px;border-radius:3px;background:var(--time-report)"></span>Reporting</div><div class="tb-bar-track"><div class="tb-bar-fill" style="width:0.2%;background:var(--time-report)"></div></div><div class="tb-bar-value">5s &middot; 0.2%</div></div>
+<div class="tb-bar-row"><div class="tb-bar-label"><span class="swatch" style="display:inline-block;width:10px;height:10px;border-radius:3px;background:var(--time-overhead)"></span>Other / Overhead</div><div class="tb-bar-track"><div class="tb-bar-fill" style="width:72.9%;background:var(--time-overhead)"></div></div><div class="tb-bar-value">32m 3s &middot; 72.9%</div></div>
+</div>
+
+<div class="tb-reconcile">Accounted Time: <b>43m 59s</b> &nbsp;=&nbsp; Total Duration: <b>43m 59s</b> &nbsp;&#10003;</div>
+</div>
+
+<div class="tc-actions">
+<button type="button" id="tbExpandAll">Expand all</button>
+<button type="button" id="tbCollapseAll">Collapse all</button>
+</div>
+<details class="tb-sec" open><summary>2. Execution Phases</summary>
+<div class="tb-phase-note">Phases are wall-clock stages of the run. The <b>Test Execution</b> phase (41m 59s) is longer than <b>Test Case Execution</b> (11m 51s, section 1) because it also contains idle time between calls. Click a phase row for the breakdown.</div>
+<div class="dashboard-card tb-table-wrap">
+<table class="tb-table">
+<thead><tr><th>Phase</th><th>Start</th><th>End</th><th class="num">Duration</th><th class="num">%</th><th></th></tr></thead>
+<tbody>
+<tr class="tb-oh-click" role="button" tabindex="0" data-detail="{&quot;title&quot;:&quot;Test Execution phase&quot;,&quot;start&quot;:&quot;2026-10-26 10:59:25 UTC&quot;,&quot;end&quot;:&quot;2026-10-26 11:41:24 UTC&quot;,&quot;duration&quot;:&quot;41m 59s&quot;,&quot;share&quot;:&quot;95.5% of total&quot;,&quot;before&quot;:&quot;Run started at 10:59:25.&quot;,&quot;after&quot;:&quot;Next: Bug Reporting phase, starting 11:43:14.&quot;,&quot;steps&quot;:[&quot;Sending the API calls and checking their responses (the test cases themselves), plus the time spent reading results and preparing the next call.&quot;,&quot;API calls in flight: 11m 51s (this is the Test Case Execution card; each call counted once).&quot;,&quot;Idle inside the phase: 30m 9s = phase 41m 59s minus calls 11m 51s. It is counted as Overhead, not as test time.&quot;,&quot;Idle 4m 17s between 11:28:45 and 11:33:02 (TC-VOIDTPN-POS-05 finished; next call had not started).&quot;,&quot;Idle 3m 36s between 11:37:48 and 11:41:24 (FLOW-V2-74-TPN finished; next call had not started).&quot;,&quot;Idle 2m 35s between 11:35:12 and 11:37:47 (TC-VOIDTPN-BND-02 finished; next call had not started).&quot;,&quot;Idle 2m 6s between 11:33:06 and 11:35:12 (TC-VOIDTPN-VAL-01 finished; next call had not started).&quot;,&quot;Idle 1m 39s between 11:01:56 and 11:03:35 (TC-VOIDTPN-POS-01 finished; next call had not started).&quot;,&quot;Idle 1m 18s between 11:18:42 and 11:20:00 (TC-VOIDTPN-BIZ-01 finished; next call had not started).&quot;,&quot;Idle 55s between 11:26:54 and 11:27:49 (TC-VOIDTPN-REG-03 finished; next call had not started).&quot;,&quot;Idle 53s between 11:04:57 and 11:05:50 (TC-VOIDTPN-POS-04 finished; next call had not started).&quot;,&quot;...and 41 more idle gaps of 2s or more.&quot;],&quot;note&quot;:&quot;Phase times are wall-clock; they are not the same as the five categories in section 1, and gaps between phases belong to no phase.&quot;}"><td>Test Execution</td><td>10:59:25</td><td>11:41:24</td><td class="num">41m 59s</td><td class="num">95.5%</td><td class="oh-more">Details &rsaquo;</td></tr>
+<tr class="tb-oh-click tb-sub" role="button" tabindex="0" data-detail="{&quot;title&quot;:&quot;Per-test-case JSONL + Markdown writes&quot;,&quot;start&quot;:&quot;2026-10-26 11:00:18 UTC&quot;,&quot;end&quot;:&quot;2026-10-26 11:40:01 UTC&quot;,&quot;duration&quot;:&quot;5.02s&quot;,&quot;share&quot;:&quot;0.2% of total (sum of the 53 windows)&quot;,&quot;before&quot;:&quot;Right before: Phase \&quot;Test Execution\&quot; started at 10:59:25.&quot;,&quot;after&quot;:&quot;Right after: Phase \&quot;Test Execution\&quot; ended at 11:41:24.&quot;,&quot;steps&quot;:[&quot;For each of the 53 test cases: appended its line to the .jsonl, then re-rendered the whole .md from the log. The time is the window around that one append + render.&quot;,&quot;Average 95 ms per test case; shortest 75 ms (TC-CAPCHECK-TPN-03), longest 143 ms (TC-VOIDTPN-BIZ-02).&quot;,&quot;Slowest five: TC-VOIDTPN-BIZ-02 143 ms, TC-VOIDTPN-POS-02 116 ms, TC-VOIDTPN-POS-03 114 ms, TC-VOIDTPN-NEG-03 113 ms, TC-VOIDTPN-BIZ-05 110 ms.&quot;],&quot;note&quot;:&quot;Each write is charged to its own test case in the Reporting column of the Test Case Time table. The time between writes is not counted here (it is in Other / Overhead).&quot;}"><td><span class="tb-sub-arrow">&#8627;</span>Per-test-case JSONL + Markdown writes (53 test cases)</td><td>11:00:18</td><td>11:40:01</td><td class="num">5.02s</td><td class="num">0.2%</td><td class="oh-more">Details &rsaquo;</td></tr>
+<tr class="tb-oh-click" role="button" tabindex="0" data-detail="{&quot;title&quot;:&quot;Bug Reporting phase&quot;,&quot;start&quot;:&quot;2026-10-26 11:43:14 UTC&quot;,&quot;end&quot;:&quot;2026-10-26 11:43:14 UTC&quot;,&quot;duration&quot;:&quot;10 ms&quot;,&quot;share&quot;:&quot;0.0% of total&quot;,&quot;before&quot;:&quot;Idle for 1m 50s after the Test Execution phase ended (no phase was running).&quot;,&quot;after&quot;:&quot;Next: Report Generation phase, starting 11:43:24.&quot;,&quot;steps&quot;:[&quot;Drafting one bug report file per defect finding.&quot;,&quot;Reporting step inside this phase: Bug Report Generation (0s).&quot;],&quot;note&quot;:&quot;Phase times are wall-clock; they are not the same as the five categories in section 1, and gaps between phases belong to no phase.&quot;}"><td>Bug Reporting</td><td>11:43:14</td><td>11:43:14</td><td class="num">10 ms</td><td class="num">0.0%</td><td class="oh-more">Details &rsaquo;</td></tr>
+<tr class="tb-oh-click tb-sub" role="button" tabindex="0" data-detail="{&quot;title&quot;:&quot;Bug Report Generation&quot;,&quot;start&quot;:&quot;2026-10-26 11:43:14 UTC&quot;,&quot;end&quot;:&quot;2026-10-26 11:43:14 UTC&quot;,&quot;duration&quot;:&quot;10 ms&quot;,&quot;share&quot;:&quot;0.0% of total&quot;,&quot;before&quot;:&quot;Right before: Phase \&quot;Bug Reporting\&quot; started at 11:43:14.&quot;,&quot;after&quot;:&quot;Right after: Phase \&quot;Bug Reporting\&quot; ended at 11:43:14.&quot;,&quot;steps&quot;:[&quot;Drafted one Markdown bug report per defect finding, plus an index README, from the log (history, steps, actual/expected JSON, severity, evidence, impact).&quot;],&quot;note&quot;:&quot;Its duration is split evenly across the 12 test cases it was about (TC-CAPCHECK-TPN-02, TC-CAPCHECK-TPN-03, TC-VOIDTPN-VAL-02, TC-VOIDTPN-VAL-04, TC-VOIDTPN-VAL-07, TC-VOIDTPN-VAL-10, ...) in the Reporting column of the Test Case Time table.&quot;}"><td><span class="tb-sub-arrow">&#8627;</span>Bug Report Generation</td><td>11:43:14</td><td>11:43:14</td><td class="num">10 ms</td><td class="num">0.0%</td><td class="oh-more">Details &rsaquo;</td></tr>
+<tr class="tb-oh-click" role="button" tabindex="0" data-detail="{&quot;title&quot;:&quot;Report Generation phase&quot;,&quot;start&quot;:&quot;2026-10-26 11:43:24 UTC&quot;,&quot;end&quot;:&quot;2026-10-26 11:43:24 UTC&quot;,&quot;duration&quot;:&quot;291 ms&quot;,&quot;share&quot;:&quot;0.0% of total&quot;,&quot;before&quot;:&quot;Idle for 9s after the Bug Reporting phase ended (no phase was running).&quot;,&quot;after&quot;:&quot;Run ended at 11:43:24.&quot;,&quot;steps&quot;:[&quot;Rendering the final HTML report and this Time Breakdown page.&quot;,&quot;Reporting step inside this phase: Final HTML Report Generation (0s).&quot;,&quot;Reporting step inside this phase: Time Breakdown Report Generation (0s).&quot;,&quot;Only the instants the log records as reporting count as Reporting time; the phase boundaries here are the moments the renders started and ended.&quot;],&quot;note&quot;:&quot;Phase times are wall-clock; they are not the same as the five categories in section 1, and gaps between phases belong to no phase.&quot;}"><td>Report Generation</td><td>11:43:24</td><td>11:43:24</td><td class="num">291 ms</td><td class="num">0.0%</td><td class="oh-more">Details &rsaquo;</td></tr>
+<tr class="tb-oh-click tb-sub" role="button" tabindex="0" data-detail="{&quot;title&quot;:&quot;Final HTML Report Generation&quot;,&quot;start&quot;:&quot;2026-10-26 11:43:24 UTC&quot;,&quot;end&quot;:&quot;2026-10-26 11:43:24 UTC&quot;,&quot;duration&quot;:&quot;144 ms&quot;,&quot;share&quot;:&quot;0.0% of total&quot;,&quot;before&quot;:&quot;Right before: Phase \&quot;Report Generation\&quot; started at 11:43:24.&quot;,&quot;after&quot;:&quot;Right after: Phase \&quot;Report Generation\&quot; ended at 11:43:24.&quot;,&quot;steps&quot;:[&quot;Rendered the single self-contained QA report (.html) from the finished .jsonl: summary donut, category cards, per-test-case request/response panels, findings, proposed SPEC.md updates and clean-up list.&quot;],&quot;note&quot;:&quot;Run-level work, not attributable to one test case: it appears in the Reporting card but in no test case row.&quot;}"><td><span class="tb-sub-arrow">&#8627;</span>Final HTML Report Generation</td><td>11:43:24</td><td>11:43:24</td><td class="num">144 ms</td><td class="num">0.0%</td><td class="oh-more">Details &rsaquo;</td></tr>
+<tr class="tb-oh-click tb-sub" role="button" tabindex="0" data-detail="{&quot;title&quot;:&quot;Time Breakdown Report Generation&quot;,&quot;start&quot;:&quot;2026-10-26 11:43:24 UTC&quot;,&quot;end&quot;:&quot;2026-10-26 11:43:24 UTC&quot;,&quot;duration&quot;:&quot;146 ms&quot;,&quot;share&quot;:&quot;0.0% of total&quot;,&quot;before&quot;:&quot;Right before: Phase \&quot;Report Generation\&quot; started at 11:43:24.&quot;,&quot;after&quot;:&quot;Right after: Phase \&quot;Report Generation\&quot; ended at 11:43:24.&quot;,&quot;steps&quot;:[&quot;Rendered this Time Breakdown page from the .jsonl timestamps (categories, phases, AI operations, reporting, per-test-case table, timeline, overhead).&quot;],&quot;note&quot;:&quot;Run-level work, not attributable to one test case: it appears in the Reporting card but in no test case row.&quot;}"><td><span class="tb-sub-arrow">&#8627;</span>Time Breakdown Report Generation</td><td>11:43:24</td><td>11:43:24</td><td class="num">146 ms</td><td class="num">0.0%</td><td class="oh-more">Details &rsaquo;</td></tr>
+</tbody>
+<tfoot><tr><td colspan="3"><b>Total Reporting Time</b> <span class="tb-foot-note">(sum of the &#8627; rows above)</span></td><td class="num"><b>5.32s</b></td><td colspan="2" class="num"><span class="tb-foot-note">card: 5s rounded</span></td></tr></tfoot>
+</table>
+</div>
+
+</details>
+<details class="tb-sec" open><summary>3. Claude / AI Operations</summary>
+<div class="dashboard-card tb-table-wrap">
+<div class="empty">No AI operations recorded for this run.</div>
+</div>
+
+</details>
+<details class="tb-sec" open><summary>4. Test Case Time</summary>
+<div class="tc-toolbar dashboard-card">
+<input type="search" id="tcbSearch" placeholder="Search test case ID or title...">
+<select id="tcbStatusFilter">
+<option value="">All statuses</option>
+<option value="PASS">Passed</option>
+<option value="FAIL">Failed</option>
+<option value="BLOCKED">Blocked</option>
+</select>
+<select id="tcbCategoryFilter">
+<option value="">All categories</option>
+<option value="positive">Positive</option>
+<option value="validation">Validation</option>
+<option value="boundary">Boundary</option>
+<option value="business-rule">Business Rule</option>
+<option value="negative">Negative</option>
+<option value="security">Security</option>
+<option value="integration">Integration</option>
+<option value="regression">Regression</option>
+<option value="flow">Flow</option>
+</select>
+<button type="button" id="tcbReset">Reset</button>
+<span class="tc-count" id="tcbCount">53 / 53 shown</span>
+</div>
+<div class="tb-no-results js-hidden" id="tcbNoResults">No test cases match the current search/filter.</div>
+<div class="dashboard-card tb-table-wrap">
+<table class="tcb-table" id="tcbTable">
+<thead><tr>
+<th data-sort="idx" data-type="num">#</th>
+<th data-sort="tcid" data-type="text">Test Case ID</th>
+<th data-sort="title" data-type="text">Test Case</th>
+<th data-sort="status" data-type="text">Status</th>
+<th data-sort="start" data-type="num">Start</th>
+<th data-sort="end" data-type="num">End</th>
+<th data-sort="exec" data-type="num" class="num">Execution</th>
+<th data-sort="wait" data-type="num" class="num">Waiting</th>
+<th data-sort="claude" data-type="num" class="num">Claude</th>
+<th data-sort="report" data-type="num" class="num">Reporting</th>
+<th data-sort="total" data-type="num" class="num">Total</th>
+</tr></thead>
+<tbody>
+<tr data-tcid="TC-CAPCHECK-TPN-01" data-title="Verify TravelportNdc credentials for credentialsSelector UAE are active and return offers." data-status="PASS" data-cat="positive">
+<td data-sort-v="1">1</td>
+<td>TC-CAPCHECK-TPN-01</td>
+<td>Verify TravelportNdc credentials for credentialsSelector UAE are active and return offers.</td>
+<td><span class="badge PASS">PASS</span></td>
+<td data-sort-v="1793012371297">10:59:31</td>
+<td data-sort-v="1793012377606">10:59:37</td>
+<td class="num" data-sort-v="6302">6.30s</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="93">93 ms</td>
+<td class="num" data-sort-v="6395">6.39s</td>
+</tr>
+<tr data-tcid="TC-CAPCHECK-TPN-04" data-title="Verify which credentialsSelector values (UAE, EGY, KSA) are active for TravelportNdc." data-status="PASS" data-cat="positive">
+<td data-sort-v="2">2</td>
+<td>TC-CAPCHECK-TPN-04</td>
+<td>Verify which credentialsSelector values (UAE, EGY, KSA) are active for TravelportNdc.</td>
+<td><span class="badge PASS">PASS</span></td>
+<td data-sort-v="1793012395210">10:59:55</td>
+<td data-sort-v="1793012402116">11:00:02</td>
+<td class="num" data-sort-v="6897">6.90s</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="102">102 ms</td>
+<td class="num" data-sort-v="6999">7.00s</td>
+</tr>
+<tr data-tcid="TC-CAPCHECK-TPN-02" data-title="[Response] Verify a TravelportNdc Book returns synchronously issued ticket numbers and records the voidCapability value." data-status="FAIL" data-cat="positive">
+<td data-sort-v="3">3</td>
+<td>TC-CAPCHECK-TPN-02</td>
+<td>[Response] Verify a TravelportNdc Book returns synchronously issued ticket numbers and records the voidCapability value.</td>
+<td><span class="badge FAIL">FAIL</span></td>
+<td data-sort-v="1793012430473">11:00:30</td>
+<td data-sort-v="1793012456582">11:00:56</td>
+<td class="num" data-sort-v="9086">9.09s</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="79">79 ms</td>
+<td class="num" data-sort-v="9165">9.17s</td>
+</tr>
+<tr data-tcid="TC-CAPCHECK-TPN-03" data-title="[Response] Verify Void for a ticketed TravelportNdc booking is no longer rejected as OperationNotSupported." data-status="FAIL" data-cat="positive">
+<td data-sort-v="4">4</td>
+<td>TC-CAPCHECK-TPN-03</td>
+<td>[Response] Verify Void for a ticketed TravelportNdc booking is no longer rejected as OperationNotSupported.</td>
+<td><span class="badge FAIL">FAIL</span></td>
+<td data-sort-v="1793012471949">11:01:11</td>
+<td data-sort-v="1793012485023">11:01:25</td>
+<td class="num" data-sort-v="1741">1.74s</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="76">76 ms</td>
+<td class="num" data-sort-v="1817">1.82s</td>
+</tr>
+<tr data-tcid="TC-VOIDTPN-POS-01" data-title="[Response] Verify V1 Void succeeds for a TravelportNdc booking ticketed the same calendar day." data-status="FAIL" data-cat="positive">
+<td data-sort-v="5">5</td>
+<td>TC-VOIDTPN-POS-01</td>
+<td>[Response] Verify V1 Void succeeds for a TravelportNdc booking ticketed the same calendar day.</td>
+<td><span class="badge FAIL">FAIL</span></td>
+<td data-sort-v="1793012435616">11:00:35</td>
+<td data-sort-v="1793012516045">11:01:56</td>
+<td class="num" data-sort-v="4676">4.68s</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="103">103 ms</td>
+<td class="num" data-sort-v="4779">4.78s</td>
+</tr>
+<tr data-tcid="TC-VOIDTPN-POS-02" data-title="[Response] Verify V2 Void succeeds for a TravelportNdc booking ticketed the same calendar day." data-status="PASS" data-cat="positive">
+<td data-sort-v="6">6</td>
+<td>TC-VOIDTPN-POS-02</td>
+<td>[Response] Verify V2 Void succeeds for a TravelportNdc booking ticketed the same calendar day.</td>
+<td><span class="badge PASS">PASS</span></td>
+<td data-sort-v="1793012437003">11:00:37</td>
+<td data-sort-v="1793012510579">11:01:50</td>
+<td class="num" data-sort-v="5214">5.21s</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="116">116 ms</td>
+<td class="num" data-sort-v="5330">5.33s</td>
+</tr>
+<tr data-tcid="TC-VOIDTPN-POS-03" data-title="[Response] Verify Void succeeds for a TravelportNdc booking ticketed via Hold then BookAfterHold on the same day." data-status="PASS" data-cat="positive">
+<td data-sort-v="7">7</td>
+<td>TC-VOIDTPN-POS-03</td>
+<td>[Response] Verify Void succeeds for a TravelportNdc booking ticketed via Hold then BookAfterHold on the same day.</td>
+<td><span class="badge PASS">PASS</span></td>
+<td data-sort-v="1793013151957">11:12:31</td>
+<td data-sort-v="1793013276698">11:14:36</td>
+<td class="num" data-sort-v="86771">1m 27s</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="114">114 ms</td>
+<td class="num" data-sort-v="86885">1m 27s</td>
+</tr>
+<tr data-tcid="TC-VOIDTPN-POS-04" data-title="[Response] Verify Void of a multi-passenger TravelportNdc booking (ADT+CHD+INF) voids every ticket on the PNR." data-status="PASS" data-cat="positive">
+<td data-sort-v="8">8</td>
+<td>TC-VOIDTPN-POS-04</td>
+<td>[Response] Verify Void of a multi-passenger TravelportNdc booking (ADT+CHD+INF) voids every ticket on the PNR.</td>
+<td><span class="badge PASS">PASS</span></td>
+<td data-sort-v="1793012615264">11:03:35</td>
+<td data-sort-v="1793014069923">11:27:49</td>
+<td class="num" data-sort-v="26624">26.6s</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="85">85 ms</td>
+<td class="num" data-sort-v="26709">26.7s</td>
+</tr>
+<tr data-tcid="TC-VOIDTPN-POS-05" data-title="[Request] Validate Void with voidTickets explicitly listing every ticket number on the PNR." data-status="PASS" data-cat="positive">
+<td data-sort-v="9">9</td>
+<td>TC-VOIDTPN-POS-05</td>
+<td>[Request] Validate Void with voidTickets explicitly listing every ticket number on the PNR.</td>
+<td><span class="badge PASS">PASS</span></td>
+<td data-sort-v="1793012615814">11:03:35</td>
+<td data-sort-v="1793014070031">11:27:50</td>
+<td class="num" data-sort-v="13113">13.1s</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="98">98 ms</td>
+<td class="num" data-sort-v="13211">13.2s</td>
+</tr>
+<tr data-tcid="TC-VOIDTPN-VAL-01" data-title="[Request] Validate missing or empty pnr is rejected before reaching TravelportNdc." data-status="PASS" data-cat="validation">
+<td data-sort-v="10">10</td>
+<td>TC-VOIDTPN-VAL-01</td>
+<td>[Request] Validate missing or empty pnr is rejected before reaching TravelportNdc.</td>
+<td><span class="badge PASS">PASS</span></td>
+<td data-sort-v="1793014382665">11:33:02</td>
+<td data-sort-v="1793013115786">11:11:55</td>
+<td class="num" data-sort-v="2351">2.35s</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="89">89 ms</td>
+<td class="num" data-sort-v="2440">2.44s</td>
+</tr>
+<tr data-tcid="TC-VOIDTPN-VAL-02" data-title="[Request] Validate missing or empty bookingToken is rejected." data-status="FAIL" data-cat="validation">
+<td data-sort-v="11">11</td>
+<td>TC-VOIDTPN-VAL-02</td>
+<td>[Request] Validate missing or empty bookingToken is rejected.</td>
+<td><span class="badge FAIL">FAIL</span></td>
+<td data-sort-v="1793012750238">11:05:50</td>
+<td data-sort-v="1793013115974">11:11:55</td>
+<td class="num" data-sort-v="21399">21.4s</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="93">93 ms</td>
+<td class="num" data-sort-v="21492">21.5s</td>
+</tr>
+<tr data-tcid="TC-VOIDTPN-VAL-03" data-title="[Request] Validate whether gdsPNR is mandatory for TravelportNdc Void (empty string as in the V2 saved example)." data-status="PASS" data-cat="validation">
+<td data-sort-v="12">12</td>
+<td>TC-VOIDTPN-VAL-03</td>
+<td>[Request] Validate whether gdsPNR is mandatory for TravelportNdc Void (empty string as in the V2 saved example).</td>
+<td><span class="badge PASS">PASS</span></td>
+<td data-sort-v="1793012816497">11:06:56</td>
+<td data-sort-v="1793013116170">11:11:56</td>
+<td class="num" data-sort-v="1868">1.87s</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="86">86 ms</td>
+<td class="num" data-sort-v="1954">1.95s</td>
+</tr>
+<tr data-tcid="TC-VOIDTPN-VAL-04" data-title="[Request] Validate Void with a surName that does not match any passenger on the PNR is rejected." data-status="FAIL" data-cat="validation">
+<td data-sort-v="13">13</td>
+<td>TC-VOIDTPN-VAL-04</td>
+<td>[Request] Validate Void with a surName that does not match any passenger on the PNR is rejected.</td>
+<td><span class="badge FAIL">FAIL</span></td>
+<td data-sort-v="1793012817500">11:06:57</td>
+<td data-sort-v="1793013116510">11:11:56</td>
+<td class="num" data-sort-v="21122">21.1s</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="82">82 ms</td>
+<td class="num" data-sort-v="21204">21.2s</td>
+</tr>
+<tr data-tcid="TC-VOIDTPN-VAL-05" data-title="[Request] Validate missing supplier or credentialsSelector is rejected." data-status="PASS" data-cat="validation">
+<td data-sort-v="14">14</td>
+<td>TC-VOIDTPN-VAL-05</td>
+<td>[Request] Validate missing supplier or credentialsSelector is rejected.</td>
+<td><span class="badge PASS">PASS</span></td>
+<td data-sort-v="1793014383205">11:33:03</td>
+<td data-sort-v="1793013116692">11:11:56</td>
+<td class="num" data-sort-v="2026">2.03s</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="86">86 ms</td>
+<td class="num" data-sort-v="2112">2.11s</td>
+</tr>
+<tr data-tcid="TC-VOIDTPN-VAL-06" data-title="[Request] Validate voidTickets of the wrong type (string, null, number elements) is rejected." data-status="PASS" data-cat="validation">
+<td data-sort-v="15">15</td>
+<td>TC-VOIDTPN-VAL-06</td>
+<td>[Request] Validate voidTickets of the wrong type (string, null, number elements) is rejected.</td>
+<td><span class="badge PASS">PASS</span></td>
+<td data-sort-v="1793012850612">11:07:30</td>
+<td data-sort-v="1793013117032">11:11:57</td>
+<td class="num" data-sort-v="5203">5.20s</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="82">82 ms</td>
+<td class="num" data-sort-v="5285">5.29s</td>
+</tr>
+<tr data-tcid="TC-VOIDTPN-VAL-07" data-title="[Response] Verify the Void response follows the integration contract and does not expose raw TravelportNdc payloads." data-status="FAIL" data-cat="validation">
+<td data-sort-v="16">16</td>
+<td>TC-VOIDTPN-VAL-07</td>
+<td>[Response] Verify the Void response follows the integration contract and does not expose raw TravelportNdc payloads.</td>
+<td><span class="badge FAIL">FAIL</span></td>
+<td data-sort-v="1793012471966">11:01:11</td>
+<td data-sort-v="1793012941631">11:09:01</td>
+<td class="num" data-sort-v="7084">7.08s</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="92">92 ms</td>
+<td class="num" data-sort-v="7176">7.18s</td>
+</tr>
+<tr data-tcid="TC-VOIDTPN-VAL-08" data-title="[Response] Verify the voided ticket numbers and carrier code echo the Book response unchanged." data-status="PASS" data-cat="validation">
+<td data-sort-v="17">17</td>
+<td>TC-VOIDTPN-VAL-08</td>
+<td>[Response] Verify the voided ticket numbers and carrier code echo the Book response unchanged.</td>
+<td><span class="badge PASS">PASS</span></td>
+<td data-sort-v="1793012615264">11:03:35</td>
+<td data-sort-v="1793013459075">11:17:39</td>
+<td class="num" data-sort-v="8973">8.97s</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="82">82 ms</td>
+<td class="num" data-sort-v="9055">9.05s</td>
+</tr>
+<tr data-tcid="TC-VOIDTPN-VAL-09" data-title="[Response] Verify ticket numbers in the Void response are unique with no duplicated entries." data-status="PASS" data-cat="validation">
+<td data-sort-v="18">18</td>
+<td>TC-VOIDTPN-VAL-09</td>
+<td>[Response] Verify ticket numbers in the Void response are unique with no duplicated entries.</td>
+<td><span class="badge PASS">PASS</span></td>
+<td data-sort-v="1793013442851">11:17:22</td>
+<td data-sort-v="1793013458628">11:17:38</td>
+<td class="num" data-sort-v="3317">3.32s</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="83">83 ms</td>
+<td class="num" data-sort-v="3400">3.40s</td>
+</tr>
+<tr data-tcid="TC-VOIDTPN-VAL-10" data-title="[Response] Verify V2 Void returns empty passengersVoidedAncillaries and emdTickets for a booking without ancillaries." data-status="FAIL" data-cat="validation">
+<td data-sort-v="19">19</td>
+<td>TC-VOIDTPN-VAL-10</td>
+<td>[Response] Verify V2 Void returns empty passengersVoidedAncillaries and emdTickets for a booking without ancillaries.</td>
+<td><span class="badge FAIL">FAIL</span></td>
+<td data-sort-v="1793012452987">11:00:52</td>
+<td data-sort-v="1793013966916">11:26:06</td>
+<td class="num" data-sort-v="7606">7.61s</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="85">85 ms</td>
+<td class="num" data-sort-v="7690">7.69s</td>
+</tr>
+<tr data-tcid="TC-VOIDTPN-BND-01" data-title="[Request] Validate pnr and bookingToken of whitespace-only, lowercase and over-length values are handled without a server error." data-status="FAIL" data-cat="boundary">
+<td data-sort-v="20">20</td>
+<td>TC-VOIDTPN-BND-01</td>
+<td>[Request] Validate pnr and bookingToken of whitespace-only, lowercase and over-length values are handled without a server error.</td>
+<td><span class="badge FAIL">FAIL</span></td>
+<td data-sort-v="1793012966421">11:09:26</td>
+<td data-sort-v="1793013117314">11:11:57</td>
+<td class="num" data-sort-v="32203">32.2s</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="88">88 ms</td>
+<td class="num" data-sort-v="32290">32.3s</td>
+</tr>
+<tr data-tcid="TC-VOIDTPN-BND-02" data-title="[Request] Validate the calendar-day boundary: Void just before midnight is accepted and just after midnight is rejected." data-status="BLOCKED" data-cat="boundary">
+<td data-sort-v="21">21</td>
+<td>TC-VOIDTPN-BND-02</td>
+<td>[Request] Validate the calendar-day boundary: Void just before midnight is accepted and just after midnight is rejected.</td>
+<td><span class="badge BLOCKED">BLOCKED</span></td>
+<td data-sort-v="1793014512600">11:35:12</td>
+<td data-sort-v="1793014512600">11:35:12</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="86">86 ms</td>
+<td class="num" data-sort-v="86">86 ms</td>
+</tr>
+<tr data-tcid="TC-VOIDTPN-BIZ-01" data-title="[Response] Verify Void is rejected for a TravelportNdc booking ticketed on a previous calendar day." data-status="BLOCKED" data-cat="business-rule">
+<td data-sort-v="22">22</td>
+<td>TC-VOIDTPN-BIZ-01</td>
+<td>[Response] Verify Void is rejected for a TravelportNdc booking ticketed on a previous calendar day.</td>
+<td><span class="badge BLOCKED">BLOCKED</span></td>
+<td data-sort-v="1793013515353">11:18:35</td>
+<td data-sort-v="1793013513428">11:18:33</td>
+<td class="num" data-sort-v="9946">9.95s</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="101">101 ms</td>
+<td class="num" data-sort-v="10047">10.0s</td>
+</tr>
+<tr data-tcid="TC-VOIDTPN-BIZ-02" data-title="[Response] Verify a second Void on an already-voided TravelportNdc booking is rejected." data-status="PASS" data-cat="business-rule">
+<td data-sort-v="23">23</td>
+<td>TC-VOIDTPN-BIZ-02</td>
+<td>[Response] Verify a second Void on an already-voided TravelportNdc booking is rejected.</td>
+<td><span class="badge PASS">PASS</span></td>
+<td data-sort-v="1793012471966">11:01:11</td>
+<td data-sort-v="1793013401651">11:16:41</td>
+<td class="num" data-sort-v="6536">6.54s</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="143">143 ms</td>
+<td class="num" data-sort-v="6679">6.68s</td>
+</tr>
+<tr data-tcid="TC-VOIDTPN-BIZ-03" data-title="[Response] Verify Void is rejected for a held, unticketed TravelportNdc booking." data-status="FAIL" data-cat="business-rule">
+<td data-sort-v="24">24</td>
+<td>TC-VOIDTPN-BIZ-03</td>
+<td>[Response] Verify Void is rejected for a held, unticketed TravelportNdc booking.</td>
+<td><span class="badge FAIL">FAIL</span></td>
+<td data-sort-v="1793013217950">11:13:37</td>
+<td data-sort-v="1793013324795">11:15:24</td>
+<td class="num" data-sort-v="15860">15.9s</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="103">103 ms</td>
+<td class="num" data-sort-v="15963">16.0s</td>
+</tr>
+<tr data-tcid="TC-VOIDTPN-BIZ-04" data-title="[Response] Verify Void is rejected for a TravelportNdc hold already cancelled via CancelAfterHold." data-status="PASS" data-cat="business-rule">
+<td data-sort-v="25">25</td>
+<td>TC-VOIDTPN-BIZ-04</td>
+<td>[Response] Verify Void is rejected for a TravelportNdc hold already cancelled via CancelAfterHold.</td>
+<td><span class="badge PASS">PASS</span></td>
+<td data-sort-v="1793013341962">11:15:41</td>
+<td data-sort-v="1793013335252">11:15:35</td>
+<td class="num" data-sort-v="29077">29.1s</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="94">94 ms</td>
+<td class="num" data-sort-v="29171">29.2s</td>
+</tr>
+<tr data-tcid="TC-VOIDTPN-BIZ-05" data-title="&amp;[Void] [Response] Verify voidCapability is consistent with the actual Void outcome." data-status="FAIL" data-cat="business-rule">
+<td data-sort-v="26">26</td>
+<td>TC-VOIDTPN-BIZ-05</td>
+<td>&amp;[Void] [Response] Verify voidCapability is consistent with the actual Void outcome.</td>
+<td><span class="badge FAIL">FAIL</span></td>
+<td data-sort-v="1793012437003">11:00:37</td>
+<td data-sort-v="1793012472846">11:01:12</td>
+<td class="num" data-sort-v="15957">16.0s</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="110">110 ms</td>
+<td class="num" data-sort-v="16067">16.1s</td>
+</tr>
+<tr data-tcid="TC-VOIDTPN-BIZ-06" data-title="[Response] Verify Void with voidTickets listing only a subset of the PNR's tickets voids exactly those tickets or is rejected." data-status="FAIL" data-cat="business-rule">
+<td data-sort-v="27">27</td>
+<td>TC-VOIDTPN-BIZ-06</td>
+<td>[Response] Verify Void with voidTickets listing only a subset of the PNR's tickets voids exactly those tickets or is rejected.</td>
+<td><span class="badge FAIL">FAIL</span></td>
+<td data-sort-v="1793013435911">11:17:15</td>
+<td data-sort-v="1793014070152">11:27:50</td>
+<td class="num" data-sort-v="7646">7.65s</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="104">104 ms</td>
+<td class="num" data-sort-v="7750">7.75s</td>
+</tr>
+<tr data-tcid="TC-VOIDTPN-BIZ-07" data-title="&amp;[BookAfterHold] [Response] Verify CancelAfterHold and BookAfterHold on a voided TravelportNdc booking are rejected and Retrieve reports the voided state." data-status="PASS" data-cat="business-rule">
+<td data-sort-v="28">28</td>
+<td>TC-VOIDTPN-BIZ-07</td>
+<td>&amp;[BookAfterHold] [Response] Verify CancelAfterHold and BookAfterHold on a voided TravelportNdc booking are rejected and Retrieve reports the voided state.</td>
+<td><span class="badge PASS">PASS</span></td>
+<td data-sort-v="1793013364934">11:16:04</td>
+<td data-sort-v="1793013370958">11:16:10</td>
+<td class="num" data-sort-v="2379">2.38s</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="100">100 ms</td>
+<td class="num" data-sort-v="2479">2.48s</td>
+</tr>
+<tr data-tcid="TC-VOIDTPN-NEG-01" data-title="[Response] Verify Void with a non-existent pnr returns a mapped error, not a server error." data-status="FAIL" data-cat="negative">
+<td data-sort-v="29">29</td>
+<td>TC-VOIDTPN-NEG-01</td>
+<td>[Response] Verify Void with a non-existent pnr returns a mapped error, not a server error.</td>
+<td><span class="badge FAIL">FAIL</span></td>
+<td data-sort-v="1793012996626">11:09:56</td>
+<td data-sort-v="1793013117791">11:11:57</td>
+<td class="num" data-sort-v="282">282 ms</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="94">94 ms</td>
+<td class="num" data-sort-v="376">376 ms</td>
+</tr>
+<tr data-tcid="TC-VOIDTPN-NEG-02" data-title="[Request] Validate Void with a bookingToken from a different TravelportNdc booking is rejected." data-status="FAIL" data-cat="negative">
+<td data-sort-v="30">30</td>
+<td>TC-VOIDTPN-NEG-02</td>
+<td>[Request] Validate Void with a bookingToken from a different TravelportNdc booking is rejected.</td>
+<td><span class="badge FAIL">FAIL</span></td>
+<td data-sort-v="1793012896125">11:08:16</td>
+<td data-sort-v="1793013117900">11:11:57</td>
+<td class="num" data-sort-v="6756">6.76s</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="97">97 ms</td>
+<td class="num" data-sort-v="6853">6.85s</td>
+</tr>
+<tr data-tcid="TC-VOIDTPN-NEG-03" data-title="[Request] Validate voidTickets containing a ticket number not on the PNR is rejected." data-status="FAIL" data-cat="negative">
+<td data-sort-v="31">31</td>
+<td>TC-VOIDTPN-NEG-03</td>
+<td>[Request] Validate voidTickets containing a ticket number not on the PNR is rejected.</td>
+<td><span class="badge FAIL">FAIL</span></td>
+<td data-sort-v="1793012931639">11:08:51</td>
+<td data-sort-v="1793012982556">11:09:42</td>
+<td class="num" data-sort-v="9135">9.13s</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="113">113 ms</td>
+<td class="num" data-sort-v="9248">9.25s</td>
+</tr>
+<tr data-tcid="TC-VOIDTPN-NEG-04" data-title="[Response] Verify Void with a credentialsSelector that has no TravelportNdc credentials returns the credentials error, not a generic failure." data-status="PASS" data-cat="negative">
+<td data-sort-v="32">32</td>
+<td>TC-VOIDTPN-NEG-04</td>
+<td>[Response] Verify Void with a credentialsSelector that has no TravelportNdc credentials returns the credentials error, not a generic failure.</td>
+<td><span class="badge PASS">PASS</span></td>
+<td data-sort-v="1793012995816">11:09:55</td>
+<td data-sort-v="1793013118269">11:11:58</td>
+<td class="num" data-sort-v="1595">1.60s</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="96">96 ms</td>
+<td class="num" data-sort-v="1691">1.69s</td>
+</tr>
+<tr data-tcid="TC-VOIDTPN-NEG-05" data-title="[Response] Verify error responses for all failed Void scenarios use one consistent envelope." data-status="FAIL" data-cat="negative">
+<td data-sort-v="33">33</td>
+<td>TC-VOIDTPN-NEG-05</td>
+<td>[Response] Verify error responses for all failed Void scenarios use one consistent envelope.</td>
+<td><span class="badge FAIL">FAIL</span></td>
+<td data-sort-v="1793014382665">11:33:02</td>
+<td data-sort-v="1793013115686">11:11:55</td>
+<td class="num" data-sort-v="1837">1.84s</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="90">90 ms</td>
+<td class="num" data-sort-v="1927">1.93s</td>
+</tr>
+<tr data-tcid="TC-VOIDTPN-NEG-06" data-title="[Response] Verify the same invalid supplier or credentialsSelector gives the same error shape on Void as on Search and Book." data-status="PASS" data-cat="negative">
+<td data-sort-v="34">34</td>
+<td>TC-VOIDTPN-NEG-06</td>
+<td>[Response] Verify the same invalid supplier or credentialsSelector gives the same error shape on Void as on Search and Book.</td>
+<td><span class="badge PASS">PASS</span></td>
+<td data-sort-v="1793014074162">11:27:54</td>
+<td data-sort-v="1793014075001">11:27:55</td>
+<td class="num" data-sort-v="832">832 ms</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="87">87 ms</td>
+<td class="num" data-sort-v="919">919 ms</td>
+</tr>
+<tr data-tcid="TC-VOIDTPN-SEC-01" data-title="[Request] Validate Void without x-api-key or with an invalid x-api-key is rejected." data-status="PASS" data-cat="security">
+<td data-sort-v="35">35</td>
+<td>TC-VOIDTPN-SEC-01</td>
+<td>[Request] Validate Void without x-api-key or with an invalid x-api-key is rejected.</td>
+<td><span class="badge PASS">PASS</span></td>
+<td data-sort-v="1793012996263">11:09:56</td>
+<td data-sort-v="1793013118526">11:11:58</td>
+<td class="num" data-sort-v="1504">1.50s</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="99">99 ms</td>
+<td class="num" data-sort-v="1603">1.60s</td>
+</tr>
+<tr data-tcid="TC-VOIDTPN-SEC-02" data-title="[Request] Validate Void with an invalid Client-Id is rejected." data-status="PASS" data-cat="security">
+<td data-sort-v="36">36</td>
+<td>TC-VOIDTPN-SEC-02</td>
+<td>[Request] Validate Void with an invalid Client-Id is rejected.</td>
+<td><span class="badge PASS">PASS</span></td>
+<td data-sort-v="1793012996540">11:09:56</td>
+<td data-sort-v="1793013118622">11:11:58</td>
+<td class="num" data-sort-v="1203">1.20s</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="94">94 ms</td>
+<td class="num" data-sort-v="1297">1.30s</td>
+</tr>
+<tr data-tcid="TC-VOIDTPN-SEC-03" data-title="[Request] Validate a TravelportNdc booking cannot be voided under a different supplier or credentialsSelector." data-status="PASS" data-cat="security">
+<td data-sort-v="37">37</td>
+<td>TC-VOIDTPN-SEC-03</td>
+<td>[Request] Validate a TravelportNdc booking cannot be voided under a different supplier or credentialsSelector.</td>
+<td><span class="badge PASS">PASS</span></td>
+<td data-sort-v="1793012929487">11:08:49</td>
+<td data-sort-v="1793013120840">11:12:00</td>
+<td class="num" data-sort-v="8386">8.39s</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="96">96 ms</td>
+<td class="num" data-sort-v="8482">8.48s</td>
+</tr>
+<tr data-tcid="TC-VOIDTPN-SEC-04" data-title="[Request] Validate injection payloads in surName and pnr are rejected or safely handled." data-status="FAIL" data-cat="security">
+<td data-sort-v="38">38</td>
+<td>TC-VOIDTPN-SEC-04</td>
+<td>[Request] Validate injection payloads in surName and pnr are rejected or safely handled.</td>
+<td><span class="badge FAIL">FAIL</span></td>
+<td data-sort-v="1793013056935">11:10:56</td>
+<td data-sort-v="1793013121214">11:12:01</td>
+<td class="num" data-sort-v="25005">25.0s</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="103">103 ms</td>
+<td class="num" data-sort-v="25108">25.1s</td>
+</tr>
+<tr data-tcid="TC-VOIDTPN-INT-01" data-title="&amp;[Void] [Request] Verify pnr, gdsPNR and bookingToken from Book are accepted unchanged by Void." data-status="PASS" data-cat="integration">
+<td data-sort-v="39">39</td>
+<td>TC-VOIDTPN-INT-01</td>
+<td>&amp;[Void] [Request] Verify pnr, gdsPNR and bookingToken from Book are accepted unchanged by Void.</td>
+<td><span class="badge PASS">PASS</span></td>
+<td data-sort-v="1793012437003">11:00:37</td>
+<td data-sort-v="1793012472846">11:01:12</td>
+<td class="num" data-sort-v="4663">4.66s</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="101">101 ms</td>
+<td class="num" data-sort-v="4764">4.76s</td>
+</tr>
+<tr data-tcid="TC-VOIDTPN-INT-02" data-title="&amp;[Retrieve] [Response] Verify Retrieve after a successful TravelportNdc Void reflects the voided state." data-status="PASS" data-cat="integration">
+<td data-sort-v="40">40</td>
+<td>TC-VOIDTPN-INT-02</td>
+<td>&amp;[Retrieve] [Response] Verify Retrieve after a successful TravelportNdc Void reflects the voided state.</td>
+<td><span class="badge PASS">PASS</span></td>
+<td data-sort-v="1793012508562">11:01:48</td>
+<td data-sort-v="1793012516045">11:01:56</td>
+<td class="num" data-sort-v="3146">3.15s</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="90">90 ms</td>
+<td class="num" data-sort-v="3236">3.24s</td>
+</tr>
+<tr data-tcid="TC-VOIDTPN-REG-01" data-title="[Response] Verify SabreNdc Void still works and is not routed to the TravelportNdc handler." data-status="PASS" data-cat="regression">
+<td data-sort-v="41">41</td>
+<td>TC-VOIDTPN-REG-01</td>
+<td>[Response] Verify SabreNdc Void still works and is not routed to the TravelportNdc handler.</td>
+<td><span class="badge PASS">PASS</span></td>
+<td data-sort-v="1793013889278">11:24:49</td>
+<td data-sort-v="1793013970722">11:26:10</td>
+<td class="num" data-sort-v="18035">18.0s</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="91">91 ms</td>
+<td class="num" data-sort-v="18126">18.1s</td>
+</tr>
+<tr data-tcid="TC-VOIDTPN-REG-02" data-title="[Response] Verify V1 and V2 Void return the same response shape for TravelportNdc." data-status="FAIL" data-cat="regression">
+<td data-sort-v="42">42</td>
+<td>TC-VOIDTPN-REG-02</td>
+<td>[Response] Verify V1 and V2 Void return the same response shape for TravelportNdc.</td>
+<td><span class="badge FAIL">FAIL</span></td>
+<td data-sort-v="1793012471949">11:01:11</td>
+<td data-sort-v="1793013367148">11:16:07</td>
+<td class="num" data-sort-v="2340">2.34s</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="90">90 ms</td>
+<td class="num" data-sort-v="2430">2.43s</td>
+</tr>
+<tr data-tcid="TC-VOIDTPN-REG-03" data-title="&amp;[Retrieve]&amp;[CancelAfterHold] [Response] Verify Hold, Retrieve and CancelAfterHold for TravelportNdc are unchanged by the Void implementation." data-status="PASS" data-cat="regression">
+<td data-sort-v="43">43</td>
+<td>TC-VOIDTPN-REG-03</td>
+<td>&amp;[Retrieve]&amp;[CancelAfterHold] [Response] Verify Hold, Retrieve and CancelAfterHold for TravelportNdc are unchanged by the Void implementation.</td>
+<td><span class="badge PASS">PASS</span></td>
+<td data-sort-v="1793013988447">11:26:28</td>
+<td data-sort-v="1793012456582">11:00:56</td>
+<td class="num" data-sort-v="29438">29.4s</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="90">90 ms</td>
+<td class="num" data-sort-v="29528">29.5s</td>
+</tr>
+<tr data-tcid="FLOW-V1-03-TPN" data-title="[Search]&amp;[FareConfirm]&amp;[Book]&amp;[Retrieve]&amp;[Void] [Response] Verify Family-C flow #3 completes end to end for TravelportNdc." data-status="FAIL" data-cat="flow">
+<td data-sort-v="44">44</td>
+<td>FLOW-V1-03-TPN</td>
+<td>[Search]&amp;[FareConfirm]&amp;[Book]&amp;[Retrieve]&amp;[Void] [Response] Verify Family-C flow #3 completes end to end for TravelportNdc.</td>
+<td><span class="badge FAIL">FAIL</span></td>
+<td data-sort-v="1793013801665">11:23:21</td>
+<td data-sort-v="1793013835019">11:23:55</td>
+<td class="num" data-sort-v="8522">8.52s</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="104">104 ms</td>
+<td class="num" data-sort-v="8626">8.63s</td>
+</tr>
+<tr data-tcid="FLOW-V1-05-TPN" data-title="[Search]&amp;[FareConfirm]&amp;[Hold]&amp;[BookAfterHold]&amp;[Void] [Response] Verify Family-E flow #5 completes end to end for TravelportNdc." data-status="FAIL" data-cat="flow">
+<td data-sort-v="45">45</td>
+<td>FLOW-V1-05-TPN</td>
+<td>[Search]&amp;[FareConfirm]&amp;[Hold]&amp;[BookAfterHold]&amp;[Void] [Response] Verify Family-E flow #5 completes end to end for TravelportNdc.</td>
+<td><span class="badge FAIL">FAIL</span></td>
+<td data-sort-v="1793013801715">11:23:21</td>
+<td data-sort-v="1793013841039">11:24:01</td>
+<td class="num" data-sort-v="11482">11.5s</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="95">95 ms</td>
+<td class="num" data-sort-v="11577">11.6s</td>
+</tr>
+<tr data-tcid="FLOW-V1-09-TPN" data-title="[Search]&amp;[UpSelling]&amp;[Book]&amp;[Retrieve]&amp;[Void] [Response] Verify Family-C flow #9 completes end to end for TravelportNdc." data-status="FAIL" data-cat="flow">
+<td data-sort-v="46">46</td>
+<td>FLOW-V1-09-TPN</td>
+<td>[Search]&amp;[UpSelling]&amp;[Book]&amp;[Retrieve]&amp;[Void] [Response] Verify Family-C flow #9 completes end to end for TravelportNdc.</td>
+<td><span class="badge FAIL">FAIL</span></td>
+<td data-sort-v="1793013801770">11:23:21</td>
+<td data-sort-v="1793013833453">11:23:53</td>
+<td class="num" data-sort-v="7923">7.92s</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="100">100 ms</td>
+<td class="num" data-sort-v="8023">8.02s</td>
+</tr>
+<tr data-tcid="FLOW-V1-11-TPN" data-title="[Search]&amp;[UpSelling]&amp;[Hold]&amp;[BookAfterHold]&amp;[Void] [Response] Verify Family-E flow #11 completes end to end for TravelportNdc." data-status="FAIL" data-cat="flow">
+<td data-sort-v="47">47</td>
+<td>FLOW-V1-11-TPN</td>
+<td>[Search]&amp;[UpSelling]&amp;[Hold]&amp;[BookAfterHold]&amp;[Void] [Response] Verify Family-E flow #11 completes end to end for TravelportNdc.</td>
+<td><span class="badge FAIL">FAIL</span></td>
+<td data-sort-v="1793013801794">11:23:21</td>
+<td data-sort-v="1793013843693">11:24:03</td>
+<td class="num" data-sort-v="14100">14.1s</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="94">94 ms</td>
+<td class="num" data-sort-v="14194">14.2s</td>
+</tr>
+<tr data-tcid="FLOW-V2-27-TPN" data-title="[Search]&amp;[FareConfirm]&amp;[AddPassenger]&amp;[Book]&amp;[Retrieve]&amp;[Void] [Response] Verify Family-C flow #27 completes end to end for TravelportNdc." data-status="PASS" data-cat="flow">
+<td data-sort-v="48">48</td>
+<td>FLOW-V2-27-TPN</td>
+<td>[Search]&amp;[FareConfirm]&amp;[AddPassenger]&amp;[Book]&amp;[Retrieve]&amp;[Void] [Response] Verify Family-C flow #27 completes end to end for TravelportNdc.</td>
+<td><span class="badge PASS">PASS</span></td>
+<td data-sort-v="1793013600926">11:20:00</td>
+<td data-sort-v="1793013642865">11:20:42</td>
+<td class="num" data-sort-v="40626">40.6s</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="92">92 ms</td>
+<td class="num" data-sort-v="40718">40.7s</td>
+</tr>
+<tr data-tcid="FLOW-V2-29-TPN" data-title="[Search]&amp;[FareConfirm]&amp;[AddPassenger]&amp;[Hold]&amp;[BookAfterHold]&amp;[Void] [Response] Verify Family-E flow #29 completes end to end for TravelportNdc." data-status="PASS" data-cat="flow">
+<td data-sort-v="49">49</td>
+<td>FLOW-V2-29-TPN</td>
+<td>[Search]&amp;[FareConfirm]&amp;[AddPassenger]&amp;[Hold]&amp;[BookAfterHold]&amp;[Void] [Response] Verify Family-E flow #29 completes end to end for TravelportNdc.</td>
+<td><span class="badge PASS">PASS</span></td>
+<td data-sort-v="1793013656159">11:20:56</td>
+<td data-sort-v="1793013705497">11:21:45</td>
+<td class="num" data-sort-v="49317">49.3s</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="93">93 ms</td>
+<td class="num" data-sort-v="49410">49.4s</td>
+</tr>
+<tr data-tcid="FLOW-V2-74-TPN" data-title="[Search]&amp;[UpSelling]&amp;[AddPassenger]&amp;[Book]&amp;[Retrieve]&amp;[Void] [Response] Verify Family-C flow #74 completes end to end for TravelportNdc." data-status="PASS" data-cat="flow">
+<td data-sort-v="50">50</td>
+<td>FLOW-V2-74-TPN</td>
+<td>[Search]&amp;[UpSelling]&amp;[AddPassenger]&amp;[Book]&amp;[Retrieve]&amp;[Void] [Response] Verify Family-C flow #74 completes end to end for TravelportNdc.</td>
+<td><span class="badge PASS">PASS</span></td>
+<td data-sort-v="1793013723027">11:22:03</td>
+<td data-sort-v="1793014668989">11:37:48</td>
+<td class="num" data-sort-v="23162">23.2s</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="93">93 ms</td>
+<td class="num" data-sort-v="23254">23.3s</td>
+</tr>
+<tr data-tcid="FLOW-V2-76-TPN" data-title="[Search]&amp;[UpSelling]&amp;[AddPassenger]&amp;[Hold]&amp;[BookAfterHold]&amp;[Void] [Response] Verify Family-E flow #76 completes end to end for TravelportNdc." data-status="PASS" data-cat="flow">
+<td data-sort-v="51">51</td>
+<td>FLOW-V2-76-TPN</td>
+<td>[Search]&amp;[UpSelling]&amp;[AddPassenger]&amp;[Hold]&amp;[BookAfterHold]&amp;[Void] [Response] Verify Family-E flow #76 completes end to end for TravelportNdc.</td>
+<td><span class="badge PASS">PASS</span></td>
+<td data-sort-v="1793013723020">11:22:03</td>
+<td data-sort-v="1793013778527">11:22:58</td>
+<td class="num" data-sort-v="33541">33.5s</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="91">91 ms</td>
+<td class="num" data-sort-v="33632">33.6s</td>
+</tr>
+<tr data-tcid="FLOW-V1-03-TPN-NEGHOP5" data-title="[Search]&amp;[FareConfirm]&amp;[Book]&amp;[Retrieve]&amp;[Void] [Request] Validate Family-C flow #3 rejects a stale bookingToken at the Void hop for TravelportNdc." data-status="BLOCKED" data-cat="flow">
+<td data-sort-v="52">52</td>
+<td>FLOW-V1-03-TPN-NEGHOP5</td>
+<td>[Search]&amp;[FareConfirm]&amp;[Book]&amp;[Retrieve]&amp;[Void] [Request] Validate Family-C flow #3 rejects a stale bookingToken at the Void hop for TravelportNdc.</td>
+<td><span class="badge BLOCKED">BLOCKED</span></td>
+<td data-sort-v="1793012671626">11:04:31</td>
+<td data-sort-v="1793013890432">11:24:50</td>
+<td class="num" data-sort-v="16521">16.5s</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="89">89 ms</td>
+<td class="num" data-sort-v="16610">16.6s</td>
+</tr>
+<tr data-tcid="FLOW-V2-27-TPN-NEGHOP6" data-title="[Search]&amp;[FareConfirm]&amp;[AddPassenger]&amp;[Book]&amp;[Retrieve]&amp;[Void] [Request] Validate Family-C flow #27 rejects a stale bookingToken at the Void hop for TravelportNdc." data-status="FAIL" data-cat="flow">
+<td data-sort-v="53">53</td>
+<td>FLOW-V2-27-TPN-NEGHOP6</td>
+<td>[Search]&amp;[FareConfirm]&amp;[AddPassenger]&amp;[Book]&amp;[Retrieve]&amp;[Void] [Request] Validate Family-C flow #27 rejects a stale bookingToken at the Void hop for TravelportNdc.</td>
+<td><span class="badge FAIL">FAIL</span></td>
+<td data-sort-v="1793013882177">11:24:42</td>
+<td data-sort-v="1793013928624">11:25:28</td>
+<td class="num" data-sort-v="30230">30.2s</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="0">0 ms</td>
+<td class="num" data-sort-v="93">93 ms</td>
+<td class="num" data-sort-v="30323">30.3s</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="tb-reconcile">Execution column: rows sum to 11m 51s = 11m 51s Test Case Execution (section 1). Each test case is charged only for the time its own API calls were in flight; a call shared by several test cases is split evenly between them, so nothing is counted twice and idle gaps between calls are not charged. Claude column: the run-level analysis (0 ms) split evenly across the 53 test cases, rows sum to 0 ms. Reporting column: rows sum to 5.03s, plus 290 ms of run-level reporting (final HTML and Time Breakdown, not attributable to one test case), = 5s Reporting (section 1).</div>
+
+</details>
+<details class="tb-sec" open><summary>5. Timeline</summary>
+<div class="dashboard-card">
+<div class="tb-timeline">
+<div class="tb-tl-row"><div class="tb-tl-time">10:59:25</div><div class="tb-tl-label"><b>Test Execution</b> started</div></div>
+<div class="tb-tl-row"><div class="tb-tl-time">10:59:31</div><div class="tb-tl-label">TC-CAPCHECK-TPN-01 started</div></div>
+<div class="tb-tl-row"><div class="tb-tl-time">10:59:55</div><div class="tb-tl-label">TC-CAPCHECK-TPN-04 started</div></div>
+<div class="tb-tl-row"><div class="tb-tl-time">11:00:30</div><div class="tb-tl-label">TC-CAPCHECK-TPN-02 started</div></div>
+<div class="tb-tl-row"><div class="tb-tl-time">11:00:35</div><div class="tb-tl-label">TC-VOIDTPN-POS-01 started</div></div>
+<div class="tb-tl-row"><div class="tb-tl-time">11:00:37</div><div class="tb-tl-label">TC-VOIDTPN-POS-02 started</div></div>
+<div class="tb-tl-row"><div class="tb-tl-time">11:00:37</div><div class="tb-tl-label">TC-VOIDTPN-BIZ-05 started</div></div>
+<div class="tb-tl-row"><div class="tb-tl-time">11:00:37</div><div class="tb-tl-label">TC-VOIDTPN-INT-01 started</div></div>
+<div class="tb-tl-row"><div class="tb-tl-time">11:00:52</div><div class="tb-tl-label">TC-VOIDTPN-VAL-10 started</div></div>
+<div class="tb-tl-row"><div class="tb-tl-time">11:01:11</div><div class="tb-tl-label">TC-CAPCHECK-TPN-03 started</div></div>
+<div class="tb-tl-row"><div class="tb-tl-time">11:01:11</div><div class="tb-tl-label">TC-VOIDTPN-REG-02 started</div></div>
+<div class="tb-tl-row"><div class="tb-tl-time">11:01:11</div><div class="tb-tl-label">TC-VOIDTPN-VAL-07 started</div></div>
+<div class="tb-tl-row"><div class="tb-tl-time">11:01:11</div><div class="tb-tl-label">TC-VOIDTPN-BIZ-02 started</div></div>
+<div class="tb-tl-row"><div class="tb-tl-time">11:01:48</div><div class="tb-tl-label">TC-VOIDTPN-INT-02 started</div></div>
+<div class="tb-tl-row"><div class="tb-tl-time">11:03:35</div><div class="tb-tl-label">TC-VOIDTPN-POS-04 started</div></div>
+<div class="tb-tl-row"><div class="tb-tl-time">11:03:35</div><div class="tb-tl-label">TC-VOIDTPN-VAL-08 started</div></div>
+<div class="tb-tl-row"><div class="tb-tl-time">11:03:35</div><div class="tb-tl-label">TC-VOIDTPN-POS-05 started</div></div>
+<div class="tb-tl-row"><div class="tb-tl-time">11:04:31</div><div class="tb-tl-label">FLOW-V1-03-TPN-NEGHOP5 started</div></div>
+<div class="tb-tl-row"><div class="tb-tl-time">11:05:50</div><div class="tb-tl-label">TC-VOIDTPN-VAL-02 started</div></div>
+<div class="tb-tl-row"><div class="tb-tl-time">11:06:56</div><div class="tb-tl-label">TC-VOIDTPN-VAL-03 started</div></div>
+<div class="tb-tl-row"><div class="tb-tl-time">11:06:57</div><div class="tb-tl-label">TC-VOIDTPN-VAL-04 started</div></div>
+<div class="tb-tl-row"><div class="tb-tl-time">11:07:30</div><div class="tb-tl-label">TC-VOIDTPN-VAL-06 started</div></div>
+<div class="tb-tl-row"><div class="tb-tl-time">11:08:16</div><div class="tb-tl-label">TC-VOIDTPN-NEG-02 started</div></div>
+<div class="tb-tl-row"><div class="tb-tl-time">11:08:49</div><div class="tb-tl-label">TC-VOIDTPN-SEC-03 started</div></div>
+<div class="tb-tl-row"><div class="tb-tl-time">11:08:51</div><div class="tb-tl-label">TC-VOIDTPN-NEG-03 started</div></div>
+<div class="tb-tl-row"><div class="tb-tl-time">11:09:26</div><div class="tb-tl-label">TC-VOIDTPN-BND-01 started</div></div>
+<div class="tb-tl-row"><div class="tb-tl-time">11:09:55</div><div class="tb-tl-label">TC-VOIDTPN-NEG-04 started</div></div>
+<div class="tb-tl-row"><div class="tb-tl-time">11:09:56</div><div class="tb-tl-label">TC-VOIDTPN-SEC-01 started</div></div>
+<div class="tb-tl-row"><div class="tb-tl-time">11:09:56</div><div class="tb-tl-label">TC-VOIDTPN-SEC-02 started</div></div>
+<div class="tb-tl-row"><div class="tb-tl-time">11:09:56</div><div class="tb-tl-label">TC-VOIDTPN-NEG-01 started</div></div>
+<div class="tb-tl-row"><div class="tb-tl-time">11:10:56</div><div class="tb-tl-label">TC-VOIDTPN-SEC-04 started</div></div>
+<div class="tb-tl-row"><div class="tb-tl-time">11:12:31</div><div class="tb-tl-label">TC-VOIDTPN-POS-03 started</div></div>
+<div class="tb-tl-row"><div class="tb-tl-time">11:13:37</div><div class="tb-tl-label">TC-VOIDTPN-BIZ-03 started</div></div>
+<div class="tb-tl-row"><div class="tb-tl-time">11:15:41</div><div class="tb-tl-label">TC-VOIDTPN-BIZ-04 started</div></div>
+<div class="tb-tl-row"><div class="tb-tl-time">11:16:04</div><div class="tb-tl-label">TC-VOIDTPN-BIZ-07 started</div></div>
+<div class="tb-tl-row"><div class="tb-tl-time">11:17:15</div><div class="tb-tl-label">TC-VOIDTPN-BIZ-06 started</div></div>
+<div class="tb-tl-row"><div class="tb-tl-time">11:17:22</div><div class="tb-tl-label">TC-VOIDTPN-VAL-09 started</div></div>
+<div class="tb-tl-row"><div class="tb-tl-time">11:18:35</div><div class="tb-tl-label">TC-VOIDTPN-BIZ-01 started</div></div>
+<div class="tb-tl-row"><div class="tb-tl-time">11:20:00</div><div class="tb-tl-label">FLOW-V2-27-TPN started</div></div>
+<div class="tb-tl-row"><div class="tb-tl-time">11:20:56</div><div class="tb-tl-label">FLOW-V2-29-TPN started</div></div>
+<div class="tb-tl-row"><div class="tb-tl-time">11:22:03</div><div class="tb-tl-label">FLOW-V2-76-TPN started</div></div>
+<div class="tb-tl-row"><div class="tb-tl-time">11:22:03</div><div class="tb-tl-label">FLOW-V2-74-TPN started</div></div>
+<div class="tb-tl-row"><div class="tb-tl-time">11:23:21</div><div class="tb-tl-label">FLOW-V1-03-TPN started</div></div>
+<div class="tb-tl-row"><div class="tb-tl-time">11:23:21</div><div class="tb-tl-label">FLOW-V1-05-TPN started</div></div>
+<div class="tb-tl-row"><div class="tb-tl-time">11:23:21</div><div class="tb-tl-label">FLOW-V1-09-TPN started</div></div>
+<div class="tb-tl-row"><div class="tb-tl-time">11:23:21</div><div class="tb-tl-label">FLOW-V1-11-TPN started</div></div>
+<div class="tb-tl-row"><div class="tb-tl-time">11:24:42</div><div class="tb-tl-label">FLOW-V2-27-TPN-NEGHOP6 started</div></div>
+<div class="tb-tl-row"><div class="tb-tl-time">11:24:49</div><div class="tb-tl-label">TC-VOIDTPN-REG-01 started</div></div>
+<div class="tb-tl-row"><div class="tb-tl-time">11:26:28</div><div class="tb-tl-label">TC-VOIDTPN-REG-03 started</div></div>
+<div class="tb-tl-row"><div class="tb-tl-time">11:27:54</div><div class="tb-tl-label">TC-VOIDTPN-NEG-06 started</div></div>
+<div class="tb-tl-row"><div class="tb-tl-time">11:33:02</div><div class="tb-tl-label">TC-VOIDTPN-VAL-01 started</div></div>
+<div class="tb-tl-row"><div class="tb-tl-time">11:33:02</div><div class="tb-tl-label">TC-VOIDTPN-NEG-05 started</div></div>
+<div class="tb-tl-row"><div class="tb-tl-time">11:33:03</div><div class="tb-tl-label">TC-VOIDTPN-VAL-05 started</div></div>
+<div class="tb-tl-row"><div class="tb-tl-time">11:35:12</div><div class="tb-tl-label">TC-VOIDTPN-BND-02 started</div></div>
+<div class="tb-tl-row"><div class="tb-tl-time">11:41:24</div><div class="tb-tl-label"><b>Test Execution</b> ended</div></div>
+<div class="tb-tl-row"><div class="tb-tl-time">11:43:14</div><div class="tb-tl-label"><b>Bug Reporting</b> started</div></div>
+<div class="tb-tl-row"><div class="tb-tl-time">11:43:14</div><div class="tb-tl-label"><b>Bug Reporting</b> ended</div></div>
+<div class="tb-tl-row"><div class="tb-tl-time">11:43:24</div><div class="tb-tl-label"><b>Report Generation</b> started</div></div>
+<div class="tb-tl-row"><div class="tb-tl-time">11:43:24</div><div class="tb-tl-label"><b>Report Generation</b> ended</div></div>
+<div class="tb-tl-row"><div class="tb-tl-time">11:43:24</div><div class="tb-tl-label">Execution completed</div></div>
+</div>
+</div>
+
+</details>
+<details class="tb-sec" open><summary>6. Other / Overhead</summary>
+<div class="dashboard-card">
+<div class="tb-overhead-box">
+<div class="oh-title">What's in Other / Overhead (32m 3s) &mdash; click a row for details</div>
+<div class="tb-oh-rows">
+<div class="tb-oh-row tb-oh-click" role="button" tabindex="0" data-detail="{&quot;title&quot;:&quot;Gap after Phase \&quot;Initialization\&quot; started at 10:59:25 and before TC-CAPCHECK-TPN-01 (whole test case), started 10:59:31&quot;,&quot;start&quot;:&quot;2026-10-26 10:59:25 UTC&quot;,&quot;end&quot;:&quot;2026-10-26 10:59:31 UTC&quot;,&quot;duration&quot;:&quot;6s&quot;,&quot;share&quot;:&quot;0.2% of total&quot;,&quot;before&quot;:&quot;Phase \&quot;Initialization\&quot; started at 10:59:25&quot;,&quot;after&quot;:&quot;TC-CAPCHECK-TPN-01 (whole test case), started 10:59:31&quot;,&quot;steps&quot;:[&quot;No notes were recorded for this window. It is the time between the two events shown above that no test case, wait, AI operation or reporting operation accounts for.&quot;],&quot;note&quot;:&quot;Derived from the log timestamps: the time in this window is not covered by any test-case span, wait, AI operation or reporting operation.&quot;}"><span class="oh-label">Gap after Phase "Initialization" started at 10:59:25 and before TC-CAPCHECK-TPN-01 (whole test case), started 10:59:31</span><span class="oh-val">6s</span><span class="oh-more">Details &rsaquo;</span></div>
+<div class="tb-oh-row tb-oh-click" role="button" tabindex="0" data-detail="{&quot;title&quot;:&quot;Short gaps between the per-test-case log writes (131 gaps under 2 seconds)&quot;,&quot;start&quot;:&quot;2026-10-26 10:59:35 UTC&quot;,&quot;end&quot;:&quot;2026-10-26 11:40:01 UTC&quot;,&quot;duration&quot;:&quot;8s&quot;,&quot;share&quot;:&quot;0.3% of total&quot;,&quot;before&quot;:&quot;the per-test-case log writes&quot;,&quot;after&quot;:&quot;the per-test-case log writes&quot;,&quot;steps&quot;:[&quot;Each test case's log line and Markdown re-render ran back to back; these are the sub-2-second pauses between one render finishing and the next one starting.&quot;],&quot;note&quot;:&quot;Sum of many short gaps, spread between 10:59:35 and 11:40:01.&quot;}"><span class="oh-label">Short gaps between the per-test-case log writes (131 gaps under 2 seconds)</span><span class="oh-val">8s</span><span class="oh-more">Details &rsaquo;</span></div>
+<div class="tb-oh-row tb-oh-click" role="button" tabindex="0" data-detail="{&quot;title&quot;:&quot;Gap after TC-CAPCHECK-TPN-01 (whole test case), ended 10:59:37 and before TC-CAPCHECK-TPN-04 (whole test case), started 10:59:55&quot;,&quot;start&quot;:&quot;2026-10-26 10:59:37 UTC&quot;,&quot;end&quot;:&quot;2026-10-26 10:59:55 UTC&quot;,&quot;duration&quot;:&quot;18s&quot;,&quot;share&quot;:&quot;0.7% of total&quot;,&quot;before&quot;:&quot;TC-CAPCHECK-TPN-01 (whole test case), ended 10:59:37&quot;,&quot;after&quot;:&quot;TC-CAPCHECK-TPN-04 (whole test case), started 10:59:55&quot;,&quot;steps&quot;:[&quot;No notes were recorded for this window. It is the time between the two events shown above that no test case, wait, AI operation or reporting operation accounts for.&quot;],&quot;note&quot;:&quot;Derived from the log timestamps: the time in this window is not covered by any test-case span, wait, AI operation or reporting operation.&quot;}"><span class="oh-label">Gap after TC-CAPCHECK-TPN-01 (whole test case), ended 10:59:37 and before TC-CAPCHECK-TPN-04 (whole test case), started 10:59:55</span><span class="oh-val">18s</span><span class="oh-more">Details &rsaquo;</span></div>
+<div class="tb-oh-row tb-oh-click" role="button" tabindex="0" data-detail="{&quot;title&quot;:&quot;Gap after TC-CAPCHECK-TPN-04 (whole test case), ended 11:00:02 and before TC-CAPCHECK-TPN-01 log write, started 11:00:18&quot;,&quot;start&quot;:&quot;2026-10-26 11:00:02 UTC&quot;,&quot;end&quot;:&quot;2026-10-26 11:00:18 UTC&quot;,&quot;duration&quot;:&quot;17s&quot;,&quot;share&quot;:&quot;0.6% of total&quot;,&quot;before&quot;:&quot;TC-CAPCHECK-TPN-04 (whole test case), ended 11:00:02&quot;,&quot;after&quot;:&quot;TC-CAPCHECK-TPN-01 log write, started 11:00:18&quot;,&quot;steps&quot;:[&quot;No notes were recorded for this window. It is the time between the two events shown above that no test case, wait, AI operation or reporting operation accounts for.&quot;],&quot;note&quot;:&quot;Derived from the log timestamps: the time in this window is not covered by any test-case span, wait, AI operation or reporting operation.&quot;}"><span class="oh-label">Gap after TC-CAPCHECK-TPN-04 (whole test case), ended 11:00:02 and before TC-CAPCHECK-TPN-01 log write, started 11:00:18</span><span class="oh-val">17s</span><span class="oh-more">Details &rsaquo;</span></div>
+<div class="tb-oh-row tb-oh-click" role="button" tabindex="0" data-detail="{&quot;title&quot;:&quot;Gap after TC-CAPCHECK-TPN-04 log write, ended 11:00:19 and before TC-CAPCHECK-TPN-02 hop 1 - V1 Search (B1), started 11:00:30&quot;,&quot;start&quot;:&quot;2026-10-26 11:00:19 UTC&quot;,&quot;end&quot;:&quot;2026-10-26 11:00:30 UTC&quot;,&quot;duration&quot;:&quot;11s&quot;,&quot;share&quot;:&quot;0.4% of total&quot;,&quot;before&quot;:&quot;TC-CAPCHECK-TPN-04 log write, ended 11:00:19&quot;,&quot;after&quot;:&quot;TC-CAPCHECK-TPN-02 hop 1 - V1 Search (B1), started 11:00:30&quot;,&quot;steps&quot;:[&quot;No notes were recorded for this window. It is the time between the two events shown above that no test case, wait, AI operation or reporting operation accounts for.&quot;],&quot;note&quot;:&quot;Derived from the log timestamps: the time in this window is not covered by any test-case span, wait, AI operation or reporting operation.&quot;}"><span class="oh-label">Gap after TC-CAPCHECK-TPN-04 log write, ended 11:00:19 and before TC-CAPCHECK-TPN-02 hop 1 - V1 Search (B1), started 11:00:30</span><span class="oh-val">11s</span><span class="oh-more">Details &rsaquo;</span></div>
+<div class="tb-oh-row tb-oh-click" role="button" tabindex="0" data-detail="{&quot;title&quot;:&quot;Gap after TC-CAPCHECK-TPN-02 hop 9 - V2 Retrieve (B1-pre), ended 11:00:56 and before TC-CAPCHECK-TPN-03 (whole test case), started 11:01:11&quot;,&quot;start&quot;:&quot;2026-10-26 11:00:56 UTC&quot;,&quot;end&quot;:&quot;2026-10-26 11:01:11 UTC&quot;,&quot;duration&quot;:&quot;15s&quot;,&quot;share&quot;:&quot;0.6% of total&quot;,&quot;before&quot;:&quot;TC-CAPCHECK-TPN-02 hop 9 - V2 Retrieve (B1-pre), ended 11:00:56&quot;,&quot;after&quot;:&quot;TC-CAPCHECK-TPN-03 (whole test case), started 11:01:11&quot;,&quot;steps&quot;:[&quot;No notes were recorded for this window. It is the time between the two events shown above that no test case, wait, AI operation or reporting operation accounts for.&quot;],&quot;note&quot;:&quot;Derived from the log timestamps: the time in this window is not covered by any test-case span, wait, AI operation or reporting operation.&quot;}"><span class="oh-label">Gap after TC-CAPCHECK-TPN-02 hop 9 - V2 Retrieve (B1-pre), ended 11:00:56 and before TC-CAPCHECK-TPN-03 (whole test case), started 11:01:11</span><span class="oh-val">15s</span><span class="oh-more">Details &rsaquo;</span></div>
+<div class="tb-oh-row tb-oh-click" role="button" tabindex="0" data-detail="{&quot;title&quot;:&quot;Gap after TC-CAPCHECK-TPN-03 (whole test case), ended 11:01:25 and before TC-VOIDTPN-INT-02 (whole test case), started 11:01:48&quot;,&quot;start&quot;:&quot;2026-10-26 11:01:25 UTC&quot;,&quot;end&quot;:&quot;2026-10-26 11:01:48 UTC&quot;,&quot;duration&quot;:&quot;24s&quot;,&quot;share&quot;:&quot;0.9% of total&quot;,&quot;before&quot;:&quot;TC-CAPCHECK-TPN-03 (whole test case), ended 11:01:25&quot;,&quot;after&quot;:&quot;TC-VOIDTPN-INT-02 (whole test case), started 11:01:48&quot;,&quot;steps&quot;:[&quot;No notes were recorded for this window. It is the time between the two events shown above that no test case, wait, AI operation or reporting operation accounts for.&quot;],&quot;note&quot;:&quot;Derived from the log timestamps: the time in this window is not covered by any test-case span, wait, AI operation or reporting operation.&quot;}"><span class="oh-label">Gap after TC-CAPCHECK-TPN-03 (whole test case), ended 11:01:25 and before TC-VOIDTPN-INT-02 (whole test case), started 11:01:48</span><span class="oh-val">24s</span><span class="oh-more">Details &rsaquo;</span></div>
+<div class="tb-oh-row tb-oh-click" role="button" tabindex="0" data-detail="{&quot;title&quot;:&quot;Gap after TC-VOIDTPN-POS-02 (whole test case), ended 11:01:50 and before -&quot;,&quot;start&quot;:&quot;2026-10-26 11:01:50 UTC&quot;,&quot;end&quot;:&quot;2026-10-26 11:01:52 UTC&quot;,&quot;duration&quot;:&quot;2s&quot;,&quot;share&quot;:&quot;0.1% of total&quot;,&quot;before&quot;:&quot;TC-VOIDTPN-POS-02 (whole test case), ended 11:01:50&quot;,&quot;after&quot;:&quot;-&quot;,&quot;steps&quot;:[&quot;No notes were recorded for this window. It is the time between the two events shown above that no test case, wait, AI operation or reporting operation accounts for.&quot;],&quot;note&quot;:&quot;Derived from the log timestamps: the time in this window is not covered by any test-case span, wait, AI operation or reporting operation.&quot;}"><span class="oh-label">Gap after TC-VOIDTPN-POS-02 (whole test case), ended 11:01:50 and before -</span><span class="oh-val">2s</span><span class="oh-more">Details &rsaquo;</span></div>
+<div class="tb-oh-row tb-oh-click" role="button" tabindex="0" data-detail="{&quot;title&quot;:&quot;Gap after TC-VOIDTPN-POS-01 (whole test case), ended 11:01:56 and before TC-CAPCHECK-TPN-02 log write, started 11:03:15&quot;,&quot;start&quot;:&quot;2026-10-26 11:01:56 UTC&quot;,&quot;end&quot;:&quot;2026-10-26 11:03:15 UTC&quot;,&quot;duration&quot;:&quot;1m 19s&quot;,&quot;share&quot;:&quot;3.0% of total&quot;,&quot;before&quot;:&quot;TC-VOIDTPN-POS-01 (whole test case), ended 11:01:56&quot;,&quot;after&quot;:&quot;TC-CAPCHECK-TPN-02 log write, started 11:03:15&quot;,&quot;steps&quot;:[&quot;No notes were recorded for this window. It is the time between the two events shown above that no test case, wait, AI operation or reporting operation accounts for.&quot;],&quot;note&quot;:&quot;Derived from the log timestamps: the time in this window is not covered by any test-case span, wait, AI operation or reporting operation.&quot;}"><span class="oh-label">Gap after TC-VOIDTPN-POS-01 (whole test case), ended 11:01:56 and before TC-CAPCHECK-TPN-02 log write, started 11:03:15</span><span class="oh-val">1m 19s</span><span class="oh-more">Details &rsaquo;</span></div>
+<div class="tb-oh-row tb-oh-click" role="button" tabindex="0" data-detail="{&quot;title&quot;:&quot;Gap after TC-CAPCHECK-TPN-03 log write, ended 11:03:15 and before TC-VOIDTPN-POS-04 (whole test case), started 11:03:35&quot;,&quot;start&quot;:&quot;2026-10-26 11:03:15 UTC&quot;,&quot;end&quot;:&quot;2026-10-26 11:03:35 UTC&quot;,&quot;duration&quot;:&quot;20s&quot;,&quot;share&quot;:&quot;0.8% of total&quot;,&quot;before&quot;:&quot;TC-CAPCHECK-TPN-03 log write, ended 11:03:15&quot;,&quot;after&quot;:&quot;TC-VOIDTPN-POS-04 (whole test case), started 11:03:35&quot;,&quot;steps&quot;:[&quot;No notes were recorded for this window. It is the time between the two events shown above that no test case, wait, AI operation or reporting operation accounts for.&quot;],&quot;note&quot;:&quot;Derived from the log timestamps: the time in this window is not covered by any test-case span, wait, AI operation or reporting operation.&quot;}"><span class="oh-label">Gap after TC-CAPCHECK-TPN-03 log write, ended 11:03:15 and before TC-VOIDTPN-POS-04 (whole test case), started 11:03:35</span><span class="oh-val">20s</span><span class="oh-more">Details &rsaquo;</span></div>
+<div class="tb-oh-row tb-oh-click" role="button" tabindex="0" data-detail="{&quot;title&quot;:&quot;Gap after - and before FLOW-V1-03-TPN-NEGHOP5 hop 1 - V1 Search (b2_V1), started 11:04:31&quot;,&quot;start&quot;:&quot;2026-10-26 11:03:53 UTC&quot;,&quot;end&quot;:&quot;2026-10-26 11:04:31 UTC&quot;,&quot;duration&quot;:&quot;38s&quot;,&quot;share&quot;:&quot;1.4% of total&quot;,&quot;before&quot;:&quot;-&quot;,&quot;after&quot;:&quot;FLOW-V1-03-TPN-NEGHOP5 hop 1 - V1 Search (b2_V1), started 11:04:31&quot;,&quot;steps&quot;:[&quot;No notes were recorded for this window. It is the time between the two events shown above that no test case, wait, AI operation or reporting operation accounts for.&quot;],&quot;note&quot;:&quot;Derived from the log timestamps: the time in this window is not covered by any test-case span, wait, AI operation or reporting operation.&quot;}"><span class="oh-label">Gap after - and before FLOW-V1-03-TPN-NEGHOP5 hop 1 - V1 Search (b2_V1), started 11:04:31</span><span class="oh-val">38s</span><span class="oh-more">Details &rsaquo;</span></div>
+<div class="tb-oh-row tb-oh-click" role="button" tabindex="0" data-detail="{&quot;title&quot;:&quot;Gap after - and before TC-VOIDTPN-VAL-02 (whole test case), started 11:05:50&quot;,&quot;start&quot;:&quot;2026-10-26 11:04:57 UTC&quot;,&quot;end&quot;:&quot;2026-10-26 11:05:50 UTC&quot;,&quot;duration&quot;:&quot;53s&quot;,&quot;share&quot;:&quot;2.0% of total&quot;,&quot;before&quot;:&quot;-&quot;,&quot;after&quot;:&quot;TC-VOIDTPN-VAL-02 (whole test case), started 11:05:50&quot;,&quot;steps&quot;:[&quot;No notes were recorded for this window. It is the time between the two events shown above that no test case, wait, AI operation or reporting operation accounts for.&quot;],&quot;note&quot;:&quot;Derived from the log timestamps: the time in this window is not covered by any test-case span, wait, AI operation or reporting operation.&quot;}"><span class="oh-label">Gap after - and before TC-VOIDTPN-VAL-02 (whole test case), started 11:05:50</span><span class="oh-val">53s</span><span class="oh-more">Details &rsaquo;</span></div>
+<div class="tb-oh-row tb-oh-click" role="button" tabindex="0" data-detail="{&quot;title&quot;:&quot;Gap after - and before -&quot;,&quot;start&quot;:&quot;2026-10-26 11:06:02 UTC&quot;,&quot;end&quot;:&quot;2026-10-26 11:06:32 UTC&quot;,&quot;duration&quot;:&quot;30s&quot;,&quot;share&quot;:&quot;1.1% of total&quot;,&quot;before&quot;:&quot;-&quot;,&quot;after&quot;:&quot;-&quot;,&quot;steps&quot;:[&quot;No notes were recorded for this window. It is the time between the two events shown above that no test case, wait, AI operation or reporting operation accounts for.&quot;],&quot;note&quot;:&quot;Derived from the log timestamps: the time in this window is not covered by any test-case span, wait, AI operation or reporting operation.&quot;}"><span class="oh-label">Gap after - and before -</span><span class="oh-val">30s</span><span class="oh-more">Details &rsaquo;</span></div>
+<div class="tb-oh-row tb-oh-click" role="button" tabindex="0" data-detail="{&quot;title&quot;:&quot;Gap after - and before TC-VOIDTPN-VAL-03 (whole test case), started 11:06:56&quot;,&quot;start&quot;:&quot;2026-10-26 11:06:34 UTC&quot;,&quot;end&quot;:&quot;2026-10-26 11:06:56 UTC&quot;,&quot;duration&quot;:&quot;22s&quot;,&quot;share&quot;:&quot;0.8% of total&quot;,&quot;before&quot;:&quot;-&quot;,&quot;after&quot;:&quot;TC-VOIDTPN-VAL-03 (whole test case), started 11:06:56&quot;,&quot;steps&quot;:[&quot;No notes were recorded for this window. It is the time between the two events shown above that no test case, wait, AI operation or reporting operation accounts for.&quot;],&quot;note&quot;:&quot;Derived from the log timestamps: the time in this window is not covered by any test-case span, wait, AI operation or reporting operation.&quot;}"><span class="oh-label">Gap after - and before TC-VOIDTPN-VAL-03 (whole test case), started 11:06:56</span><span class="oh-val">22s</span><span class="oh-more">Details &rsaquo;</span></div>
+<div class="tb-oh-row tb-oh-click" role="button" tabindex="0" data-detail="{&quot;title&quot;:&quot;Gap after - and before -&quot;,&quot;start&quot;:&quot;2026-10-26 11:07:11 UTC&quot;,&quot;end&quot;:&quot;2026-10-26 11:07:29 UTC&quot;,&quot;duration&quot;:&quot;19s&quot;,&quot;share&quot;:&quot;0.7% of total&quot;,&quot;before&quot;:&quot;-&quot;,&quot;after&quot;:&quot;-&quot;,&quot;steps&quot;:[&quot;No notes were recorded for this window. It is the time between the two events shown above that no test case, wait, AI operation or reporting operation accounts for.&quot;],&quot;note&quot;:&quot;Derived from the log timestamps: the time in this window is not covered by any test-case span, wait, AI operation or reporting operation.&quot;}"><span class="oh-label">Gap after - and before -</span><span class="oh-val">19s</span><span class="oh-more">Details &rsaquo;</span></div>
+<div class="tb-oh-row tb-oh-click" role="button" tabindex="0" data-detail="{&quot;title&quot;:&quot;Gap after - and before -&quot;,&quot;start&quot;:&quot;2026-10-26 11:07:44 UTC&quot;,&quot;end&quot;:&quot;2026-10-26 11:08:15 UTC&quot;,&quot;duration&quot;:&quot;32s&quot;,&quot;share&quot;:&quot;1.2% of total&quot;,&quot;before&quot;:&quot;-&quot;,&quot;after&quot;:&quot;-&quot;,&quot;steps&quot;:[&quot;No notes were recorded for this window. It is the time between the two events shown above that no test case, wait, AI operation or reporting operation accounts for.&quot;],&quot;note&quot;:&quot;Derived from the log timestamps: the time in this window is not covered by any test-case span, wait, AI operation or reporting operation.&quot;}"><span class="oh-label">Gap after - and before -</span><span class="oh-val">32s</span><span class="oh-more">Details &rsaquo;</span></div>
+<div class="tb-oh-row tb-oh-click" role="button" tabindex="0" data-detail="{&quot;title&quot;:&quot;Gap after - and before -&quot;,&quot;start&quot;:&quot;2026-10-26 11:08:29 UTC&quot;,&quot;end&quot;:&quot;2026-10-26 11:08:48 UTC&quot;,&quot;duration&quot;:&quot;18s&quot;,&quot;share&quot;:&quot;0.7% of total&quot;,&quot;before&quot;:&quot;-&quot;,&quot;after&quot;:&quot;-&quot;,&quot;steps&quot;:[&quot;No notes were recorded for this window. It is the time between the two events shown above that no test case, wait, AI operation or reporting operation accounts for.&quot;],&quot;note&quot;:&quot;Derived from the log timestamps: the time in this window is not covered by any test-case span, wait, AI operation or reporting operation.&quot;}"><span class="oh-label">Gap after - and before -</span><span class="oh-val">18s</span><span class="oh-more">Details &rsaquo;</span></div>
+<div class="tb-oh-row tb-oh-click" role="button" tabindex="0" data-detail="{&quot;title&quot;:&quot;Gap after - and before TC-VOIDTPN-BND-01 (whole test case), started 11:09:26&quot;,&quot;start&quot;:&quot;2026-10-26 11:09:05 UTC&quot;,&quot;end&quot;:&quot;2026-10-26 11:09:26 UTC&quot;,&quot;duration&quot;:&quot;21s&quot;,&quot;share&quot;:&quot;0.8% of total&quot;,&quot;before&quot;:&quot;-&quot;,&quot;after&quot;:&quot;TC-VOIDTPN-BND-01 (whole test case), started 11:09:26&quot;,&quot;steps&quot;:[&quot;No notes were recorded for this window. It is the time between the two events shown above that no test case, wait, AI operation or reporting operation accounts for.&quot;],&quot;note&quot;:&quot;Derived from the log timestamps: the time in this window is not covered by any test-case span, wait, AI operation or reporting operation.&quot;}"><span class="oh-label">Gap after - and before TC-VOIDTPN-BND-01 (whole test case), started 11:09:26</span><span class="oh-val">21s</span><span class="oh-more">Details &rsaquo;</span></div>
+<div class="tb-oh-row tb-oh-click" role="button" tabindex="0" data-detail="{&quot;title&quot;:&quot;Gap after TC-VOIDTPN-NEG-03 (whole test case), ended 11:09:42 and before TC-VOIDTPN-NEG-04 (whole test case), started 11:09:55&quot;,&quot;start&quot;:&quot;2026-10-26 11:09:42 UTC&quot;,&quot;end&quot;:&quot;2026-10-26 11:09:55 UTC&quot;,&quot;duration&quot;:&quot;13s&quot;,&quot;share&quot;:&quot;0.5% of total&quot;,&quot;before&quot;:&quot;TC-VOIDTPN-NEG-03 (whole test case), ended 11:09:42&quot;,&quot;after&quot;:&quot;TC-VOIDTPN-NEG-04 (whole test case), started 11:09:55&quot;,&quot;steps&quot;:[&quot;No notes were recorded for this window. It is the time between the two events shown above that no test case, wait, AI operation or reporting operation accounts for.&quot;],&quot;note&quot;:&quot;Derived from the log timestamps: the time in this window is not covered by any test-case span, wait, AI operation or reporting operation.&quot;}"><span class="oh-label">Gap after TC-VOIDTPN-NEG-03 (whole test case), ended 11:09:42 and before TC-VOIDTPN-NEG-04 (whole test case), started 11:09:55</span><span class="oh-val">13s</span><span class="oh-more">Details &rsaquo;</span></div>
+<div class="tb-oh-row tb-oh-click" role="button" tabindex="0" data-detail="{&quot;title&quot;:&quot;Gap after - and before -&quot;,&quot;start&quot;:&quot;2026-10-26 11:10:00 UTC&quot;,&quot;end&quot;:&quot;2026-10-26 11:10:21 UTC&quot;,&quot;duration&quot;:&quot;21s&quot;,&quot;share&quot;:&quot;0.8% of total&quot;,&quot;before&quot;:&quot;-&quot;,&quot;after&quot;:&quot;-&quot;,&quot;steps&quot;:[&quot;No notes were recorded for this window. It is the time between the two events shown above that no test case, wait, AI operation or reporting operation accounts for.&quot;],&quot;note&quot;:&quot;Derived from the log timestamps: the time in this window is not covered by any test-case span, wait, AI operation or reporting operation.&quot;}"><span class="oh-label">Gap after - and before -</span><span class="oh-val">21s</span><span class="oh-more">Details &rsaquo;</span></div>
+<div class="tb-oh-row tb-oh-click" role="button" tabindex="0" data-detail="{&quot;title&quot;:&quot;Gap after - and before TC-VOIDTPN-SEC-04 (whole test case), started 11:10:56&quot;,&quot;start&quot;:&quot;2026-10-26 11:10:36 UTC&quot;,&quot;end&quot;:&quot;2026-10-26 11:10:56 UTC&quot;,&quot;duration&quot;:&quot;20s&quot;,&quot;share&quot;:&quot;0.8% of total&quot;,&quot;before&quot;:&quot;-&quot;,&quot;after&quot;:&quot;TC-VOIDTPN-SEC-04 (whole test case), started 11:10:56&quot;,&quot;steps&quot;:[&quot;No notes were recorded for this window. It is the time between the two events shown above that no test case, wait, AI operation or reporting operation accounts for.&quot;],&quot;note&quot;:&quot;Derived from the log timestamps: the time in this window is not covered by any test-case span, wait, AI operation or reporting operation.&quot;}"><span class="oh-label">Gap after - and before TC-VOIDTPN-SEC-04 (whole test case), started 11:10:56</span><span class="oh-val">20s</span><span class="oh-more">Details &rsaquo;</span></div>
+<div class="tb-oh-row tb-oh-click" role="button" tabindex="0" data-detail="{&quot;title&quot;:&quot;Gap after - and before -&quot;,&quot;start&quot;:&quot;2026-10-26 11:11:09 UTC&quot;,&quot;end&quot;:&quot;2026-10-26 11:11:29 UTC&quot;,&quot;duration&quot;:&quot;21s&quot;,&quot;share&quot;:&quot;0.8% of total&quot;,&quot;before&quot;:&quot;-&quot;,&quot;after&quot;:&quot;-&quot;,&quot;steps&quot;:[&quot;No notes were recorded for this window. It is the time between the two events shown above that no test case, wait, AI operation or reporting operation accounts for.&quot;],&quot;note&quot;:&quot;Derived from the log timestamps: the time in this window is not covered by any test-case span, wait, AI operation or reporting operation.&quot;}"><span class="oh-label">Gap after - and before -</span><span class="oh-val">21s</span><span class="oh-more">Details &rsaquo;</span></div>
+<div class="tb-oh-row tb-oh-click" role="button" tabindex="0" data-detail="{&quot;title&quot;:&quot;Gap after - and before -&quot;,&quot;start&quot;:&quot;2026-10-26 11:11:42 UTC&quot;,&quot;end&quot;:&quot;2026-10-26 11:11:55 UTC&quot;,&quot;duration&quot;:&quot;13s&quot;,&quot;share&quot;:&quot;0.5% of total&quot;,&quot;before&quot;:&quot;-&quot;,&quot;after&quot;:&quot;-&quot;,&quot;steps&quot;:[&quot;No notes were recorded for this window. It is the time between the two events shown above that no test case, wait, AI operation or reporting operation accounts for.&quot;],&quot;note&quot;:&quot;Derived from the log timestamps: the time in this window is not covered by any test-case span, wait, AI operation or reporting operation.&quot;}"><span class="oh-label">Gap after - and before -</span><span class="oh-val">13s</span><span class="oh-more">Details &rsaquo;</span></div>
+<div class="tb-oh-row tb-oh-click" role="button" tabindex="0" data-detail="{&quot;title&quot;:&quot;Gap after TC-VOIDTPN-SEC-04 (whole test case), ended 11:12:01 and before TC-VOIDTPN-POS-03 hop 1 - V1 Search (h1_V1), started 11:12:31&quot;,&quot;start&quot;:&quot;2026-10-26 11:12:01 UTC&quot;,&quot;end&quot;:&quot;2026-10-26 11:12:31 UTC&quot;,&quot;duration&quot;:&quot;31s&quot;,&quot;share&quot;:&quot;1.2% of total&quot;,&quot;before&quot;:&quot;TC-VOIDTPN-SEC-04 (whole test case), ended 11:12:01&quot;,&quot;after&quot;:&quot;TC-VOIDTPN-POS-03 hop 1 - V1 Search (h1_V1), started 11:12:31&quot;,&quot;steps&quot;:[&quot;No notes were recorded for this window. It is the time between the two events shown above that no test case, wait, AI operation or reporting operation accounts for.&quot;],&quot;note&quot;:&quot;Derived from the log timestamps: the time in this window is not covered by any test-case span, wait, AI operation or reporting operation.&quot;}"><span class="oh-label">Gap after TC-VOIDTPN-SEC-04 (whole test case), ended 11:12:01 and before TC-VOIDTPN-POS-03 hop 1 - V1 Search (h1_V1), started 11:12:31</span><span class="oh-val">31s</span><span class="oh-more">Details &rsaquo;</span></div>
+<div class="tb-oh-row tb-oh-click" role="button" tabindex="0" data-detail="{&quot;title&quot;:&quot;Gap after TC-VOIDTPN-POS-03 hop 3 - V1 Hold (h1_V1), ended 11:12:46 and before TC-VOIDTPN-POS-03 hop 10 - V2 Search (h1_V2), started 11:13:18&quot;,&quot;start&quot;:&quot;2026-10-26 11:12:46 UTC&quot;,&quot;end&quot;:&quot;2026-10-26 11:13:18 UTC&quot;,&quot;duration&quot;:&quot;31s&quot;,&quot;share&quot;:&quot;1.2% of total&quot;,&quot;before&quot;:&quot;TC-VOIDTPN-POS-03 hop 3 - V1 Hold (h1_V1), ended 11:12:46&quot;,&quot;after&quot;:&quot;TC-VOIDTPN-POS-03 hop 10 - V2 Search (h1_V2), started 11:13:18&quot;,&quot;steps&quot;:[&quot;No notes were recorded for this window. It is the time between the two events shown above that no test case, wait, AI operation or reporting operation accounts for.&quot;],&quot;note&quot;:&quot;Derived from the log timestamps: the time in this window is not covered by any test-case span, wait, AI operation or reporting operation.&quot;}"><span class="oh-label">Gap after TC-VOIDTPN-POS-03 hop 3 - V1 Hold (h1_V1), ended 11:12:46 and before TC-VOIDTPN-POS-03 hop 10 - V2 Search (h1_V2), started 11:13:18</span><span class="oh-val">31s</span><span class="oh-more">Details &rsaquo;</span></div>
+<div class="tb-oh-row tb-oh-click" role="button" tabindex="0" data-detail="{&quot;title&quot;:&quot;Gap after TC-VOIDTPN-POS-03 hop 13 - V2 Hold (h1_V2), ended 11:13:33 and before TC-VOIDTPN-BIZ-03 (whole test case), started 11:13:37&quot;,&quot;start&quot;:&quot;2026-10-26 11:13:33 UTC&quot;,&quot;end&quot;:&quot;2026-10-26 11:13:37 UTC&quot;,&quot;duration&quot;:&quot;4s&quot;,&quot;share&quot;:&quot;0.2% of total&quot;,&quot;before&quot;:&quot;TC-VOIDTPN-POS-03 hop 13 - V2 Hold (h1_V2), ended 11:13:33&quot;,&quot;after&quot;:&quot;TC-VOIDTPN-BIZ-03 (whole test case), started 11:13:37&quot;,&quot;steps&quot;:[&quot;No notes were recorded for this window. It is the time between the two events shown above that no test case, wait, AI operation or reporting operation accounts for.&quot;],&quot;note&quot;:&quot;Derived from the log timestamps: the time in this window is not covered by any test-case span, wait, AI operation or reporting operation.&quot;}"><span class="oh-label">Gap after TC-VOIDTPN-POS-03 hop 13 - V2 Hold (h1_V2), ended 11:13:33 and before TC-VOIDTPN-BIZ-03 (whole test case), started 11:13:37</span><span class="oh-val">4s</span><span class="oh-more">Details &rsaquo;</span></div>
+<div class="tb-oh-row tb-oh-click" role="button" tabindex="0" data-detail="{&quot;title&quot;:&quot;Gap after - and before TC-VOIDTPN-POS-03 hop 14 - V2 PnrReprice (FCAH), started 11:13:54&quot;,&quot;start&quot;:&quot;2026-10-26 11:13:47 UTC&quot;,&quot;end&quot;:&quot;2026-10-26 11:13:54 UTC&quot;,&quot;duration&quot;:&quot;7s&quot;,&quot;share&quot;:&quot;0.3% of total&quot;,&quot;before&quot;:&quot;-&quot;,&quot;after&quot;:&quot;TC-VOIDTPN-POS-03 hop 14 - V2 PnrReprice (FCAH), started 11:13:54&quot;,&quot;steps&quot;:[&quot;No notes were recorded for this window. It is the time between the two events shown above that no test case, wait, AI operation or reporting operation accounts for.&quot;],&quot;note&quot;:&quot;Derived from the log timestamps: the time in this window is not covered by any test-case span, wait, AI operation or reporting operation.&quot;}"><span class="oh-label">Gap after - and before TC-VOIDTPN-POS-03 hop 14 - V2 PnrReprice (FCAH), started 11:13:54</span><span class="oh-val">7s</span><span class="oh-more">Details &rsaquo;</span></div>
+<div class="tb-oh-row tb-oh-click" role="button" tabindex="0" data-detail="{&quot;title&quot;:&quot;Gap after TC-VOIDTPN-POS-03 hop 19 - V2 Retrieve (after-void), ended 11:14:36 and before TC-VOIDTPN-POS-03 hop 4 - V1 PnrReprice (FCAH), started 11:14:44&quot;,&quot;start&quot;:&quot;2026-10-26 11:14:36 UTC&quot;,&quot;end&quot;:&quot;2026-10-26 11:14:44 UTC&quot;,&quot;duration&quot;:&quot;7s&quot;,&quot;share&quot;:&quot;0.3% of total&quot;,&quot;before&quot;:&quot;TC-VOIDTPN-POS-03 hop 19 - V2 Retrieve (after-void), ended 11:14:36&quot;,&quot;after&quot;:&quot;TC-VOIDTPN-POS-03 hop 4 - V1 PnrReprice (FCAH), started 11:14:44&quot;,&quot;steps&quot;:[&quot;No notes were recorded for this window. It is the time between the two events shown above that no test case, wait, AI operation or reporting operation accounts for.&quot;],&quot;note&quot;:&quot;Derived from the log timestamps: the time in this window is not covered by any test-case span, wait, AI operation or reporting operation.&quot;}"><span class="oh-label">Gap after TC-VOIDTPN-POS-03 hop 19 - V2 Retrieve (after-void), ended 11:14:36 and before TC-VOIDTPN-POS-03 hop 4 - V1 PnrReprice (FCAH), started 11:14:44</span><span class="oh-val">7s</span><span class="oh-more">Details &rsaquo;</span></div>
+<div class="tb-oh-row tb-oh-click" role="button" tabindex="0" data-detail="{&quot;title&quot;:&quot;Gap after TC-VOIDTPN-POS-03 hop 9 - V1 Retrieve (after-void), ended 11:15:14 and before -&quot;,&quot;start&quot;:&quot;2026-10-26 11:15:14 UTC&quot;,&quot;end&quot;:&quot;2026-10-26 11:15:24 UTC&quot;,&quot;duration&quot;:&quot;10s&quot;,&quot;share&quot;:&quot;0.4% of total&quot;,&quot;before&quot;:&quot;TC-VOIDTPN-POS-03 hop 9 - V1 Retrieve (after-void), ended 11:15:14&quot;,&quot;after&quot;:&quot;-&quot;,&quot;steps&quot;:[&quot;No notes were recorded for this window. It is the time between the two events shown above that no test case, wait, AI operation or reporting operation accounts for.&quot;],&quot;note&quot;:&quot;Derived from the log timestamps: the time in this window is not covered by any test-case span, wait, AI operation or reporting operation.&quot;}"><span class="oh-label">Gap after TC-VOIDTPN-POS-03 hop 9 - V1 Retrieve (after-void), ended 11:15:14 and before -</span><span class="oh-val">10s</span><span class="oh-more">Details &rsaquo;</span></div>
+<div class="tb-oh-row tb-oh-click" role="button" tabindex="0" data-detail="{&quot;title&quot;:&quot;Gap after TC-VOIDTPN-BIZ-03 (whole test case), ended 11:15:24 and before -&quot;,&quot;start&quot;:&quot;2026-10-26 11:15:24 UTC&quot;,&quot;end&quot;:&quot;2026-10-26 11:15:27 UTC&quot;,&quot;duration&quot;:&quot;3s&quot;,&quot;share&quot;:&quot;0.1% of total&quot;,&quot;before&quot;:&quot;TC-VOIDTPN-BIZ-03 (whole test case), ended 11:15:24&quot;,&quot;after&quot;:&quot;-&quot;,&quot;steps&quot;:[&quot;No notes were recorded for this window. It is the time between the two events shown above that no test case, wait, AI operation or reporting operation accounts for.&quot;],&quot;note&quot;:&quot;Derived from the log timestamps: the time in this window is not covered by any test-case span, wait, AI operation or reporting operation.&quot;}"><span class="oh-label">Gap after TC-VOIDTPN-BIZ-03 (whole test case), ended 11:15:24 and before -</span><span class="oh-val">3s</span><span class="oh-more">Details &rsaquo;</span></div>
+<div class="tb-oh-row tb-oh-click" role="button" tabindex="0" data-detail="{&quot;title&quot;:&quot;Gap after TC-VOIDTPN-BIZ-04 (whole test case), ended 11:15:35 and before TC-VOIDTPN-BIZ-04 (whole test case), started 11:15:41&quot;,&quot;start&quot;:&quot;2026-10-26 11:15:35 UTC&quot;,&quot;end&quot;:&quot;2026-10-26 11:15:41 UTC&quot;,&quot;duration&quot;:&quot;7s&quot;,&quot;share&quot;:&quot;0.3% of total&quot;,&quot;before&quot;:&quot;TC-VOIDTPN-BIZ-04 (whole test case), ended 11:15:35&quot;,&quot;after&quot;:&quot;TC-VOIDTPN-BIZ-04 (whole test case), started 11:15:41&quot;,&quot;steps&quot;:[&quot;No notes were recorded for this window. It is the time between the two events shown above that no test case, wait, AI operation or reporting operation accounts for.&quot;],&quot;note&quot;:&quot;Derived from the log timestamps: the time in this window is not covered by any test-case span, wait, AI operation or reporting operation.&quot;}"><span class="oh-label">Gap after TC-VOIDTPN-BIZ-04 (whole test case), ended 11:15:35 and before TC-VOIDTPN-BIZ-04 (whole test case), started 11:15:41</span><span class="oh-val">7s</span><span class="oh-more">Details &rsaquo;</span></div>
+<div class="tb-oh-row tb-oh-click" role="button" tabindex="0" data-detail="{&quot;title&quot;:&quot;Gap after - and before TC-VOIDTPN-BIZ-07 (whole test case), started 11:16:04&quot;,&quot;start&quot;:&quot;2026-10-26 11:15:52 UTC&quot;,&quot;end&quot;:&quot;2026-10-26 11:16:04 UTC&quot;,&quot;duration&quot;:&quot;13s&quot;,&quot;share&quot;:&quot;0.5% of total&quot;,&quot;before&quot;:&quot;-&quot;,&quot;after&quot;:&quot;TC-VOIDTPN-BIZ-07 (whole test case), started 11:16:04&quot;,&quot;steps&quot;:[&quot;No notes were recorded for this window. It is the time between the two events shown above that no test case, wait, AI operation or reporting operation accounts for.&quot;],&quot;note&quot;:&quot;Derived from the log timestamps: the time in this window is not covered by any test-case span, wait, AI operation or reporting operation.&quot;}"><span class="oh-label">Gap after - and before TC-VOIDTPN-BIZ-07 (whole test case), started 11:16:04</span><span class="oh-val">13s</span><span class="oh-more">Details &rsaquo;</span></div>
+<div class="tb-oh-row tb-oh-click" role="button" tabindex="0" data-detail="{&quot;title&quot;:&quot;Gap after - and before -&quot;,&quot;start&quot;:&quot;2026-10-26 11:16:21 UTC&quot;,&quot;end&quot;:&quot;2026-10-26 11:16:37 UTC&quot;,&quot;duration&quot;:&quot;16s&quot;,&quot;share&quot;:&quot;0.6% of total&quot;,&quot;before&quot;:&quot;-&quot;,&quot;after&quot;:&quot;-&quot;,&quot;steps&quot;:[&quot;No notes were recorded for this window. It is the time between the two events shown above that no test case, wait, AI operation or reporting operation accounts for.&quot;],&quot;note&quot;:&quot;Derived from the log timestamps: the time in this window is not covered by any test-case span, wait, AI operation or reporting operation.&quot;}"><span class="oh-label">Gap after - and before -</span><span class="oh-val">16s</span><span class="oh-more">Details &rsaquo;</span></div>
+<div class="tb-oh-row tb-oh-click" role="button" tabindex="0" data-detail="{&quot;title&quot;:&quot;Gap after TC-VOIDTPN-BIZ-02 (whole test case), ended 11:16:41 and before TC-VOIDTPN-BIZ-06 (whole test case), started 11:17:15&quot;,&quot;start&quot;:&quot;2026-10-26 11:16:41 UTC&quot;,&quot;end&quot;:&quot;2026-10-26 11:17:15 UTC&quot;,&quot;duration&quot;:&quot;34s&quot;,&quot;share&quot;:&quot;1.3% of total&quot;,&quot;before&quot;:&quot;TC-VOIDTPN-BIZ-02 (whole test case), ended 11:16:41&quot;,&quot;after&quot;:&quot;TC-VOIDTPN-BIZ-06 (whole test case), started 11:17:15&quot;,&quot;steps&quot;:[&quot;No notes were recorded for this window. It is the time between the two events shown above that no test case, wait, AI operation or reporting operation accounts for.&quot;],&quot;note&quot;:&quot;Derived from the log timestamps: the time in this window is not covered by any test-case span, wait, AI operation or reporting operation.&quot;}"><span class="oh-label">Gap after TC-VOIDTPN-BIZ-02 (whole test case), ended 11:16:41 and before TC-VOIDTPN-BIZ-06 (whole test case), started 11:17:15</span><span class="oh-val">34s</span><span class="oh-more">Details &rsaquo;</span></div>
+<div class="tb-oh-row tb-oh-click" role="button" tabindex="0" data-detail="{&quot;title&quot;:&quot;Gap after TC-VOIDTPN-VAL-08 (whole test case), ended 11:17:39 and before -&quot;,&quot;start&quot;:&quot;2026-10-26 11:17:39 UTC&quot;,&quot;end&quot;:&quot;2026-10-26 11:17:47 UTC&quot;,&quot;duration&quot;:&quot;8s&quot;,&quot;share&quot;:&quot;0.3% of total&quot;,&quot;before&quot;:&quot;TC-VOIDTPN-VAL-08 (whole test case), ended 11:17:39&quot;,&quot;after&quot;:&quot;-&quot;,&quot;steps&quot;:[&quot;No notes were recorded for this window. It is the time between the two events shown above that no test case, wait, AI operation or reporting operation accounts for.&quot;],&quot;note&quot;:&quot;Derived from the log timestamps: the time in this window is not covered by any test-case span, wait, AI operation or reporting operation.&quot;}"><span class="oh-label">Gap after TC-VOIDTPN-VAL-08 (whole test case), ended 11:17:39 and before -</span><span class="oh-val">8s</span><span class="oh-more">Details &rsaquo;</span></div>
+<div class="tb-oh-row tb-oh-click" role="button" tabindex="0" data-detail="{&quot;title&quot;:&quot;Gap after - and before -&quot;,&quot;start&quot;:&quot;2026-10-26 11:17:49 UTC&quot;,&quot;end&quot;:&quot;2026-10-26 11:17:51 UTC&quot;,&quot;duration&quot;:&quot;2s&quot;,&quot;share&quot;:&quot;0.1% of total&quot;,&quot;before&quot;:&quot;-&quot;,&quot;after&quot;:&quot;-&quot;,&quot;steps&quot;:[&quot;No notes were recorded for this window. It is the time between the two events shown above that no test case, wait, AI operation or reporting operation accounts for.&quot;],&quot;note&quot;:&quot;Derived from the log timestamps: the time in this window is not covered by any test-case span, wait, AI operation or reporting operation.&quot;}"><span class="oh-label">Gap after - and before -</span><span class="oh-val">2s</span><span class="oh-more">Details &rsaquo;</span></div>
+<div class="tb-oh-row tb-oh-click" role="button" tabindex="0" data-detail="{&quot;title&quot;:&quot;Gap after - and before -&quot;,&quot;start&quot;:&quot;2026-10-26 11:17:54 UTC&quot;,&quot;end&quot;:&quot;2026-10-26 11:18:30 UTC&quot;,&quot;duration&quot;:&quot;37s&quot;,&quot;share&quot;:&quot;1.4% of total&quot;,&quot;before&quot;:&quot;-&quot;,&quot;after&quot;:&quot;-&quot;,&quot;steps&quot;:[&quot;No notes were recorded for this window. It is the time between the two events shown above that no test case, wait, AI operation or reporting operation accounts for.&quot;],&quot;note&quot;:&quot;Derived from the log timestamps: the time in this window is not covered by any test-case span, wait, AI operation or reporting operation.&quot;}"><span class="oh-label">Gap after - and before -</span><span class="oh-val">37s</span><span class="oh-more">Details &rsaquo;</span></div>
+<div class="tb-oh-row tb-oh-click" role="button" tabindex="0" data-detail="{&quot;title&quot;:&quot;Gap after - and before FLOW-V2-27-TPN hop 1 - V2 Search (f27_V2), started 11:20:00&quot;,&quot;start&quot;:&quot;2026-10-26 11:18:42 UTC&quot;,&quot;end&quot;:&quot;2026-10-26 11:20:00 UTC&quot;,&quot;duration&quot;:&quot;1m 18s&quot;,&quot;share&quot;:&quot;3.0% of total&quot;,&quot;before&quot;:&quot;-&quot;,&quot;after&quot;:&quot;FLOW-V2-27-TPN hop 1 - V2 Search (f27_V2), started 11:20:00&quot;,&quot;steps&quot;:[&quot;No notes were recorded for this window. It is the time between the two events shown above that no test case, wait, AI operation or reporting operation accounts for.&quot;],&quot;note&quot;:&quot;Derived from the log timestamps: the time in this window is not covered by any test-case span, wait, AI operation or reporting operation.&quot;}"><span class="oh-label">Gap after - and before FLOW-V2-27-TPN hop 1 - V2 Search (f27_V2), started 11:20:00</span><span class="oh-val">1m 18s</span><span class="oh-more">Details &rsaquo;</span></div>
+<div class="tb-oh-row tb-oh-click" role="button" tabindex="0" data-detail="{&quot;title&quot;:&quot;Gap after FLOW-V2-27-TPN hop 7 - V2 Retrieve (f27_V2-after), ended 11:20:42 and before FLOW-V2-29-TPN hop 1 - V2 Search (f29_V2), started 11:20:56&quot;,&quot;start&quot;:&quot;2026-10-26 11:20:42 UTC&quot;,&quot;end&quot;:&quot;2026-10-26 11:20:56 UTC&quot;,&quot;duration&quot;:&quot;13s&quot;,&quot;share&quot;:&quot;0.5% of total&quot;,&quot;before&quot;:&quot;FLOW-V2-27-TPN hop 7 - V2 Retrieve (f27_V2-after), ended 11:20:42&quot;,&quot;after&quot;:&quot;FLOW-V2-29-TPN hop 1 - V2 Search (f29_V2), started 11:20:56&quot;,&quot;steps&quot;:[&quot;No notes were recorded for this window. It is the time between the two events shown above that no test case, wait, AI operation or reporting operation accounts for.&quot;],&quot;note&quot;:&quot;Derived from the log timestamps: the time in this window is not covered by any test-case span, wait, AI operation or reporting operation.&quot;}"><span class="oh-label">Gap after FLOW-V2-27-TPN hop 7 - V2 Retrieve (f27_V2-after), ended 11:20:42 and before FLOW-V2-29-TPN hop 1 - V2 Search (f29_V2), started 11:20:56</span><span class="oh-val">13s</span><span class="oh-more">Details &rsaquo;</span></div>
+<div class="tb-oh-row tb-oh-click" role="button" tabindex="0" data-detail="{&quot;title&quot;:&quot;Gap after FLOW-V2-29-TPN hop 10 - V2 Retrieve (f29_V2-after), ended 11:21:45 and before FLOW-V2-74-TPN hop 1 - V2 Search (f74_V2), started 11:22:03&quot;,&quot;start&quot;:&quot;2026-10-26 11:21:45 UTC&quot;,&quot;end&quot;:&quot;2026-10-26 11:22:03 UTC&quot;,&quot;duration&quot;:&quot;18s&quot;,&quot;share&quot;:&quot;0.7% of total&quot;,&quot;before&quot;:&quot;FLOW-V2-29-TPN hop 10 - V2 Retrieve (f29_V2-after), ended 11:21:45&quot;,&quot;after&quot;:&quot;FLOW-V2-74-TPN hop 1 - V2 Search (f74_V2), started 11:22:03&quot;,&quot;steps&quot;:[&quot;No notes were recorded for this window. It is the time between the two events shown above that no test case, wait, AI operation or reporting operation accounts for.&quot;],&quot;note&quot;:&quot;Derived from the log timestamps: the time in this window is not covered by any test-case span, wait, AI operation or reporting operation.&quot;}"><span class="oh-label">Gap after FLOW-V2-29-TPN hop 10 - V2 Retrieve (f29_V2-after), ended 11:21:45 and before FLOW-V2-74-TPN hop 1 - V2 Search (f74_V2), started 11:22:03</span><span class="oh-val">18s</span><span class="oh-more">Details &rsaquo;</span></div>
+<div class="tb-oh-row tb-oh-click" role="button" tabindex="0" data-detail="{&quot;title&quot;:&quot;Gap after FLOW-V2-76-TPN hop 10 - V2 Retrieve (f76_V2-after), ended 11:22:58 and before FLOW-V1-03-TPN hop 1 - V1 Search (f03_V1), started 11:23:21&quot;,&quot;start&quot;:&quot;2026-10-26 11:22:58 UTC&quot;,&quot;end&quot;:&quot;2026-10-26 11:23:21 UTC&quot;,&quot;duration&quot;:&quot;23s&quot;,&quot;share&quot;:&quot;0.9% of total&quot;,&quot;before&quot;:&quot;FLOW-V2-76-TPN hop 10 - V2 Retrieve (f76_V2-after), ended 11:22:58&quot;,&quot;after&quot;:&quot;FLOW-V1-03-TPN hop 1 - V1 Search (f03_V1), started 11:23:21&quot;,&quot;steps&quot;:[&quot;No notes were recorded for this window. It is the time between the two events shown above that no test case, wait, AI operation or reporting operation accounts for.&quot;],&quot;note&quot;:&quot;Derived from the log timestamps: the time in this window is not covered by any test-case span, wait, AI operation or reporting operation.&quot;}"><span class="oh-label">Gap after FLOW-V2-76-TPN hop 10 - V2 Retrieve (f76_V2-after), ended 11:22:58 and before FLOW-V1-03-TPN hop 1 - V1 Search (f03_V1), started 11:23:21</span><span class="oh-val">23s</span><span class="oh-more">Details &rsaquo;</span></div>
+<div class="tb-oh-row tb-oh-click" role="button" tabindex="0" data-detail="{&quot;title&quot;:&quot;Gap after FLOW-V1-11-TPN hop 9 - V1 Retrieve (f11_V1-after), ended 11:24:03 and before FLOW-V2-27-TPN-NEGHOP6 hop 1 - V2 Search (nh6_V2), started 11:24:42&quot;,&quot;start&quot;:&quot;2026-10-26 11:24:03 UTC&quot;,&quot;end&quot;:&quot;2026-10-26 11:24:42 UTC&quot;,&quot;duration&quot;:&quot;38s&quot;,&quot;share&quot;:&quot;1.4% of total&quot;,&quot;before&quot;:&quot;FLOW-V1-11-TPN hop 9 - V1 Retrieve (f11_V1-after), ended 11:24:03&quot;,&quot;after&quot;:&quot;FLOW-V2-27-TPN-NEGHOP6 hop 1 - V2 Search (nh6_V2), started 11:24:42&quot;,&quot;steps&quot;:[&quot;No notes were recorded for this window. It is the time between the two events shown above that no test case, wait, AI operation or reporting operation accounts for.&quot;],&quot;note&quot;:&quot;Derived from the log timestamps: the time in this window is not covered by any test-case span, wait, AI operation or reporting operation.&quot;}"><span class="oh-label">Gap after FLOW-V1-11-TPN hop 9 - V1 Retrieve (f11_V1-after), ended 11:24:03 and before FLOW-V2-27-TPN-NEGHOP6 hop 1 - V2 Search (nh6_V2), started 11:24:42</span><span class="oh-val">38s</span><span class="oh-more">Details &rsaquo;</span></div>
+<div class="tb-oh-row tb-oh-click" role="button" tabindex="0" data-detail="{&quot;title&quot;:&quot;Gap after FLOW-V2-27-TPN-NEGHOP6 hop 7 - V2 Retrieve (nh6_V2-after), ended 11:25:28 and before -&quot;,&quot;start&quot;:&quot;2026-10-26 11:25:28 UTC&quot;,&quot;end&quot;:&quot;2026-10-26 11:25:56 UTC&quot;,&quot;duration&quot;:&quot;28s&quot;,&quot;share&quot;:&quot;1.1% of total&quot;,&quot;before&quot;:&quot;FLOW-V2-27-TPN-NEGHOP6 hop 7 - V2 Retrieve (nh6_V2-after), ended 11:25:28&quot;,&quot;after&quot;:&quot;-&quot;,&quot;steps&quot;:[&quot;No notes were recorded for this window. It is the time between the two events shown above that no test case, wait, AI operation or reporting operation accounts for.&quot;],&quot;note&quot;:&quot;Derived from the log timestamps: the time in this window is not covered by any test-case span, wait, AI operation or reporting operation.&quot;}"><span class="oh-label">Gap after FLOW-V2-27-TPN-NEGHOP6 hop 7 - V2 Retrieve (nh6_V2-after), ended 11:25:28 and before -</span><span class="oh-val">28s</span><span class="oh-more">Details &rsaquo;</span></div>
+<div class="tb-oh-row tb-oh-click" role="button" tabindex="0" data-detail="{&quot;title&quot;:&quot;Gap after TC-VOIDTPN-VAL-10 (whole test case), ended 11:26:06 and before -&quot;,&quot;start&quot;:&quot;2026-10-26 11:26:06 UTC&quot;,&quot;end&quot;:&quot;2026-10-26 11:26:10 UTC&quot;,&quot;duration&quot;:&quot;3s&quot;,&quot;share&quot;:&quot;0.1% of total&quot;,&quot;before&quot;:&quot;TC-VOIDTPN-VAL-10 (whole test case), ended 11:26:06&quot;,&quot;after&quot;:&quot;-&quot;,&quot;steps&quot;:[&quot;No notes were recorded for this window. It is the time between the two events shown above that no test case, wait, AI operation or reporting operation accounts for.&quot;],&quot;note&quot;:&quot;Derived from the log timestamps: the time in this window is not covered by any test-case span, wait, AI operation or reporting operation.&quot;}"><span class="oh-label">Gap after TC-VOIDTPN-VAL-10 (whole test case), ended 11:26:06 and before -</span><span class="oh-val">3s</span><span class="oh-more">Details &rsaquo;</span></div>
+<div class="tb-oh-row tb-oh-click" role="button" tabindex="0" data-detail="{&quot;title&quot;:&quot;Gap after TC-VOIDTPN-REG-01 (whole test case), ended 11:26:10 and before TC-VOIDTPN-REG-03 (whole test case), started 11:26:28&quot;,&quot;start&quot;:&quot;2026-10-26 11:26:10 UTC&quot;,&quot;end&quot;:&quot;2026-10-26 11:26:28 UTC&quot;,&quot;duration&quot;:&quot;18s&quot;,&quot;share&quot;:&quot;0.7% of total&quot;,&quot;before&quot;:&quot;TC-VOIDTPN-REG-01 (whole test case), ended 11:26:10&quot;,&quot;after&quot;:&quot;TC-VOIDTPN-REG-03 (whole test case), started 11:26:28&quot;,&quot;steps&quot;:[&quot;No notes were recorded for this window. It is the time between the two events shown above that no test case, wait, AI operation or reporting operation accounts for.&quot;],&quot;note&quot;:&quot;Derived from the log timestamps: the time in this window is not covered by any test-case span, wait, AI operation or reporting operation.&quot;}"><span class="oh-label">Gap after TC-VOIDTPN-REG-01 (whole test case), ended 11:26:10 and before TC-VOIDTPN-REG-03 (whole test case), started 11:26:28</span><span class="oh-val">18s</span><span class="oh-more">Details &rsaquo;</span></div>
+<div class="tb-oh-row tb-oh-click" role="button" tabindex="0" data-detail="{&quot;title&quot;:&quot;Gap after - and before -&quot;,&quot;start&quot;:&quot;2026-10-26 11:26:54 UTC&quot;,&quot;end&quot;:&quot;2026-10-26 11:27:49 UTC&quot;,&quot;duration&quot;:&quot;55s&quot;,&quot;share&quot;:&quot;2.1% of total&quot;,&quot;before&quot;:&quot;-&quot;,&quot;after&quot;:&quot;-&quot;,&quot;steps&quot;:[&quot;No notes were recorded for this window. It is the time between the two events shown above that no test case, wait, AI operation or reporting operation accounts for.&quot;],&quot;note&quot;:&quot;Derived from the log timestamps: the time in this window is not covered by any test-case span, wait, AI operation or reporting operation.&quot;}"><span class="oh-label">Gap after - and before -</span><span class="oh-val">55s</span><span class="oh-more">Details &rsaquo;</span></div>
+<div class="tb-oh-row tb-oh-click" role="button" tabindex="0" data-detail="{&quot;title&quot;:&quot;Gap after TC-VOIDTPN-BIZ-06 (whole test case), ended 11:27:50 and before TC-VOIDTPN-NEG-06 (whole test case), started 11:27:54&quot;,&quot;start&quot;:&quot;2026-10-26 11:27:50 UTC&quot;,&quot;end&quot;:&quot;2026-10-26 11:27:54 UTC&quot;,&quot;duration&quot;:&quot;4s&quot;,&quot;share&quot;:&quot;0.2% of total&quot;,&quot;before&quot;:&quot;TC-VOIDTPN-BIZ-06 (whole test case), ended 11:27:50&quot;,&quot;after&quot;:&quot;TC-VOIDTPN-NEG-06 (whole test case), started 11:27:54&quot;,&quot;steps&quot;:[&quot;No notes were recorded for this window. It is the time between the two events shown above that no test case, wait, AI operation or reporting operation accounts for.&quot;],&quot;note&quot;:&quot;Derived from the log timestamps: the time in this window is not covered by any test-case span, wait, AI operation or reporting operation.&quot;}"><span class="oh-label">Gap after TC-VOIDTPN-BIZ-06 (whole test case), ended 11:27:50 and before TC-VOIDTPN-NEG-06 (whole test case), started 11:27:54</span><span class="oh-val">4s</span><span class="oh-more">Details &rsaquo;</span></div>
+<div class="tb-oh-row tb-oh-click" role="button" tabindex="0" data-detail="{&quot;title&quot;:&quot;Gap after TC-VOIDTPN-NEG-06 (whole test case), ended 11:27:55 and before -&quot;,&quot;start&quot;:&quot;2026-10-26 11:27:55 UTC&quot;,&quot;end&quot;:&quot;2026-10-26 11:28:45 UTC&quot;,&quot;duration&quot;:&quot;51s&quot;,&quot;share&quot;:&quot;1.9% of total&quot;,&quot;before&quot;:&quot;TC-VOIDTPN-NEG-06 (whole test case), ended 11:27:55&quot;,&quot;after&quot;:&quot;-&quot;,&quot;steps&quot;:[&quot;No notes were recorded for this window. It is the time between the two events shown above that no test case, wait, AI operation or reporting operation accounts for.&quot;],&quot;note&quot;:&quot;Derived from the log timestamps: the time in this window is not covered by any test-case span, wait, AI operation or reporting operation.&quot;}"><span class="oh-label">Gap after TC-VOIDTPN-NEG-06 (whole test case), ended 11:27:55 and before -</span><span class="oh-val">51s</span><span class="oh-more">Details &rsaquo;</span></div>
+<div class="tb-oh-row tb-oh-click" role="button" tabindex="0" data-detail="{&quot;title&quot;:&quot;Gap after - and before TC-VOIDTPN-POS-01 log write, started 11:32:24&quot;,&quot;start&quot;:&quot;2026-10-26 11:28:45 UTC&quot;,&quot;end&quot;:&quot;2026-10-26 11:32:24 UTC&quot;,&quot;duration&quot;:&quot;3m 39s&quot;,&quot;share&quot;:&quot;8.3% of total&quot;,&quot;before&quot;:&quot;-&quot;,&quot;after&quot;:&quot;TC-VOIDTPN-POS-01 log write, started 11:32:24&quot;,&quot;steps&quot;:[&quot;No notes were recorded for this window. It is the time between the two events shown above that no test case, wait, AI operation or reporting operation accounts for.&quot;],&quot;note&quot;:&quot;Derived from the log timestamps: the time in this window is not covered by any test-case span, wait, AI operation or reporting operation.&quot;}"><span class="oh-label">Gap after - and before TC-VOIDTPN-POS-01 log write, started 11:32:24</span><span class="oh-val">3m 39s</span><span class="oh-more">Details &rsaquo;</span></div>
+<div class="tb-oh-row tb-oh-click" role="button" tabindex="0" data-detail="{&quot;title&quot;:&quot;Gap after TC-VOIDTPN-POS-05 log write, ended 11:32:25 and before TC-VOIDTPN-VAL-01 (whole test case), started 11:33:02&quot;,&quot;start&quot;:&quot;2026-10-26 11:32:25 UTC&quot;,&quot;end&quot;:&quot;2026-10-26 11:33:02 UTC&quot;,&quot;duration&quot;:&quot;37s&quot;,&quot;share&quot;:&quot;1.4% of total&quot;,&quot;before&quot;:&quot;TC-VOIDTPN-POS-05 log write, ended 11:32:25&quot;,&quot;after&quot;:&quot;TC-VOIDTPN-VAL-01 (whole test case), started 11:33:02&quot;,&quot;steps&quot;:[&quot;No notes were recorded for this window. It is the time between the two events shown above that no test case, wait, AI operation or reporting operation accounts for.&quot;],&quot;note&quot;:&quot;Derived from the log timestamps: the time in this window is not covered by any test-case span, wait, AI operation or reporting operation.&quot;}"><span class="oh-label">Gap after TC-VOIDTPN-POS-05 log write, ended 11:32:25 and before TC-VOIDTPN-VAL-01 (whole test case), started 11:33:02</span><span class="oh-val">37s</span><span class="oh-more">Details &rsaquo;</span></div>
+<div class="tb-oh-row tb-oh-click" role="button" tabindex="0" data-detail="{&quot;title&quot;:&quot;Gap after - and before TC-VOIDTPN-VAL-01 log write, started 11:35:10&quot;,&quot;start&quot;:&quot;2026-10-26 11:33:06 UTC&quot;,&quot;end&quot;:&quot;2026-10-26 11:35:10 UTC&quot;,&quot;duration&quot;:&quot;2m 4s&quot;,&quot;share&quot;:&quot;4.7% of total&quot;,&quot;before&quot;:&quot;-&quot;,&quot;after&quot;:&quot;TC-VOIDTPN-VAL-01 log write, started 11:35:10&quot;,&quot;steps&quot;:[&quot;No notes were recorded for this window. It is the time between the two events shown above that no test case, wait, AI operation or reporting operation accounts for.&quot;],&quot;note&quot;:&quot;Derived from the log timestamps: the time in this window is not covered by any test-case span, wait, AI operation or reporting operation.&quot;}"><span class="oh-label">Gap after - and before TC-VOIDTPN-VAL-01 log write, started 11:35:10</span><span class="oh-val">2m 4s</span><span class="oh-more">Details &rsaquo;</span></div>
+<div class="tb-oh-row tb-oh-click" role="button" tabindex="0" data-detail="{&quot;title&quot;:&quot;Gap after TC-VOIDTPN-BND-02 log write, ended 11:35:12 and before TC-VOIDTPN-BIZ-01 log write, started 11:37:00&quot;,&quot;start&quot;:&quot;2026-10-26 11:35:12 UTC&quot;,&quot;end&quot;:&quot;2026-10-26 11:37:00 UTC&quot;,&quot;duration&quot;:&quot;1m 47s&quot;,&quot;share&quot;:&quot;4.1% of total&quot;,&quot;before&quot;:&quot;TC-VOIDTPN-BND-02 log write, ended 11:35:12&quot;,&quot;after&quot;:&quot;TC-VOIDTPN-BIZ-01 log write, started 11:37:00&quot;,&quot;steps&quot;:[&quot;No notes were recorded for this window. It is the time between the two events shown above that no test case, wait, AI operation or reporting operation accounts for.&quot;],&quot;note&quot;:&quot;Derived from the log timestamps: the time in this window is not covered by any test-case span, wait, AI operation or reporting operation.&quot;}"><span class="oh-label">Gap after TC-VOIDTPN-BND-02 log write, ended 11:35:12 and before TC-VOIDTPN-BIZ-01 log write, started 11:37:00</span><span class="oh-val">1m 47s</span><span class="oh-more">Details &rsaquo;</span></div>
+<div class="tb-oh-row tb-oh-click" role="button" tabindex="0" data-detail="{&quot;title&quot;:&quot;Gap after TC-VOIDTPN-NEG-06 log write, ended 11:37:02 and before FLOW-V2-74-TPN hop 8 - V2 Book (noap), started 11:37:47&quot;,&quot;start&quot;:&quot;2026-10-26 11:37:02 UTC&quot;,&quot;end&quot;:&quot;2026-10-26 11:37:47 UTC&quot;,&quot;duration&quot;:&quot;45s&quot;,&quot;share&quot;:&quot;1.7% of total&quot;,&quot;before&quot;:&quot;TC-VOIDTPN-NEG-06 log write, ended 11:37:02&quot;,&quot;after&quot;:&quot;FLOW-V2-74-TPN hop 8 - V2 Book (noap), started 11:37:47&quot;,&quot;steps&quot;:[&quot;No notes were recorded for this window. It is the time between the two events shown above that no test case, wait, AI operation or reporting operation accounts for.&quot;],&quot;note&quot;:&quot;Derived from the log timestamps: the time in this window is not covered by any test-case span, wait, AI operation or reporting operation.&quot;}"><span class="oh-label">Gap after TC-VOIDTPN-NEG-06 log write, ended 11:37:02 and before FLOW-V2-74-TPN hop 8 - V2 Book (noap), started 11:37:47</span><span class="oh-val">45s</span><span class="oh-more">Details &rsaquo;</span></div>
+<div class="tb-oh-row tb-oh-click" role="button" tabindex="0" data-detail="{&quot;title&quot;:&quot;Gap after FLOW-V2-74-TPN hop 8 - V2 Book (noap), ended 11:37:48 and before TC-VOIDTPN-SEC-01 log write, started 11:38:48&quot;,&quot;start&quot;:&quot;2026-10-26 11:37:48 UTC&quot;,&quot;end&quot;:&quot;2026-10-26 11:38:48 UTC&quot;,&quot;duration&quot;:&quot;59s&quot;,&quot;share&quot;:&quot;2.2% of total&quot;,&quot;before&quot;:&quot;FLOW-V2-74-TPN hop 8 - V2 Book (noap), ended 11:37:48&quot;,&quot;after&quot;:&quot;TC-VOIDTPN-SEC-01 log write, started 11:38:48&quot;,&quot;steps&quot;:[&quot;No notes were recorded for this window. It is the time between the two events shown above that no test case, wait, AI operation or reporting operation accounts for.&quot;],&quot;note&quot;:&quot;Derived from the log timestamps: the time in this window is not covered by any test-case span, wait, AI operation or reporting operation.&quot;}"><span class="oh-label">Gap after FLOW-V2-74-TPN hop 8 - V2 Book (noap), ended 11:37:48 and before TC-VOIDTPN-SEC-01 log write, started 11:38:48</span><span class="oh-val">59s</span><span class="oh-more">Details &rsaquo;</span></div>
+<div class="tb-oh-row tb-oh-click" role="button" tabindex="0" data-detail="{&quot;title&quot;:&quot;Gap after TC-VOIDTPN-REG-03 log write, ended 11:38:49 and before FLOW-V1-03-TPN log write, started 11:39:59&quot;,&quot;start&quot;:&quot;2026-10-26 11:38:49 UTC&quot;,&quot;end&quot;:&quot;2026-10-26 11:39:59 UTC&quot;,&quot;duration&quot;:&quot;1m 10s&quot;,&quot;share&quot;:&quot;2.7% of total&quot;,&quot;before&quot;:&quot;TC-VOIDTPN-REG-03 log write, ended 11:38:49&quot;,&quot;after&quot;:&quot;FLOW-V1-03-TPN log write, started 11:39:59&quot;,&quot;steps&quot;:[&quot;No notes were recorded for this window. It is the time between the two events shown above that no test case, wait, AI operation or reporting operation accounts for.&quot;],&quot;note&quot;:&quot;Derived from the log timestamps: the time in this window is not covered by any test-case span, wait, AI operation or reporting operation.&quot;}"><span class="oh-label">Gap after TC-VOIDTPN-REG-03 log write, ended 11:38:49 and before FLOW-V1-03-TPN log write, started 11:39:59</span><span class="oh-val">1m 10s</span><span class="oh-more">Details &rsaquo;</span></div>
+<div class="tb-oh-row tb-oh-click" role="button" tabindex="0" data-detail="{&quot;title&quot;:&quot;Gap after FLOW-V2-27-TPN-NEGHOP6 log write, ended 11:40:01 and before Bug Report Generation, started 11:43:14&quot;,&quot;start&quot;:&quot;2026-10-26 11:40:01 UTC&quot;,&quot;end&quot;:&quot;2026-10-26 11:43:14 UTC&quot;,&quot;duration&quot;:&quot;3m 13s&quot;,&quot;share&quot;:&quot;7.3% of total&quot;,&quot;before&quot;:&quot;FLOW-V2-27-TPN-NEGHOP6 log write, ended 11:40:01&quot;,&quot;after&quot;:&quot;Bug Report Generation, started 11:43:14&quot;,&quot;steps&quot;:[&quot;No notes were recorded for this window. It is the time between the two events shown above that no test case, wait, AI operation or reporting operation accounts for.&quot;],&quot;note&quot;:&quot;Derived from the log timestamps: the time in this window is not covered by any test-case span, wait, AI operation or reporting operation.&quot;}"><span class="oh-label">Gap after FLOW-V2-27-TPN-NEGHOP6 log write, ended 11:40:01 and before Bug Report Generation, started 11:43:14</span><span class="oh-val">3m 13s</span><span class="oh-more">Details &rsaquo;</span></div>
+<div class="tb-oh-row tb-oh-click" role="button" tabindex="0" data-detail="{&quot;title&quot;:&quot;Gap after Bug Report Generation, ended 11:43:14 and before Final HTML Report Generation, started 11:43:24&quot;,&quot;start&quot;:&quot;2026-10-26 11:43:14 UTC&quot;,&quot;end&quot;:&quot;2026-10-26 11:43:24 UTC&quot;,&quot;duration&quot;:&quot;9s&quot;,&quot;share&quot;:&quot;0.3% of total&quot;,&quot;before&quot;:&quot;Bug Report Generation, ended 11:43:14&quot;,&quot;after&quot;:&quot;Final HTML Report Generation, started 11:43:24&quot;,&quot;steps&quot;:[&quot;No notes were recorded for this window. It is the time between the two events shown above that no test case, wait, AI operation or reporting operation accounts for.&quot;],&quot;note&quot;:&quot;Derived from the log timestamps: the time in this window is not covered by any test-case span, wait, AI operation or reporting operation.&quot;}"><span class="oh-label">Gap after Bug Report Generation, ended 11:43:14 and before Final HTML Report Generation, started 11:43:24</span><span class="oh-val">9s</span><span class="oh-more">Details &rsaquo;</span></div>
+</div>
+</div>
+</div>
+
+</details>
+<div class="tb-modal js-hidden" id="tbModal" role="dialog" aria-modal="true" aria-labelledby="tbModalTitle">
+<div class="tb-modal-card">
+<div class="tb-modal-head"><div class="tb-modal-title" id="tbModalTitle"></div><button type="button" class="tb-modal-x" id="tbModalClose" aria-label="Close">&times;</button></div>
+<div class="tb-modal-grid" id="tbModalGrid"></div>
+<h4>Right before</h4><p id="tbModalBefore"></p>
+<h4>What happened in this window</h4><ol id="tbModalSteps"></ol>
+<h4>Right after</h4><p id="tbModalAfter"></p>
+<div class="mnote" id="tbModalNote"></div>
+</div>
+</div>
+
+<script>
+(function(){
+  var search = document.getElementById('tcbSearch');
+  var statusFilter = document.getElementById('tcbStatusFilter');
+  var catFilter = document.getElementById('tcbCategoryFilter');
+  var resetBtn = document.getElementById('tcbReset');
+  var countEl = document.getElementById('tcbCount');
+  var noResults = document.getElementById('tcbNoResults');
+  var table = document.getElementById('tcbTable');
+  if(!table) return;
+  var tbody = table.tBodies[0];
+  var allRows = Array.prototype.slice.call(tbody.rows);
+  var total = allRows.length;
+
+  function applyFilter(){
+    var q = (search.value || '').trim().toLowerCase();
+    var st = statusFilter.value;
+    var ct = catFilter ? catFilter.value : '';
+    var shown = 0;
+    allRows.forEach(function(row){
+      var matchesQ = !q || (row.getAttribute('data-tcid').toLowerCase().indexOf(q) !== -1) ||
+                     (row.getAttribute('data-title').toLowerCase().indexOf(q) !== -1);
+      var matchesSt = !st || row.getAttribute('data-status') === st;
+      var matchesCt = !ct || row.getAttribute('data-cat') === ct;
+      var show = matchesQ && matchesSt && matchesCt;
+      row.classList.toggle('js-hidden', !show);
+      if(show) shown++;
+    });
+    countEl.textContent = shown + ' / ' + total + ' shown';
+    noResults.classList.toggle('js-hidden', shown !== 0);
+  }
+
+  search.addEventListener('input', applyFilter);
+  statusFilter.addEventListener('change', applyFilter);
+  if (catFilter) catFilter.addEventListener('change', applyFilter);
+  resetBtn.addEventListener('click', function(){
+    search.value = ''; statusFilter.value = ''; if (catFilter) catFilter.value = ''; applyFilter();
+  });
+
+  var sortState = { key: null, dir: 1 };
+  var headers = Array.prototype.slice.call(table.tHead.rows[0].cells);
+  headers.forEach(function(th, colIdx){
+    var key = th.getAttribute('data-sort');
+    if(!key) return;
+    th.addEventListener('click', function(){
+      var dir = (sortState.key === key) ? -sortState.dir : 1;
+      sortState = { key: key, dir: dir };
+      headers.forEach(function(h){ h.querySelectorAll('.sort-arrow').forEach(function(a){ a.remove(); }); });
+      var arrow = document.createElement('span');
+      arrow.className = 'sort-arrow';
+      arrow.textContent = dir === 1 ? '▴' : '▾';
+      th.appendChild(arrow);
+
+      var type = th.getAttribute('data-type');
+      var rows = Array.prototype.slice.call(tbody.rows);
+      rows.sort(function(a, b){
+        var av = a.cells[colIdx].getAttribute('data-sort-v');
+        var bv = b.cells[colIdx].getAttribute('data-sort-v');
+        if(type === 'num'){
+          av = parseFloat(av); bv = parseFloat(bv);
+          return (av - bv) * dir;
+        }
+        av = a.cells[colIdx].textContent.trim().toLowerCase();
+        bv = b.cells[colIdx].textContent.trim().toLowerCase();
+        return av.localeCompare(bv) * dir;
+      });
+      rows.forEach(function(r){ tbody.appendChild(r); });
+    });
+  });
+
+  applyFilter();
+})();
+</script>
+<script>
+(function(){
+  var reset = document.getElementById('tcbReset');
+  var table = document.getElementById('tcbTable');
+  if (!reset || !table) return;
+  var wrap = table.closest('.tb-table-wrap') || table.parentNode;
+  var noRes = document.getElementById('tcbNoResults');
+  function make(id, label, open){
+    var b = document.createElement('button');
+    b.type = 'button'; b.id = id; b.textContent = label;
+    b.addEventListener('click', function(){
+      wrap.hidden = !open;
+      if (noRes) noRes.style.display = open ? '' : 'none';
+    });
+    return b;
+  }
+  reset.parentNode.insertBefore(make('tcbExpandAll', 'Expand all', true), reset);
+  reset.parentNode.insertBefore(make('tcbCollapseAll', 'Collapse all', false), reset);
+})();
+</script>
+
+<script>
+(function(){
+  var modal=document.getElementById("tbModal"); if(!modal) return;
+  var $=function(i){return document.getElementById(i)};
+  function esc(s){var d=document.createElement("div");d.textContent=s==null?"":s;return d.innerHTML}
+  function open(row){
+    var d=JSON.parse(row.getAttribute("data-detail"));
+    $("tbModalTitle").textContent=d.title;
+    $("tbModalGrid").innerHTML=[["Start",d.start],["End",d.end],["Duration",d.duration],["Share of total",d.share]].map(function(x){return "<div class=\"mg\"><div class=\"k\">"+esc(x[0])+"</div><div class=\"v\">"+esc(x[1])+"</div></div>"}).join("");
+    $("tbModalBefore").textContent=d.before; $("tbModalAfter").textContent=d.after;
+    $("tbModalSteps").innerHTML=d.steps.map(function(s){return "<li>"+esc(s)+"</li>"}).join("");
+    $("tbModalNote").textContent=d.note||"";
+    modal.classList.remove("js-hidden"); $("tbModalClose").focus();
+  }
+  function close(){ modal.classList.add("js-hidden"); }
+  Array.prototype.forEach.call(document.querySelectorAll(".tb-oh-click"),function(r){
+    r.addEventListener("click",function(){open(r)});
+    r.addEventListener("keydown",function(e){ if(e.key==="Enter"||e.key===" "){e.preventDefault();open(r)} });
+  });
+  $("tbModalClose").addEventListener("click",close);
+  modal.addEventListener("click",function(e){ if(e.target===modal) close(); });
+  document.addEventListener("keydown",function(e){ if(e.key==="Escape") close(); });
+})();
+</script>
+
+<script>
+(function(){
+  var secs=function(){return Array.prototype.slice.call(document.querySelectorAll("details.tb-sec"))};
+  var e=document.getElementById("tbExpandAll"), c=document.getElementById("tbCollapseAll");
+  if(e) e.addEventListener("click",function(){secs().forEach(function(d){d.open=true})});
+  if(c) c.addEventListener("click",function(){secs().forEach(function(d){d.open=false})});
+})();
+</script>
+
+</div></body></html>

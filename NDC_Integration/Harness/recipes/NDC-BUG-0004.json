@@ -1,0 +1,65 @@
+{
+  "id": "NDC-BUG-0004",
+  "title": "[V2][AirArabiaPlus][AddPassenger] – ParentPaxRefId Is Ignored: The Infant Is Attached to the First Adult",
+  "source": "Resources/AirArabiaPlus_bugs.xlsx row 5; ADO 65513; KB/02_Suppliers/AirArabiaPlus.md §4",
+  "supplier": "AirArabiaPlus",
+  "selector": "USA",
+  "version": "V2",
+  "testData": "TestData/AAP_2ADT1INF_AMM-SHJ_OW.json",
+  "chain": [
+    {
+      "step": "Search",
+      "offer": {
+        "direct": true
+      }
+    },
+    "FareConfirm",
+    {
+      "step": "AddPassenger",
+      "infantParents": {
+        "Pax3": "Pax2"
+      }
+    },
+    "Hold",
+    "Retrieve"
+  ],
+  "preconditions": [
+    {
+      "step": "Hold",
+      "path": "$.pnr",
+      "op": "exists"
+    }
+  ],
+  "assert": [
+    {
+      "step": "Hold",
+      "path": "$.selectedOffer.passengerFareBreakdown[?(@.passengerTypeCode=='INF')].passengerRefId",
+      "op": "equals",
+      "value": "I3/A2"
+    },
+    {
+      "step": "Retrieve",
+      "path": "$.selectedOffer.passengerFareBreakdown[?(@.passengerTypeCode=='INF')].passengerRefId",
+      "op": "equals",
+      "value": "I3/A2"
+    }
+  ],
+  "reproduces": [
+    {
+      "step": "Hold",
+      "path": "$.selectedOffer.passengerFareBreakdown[?(@.passengerTypeCode=='INF')].passengerRefId",
+      "op": "equals",
+      "value": "I3/A1"
+    }
+  ],
+  "fixedWhen": "all asserts pass",
+  "neighbours": [
+    "FLOW-V2-26"
+  ],
+  "notes": "Uses Hold (the 2026-11-11 BUG-18 verification showed Hold, Book and Retrieve behave the same), so no ticket is issued; the hold expires (~75 min).",
+  "approved": {
+    "by": "Mostafa Ebrahim Mostafa",
+    "date": "2026-11-17",
+    "sha": "7c579b4245c507fc"
+  }
+}

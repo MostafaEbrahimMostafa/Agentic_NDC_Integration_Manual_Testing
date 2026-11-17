@@ -1,0 +1,65 @@
+{
+  "label": "V1 Hold",
+  "method": "POST",
+  "url": "https://ndc-integration-stg-ne-3.azurewebsites.net/api/FlightBooking/Hold",
+  "headers": {
+    "x-api-key": "[REDACTED]",
+    "Client-Id": "NDC-Core",
+    "Content-Type": "application/json"
+  },
+  "body": {
+    "supplier": "SabreNdc",
+    "credentialsSelector": "EGY",
+    "fareConfirmResponseId": "e0225756-86ef-435b-909c-025452bbc919",
+    "selectedOfferId": "ce5bb4bf9478mpzqlmw3ffn617&lcC8Y2U1YmI0YmY5NDc4bXB6cWxtdzNmZm42MTctMZG+Y2U1YmI0YmY5NDc4bXB6cWxtdzNmZm42MTctMS0xkZPAqlBhc3NlbmdlcjGjQURUk8CSl6RTRUc0o0NBSaNET0jW/2sTc6TW/2sTrRCiUVKiUVKXpFNFRzOjRE9Io0pFRNb/axRP9Nb/axR1dKJRUqJRUpTAk8CoMTc1NjUuODCjRUdQk8CoMTEwMjkuODCjRUdQk8CnNjUzNi4wMKNFR1A=",
+    "passengersList": {
+      "Pax1": {
+        "title": "Mr",
+        "name": {
+          "first": "Fares",
+          "middle": "",
+          "last": "Barakat"
+        },
+        "nationality": "EG",
+        "residentCountry": "EG",
+        "birthDate": "1990-02-15T00:00:00.000Z",
+        "gender": "male",
+        "passengerTypeCode": "ADT",
+        "contactRefId": "0",
+        "travelDocument": {
+          "name": {
+            "first": "Fares",
+            "middle": "",
+            "last": "Barakat"
+          },
+          "nationality": "EG",
+          "expirationDate": "2030-10-01T00:00:00.000Z",
+          "issuanceDate": "2024-10-01T00:00:00.000Z",
+          "documentNumber": "A1039255",
+          "documentType": "PASSPORT",
+          "gender": "male",
+          "birthCountry": "EG",
+          "birthDate": "1990-02-15T00:00:00.000Z",
+          "issuanceCountryCode": "EG"
+        }
+      }
+    },
+    "contactsList": {
+      "0": {
+        "Email": "ndc.qa.void@gmail.com",
+        "phone": {
+          "type": "Mobile",
+          "countryDialingCode": "+20",
+          "phoneNumber": "01005747258"
+        },
+        "Address": {
+          "Line1": "New Cairo",
+          "Line2": "Al Nahda",
+          "City": "CAIRO",
+          "CountryCode": "EG"
+        }
+      }
+    },
+    "selectedBundles": []
+  }
+}

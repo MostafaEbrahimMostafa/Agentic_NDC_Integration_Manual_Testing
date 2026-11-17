@@ -1,0 +1,19 @@
+{
+  "label": "isolated 500 Void",
+  "method": "POST",
+  "url": "https://ndc-integration-stg-ne-3.azurewebsites.net/api/FlightBooking/Void",
+  "headers": {
+    "x-api-key": "[REDACTED]",
+    "Client-Id": "NDC-Core",
+    "Content-Type": "application/json"
+  },
+  "body": {
+    "supplier": "SabreNdc",
+    "credentialsSelector": "EGY",
+    "pnr": "OIBZUH",
+    "gdsPNR": "OIBZUH",
+    "bookingToken": "1SXXXC9QQP9ZH",
+    "surName": "Wahba",
+    "voidTickets": []
+  }
+}

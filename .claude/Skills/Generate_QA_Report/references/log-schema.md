@@ -16,6 +16,9 @@ it doesn't recognize.
 
 ## Execution-time accounting rule
 
+> **Revision 2026-10-10 (supersedes the Test Case Execution bullet below).** Test Case Execution is now the merged union of the intervals during which an API call was in flight: every `hops[]` and `attempts[]` entry's `[started_at, ended_at]` (attempts must therefore carry their own `started_at`/`ended_at`). A test case's own span (`started_at` to `timestamp`) is only a fallback for a legacy log with no per-call times. Idle gaps between calls are no longer execution; they fall into Other / Overhead. In the Test Case Time table each row's Execution is the test case's *share*: every elementary time slice is split evenly between the test cases whose calls cover it, so the rows sum exactly to the Test Case Execution card (no "parallel overlap" line any more).
+
+
 The JSONL is also the source of truth for the "Execution Time Breakdown" page (see
 `generate-qa-report`'s SKILL.md). There is no coded execution backend here — `execute-test-cases` *is*
 Claude reasoning and calling the live API — so the five time categories are defined precisely to avoid
@@ -393,3 +396,39 @@ Feeds the click-to-open popup on each row of the Time Breakdown page's "What's i
 `from` is matched (within 3 seconds) to the start of a computed gap; `steps` is plain prose of what actually
 happened in that window, taken from the conversation, never invented. A gap with no matching line still gets a
 popup, with its exact window and the events on either side plus a generic note. Not counted in any category.
+
+## Additions 2026-10-10 (Round 18 tooling)
+
+- `run_start` may carry presentation fields read by `render-md.js` / `render-html.js`: `title_line` (the .md H1 text after "QA Execution Report — "), `prior_runs`, `scope_text`, `coverage_text`, `description_text`. Without them the renderers fall back to a generic title and "N of M planned test cases".
+- A `test_case` line may carry `plain`: `{e,q,s,x,a}` (endpoint, request, response, expected, actual in plain, non-technical wording) for the six visible HTML card rows. `render-html.js` uses `t.plain`; an old run's built-in table is only a fallback.
+- Every `attempts[]` entry must carry its own `started_at` / `ended_at` (hops already do): Test Case Execution is built from call intervals, so a test case made only of attempts has no execution time without them.
+- Long bodies must be truncated before they are written to the log: arrays longer than 3 items keep 2 + `"__omitted__: N more items"`, strings over 110 characters are cut to 60 + `...[truncated]`, objects over 14 keys keep 8 + an `__omitted__` key. Untruncated seat maps and search results made the Round 18 HTML 30 MB.
+- `ai_operation` may name `related_tc_ids` (or `related_tc_id`); with neither, its duration is split evenly across all test cases in the Claude column of the Test Case Time table (an allocation, disclosed on the page).
+- `ai_operation_detail` (optional, one per operation): `{"type":"ai_operation_detail","operation":"<same name as the ai_operation>","steps":["..."]}` — plain-prose steps shown in that operation's popup.
+- Durations under 1 s are displayed in milliseconds, under 10 s with two decimals, under a minute with one decimal; the cards keep whole-second rounding and the Execution Phases table's Total Reporting Time footer shows both ("5.60s (card: 6s rounded)").
+
+## Guardrail fields (Enhancement Plan Step 4, 2026-11-17)
+
+All optional and additive, so the renderers ignore them and old logs stay valid. Rules:
+`.claude/Skills/_shared/AI_Guardrails.md`. Checked by `.claude/Skills/_shared/scripts/verify-evidence.js`,
+which writes `<slug>_evidence.md` / `.json` next to the log and never edits the log.
+
+- `run_start.build`: the build or version the run was tested on: `{"label":"RC-2026.11.3","source":"user"}`,
+  `{"label":"1.4.2","source":"swagger:info.version"}`, or `{"label":"not exposed","source":"unknown"}`. Always set it (KB L-04).
+- `build_change` (new line type): `{"type":"build_change","at":"<ISO>","from":"<label>","to":"<label>","evidence":"<what showed it>"}`.
+- `test_case.evidence_refs[]` (also on a `finding`): each entry is a checkable observation:
+  `{"source":"<repo-relative file, omit for this log>","line":<1-based for .jsonl>,"hop":<n>|"attempt":<n>,`
+  `"path":"<JSONPath | $status | $header.x>","op":"<assert.js operator>","value":<v>,"other":{"source","line","path"},`
+  `"also_checked":["<other step/level checked>"],"scoped":true}`.
+  With no `source` and no `line`, the ref points at the test case's own line (its `response_full`, or `hop`/`attempt`).
+  `also_checked` is required for absence ops (`notExists`, `allNull`, `notIn`, `notMatches`, `count` 0). `scoped:true`
+  means "absent here, present elsewhere is expected", and it is gated NEEDS-HUMAN.
+- `expectation_source`: `SPEC` | `LIVE-CONFIRMED` | `INFERRED` (on a `FAIL` test case and on every defect finding).
+- `expectation_quote`: for `SPEC`, the rule copied verbatim from the `spec_ref` section (backticks and asterisks are ignored).
+- `expectation_cite`: for `LIVE-CONFIRMED`, `{"file":"NDC_Integration/KB/02_Suppliers/<S>.md","quote":"..."}` or `{"file":"<log>","line":n}`.
+- `finding.repro.records[]`: one entry per reproduction run, `{"source":"<saved call>","line":n,"reproduced":true,"host":"<host>","at":"<ISO>"}`.
+  The script counts them. Never type a count.
+- `finding.second_opinion`: the fresh sub-agent's answer, copied as given: `{"by":"fresh-subagent",
+  "prompt":".claude/Skills/_shared/second-opinion-prompt.md","rule_met":"no|yes|cannot_tell","summary":"...","evidence_refs":[...]}`.
+
+Correct a guardrail field by appending a new `finding` line with the same `related_tc_id` + `bug_id` (the latest line wins).

@@ -63,27 +63,34 @@ $ErrorActionPreference = "Stop"
 
 # --- Resolve paths ----------------------------------------------------------
 if (-not $RepoRoot) {
-    # scripts\ -> Validate_TestData_Search\ -> Skills\ -> .claude\ -> .c\ -> repo root
-    $RepoRoot = (Resolve-Path (Join-Path $PSScriptRoot "..\..\..\..\..")).Path
+    # scripts\ -> Validate_TestData_Search\ -> Skills\ -> .claude\ -> repo root
+    $RepoRoot = (Resolve-Path (Join-Path $PSScriptRoot "..\..\..\..")).Path
 }
 if (-not $TestDataDir) { $TestDataDir = Join-Path $RepoRoot "NDC_Integration\TestData" }
 if (-not $ReportDir)   { $ReportDir   = Join-Path $RepoRoot "NDC_Integration\Artifacts\SearchSweep" }
 
 if (-not (Test-Path $TestDataDir)) { throw "TestData directory not found: $TestDataDir" }
 
-# The key is a shared staging secret that already lives in the committed collection; read it from
-# there rather than duplicating it into a third place that can drift.
-if (-not $ApiKey) {
-    $collection = Join-Path $RepoRoot "Postman_Collection\Collection_V2\NDC_Integrations_Staging_Scripts_V2.postman_collection.json"
-    if (Test-Path $collection) {
-        $m = [regex]::Match((Get-Content -Raw $collection), '"key"\s*:\s*"x-api-key"\s*,\s*"value"\s*:\s*"([^"]+)"')
-        if ($m.Success) { $ApiKey = $m.Groups[1].Value }
+# The key is a secret: it is NOT in the repo. Order: -ApiKey, then $env:NDC_API_KEY, then the
+# git-ignored repo-root .env file (copy .env.example to .env and fill it in).
+function Get-SweepEnvValue([string] $Name) {
+    $v = [Environment]::GetEnvironmentVariable($Name)
+    if ($v) { return $v }
+    $envFile = Join-Path $RepoRoot ".env"
+    if (Test-Path $envFile) {
+        foreach ($line in Get-Content $envFile) {
+            if ($line -match ('^\s*' + [regex]::Escape($Name) + '\s*=\s*(.*?)\s*$')) { return $Matches[1].Trim('"', "'") }
+        }
     }
-    if (-not $ApiKey) { throw "No -ApiKey supplied and none could be read from the V2 Postman collection." }
+    return $null
 }
+if (-not $ApiKey) { $ApiKey = Get-SweepEnvValue "NDC_API_KEY" }
+if (-not $ApiKey) { throw "No -ApiKey supplied and NDC_API_KEY is not set (env var or repo-root .env, see .env.example)." }
+$clientId = Get-SweepEnvValue "NDC_CLIENT_ID"
+if (-not $clientId) { $clientId = "NDC-Core" }
 
 $searchUri = "$($BaseUrl.TrimEnd('/'))/api/V2/FlightSearch/Search"
-$headers   = @{ "x-api-key" = $ApiKey; "Client-Id" = "NDC-Core" }
+$headers   = @{ "x-api-key" = $ApiKey; "Client-Id" = $clientId }
 
 # ---------------------------------------------------------------------------
 # Search

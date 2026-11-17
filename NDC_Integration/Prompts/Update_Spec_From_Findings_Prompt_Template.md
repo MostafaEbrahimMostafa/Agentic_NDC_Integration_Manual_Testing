@@ -23,6 +23,11 @@ On confirmation, apply the exact string replacement to SPEC.md byte-for-byte, ap
 
 Close with a final tally: N applied, N declined, N deferred, N skipped (text mismatch).
 
+Then propose Knowledge Base updates from the same run (step 9): compare the run with
+`NDC_Integration/KB/02_Suppliers/[Supplier].md` (and Environments / Lessons if relevant), show each
+change as `- Old:` / `+ New:` with a `Last verified: <date> / <env> / <run key>` line, and apply
+only what I confirm. No keys, PNRs or passenger names in the KB.
+
 **Stop and ask me, don't guess:**
 - if no run is named and more than one `.jsonl` exists under
   `NDC_Integration/Artifacts/Logs/` — don't assume "the most recent"

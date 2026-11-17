@@ -1,0 +1,17 @@
+{
+  "label": "isolated 500 BookAfterHold",
+  "method": "POST",
+  "url": "https://ndc-integration-stg-ne-3.azurewebsites.net/api/V2/FlightBooking/BookAfterHold",
+  "headers": {
+    "x-api-key": "[REDACTED]",
+    "Client-Id": "NDC-Core",
+    "Content-Type": "application/json"
+  },
+  "body": {
+    "supplier": "SabreNdc",
+    "credentialsSelector": "EGY",
+    "pnr": "OIFNJY",
+    "gdsPnr": "OIFNJY",
+    "bookingToken": "1SXXXC5WQWXQA"
+  }
+}

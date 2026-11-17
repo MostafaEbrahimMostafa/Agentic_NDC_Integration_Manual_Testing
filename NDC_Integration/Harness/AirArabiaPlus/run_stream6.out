@@ -1,0 +1,6 @@
+to run 4 of 53
+PASS    TC-VOIDCAP-VAL-09  57 bookings compared (Book/BookAfterHold vs Retrieve): identical voidCapability in every one
+PASS    TC-VOIDCAP-VAL-10  one literal for the "not voidable" state across Book, Hold, BookAfterHold and Retrieve: VoidNotAllowed (FareConfirmAfterHold returns null instead — se
+FAIL    TC-AUTH-SEC-05  Search: 401; FareConfirm: 401; GetOfferBundles: 401; GetAncillary: 401; SeatMap: 401; Retrieve: 200 (NOT rejected); FareConfirmAfterHold: 401; Book (f
+FAIL    TC-AUTH-SEC-06  Search: 401; FareConfirm: 401; GetOfferBundles: 401; GetAncillary: 401; SeatMap: 401; Retrieve: 200 (NOT rejected); FareConfirmAfterHold: 401; Book (f
+batch complete

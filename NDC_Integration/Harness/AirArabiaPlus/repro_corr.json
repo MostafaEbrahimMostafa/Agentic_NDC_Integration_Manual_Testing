@@ -1,0 +1,444 @@
+{
+ "out": {
+  "BUG-04": {
+   "Book_first_call": {
+    "endpoint": "Book",
+    "status": 200,
+    "recId": "00008_1794224494248",
+    "correlationId": "2b508cea-25f2-43c4-8e91-eb4a784d66ce",
+    "note": null,
+    "at": "2026-11-09T11:41:05.594Z"
+   },
+   "Book_second_call_same_request": {
+    "endpoint": "Book",
+    "status": 200,
+    "recId": "00009_1794224519950",
+    "correlationId": "db674197-4a17-4590-86bf-fed76775a9cc",
+    "note": "second PNR 6ZWAXV",
+    "at": "2026-11-09T11:41:34.250Z"
+   }
+  },
+  "BUG-21": {
+   "Book_G9_not_blocked": {
+    "endpoint": "Book",
+    "status": 200,
+    "recId": "00008_1794224494248",
+    "correlationId": "2b508cea-25f2-43c4-8e91-eb4a784d66ce",
+    "note": null,
+    "at": "2026-11-09T11:41:05.594Z"
+   }
+  },
+  "BUG-19": {
+   "Void_unsupported_message": {
+    "endpoint": "Void",
+    "status": 409,
+    "recId": "00010_1794224520563",
+    "correlationId": "088ccdf9-551a-46a4-a2af-ec370b9fc7dc",
+    "note": null,
+    "at": "2026-11-09T11:41:59.952Z"
+   }
+  },
+  "BUG-02": {
+   "Retrieve_selector_EGY": {
+    "endpoint": "Retrieve",
+    "status": 200,
+    "recId": "00011_1794224521510",
+    "correlationId": "eee12233-1e7b-477a-88c3-33a4dacddc96",
+    "note": null,
+    "at": "2026-11-09T11:42:00.566Z"
+   },
+   "Retrieve_selector_UAE_rejected": {
+    "endpoint": "Retrieve",
+    "status": 400,
+    "recId": "00012_1794224521685",
+    "correlationId": "01b8823f-d055-47f3-a856-28c7d28a640b",
+    "note": null,
+    "at": "2026-11-09T11:42:01.512Z"
+   }
+  },
+  "BUG-01": {
+   "Retrieve_invalid_x-api-key": {
+    "endpoint": "Retrieve",
+    "status": 200,
+    "recId": "00013_1794224522921",
+    "correlationId": "83bc0bfa-366b-493e-939a-85d8ead90ec9",
+    "note": null,
+    "at": "2026-11-09T11:42:01.689Z"
+   },
+   "Retrieve_invalid_Client-Id": {
+    "endpoint": "Retrieve",
+    "status": 200,
+    "recId": "00014_1794224524155",
+    "correlationId": "61d6ee3e-7a3f-4601-8a7e-2675b3c6a087",
+    "note": null,
+    "at": "2026-11-09T11:42:02.924Z"
+   },
+   "Retrieve_without_x-api-key": {
+    "endpoint": "Retrieve",
+    "status": 200,
+    "recId": "00015_1794224525814",
+    "correlationId": "4806d19b-e184-46b2-92da-53011c5987dc",
+    "note": null,
+    "at": "2026-11-09T11:42:04.158Z"
+   }
+  },
+  "BUG-20": {
+   "FareConfirmAfterHold_voidCapability_null": {
+    "endpoint": "FareConfirmAfterHold",
+    "status": 200,
+    "recId": "00016_1794224526777",
+    "correlationId": "11a7278d-3c69-4564-8f04-94b4f060141f",
+    "note": null,
+    "at": "2026-11-09T11:42:05.816Z"
+   }
+  },
+  "BUG-03": {
+   "BookAfterHold_after_expiry": {
+    "endpoint": "BookAfterHold",
+    "status": 200,
+    "recId": "00017_1794224535581",
+    "correlationId": "92d2820b-1dd5-4fdf-aed7-e18d0804293c",
+    "note": "expired hold 60REPV expired 2026-11-09T11:27:41+00:00",
+    "at": "2026-11-09T11:42:07.902Z"
+   },
+   "BookAfterHold_after_expiry_second_hold": {
+    "endpoint": "BookAfterHold",
+    "status": 200,
+    "recId": "00018_1794224549866",
+    "correlationId": "7047468f-a8a9-450e-a6c9-4993fe2f269c",
+    "note": "expired hold 66186B expired 2026-11-09T11:30:44+00:00",
+    "at": "2026-11-09T11:42:15.588Z"
+   }
+  },
+  "BUG-05": {
+   "Book_mismatched_ResponseId_and_offerId": {
+    "endpoint": "Book",
+    "status": 200,
+    "recId": "00026_1794224618243",
+    "correlationId": "c53f5f48-827e-4a46-8397-2428b69f17a1",
+    "note": null,
+    "at": "2026-11-09T11:43:17.858Z"
+   },
+   "Hold_unknown_ResponseId": {
+    "endpoint": "Hold",
+    "status": 200,
+    "recId": "00027_1794224646867",
+    "correlationId": "e711ce0c-6b91-4a52-b103-8f3fd01c3e38",
+    "note": null,
+    "at": "2026-11-09T11:43:38.246Z"
+   },
+   "FareConfirm_without_ResponseId": {
+    "endpoint": "FareConfirm",
+    "status": 200,
+    "recId": "00028_1794224655667",
+    "correlationId": "2f28f34b-796d-493a-8f33-041c1921937a",
+    "note": null,
+    "at": "2026-11-09T11:44:06.869Z"
+   }
+  },
+  "BUG-06": {
+   "Retrieve_mixed_triplet": {
+    "endpoint": "Retrieve",
+    "status": 200,
+    "recId": "00038_1794224747636",
+    "correlationId": "fb3922e4-9fce-4a7c-853b-01ddd0dd8fd3",
+    "note": null,
+    "at": "2026-11-09T11:45:46.170Z"
+   },
+   "BookAfterHold_mixed_triplet": {
+    "endpoint": "BookAfterHold",
+    "status": 200,
+    "recId": "00039_1794224757970",
+    "correlationId": "5639e1d9-b948-446d-a905-a8d9818460e8",
+    "note": null,
+    "at": "2026-11-09T11:45:47.637Z"
+   }
+  },
+  "BUG-07": {
+   "Book_foreign_seat_token": {
+    "endpoint": "Book",
+    "status": 409,
+    "recId": "00050_1794224828795",
+    "correlationId": "d4f7ad09-2a79-46b2-8898-88b16a490faa",
+    "note": null,
+    "at": "2026-11-09T11:47:00.671Z"
+   }
+  },
+  "BUG-08": {
+   "Search_E5_CAI-MCT": {
+    "endpoint": "Search",
+    "status": 200,
+    "recId": "00051_1794224830321",
+    "correlationId": "7ce8d635-52ab-4df9-89f5-146854cb72b3",
+    "note": null,
+    "at": "2026-11-09T11:47:08.800Z"
+   },
+   "Search_E5_HBE-BGY": {
+    "endpoint": "Search",
+    "status": 200,
+    "recId": "00052_1794224832240",
+    "correlationId": "9c5799f2-960b-4c37-9d6d-b35219d1e6b1",
+    "note": null,
+    "at": "2026-11-09T11:47:10.323Z"
+   }
+  },
+  "BUG-09": {
+   "Search_3O_CMN-SAW_with_offer": {
+    "endpoint": "Search",
+    "status": 200,
+    "recId": "00053_1794224847580",
+    "correlationId": "17d9df03-c248-40da-9651-f85ec78d85a2",
+    "note": "reproduction attempt (the original answer with an offer is not reproducible now)",
+    "at": "2026-11-09T11:47:12.248Z"
+   },
+   "Search_3O_SAW-CMN_empty_after_15s": {
+    "endpoint": "Search",
+    "status": 200,
+    "recId": "00054_1794224862885",
+    "correlationId": "b9806a20-d337-421b-ac50-8c487f1c9f6a",
+    "note": null,
+    "at": "2026-11-09T11:47:27.582Z"
+   }
+  },
+  "BUG-10": {
+   "GetOfferBundles": {
+    "endpoint": "GetOfferBundles",
+    "status": 200,
+    "recId": "00065_1794224941495",
+    "correlationId": "34ca6a26-19fa-4e55-8bb0-006e69049efa",
+    "note": null,
+    "at": "2026-11-09T11:48:58.843Z"
+   },
+   "SeatMap": {
+    "endpoint": "SeatMap",
+    "status": 200,
+    "recId": "00068_1794224976043",
+    "correlationId": "ad723999-a2a5-4ba2-a0f3-dc1b66c2f071",
+    "note": null,
+    "at": "2026-11-09T11:49:32.584Z"
+   },
+   "Book_bundle_with_child": {
+    "endpoint": "Book",
+    "status": 200,
+    "recId": "00070_1794225037438",
+    "correlationId": "55235cd7-44b6-4be3-9e8f-bb558d867933",
+    "note": null,
+    "at": "2026-11-09T11:50:01.869Z"
+   },
+   "Retrieve_same_booking": {
+    "endpoint": "Retrieve",
+    "status": 200,
+    "recId": "00071_1794225040876",
+    "correlationId": "d94ea6a7-41a8-4d08-930e-8a6facdc2054",
+    "note": null,
+    "at": "2026-11-09T11:50:37.442Z"
+   }
+  },
+  "BUG-11": {
+   "FareConfirm_rounding": {
+    "endpoint": "FareConfirm",
+    "status": 200,
+    "recId": "00073_1794225060489",
+    "correlationId": "63605c66-e74b-4631-87c5-07642b3bab46",
+    "note": null,
+    "at": "2026-11-09T11:50:51.517Z"
+   }
+  },
+  "BUG-12": {
+   "Book_with_seats": {
+    "endpoint": "Book",
+    "status": 200,
+    "recId": "00080_1794225101203",
+    "correlationId": "b8a0d5e2-b86c-4840-9cb4-bd782a4ca839",
+    "note": null,
+    "at": "2026-11-09T11:51:27.123Z"
+   }
+  },
+  "BUG-13": {
+   "SeatMap_occupied_priced": {
+    "endpoint": "SeatMap",
+    "status": 200,
+    "recId": "00085_1794225125167",
+    "correlationId": "d72143a5-12c5-4d45-b94c-fddd096d45a2",
+    "note": null,
+    "at": "2026-11-09T11:52:00.023Z"
+   }
+  },
+  "BUG-14": {
+   "Search_9_passengers_baseline": {
+    "endpoint": "Search",
+    "status": 200,
+    "recId": "00086_1794225131663",
+    "correlationId": "afdf6b7e-1abc-4a89-811a-c07cc88baa2d",
+    "note": null,
+    "at": "2026-11-09T11:52:05.178Z"
+   },
+   "Search_10_passengers": {
+    "endpoint": "Search",
+    "status": 200,
+    "recId": "00087_1794225145080",
+    "correlationId": "f49ffa5c-e8ed-4614-897c-b45616859069",
+    "note": null,
+    "at": "2026-11-09T11:52:11.665Z"
+   }
+  },
+  "BUG-15": {
+   "Search_missing_passengers_camelCase": {
+    "endpoint": "Search",
+    "status": 400,
+    "recId": "00090_1794225156027",
+    "correlationId": "1aa9d8c9-dc23-4c44-a69d-a75fe90a019a",
+    "note": null,
+    "at": "2026-11-09T11:52:35.162Z"
+   },
+   "Book_missing_ResponseId_PascalCase": {
+    "endpoint": "Book",
+    "status": 400,
+    "recId": "00091_1794225156311",
+    "correlationId": "ff6389be-b484-42ed-a3d2-f3376b88f24d",
+    "note": null,
+    "at": "2026-11-09T11:52:36.028Z"
+   },
+   "Search_lowercase_IATA_409_Z9999": {
+    "endpoint": "Search",
+    "status": 409,
+    "recId": "00092_1794225156523",
+    "correlationId": "d7046ccd-acad-42f6-a67f-d032ce5a6ec6",
+    "note": null,
+    "at": "2026-11-09T11:52:36.313Z"
+   }
+  },
+  "BUG-16": {
+   "SeatMap_unknown_ids_500": {
+    "endpoint": "SeatMap",
+    "status": 500,
+    "recId": "00093_1794225156785",
+    "correlationId": "6a66b724-dad3-49d3-87dc-c9cb1546d038",
+    "note": null,
+    "at": "2026-11-09T11:52:36.528Z"
+   }
+  },
+  "BUG-17": {
+   "AddPassenger_hyphen_apostrophe": {
+    "endpoint": "AddPassenger",
+    "status": 400,
+    "recId": "00096_1794225163921",
+    "correlationId": "716c5e3d-fba1-493f-a95e-10e9a946ea08",
+    "note": null,
+    "at": "2026-11-09T11:52:43.683Z"
+   }
+  },
+  "BUG-18": {
+   "Book_infant_parent_Pax2": {
+    "endpoint": "Book",
+    "status": 200,
+    "recId": "00004_1794225237489",
+    "correlationId": "4bd22c1d-e05c-4ba4-8229-56f89943582d",
+    "note": null,
+    "at": "2026-11-09T11:53:43.736Z"
+   }
+  },
+  "BUG-24": {
+   "GetAncillary_misspelled_key": {
+    "endpoint": "GetAncillary",
+    "status": 200,
+    "recId": "00009_1794225271520",
+    "correlationId": "3813f99d-169c-4f7f-8ea2-787a8f90a674",
+    "note": null,
+    "at": "2026-11-09T11:54:27.399Z"
+   }
+  }
+ },
+ "newPnr": [
+  {
+   "pnr": "6XMGKX",
+   "ep": "Book",
+   "bug": "BUG-04"
+  },
+  {
+   "pnr": "6XMGKX",
+   "ep": "Book",
+   "bug": "BUG-21"
+  },
+  {
+   "pnr": "6ZWAXV",
+   "ep": "Book",
+   "bug": "BUG-04"
+  },
+  {
+   "pnr": "6XMGKX",
+   "ep": "Retrieve",
+   "bug": "BUG-02"
+  },
+  {
+   "pnr": "637QLM",
+   "ep": "Retrieve",
+   "bug": "BUG-01"
+  },
+  {
+   "pnr": "637QLM",
+   "ep": "Retrieve",
+   "bug": "BUG-01"
+  },
+  {
+   "pnr": "637QLM",
+   "ep": "Retrieve",
+   "bug": "BUG-01"
+  },
+  {
+   "pnr": "60REPV",
+   "ep": "BookAfterHold",
+   "bug": "BUG-03"
+  },
+  {
+   "pnr": "66186B",
+   "ep": "BookAfterHold",
+   "bug": "BUG-03"
+  },
+  {
+   "pnr": "659R18",
+   "ep": "Book",
+   "bug": "BUG-05"
+  },
+  {
+   "pnr": "6SXX1J",
+   "ep": "Hold",
+   "bug": "BUG-05"
+  },
+  {
+   "pnr": "62GCUX",
+   "ep": "Retrieve",
+   "bug": "BUG-06"
+  },
+  {
+   "pnr": "62GCUX",
+   "ep": "BookAfterHold",
+   "bug": "BUG-06"
+  },
+  {
+   "pnr": "61FT0L",
+   "ep": "Book",
+   "bug": "BUG-10"
+  },
+  {
+   "pnr": "61FT0L",
+   "ep": "Retrieve",
+   "bug": "BUG-10"
+  },
+  {
+   "pnr": "6UFR7T",
+   "ep": "Book",
+   "bug": "BUG-12"
+  },
+  {
+   "pnr": "64WHV2",
+   "ep": "Book",
+   "bug": "BUG-18"
+  },
+  {
+   "pnr": "6IANZV",
+   "ep": "Book",
+   "bug": "BUG-18"
+  }
+ ]
+}

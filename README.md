@@ -50,10 +50,15 @@ them into the Postman app lets you poke around by hand first:
    collection JSON files under `Collection_V1/` and `Collection_V2/`, plus the environment file).
 2. Import `Postman_Collection/Environment/STAG_ENV.postman_environment.json` as an environment and
    select it in the top-right environment dropdown.
-3. Confirm the environment's three variables look right (defaults shipped in the repo):
+3. Confirm the environment's variables look right (defaults shipped in the repo):
    - `baseUrl` → `https://ndc-integration-stg-ne-3.azurewebsites.net/`
    - `Supplier_Name` → `TravelportNdc`
    - `Credentials_Selector` → `UAE`
+   - `x_api_key` → empty in the repo. Put the staging key in its **Current value** (ask the team
+     lead; it is not in git). The collections send it as `{{x_api_key}}`.
+
+   For the harness and skills, also copy `.env.example` (repo root) to `.env` and set
+   `NDC_API_KEY=`. `.env` is git-ignored; never commit it.
 4. Send any request in the `Collection_V1` or `Collection_V2` folder to confirm you get a `200`
    back — this proves your network/VPN access to staging is working before you involve Claude Code.
 
@@ -71,7 +76,9 @@ claude
 Claude Code auto-discovers the skills under `.claude/Skills/` — you don't need to install or
 register anything. Confirm they're visible by typing `/` in the Claude Code prompt; you should see
 `Analyze_User_Story`, `Generate_Test_Cases`, `Execute_Test_cases`, `Generate_QA_Report`,
-`Generate_Bug_Report`, `Update_Spec_From_Findings`, and `Validate_TestData_Search` in the list.
+`Generate_Bug_Report`, `Update_Spec_From_Findings`, `Validate_TestData_Search`, `Retest_Issues`, and
+`Optimize_Prompt` in the list. `Optimize_Prompt` is optional: it turns a vague request into a complete
+prompt (and asks for anything missing) before you run one of the other skills.
 
 ### 5. Read the source of truth once
 
@@ -205,6 +212,7 @@ each can also be used standalone:
 | 5 | **Generate_Bug_Report** | Turns each confirmed defect from an execution run into a submittable Markdown bug report using the house template. |
 | 6 | **Update_Spec_From_Findings** | Reconciles `SPEC.md` with facts confirmed live during execution — always shows a diff and asks for confirmation before editing. |
 | — | **Validate_TestData_Search** | Housekeeping: checks that every fixture in `TestData/` still returns live flights, and repairs the ones that don't. |
+| — | **Retest_Issues** | RC regression: re-tests a bug list (Global/ADO/run IDs or a bug sheet) from the Bug Registry (`Artifacts/Bug_Registry.csv`) using approved repro recipes and one generic runner; verdict per bug (Fixed / Still reproduces / Blocked / Behaviour changed) plus neighbour flows. |
 
 **Golden rule across all skills:** nothing gets guessed. If a fact isn't confirmed by the spec or
 a live call, it's labeled `UNKNOWN` (or `INFERRED` when reasonably deduced) rather than assumed.
@@ -226,7 +234,8 @@ a live call, it's labeled `UNKNOWN` (or `INFERRED` when reasonably deduced) rath
 ## Where to start
 
 - New to the project? Follow [Getting started from scratch](#getting-started-from-scratch) top to
-  bottom.
+  bottom, then read `NDC_Integration/KB/00_Start_Here.md` (the project Knowledge Base: domain,
+  supplier facts, environments, lessons learned) and run your first smoke test from there.
 - To understand the API itself: read `NDC_Integration/SPEC.md`.
 - To understand the QA automation this project builds on top of: read `NDC_Integration/NDC_PRD.md`.
 - To run a test cycle: see [Running a test cycle](#running-a-test-cycle), or jump straight to the

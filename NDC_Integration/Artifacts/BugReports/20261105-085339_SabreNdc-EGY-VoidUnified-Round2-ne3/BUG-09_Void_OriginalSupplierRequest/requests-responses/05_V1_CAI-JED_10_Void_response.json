@@ -1,0 +1,21 @@
+{
+  "label": "V1 CAI-JED #10 Void",
+  "status": 409,
+  "durationMs": 1720,
+  "requestedAtUtc": "2026-11-05T10:24:42.482Z",
+  "respondedAtUtc": "2026-11-05T10:24:44.202Z",
+  "body": {
+    "Status": 409,
+    "TransactionId": "b02fbc0a-70ae-49c2-b5fd-e779da530113",
+    "ErrorCode": "NDC-INT-UNC-Z9999",
+    "ErrorMessage": "NDC-INT-UNC-Z9999",
+    "Context": [
+      {
+        "Name": "500",
+        "Value": "oops, something went seriously wrong"
+      }
+    ],
+    "OriginalSupplierRequest": "[REDACTED - raw supplier payload, per SPEC.md 7.14]",
+    "OriginalSupplierResponse": "[REDACTED - raw supplier payload, per SPEC.md 7.14]"
+  }
+}

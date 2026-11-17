@@ -1,0 +1,51 @@
+{
+ "RES": {
+  "TC-NEXTAVAIL-EDGE-01": "PASS",
+  "TC-NEXTAVAIL-EDGE-02": "PASS",
+  "TC-NEXTAVAIL-EDGE-03": "PASS",
+  "TC-NEXTAVAIL-EDGE-04": "PASS",
+  "TC-NEXTAVAIL-EDGE-05": "FAIL",
+  "TC-NEXTAVAIL-EDGE-06": "PASS",
+  "TC-SELECTAVAIL-EDGE-01": "BLOCKED",
+  "TC-SELECTAVAIL-EDGE-02": "PASS",
+  "TC-SELECTAVAIL-EDGE-03": "PASS",
+  "TC-SELECTAVAIL-EDGE-04": "BLOCKED",
+  "TC-SELECTAVAIL-EDGE-05": "BLOCKED",
+  "TC-SELECTAVAIL-EDGE-06": "PASS",
+  "TC-SELECTAVAIL-EDGE-07": "PASS",
+  "TC-SELECTAVAIL-EDGE-08": "FAIL",
+  "TC-SELECTAVAIL-EDGE-09": "FAIL"
+ },
+ "ERRS": {},
+ "DEF": [
+  {
+   "tc": "TC-NEXTAVAIL-EDGE-05",
+   "actual": "Ids captured 11 minutes ago (2026-11-12T20:04:47.888Z). HTTP 200 accepted (200 — page 2, hasMoreResults=true, 1 originDestinations, journeys per OD [6], availabilityId/resp...)",
+   "hops": [
+    "00016_1794514580368"
+   ]
+  },
+  {
+   "tc": "TC-SELECTAVAIL-EDGE-08",
+   "actual": "offerIds distinct: true; A priced QR1310@2026-12-12T02:15:00+QR1190@2026-12-12T07:25:00 (selected QR1310@2026-12-12T02:15:00+QR1190@2026-12-12T07:25:00) match=true; B priced QR1306@2026-12-12T01:20:00+QR1190@2026-12-12T07:25:00 (selected QR1306@2026-12-12T01:05:00+QR1190@2026-12-12T07:25:00) match=false.",
+   "hops": [
+    "00017_1794514583382",
+    "00025_1794514599228",
+    "00026_1794514599985",
+    "00027_1794514602211",
+    "00028_1794514604178"
+   ]
+  },
+  {
+   "tc": "TC-SELECTAVAIL-EDGE-09",
+   "actual": "[{\"journey\":null}] ok: HTTP 400; ErrorCode NDC-INT-TEC-A0001; ErrorMessage \"Invalid request. Please check the request parameters and try again.\"; Context [{\"Name\":\"Predic... | [{\"journey\":{\"segment\":null}}] ok: HTTP 400; ErrorCode NDC-INT-TEC-A0001; ErrorMessage \"Invalid request. Please check the request parameters and try again.\"; Context [{\"Name\":\"Predic... | [[]] PROBLEM: HTTP 400; ErrorCode 1001; ErrorMessage \"Validation errors occurred. Please check your request.\"; Context [{\"name\":\"selectAvailabilityRequestDto\",\"v... — PROBLEM: internal/.NET detail in ErrorMessage/Context | [\"\"] PROBLEM: HTTP 400; ErrorCode 1001; ErrorMessage \"Validation errors occurred. Please check your request.\"; Context [{\"name\":\"selectAvailabilityRequestDto\",\"v... — PROBLEM: internal/.NET detail in ErrorMessage/Context",
+   "hops": [
+    "00017_1794514583382",
+    "00029_1794514604463",
+    "00030_1794514604560",
+    "00031_1794514604658",
+    "00032_1794514604750"
+   ]
+  }
+ ]
+}

@@ -1,0 +1,17 @@
+{
+ "RES": {
+  "TC-AVAIL-VAL-07": "PASS",
+  "TC-AVAIL-VAL-08": "PASS",
+  "TC-AVAIL-BND-01": "PASS"
+ },
+ "ERRS": {},
+ "DEF": [
+  {
+   "tc": "TC-AVAIL-SEC-05",
+   "actual": "HTTP 200. Supplier request/response fields in the body: supplierRequest, supplierResponse; credential-like content (password/WSSE/api key/username): true; PCC/branch identifier (TargetBranch) in supplierRequest: false; AuthorizedBy value: n/a.",
+   "hops": [
+    "00005_1794405435577"
+   ]
+  }
+ ]
+}

@@ -1,0 +1,4 @@
+# Local secrets (API key for the NDC harness, Postman, sweep script). See .env.example.
+.env
+.env.*
+!.env.example

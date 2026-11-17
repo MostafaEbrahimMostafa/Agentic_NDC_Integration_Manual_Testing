@@ -1,0 +1,19 @@
+{
+  "label": "V1 Void without pnr (PascalCase envelope)",
+  "status": 400,
+  "durationMs": 107,
+  "requestedAtUtc": "2026-11-05T10:54:44.306Z",
+  "respondedAtUtc": "2026-11-05T10:54:44.413Z",
+  "body": {
+    "Status": 400,
+    "TransactionId": "b9daed8d-f13b-47ee-a92e-72c479dd0f4e",
+    "ErrorCode": "NDC-INT-TEC-A0001",
+    "ErrorMessage": "Invalid request. Please check the request parameters and try again.",
+    "Context": [
+      {
+        "Name": "NotEmptyValidator",
+        "Value": "PNR is required."
+      }
+    ]
+  }
+}

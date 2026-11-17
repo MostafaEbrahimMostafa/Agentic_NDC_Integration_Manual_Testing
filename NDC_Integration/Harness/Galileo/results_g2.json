@@ -1,0 +1,190 @@
+{
+ "RES": {
+  "TC-NEXTAVAIL-POS-01": "FAIL",
+  "TC-NEXTAVAIL-POS-02": "PASS",
+  "TC-NEXTAVAIL-POS-03": "PASS",
+  "TC-NEXTAVAIL-VAL-01": "PASS",
+  "TC-NEXTAVAIL-VAL-02": "PASS",
+  "TC-NEXTAVAIL-VAL-03": "FAIL",
+  "TC-NEXTAVAIL-VAL-04": "PASS",
+  "TC-NEXTAVAIL-VAL-05": "PASS",
+  "TC-NEXTAVAIL-VAL-06": "FAIL",
+  "TC-NEXTAVAIL-NEG-01": "PASS",
+  "TC-NEXTAVAIL-NEG-02": "PASS",
+  "TC-NEXTAVAIL-NEG-03": "PASS",
+  "TC-NEXTAVAIL-NEG-04": "PASS",
+  "TC-NEXTAVAIL-NEG-05": "PASS",
+  "TC-NEXTAVAIL-NEG-06": "PASS",
+  "TC-NEXTAVAIL-NEG-07": "FAIL",
+  "TC-NEXTAVAIL-NEG-08": "FAIL",
+  "TC-NEXTAVAIL-NEG-09": "FAIL",
+  "TC-NEXTAVAIL-NEG-10": "FAIL",
+  "TC-NEXTAVAIL-NEG-11": "PASS",
+  "TC-NEXTAVAIL-NEG-12": "FAIL",
+  "TC-NEXTAVAIL-SEC-01": "PASS",
+  "TC-NEXTAVAIL-SEC-02": "PASS",
+  "TC-NEXTAVAIL-SEC-03": "FAIL"
+ },
+ "ERRS": {
+  "TC-NEXTAVAIL-NEG-01": {
+   "ep": "NextAvailability",
+   "status": 400,
+   "code": "1001",
+   "msg": "Validation errors occurred. Please check your request.",
+   "casing": "camelCase",
+   "ok": true
+  },
+  "TC-NEXTAVAIL-NEG-02": {
+   "ep": "NextAvailability",
+   "status": 400,
+   "code": "1001",
+   "msg": "Validation errors occurred. Please check your request.",
+   "casing": "camelCase",
+   "ok": true
+  },
+  "TC-NEXTAVAIL-NEG-03": {
+   "ep": "NextAvailability",
+   "status": 400,
+   "code": "1001",
+   "msg": "Validation errors occurred. Please check your request.",
+   "casing": "camelCase",
+   "ok": true
+  },
+  "TC-NEXTAVAIL-NEG-04": {
+   "ep": "NextAvailability",
+   "status": 400,
+   "code": "1001",
+   "msg": "Validation errors occurred. Please check your request.",
+   "casing": "camelCase",
+   "ok": true
+  },
+  "TC-NEXTAVAIL-NEG-05": {
+   "ep": "NextAvailability",
+   "status": 400,
+   "code": "1001",
+   "msg": "Validation errors occurred. Please check your request.",
+   "casing": "camelCase",
+   "ok": true
+  },
+  "TC-NEXTAVAIL-NEG-06": {
+   "ep": "NextAvailability",
+   "status": 404,
+   "code": "NotFoundResource",
+   "msg": "The requested resource was not found.",
+   "casing": "PascalCase",
+   "ok": true
+  },
+  "TC-NEXTAVAIL-NEG-07": {
+   "ep": "NextAvailability",
+   "status": 400,
+   "code": "1001",
+   "msg": "Validation errors occurred. Please check your request.",
+   "casing": "camelCase",
+   "ok": false
+  },
+  "TC-NEXTAVAIL-NEG-08": {
+   "ep": "NextAvailability",
+   "status": 400,
+   "code": "1001",
+   "msg": "Validation errors occurred. Please check your request.",
+   "casing": "camelCase",
+   "ok": false
+  },
+  "TC-NEXTAVAIL-NEG-09": {
+   "ep": "NextAvailability",
+   "status": 400,
+   "code": "1001",
+   "msg": "Validation errors occurred. Please check your request.",
+   "casing": "camelCase",
+   "ok": false
+  },
+  "TC-NEXTAVAIL-NEG-10": {
+   "ep": "NextAvailability",
+   "status": 200,
+   "msg": "undefined",
+   "casing": "none",
+   "ok": false
+  }
+ },
+ "DEF": [
+  {
+   "tc": "TC-NEXTAVAIL-POS-01",
+   "actual": "BASE CAI-JED +30 pages (page 1 hasMoreResults=true) but the next page failed on 2/2 attempts here (and 5 of 5 times in probes made before the run): HTTP 409; ErrorCode NDC-INT-UNC-Z9999; ErrorMessage \"NDC-INT-UNC-Z9999\"; Context [{\"Name\":\"TimedOut\",\"Value\":\"Request Timed Out or Canceled\"}]; envelope PascalCase after 10524 ms / HTTP 409; ErrorCode NDC-INT-UNC-Z9999; ErrorMessage \"NDC-INT-UNC-Z9999\"; Context [{\"Name\":\"TimedOut\",\"Value\":\"Request Timed Out or Canceled\"}]; envelope PascalCase after 10530 ms. The 409 is a supplier timeout (Context TimedOut) carried as an unclassified Z9999 error. The same endpoint pages correctly for JED-CAI +30 (page 2 in 4025 ms), so the failure depends on the route/date, not on the endpoint being down.",
+   "hops": [
+    "00001_1794729429695",
+    "00002_1794729440222",
+    "00003_1794729448583",
+    "00004_1794729459115",
+    "00005_1794729462746",
+    "00006_1794729466773"
+   ]
+  },
+  {
+   "tc": "TC-NEXTAVAIL-VAL-03",
+   "actual": "Round-trip page 2 failed: HTTP 409; ErrorCode NDC-INT-UNC-Z9999; ErrorMessage \"NDC-INT-UNC-Z9999\"; Context [{\"Name\":\"TimedOut\",\"Value\":\"Request Timed Out or Canceled\"}]; envelope PascalCase",
+   "hops": [
+    "00016_1794729509139",
+    "00017_1794729519494"
+   ]
+  },
+  {
+   "tc": "TC-NEXTAVAIL-VAL-06",
+   "actual": "First send 200; second send HTTP 409; ErrorCode NDC-INT-UNC-Z9999; ErrorMessage \"NDC-INT-UNC-Z9999\"; Context [{\"Name\":\"18\",\"Value\":\"A bad availability specification was found. - A bad availability specifica...; envelope PascalCase. raw supplier request/response in the error body (OriginalSupplierRequest/OriginalSupplierResponse)",
+   "hops": [
+    "00022_1794729533754",
+    "00023_1794729537400",
+    "00024_1794729537956"
+   ]
+  },
+  {
+   "tc": "TC-NEXTAVAIL-NEG-07",
+   "actual": "HTTP 400; ErrorCode 1001; ErrorMessage \"Validation errors occurred. Please check your request.\"; Context [{\"name\":\"availabilityRequestDto\",\"value\":\"The availabilityRequestDto field is required.\"},{\"name...; envelope camelCase. Problems: internal/.NET detail in ErrorMessage/Context.",
+   "hops": [
+    "00037_1794729562532",
+    "00038_1794729562670"
+   ]
+  },
+  {
+   "tc": "TC-NEXTAVAIL-NEG-08",
+   "actual": "HTTP 400; ErrorCode 1001; ErrorMessage \"Validation errors occurred. Please check your request.\"; Context [{\"name\":\"availabilityRequestDto\",\"value\":\"The availabilityRequestDto field is required.\"},{\"name...; envelope camelCase. Problems: internal/.NET detail in ErrorMessage/Context.",
+   "hops": [
+    "00039_1794729566063",
+    "00040_1794729566205"
+   ]
+  },
+  {
+   "tc": "TC-NEXTAVAIL-NEG-09",
+   "actual": "HTTP 400; ErrorCode 1001; ErrorMessage \"Validation errors occurred. Please check your request.\"; Context [{\"name\":\"availabilityRequestDto\",\"value\":\"The availabilityRequestDto field is required.\"},{\"name...; envelope camelCase. Problems: internal/.NET detail in ErrorMessage/Context.",
+   "hops": [
+    "00041_1794729571402",
+    "00042_1794729571542"
+   ]
+  },
+  {
+   "tc": "TC-NEXTAVAIL-NEG-10",
+   "actual": "HTTP 200 — the request was accepted (200 — page 2, hasMoreResults=true, 1 originDestinations, journeys per OD [14], availabilityId/responseId present). Problems: HTTP 200 instead of a 4xx; error envelope incomplete (needs Status, TransactionId, ErrorCode, ErrorMessage); mismatched id pair accepted and a page returned (cross-identifier pair, High).",
+   "hops": [
+    "00043_1794729575410",
+    "00044_1794729582147",
+    "00045_1794729588610"
+   ]
+  },
+  {
+   "tc": "TC-NEXTAVAIL-NEG-12",
+   "actual": "HTTP 409; ErrorCode NDC-INT-UNC-Z9999; ErrorMessage \"NDC-INT-UNC-Z9999\"; Context [{\"Name\":\"18\",\"Value\":\"A bad availability specification was found. - A bad availability specifica...; envelope PascalCase. raw supplier request/response in the error body (OriginalSupplierRequest/OriginalSupplierResponse)",
+   "hops": [
+    "00048_1794729602919",
+    "00049_1794729614646",
+    "00050_1794729615972"
+   ]
+  },
+  {
+   "tc": "TC-NEXTAVAIL-SEC-03",
+   "actual": "HTTP 200. Supplier request/response fields: supplierRequest, supplierResponse; credential-like content: false; PCC/branch identifier (TargetBranch) in supplierRequest: true; AuthorizedBy: masked.",
+   "hops": [
+    "00055_1794729632572",
+    "00056_1794729638222"
+   ]
+  }
+ ]
+}

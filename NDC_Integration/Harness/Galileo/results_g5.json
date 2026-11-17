@@ -1,0 +1,200 @@
+{
+ "RES": {
+  "TC-AVAIL-EDGE-01": "FAIL",
+  "TC-AVAIL-EDGE-02": "PASS",
+  "TC-AVAIL-EDGE-03": "FAIL",
+  "TC-AVAIL-EDGE-04": "FAIL",
+  "TC-AVAIL-EDGE-05": "FAIL",
+  "TC-AVAIL-EDGE-06": "FAIL",
+  "TC-AVAIL-EDGE-07": "PASS",
+  "TC-AVAIL-EDGE-08": "PASS",
+  "TC-AVAIL-EDGE-09": "PASS",
+  "TC-AVAIL-EDGE-10": "PASS",
+  "TC-AVAIL-EDGE-11": "PASS",
+  "TC-AVAIL-EDGE-12": "PASS",
+  "TC-AVAIL-EDGE-13": "FAIL",
+  "TC-AVAIL-EDGE-14": "FAIL",
+  "TC-AVAIL-EDGE-15": "FAIL",
+  "TC-AVAIL-EDGE-16": "FAIL",
+  "TC-AVAIL-EDGE-17": "PASS",
+  "TC-AVAIL-EDGE-18": "PASS",
+  "TC-AVAIL-EDGE-19": "PASS",
+  "TC-AVAIL-EDGE-20": "FAIL",
+  "TC-AVAIL-EDGE-21": "PASS",
+  "TC-AVAIL-EDGE-22": "PASS",
+  "TC-AVAIL-EDGE-23": "PASS",
+  "TC-AVAIL-EDGE-24": "FAIL",
+  "TC-AVAIL-EDGE-25": "FAIL",
+  "TC-AVAIL-EDGE-26": "PASS",
+  "TC-AVAIL-EDGE-27": "PASS",
+  "TC-AVAIL-EDGE-28": "FAIL",
+  "TC-AVAIL-EDGE-29": "PASS",
+  "TC-AVAIL-EDGE-30": "FAIL",
+  "TC-AVAIL-EDGE-31": "FAIL",
+  "TC-AVAIL-EDGE-32": "PASS",
+  "TC-AVAIL-EDGE-33": "PASS",
+  "TC-AVAIL-EDGE-34": "PASS",
+  "TC-AVAIL-EDGE-35": "PASS",
+  "TC-AVAIL-EDGE-36": "PASS",
+  "TC-AVAIL-EDGE-37": "PASS",
+  "TC-AVAIL-EDGE-38": "PASS",
+  "TC-AVAIL-EDGE-39": "FAIL",
+  "TC-AVAIL-EDGE-40": "PASS",
+  "TC-AVAIL-EDGE-41": "PASS",
+  "TC-AVAIL-EDGE-42": "PASS"
+ },
+ "ERRS": {},
+ "DEF": [
+  {
+   "tc": "TC-AVAIL-EDGE-01",
+   "actual": "[+90] ok: HTTP 200, 16 journeys | [+180] ok: HTTP 200, 16 journeys | [+330] ok: HTTP 200, 7 journeys | [+364] PROBLEM: HTTP 409; ErrorCode NDC-INT-UNC-Z9999; ErrorMessage \"NDC-INT-UNC-Z9999\"; Context [{\"Name\":\"-1\",\"Value\":\"REQUESTED DATE OUTSIDE SYSTEM RANGE - REQUE... — PROBLEM: raw supplier request/response in the error body (OriginalSupplierRequest/OriginalSupplierResponse)",
+   "hops": [
+    "00001_1794729989747",
+    "00002_1794729992804",
+    "00003_1794730002306",
+    "00004_1794730002959"
+   ]
+  },
+  {
+   "tc": "TC-AVAIL-EDGE-03",
+   "actual": "[2026-02-30] PROBLEM: HTTP 400; ErrorCode 1001; ErrorMessage \"Validation errors occurred. Please check your request.\"; Context [{\"name\":\"availabilityRequestDto\",\"value\":... — PROBLEM: internal/.NET detail in ErrorMessage/Context | [2026-13-01] PROBLEM: HTTP 400; ErrorCode 1001; ErrorMessage \"Validation errors occurred. Please check your request.\"; Context [{\"name\":\"availabilityRequestDto\",\"value\":... — PROBLEM: internal/.NET detail in ErrorMessage/Context | [2026-00-10] PROBLEM: HTTP 400; ErrorCode 1001; ErrorMessage \"Validation errors occurred. Please check your request.\"; Context [{\"name\":\"availabilityRequestDto\",\"value\":... — PROBLEM: internal/.NET detail in ErrorMessage/Context | [0000-00-00] PROBLEM: HTTP 400; ErrorCode 1001; ErrorMessage \"Validation errors occurred. Please check your request.\"; Context [{\"name\":\"availabilityRequestDto\",\"value\":... — PROBLEM: internal/.NET detail in ErrorMessage/Context",
+   "hops": [
+    "00008_1794730014492",
+    "00009_1794730014648",
+    "00010_1794730015086",
+    "00011_1794730015257"
+   ]
+  },
+  {
+   "tc": "TC-AVAIL-EDGE-04",
+   "actual": "[DD/MM/YYYY] PROBLEM: HTTP 400; ErrorCode 1001; ErrorMessage \"Validation errors occurred. Please check your request.\"; Context [{\"name\":\"availabilityRequestDto\",\"value\":... — PROBLEM: internal/.NET detail in ErrorMessage/Context | [YYYYMMDD] PROBLEM: HTTP 400; ErrorCode 1001; ErrorMessage \"Validation errors occurred. Please check your request.\"; Context [{\"name\":\"availabilityRequestDto\",\"value\":... — PROBLEM: internal/.NET detail in ErrorMessage/Context | [Mon DD YYYY] PROBLEM: HTTP 400; ErrorCode 1001; ErrorMessage \"Validation errors occurred. Please check your request.\"; Context [{\"name\":\"availabilityRequestDto\",\"value\":... — PROBLEM: internal/.NET detail in ErrorMessage/Context | [epoch number] PROBLEM: HTTP 400; ErrorCode 1001; ErrorMessage \"Validation errors occurred. Please check your request.\"; Context [{\"name\":\"availabilityRequestDto\",\"value\":... — PROBLEM: internal/.NET detail in ErrorMessage/Context",
+   "hops": [
+    "00012_1794730016077",
+    "00013_1794730016262",
+    "00014_1794730016399",
+    "00015_1794730016534"
+   ]
+  },
+  {
+   "tc": "TC-AVAIL-EDGE-05",
+   "actual": "[null] PROBLEM: HTTP 400; ErrorCode 1001; ErrorMessage \"Validation errors occurred. Please check your request.\"; Context [{\"name\":\"availabilityRequestDto\",\"value\":... — PROBLEM: internal/.NET detail in ErrorMessage/Context | [empty string] PROBLEM: HTTP 400; ErrorCode 1001; ErrorMessage \"Validation errors occurred. Please check your request.\"; Context [{\"name\":\"availabilityRequestDto\",\"value\":... — PROBLEM: internal/.NET detail in ErrorMessage/Context | [whitespace] PROBLEM: HTTP 400; ErrorCode 1001; ErrorMessage \"Validation errors occurred. Please check your request.\"; Context [{\"name\":\"availabilityRequestDto\",\"value\":... — PROBLEM: internal/.NET detail in ErrorMessage/Context | [number 0] PROBLEM: HTTP 400; ErrorCode 1001; ErrorMessage \"Validation errors occurred. Please check your request.\"; Context [{\"name\":\"availabilityRequestDto\",\"value\":... — PROBLEM: internal/.NET detail in ErrorMessage/Context",
+   "hops": [
+    "00016_1794730018037",
+    "00017_1794730018174",
+    "00018_1794730018460",
+    "00019_1794730018596"
+   ]
+  },
+  {
+   "tc": "TC-AVAIL-EDGE-06",
+   "actual": "[9999-12-31] PROBLEM: HTTP 409; ErrorCode NDC-INT-UNC-Z9999; ErrorMessage \"NDC-INT-UNC-Z9999\"; Context [{\"Name\":\"-1\",\"Value\":\"REQUESTED DATE OUTSIDE SYSTEM RANGE - REQUE... — PROBLEM: raw supplier request/response in the error body (OriginalSupplierRequest/OriginalSupplierResponse) | [0001-01-01] ok: HTTP 400; ErrorCode NDC-INT-TEC-A0001; ErrorMessage \"Invalid request. Please check the request parameters and try again.\"; Context [{\"Value\":\"Date ...",
+   "hops": [
+    "00020_1794730019710",
+    "00021_1794730019834"
+   ]
+  },
+  {
+   "tc": "TC-AVAIL-EDGE-13",
+   "actual": "[1.5] PROBLEM: HTTP 400; ErrorCode 1001; ErrorMessage \"Validation errors occurred. Please check your request.\"; Context [{\"name\":\"availabilityRequestDto\",\"value\":... — PROBLEM: internal/.NET detail in ErrorMessage/Context | [2147483648] PROBLEM: HTTP 400; ErrorCode 1001; ErrorMessage \"Validation errors occurred. Please check your request.\"; Context [{\"name\":\"availabilityRequestDto\",\"value\":... — PROBLEM: internal/.NET detail in ErrorMessage/Context | [null] PROBLEM: HTTP 400; ErrorCode 1001; ErrorMessage \"Validation errors occurred. Please check your request.\"; Context [{\"name\":\"availabilityRequestDto\",\"value\":... — PROBLEM: internal/.NET detail in ErrorMessage/Context | [empty string] PROBLEM: HTTP 400; ErrorCode 1001; ErrorMessage \"Validation errors occurred. Please check your request.\"; Context [{\"name\":\"availabilityRequestDto\",\"value\":... — PROBLEM: internal/.NET detail in ErrorMessage/Context",
+   "hops": [
+    "00032_1794730052259",
+    "00033_1794730052369",
+    "00034_1794730052470",
+    "00035_1794730052586"
+   ]
+  },
+  {
+   "tc": "TC-AVAIL-EDGE-14",
+   "actual": "[[null]] ok: HTTP 400; ErrorCode NDC-INT-TEC-A0001; ErrorMessage \"Invalid request. Please check the request parameters and try again.\"; Context [{\"Name\":\"NotNul... | [{}] PROBLEM: HTTP 400; ErrorCode 1001; ErrorMessage \"Validation errors occurred. Please check your request.\"; Context [{\"name\":\"availabilityRequestDto\",\"value\":... — PROBLEM: internal/.NET detail in ErrorMessage/Context | [\"ADT\"] PROBLEM: HTTP 400; ErrorCode 1001; ErrorMessage \"Validation errors occurred. Please check your request.\"; Context [{\"name\":\"availabilityRequestDto\",\"value\":... — PROBLEM: internal/.NET detail in ErrorMessage/Context | [[{}]] ok: HTTP 400; ErrorCode 1001; ErrorMessage \"Validation errors occurred. Please check your request.\"; Context [{\"name\":\"Passengers[0].Count\",\"value\":\"Pa...",
+   "hops": [
+    "00036_1794730052941",
+    "00037_1794730053053",
+    "00038_1794730053150",
+    "00039_1794730053247"
+   ]
+  },
+  {
+   "tc": "TC-AVAIL-EDGE-15",
+   "actual": "[YTH] PROBLEM: HTTP 400; ErrorCode 1001; ErrorMessage \"Validation errors occurred. Please check your request.\"; Context [{\"name\":\"availabilityRequestDto\",\"value\":... — PROBLEM: internal/.NET detail in ErrorMessage/Context | [SRC] PROBLEM: HTTP 400; ErrorCode 1001; ErrorMessage \"Validation errors occurred. Please check your request.\"; Context [{\"name\":\"availabilityRequestDto\",\"value\":... — PROBLEM: internal/.NET detail in ErrorMessage/Context | [STU] PROBLEM: HTTP 400; ErrorCode 1001; ErrorMessage \"Validation errors occurred. Please check your request.\"; Context [{\"name\":\"availabilityRequestDto\",\"value\":... — PROBLEM: internal/.NET detail in ErrorMessage/Context | [CNN] PROBLEM: HTTP 400; ErrorCode 1001; ErrorMessage \"Validation errors occurred. Please check your request.\"; Context [{\"name\":\"availabilityRequestDto\",\"value\":... — PROBLEM: internal/.NET detail in ErrorMessage/Context",
+   "hops": [
+    "00040_1794730053588",
+    "00041_1794730053701",
+    "00042_1794730053800",
+    "00043_1794730053887"
+   ]
+  },
+  {
+   "tc": "TC-AVAIL-EDGE-16",
+   "actual": "[\" CAI \"] ok: HTTP 400; ErrorCode 1001; ErrorMessage \"Validation errors occurred. Please check your request.\"; Context [{\"name\":\"SearchCriteria[0].Origin\",\"value... | [\"Cai\"] PROBLEM: HTTP 200, 16 journeys — origin echoed as \"Cai\"",
+   "hops": [
+    "00044_1794730054761",
+    "00045_1794730057883"
+   ]
+  },
+  {
+   "tc": "TC-AVAIL-EDGE-20",
+   "actual": "[origin Arabic] ok: HTTP 400; ErrorCode 1001; ErrorMessage \"Validation errors occurred. Please check your request.\"; Context [{\"name\":\"SearchCriteria[0].Origin\",\"value... | [origin ÇAI] PROBLEM: HTTP 409; ErrorCode NDC-INT-UNC-Z9999; ErrorMessage \"NDC-INT-UNC-Z9999\"; Context [{\"Name\":\"3003\",\"Value\":\"Request data is invalid. - Unknown CityOr... — PROBLEM: raw supplier request/response in the error body (OriginalSupplierRequest/OriginalSupplierResponse) | [supplier emoji] PROBLEM: HTTP 400; ErrorCode 1001; ErrorMessage \"Validation errors occurred. Please check your request.\"; Context [{\"name\":\"availabilityRequestDto\",\"value\":... — PROBLEM: internal/.NET detail in ErrorMessage/Context | [selector RTL mark] PROBLEM: HTTP 400; ErrorCode 1001; ErrorMessage \"Validation errors occurred. Please check your request.\"; Context [{\"name\":\"availabilityRequestDto\",\"value\":... — PROBLEM: internal/.NET detail in ErrorMessage/Context",
+   "hops": [
+    "00055_1794730073325",
+    "00056_1794730073779",
+    "00057_1794730073893",
+    "00058_1794730073987"
+   ]
+  },
+  {
+   "tc": "TC-AVAIL-EDGE-24",
+   "actual": "[text/plain] PROBLEM: HTTP 400 {\"status\":400,\"transactionId\":\"76afc054-7792-4d9e-b966-acd8452cc688\",\"errorCode\":\"1001\",\"errorMessage\":\"Validation er... — PROBLEM: leak | [x-www-form-urlencoded] PROBLEM: HTTP 400 {\"status\":400,\"transactionId\":\"0a42360d-7705-41dd-b9f5-742f0db3d1f9\",\"errorCode\":\"1001\",\"errorMessage\":\"Validation er... — PROBLEM: leak | [no Content-Type] PROBLEM: HTTP 400 {\"status\":400,\"transactionId\":\"7f4ee7a2-dedb-4367-8a86-87952679c43e\",\"errorCode\":\"1001\",\"errorMessage\":\"Validation er... — PROBLEM: leak",
+   "hops": [
+    "00062_1794730091565",
+    "00063_1794730091691",
+    "00064_1794730091799"
+   ]
+  },
+  {
+   "tc": "TC-AVAIL-EDGE-25",
+   "actual": "[empty body] PROBLEM: HTTP 400; ErrorCode 1001; ErrorMessage \"Validation errors occurred. Please check your request.\"; Context [{\"name\":\"\",\"value\":\"A non-empty request b... — PROBLEM: internal/.NET detail in ErrorMessage/Context | [null] PROBLEM: HTTP 400; ErrorCode 1001; ErrorMessage \"Validation errors occurred. Please check your request.\"; Context [{\"name\":\"\",\"value\":\"A non-empty request b... — PROBLEM: internal/.NET detail in ErrorMessage/Context | [[]] PROBLEM: HTTP 400; ErrorCode 1001; ErrorMessage \"Validation errors occurred. Please check your request.\"; Context [{\"name\":\"$\",\"value\":\"The JSON value could... — PROBLEM: internal/.NET detail in ErrorMessage/Context | [\"x\"] PROBLEM: HTTP 400; ErrorCode 1001; ErrorMessage \"Validation errors occurred. Please check your request.\"; Context [{\"name\":\"$\",\"value\":\"The JSON value could... — PROBLEM: internal/.NET detail in ErrorMessage/Context | [{}] ok: HTTP 400; ErrorCode 1001; ErrorMessage \"Validation errors occurred. Please check your request.\"; Context [{\"name\":\"Supplier\",\"value\":\"Select a vali...",
+   "hops": [
+    "00065_1794730092155",
+    "00066_1794730092279",
+    "00067_1794730092376",
+    "00068_1794730092488",
+    "00069_1794730092619"
+   ]
+  },
+  {
+   "tc": "TC-AVAIL-EDGE-28",
+   "actual": "[trailing comma] PROBLEM: HTTP 400; ErrorCode 1001; ErrorMessage \"Validation errors occurred. Please check your request.\"; Context [{\"name\":\"$\",\"value\":\"The JSON object cont... — PROBLEM: internal/.NET detail in ErrorMessage/Context | [comment] PROBLEM: HTTP 400; ErrorCode 1001; ErrorMessage \"Validation errors occurred. Please check your request.\"; Context [{\"name\":\"$\",\"value\":\"'/' is an invalid st... — PROBLEM: internal/.NET detail in ErrorMessage/Context | [single quotes] PROBLEM: HTTP 400; ErrorCode 1001; ErrorMessage \"Validation errors occurred. Please check your request.\"; Context [{\"name\":\"$\",\"value\":\"''' is an invalid st... — PROBLEM: internal/.NET detail in ErrorMessage/Context | [UTF-8 BOM] ok: HTTP 200, 16 journeys",
+   "hops": [
+    "00072_1794730102694",
+    "00073_1794730102819",
+    "00074_1794730102923",
+    "00075_1794730105870"
+   ]
+  },
+  {
+   "tc": "TC-AVAIL-EDGE-30",
+   "actual": "[isDebug=\"false\"] PROBLEM: HTTP 400; ErrorCode 1001; ErrorMessage \"Validation errors occurred. Please check your request.\"; Context [{\"name\":\"availabilityRequestDto\",\"value\":... — PROBLEM: internal/.NET detail in ErrorMessage/Context | [isDebug=0] PROBLEM: HTTP 400; ErrorCode 1001; ErrorMessage \"Validation errors occurred. Please check your request.\"; Context [{\"name\":\"availabilityRequestDto\",\"value\":... — PROBLEM: internal/.NET detail in ErrorMessage/Context | [isDebug=1] PROBLEM: HTTP 400; ErrorCode 1001; ErrorMessage \"Validation errors occurred. Please check your request.\"; Context [{\"name\":\"availabilityRequestDto\",\"value\":... — PROBLEM: internal/.NET detail in ErrorMessage/Context | [isDebug=null] ok: HTTP 200, 16 journeys",
+   "hops": [
+    "00080_1794730120484",
+    "00081_1794730120615",
+    "00082_1794730120721",
+    "00083_1794730123961"
+   ]
+  },
+  {
+   "tc": "TC-AVAIL-EDGE-31",
+   "actual": "[Galileo then Galilio] PROBLEM: HTTP 400; ErrorCode 1001; ErrorMessage \"Validation errors occurred. Please check your request.\"; Context [{\"name\":\"availabilityRequestDto\",\"value\":... — PROBLEM: internal/.NET detail in ErrorMessage/Context | [Galilio then Galileo] PROBLEM: HTTP 400; ErrorCode 1001; ErrorMessage \"Validation errors occurred. Please check your request.\"; Context [{\"name\":\"availabilityRequestDto\",\"value\":... — PROBLEM: internal/.NET detail in ErrorMessage/Context",
+   "hops": [
+    "00084_1794730124370",
+    "00085_1794730124518"
+   ]
+  },
+  {
+   "tc": "TC-AVAIL-EDGE-39",
+   "actual": "Checked 223 bookingClasses on CAI-JED +30; cabins [ECONOMY,BUSINESS]; seatsAvailable range 2-9. 39 problem(s): seatsAvailable 0 for Y | seatsAvailable 0 for I | seatsAvailable 0 for B | seatsAvailable 0 for M | seatsAvailable 0 for K | seatsAvailable 0 for L | seatsAvailable 0 for V | seatsAvailable 0 for E",
+   "hops": [
+    "00095_1794730174624"
+   ]
+  }
+ ]
+}

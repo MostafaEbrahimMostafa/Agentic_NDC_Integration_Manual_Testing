@@ -1,0 +1,17 @@
+{
+  "label": "V2 Retrieve - invalid x-api-key",
+  "method": "POST",
+  "url": "https://ndc-integration-stg-ne-3.azurewebsites.net/api/v2/FlightBooking/Retrieve",
+  "headers": {
+    "x-api-key": "[REDACTED - invalid value sent]",
+    "Client-Id": "NDC-Core",
+    "Content-Type": "application/json"
+  },
+  "body": {
+    "supplier": "SabreNdc",
+    "credentialsSelector": "EGY",
+    "pnr": "PWABQS",
+    "gdsPnr": "PWABQS",
+    "bookingToken": "1SXXXC1WRMPTT"
+  }
+}

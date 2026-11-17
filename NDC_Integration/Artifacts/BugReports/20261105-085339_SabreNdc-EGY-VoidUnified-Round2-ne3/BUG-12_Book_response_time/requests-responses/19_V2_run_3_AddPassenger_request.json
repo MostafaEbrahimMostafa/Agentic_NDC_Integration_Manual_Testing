@@ -1,0 +1,64 @@
+{
+  "label": "V2 run 3 AddPassenger",
+  "method": "POST",
+  "url": "https://ndc-integration-stg-ne-3.azurewebsites.net/api/v2/Passenger/AddPassengerDetails",
+  "headers": {
+    "x-api-key": "[REDACTED]",
+    "Client-Id": "NDC-Core",
+    "Content-Type": "application/json"
+  },
+  "body": {
+    "supplier": "SabreNdc",
+    "credentialsSelector": "EGY",
+    "ResponseId": "0a203ed4-b90f-4894-83cf-14646f31b17f",
+    "selectedOfferId": "ce5bb4bf9478mpzqlmw3h3d8f7&lcC8Y2U1YmI0YmY5NDc4bXB6cWxtdzNoM2Q4ZjctMZG+Y2U1YmI0YmY5NDc4bXB6cWxtdzNoM2Q4ZjctMS0xkZPAqlBhc3NlbmdlcjGjQURUk8CSl6RTRUcyo0NBSaNET0jW/2sUC/zW/2sURWiiUVKiUVKXpVNFRzEwo0RPSKNKRUTW/2sUmcjW/2sUv0iiUVKiUVKUwJPAqDE3NTY1Ljgwo0VHUJPAqDExMDI5Ljgwo0VHUJPApzY1MzYuMDCjRUdQ",
+    "passengersList": {
+      "Pax1": {
+        "title": "Mr",
+        "name": {
+          "first": "Taher",
+          "middle": "",
+          "last": "Barakat"
+        },
+        "nationality": "EG",
+        "residentCountry": "EG",
+        "birthDate": "1990-02-15T00:00:00.000Z",
+        "gender": "male",
+        "passengerTypeCode": "ADT",
+        "contactRefId": "0",
+        "travelDocument": {
+          "name": {
+            "first": "Taher",
+            "middle": "",
+            "last": "Barakat"
+          },
+          "nationality": "EG",
+          "expirationDate": "2030-10-01T00:00:00.000Z",
+          "issuanceDate": "2024-10-01T00:00:00.000Z",
+          "documentNumber": "A1379537",
+          "documentType": "PASSPORT",
+          "gender": "male",
+          "birthCountry": "EG",
+          "birthDate": "1990-02-15T00:00:00.000Z",
+          "issuanceCountryCode": "EG"
+        }
+      }
+    },
+    "contactsList": {
+      "0": {
+        "Email": "ndc.qa.void@gmail.com",
+        "phone": {
+          "type": "Mobile",
+          "countryDialingCode": "+20",
+          "phoneNumber": "01005747258"
+        },
+        "Address": {
+          "Line1": "New Cairo",
+          "Line2": "Al Nahda",
+          "City": "CAIRO",
+          "CountryCode": "EG"
+        }
+      }
+    }
+  }
+}

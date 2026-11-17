@@ -1,0 +1,19 @@
+{
+  "label": "V1 Void unknown order (PascalCase envelope)",
+  "method": "POST",
+  "url": "https://ndc-integration-stg-ne-3.azurewebsites.net/api/FlightBooking/Void",
+  "headers": {
+    "x-api-key": "[REDACTED]",
+    "Client-Id": "NDC-Core",
+    "Content-Type": "application/json"
+  },
+  "body": {
+    "supplier": "SabreNdc",
+    "credentialsSelector": "EGY",
+    "pnr": "UNKNWN",
+    "gdsPNR": "UNKNWN",
+    "bookingToken": "unknown",
+    "surName": "Barakat",
+    "voidTickets": []
+  }
+}

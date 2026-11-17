@@ -91,6 +91,20 @@ All output goes under `NDC_Integration/Artifacts/Logs/`, up to three files per r
 ambiguous (e.g. an unnamed ad hoc batch). Pick the timestamp once, at `run_start`, and reuse it for
 both files for the rest of the run — never re-timestamp mid-run.
 
+## AI guardrails — [`../_shared/AI_Guardrails.md`](../_shared/AI_Guardrails.md)
+
+- Write the guardrail fields exactly as `execute-test-cases` supplies them (`run_start.build`,
+  `evidence_refs`, `expectation_source`/`_quote`/`_cite`, `repro.records`, `second_opinion`,
+  `build_change`). See [references/log-schema.md](references/log-schema.md) → *Guardrail fields*.
+  Never invent them to fill a gap; a missing field is what the checker reports.
+- When the run ends or stops, before the final HTML, run
+  `node .claude/Skills/_shared/scripts/verify-evidence.js NDC_Integration/Artifacts/Logs/<slug>.jsonl --no-fail`.
+  It writes `<slug>_evidence.md`/`.json` next to the log. Link `<slug>_evidence.md` from the report.
+  Quote its one-line result (defect gates, evidence coverage, secret leaks) as the script printed it,
+  without retyping or rounding the numbers.
+- If it reports a secret leak, fix the log by appending redacted lines and re-rendering. Never share
+  the leaking HTML.
+
 ## Process
 
 1. **On run start** (before the first request `execute-test-cases` sends), create the `.jsonl` file
@@ -195,7 +209,7 @@ template shares Round 12's head/CSS/script and section shape. Reference generato
   1. Executive Summary → Expand/Collapse all → Test case results → Findings → *[optional]* Not
   reproduced → Proposed SPEC.md updates → Cleanup / follow-up. Time Breakdown is back-link →
   header → meta-card → 1. Time Breakdown → 2. Execution Phases → 3. Claude / AI Operations →
-  4. Reporting Breakdown → 5. Test Case Time → 6. Timeline → 7. Other / Overhead (its own section, not inside 1). Sections 2-7 are collapsible: each title is the `<summary>` of a `details.tb-sec` block (open by default); section 1 is always visible.
+  4. Test Case Time → 5. Timeline → 6. Other / Overhead (its own section, not inside 1). Sections 2-6 are collapsible: each title is the `<summary>` of a `details.tb-sec` block (open by default); section 1 is always visible.
 - Only change **values**, and **repeat/omit** blocks only where a `DATA:` comment says so. Optional
   blocks (erratum, Not reproduced, tc-subhead, rr-attempt-label, History row, "also re-confirmed"
   note, the ai_operation table, the discrepancy warning) appear only when the JSONL has data for them.
@@ -394,6 +408,8 @@ Right after the main `.html` transform, if this run's `.jsonl` contains timing f
 timing capture or was re-rendered from one that never had it. Never synthesize timing to make the link
 work; a run without real timestamps just doesn't get a breakdown page.
 
+> **Revision 2026-10-10 (supersedes the Test Case Execution bullet below).** Test Case Execution is now the merged union of the intervals during which an API call was in flight: every `hops[]` and `attempts[]` entry's `[started_at, ended_at]` (attempts must therefore carry their own `started_at`/`ended_at`). A test case's own span (`started_at` to `timestamp`) is only a fallback for a legacy log with no per-call times. Idle gaps between calls are no longer execution; they fall into Other / Overhead. In the Test Case Time table each row's Execution is the test case's *share*: every elementary time slice is split evenly between the test cases whose calls cover it, so the rows sum exactly to the Test Case Execution card (no "parallel overlap" line any more).
+
 Compute everything from the JSONL per log-schema.md's "Execution-time accounting rule" (also
 summarized here for the render itself):
 
@@ -469,7 +485,7 @@ tool:
   three kinds of gap are exhaustive for a normal run — if they don't sum to the displayed Overhead
   value (within ~1s rounding), that is itself worth surfacing as a discrepancy (reuse the existing
   warning-callout convention) rather than silently shown as a smaller, wrong-looking list.
-- **Overhead section (7. Other / Overhead, after the Timeline)**: rows are clickable: each row of the Overhead breakdown opens a popup (`#tbModal`, markup/CSS/JS live in the template) showing the gap's start/end/duration/share, the event right before and right after it, and the `steps` from the matching `overhead_detail` line (log-schema.md). Gaps under 2 seconds are merged into one "short gaps" row. Write one `overhead_detail` line per gap of 2s or more.
+- **Overhead section (6. Other / Overhead, after the Timeline)**: rows are clickable: each row of the Overhead breakdown opens a popup (`#tbModal`, markup/CSS/JS live in the template) showing the gap's start/end/duration/share, the event right before and right after it, and the `steps` from the matching `overhead_detail` line (log-schema.md). Gaps under 2 seconds are merged into one "short gaps" row. Write one `overhead_detail` line per gap of 2s or more.
 - **Chart**: a horizontal bar per category, share of total as bar width, same status/accent color
   tokens as the rest of the report (not a new palette) — CSS-only (a `div` with `width:<pct>%`), no
   chart library, consistent with the donut elsewhere in this template being pure CSS
@@ -477,15 +493,22 @@ tool:
 - **Phase table**: one row per `phase` name with Start/End/Duration/% (only phases actually present in
   the JSONL — never list all 8 example phases from the request if fewer were logged). Whenever a
   "Test Execution" phase exists, keep the `.tb-phase-note` above the table explaining that the phase's
-  wall-clock time differs from the Test Case Execution category by exactly the Overhead split, with
-  this run's two numbers filled in.
+  wall-clock time differs from the Test Case Execution category (the difference is only the part of Overhead
+  that falls inside that phase, NOT the whole Overhead in section 1), listing per-test-case spans, the gaps
+  between test cases, the log-writing tail, and the unlabelled Overhead outside the phase (idle gaps
+  between phases, report rendering), with this run's real numbers filled in. `scripts/render-tb.js`
+  builds this note automatically.
 - **Claude / AI Operations table**: one row per `ai_operation` line (Operation/Related TC/Start/End/
   Duration). Render `<div class="empty">No AI operations recorded for this run.</div>` rather than an
   empty table if there are none — a run with none isn't a gap, most runs won't have any.
-- **Reporting Breakdown table**: one row per `reporting_op` line (operation name verbatim), plus one
-  aggregate row "Per-test-case JSONL + Markdown writes (N test cases)" **only when** `test_case` lines
-  carry `reporting_started_at`/`reporting_ended_at`. The tfoot "Total Reporting Time" equals the
-  Reporting card.
+- **Reporting operations (inside 2. Execution Phases — there is no separate Reporting Breakdown section)**:
+  the phase table lists Test Execution, Result Collection, Bug Reporting and Report Generation (those the
+  log has). Each `reporting_op` line (operation name verbatim) is an indented `↳` sub-row directly under
+  the phase whose start/end window contains it (Bug Report Generation → Bug Reporting; Final HTML and
+  Time Breakdown → Report Generation), plus one aggregate sub-row "Per-test-case JSONL + Markdown writes
+  (N test cases)" **only when** `test_case` lines carry `reporting_started_at`/`reporting_ended_at`
+  (it lands under Result Collection). Sub-rows open their own popup like phase rows. The table's tfoot
+  "Total Reporting Time" equals the Reporting card (exact value, plus "card: Ns rounded").
 - **Test Case Time table**: `# | Test Case ID | Test Case | Status | Start | End | Execution | Waiting |
   Claude | Reporting | Total`, one row per `test_case` line — reuse the main report's `tc-toolbar`
   search/status-filter pattern (same classes/IDs, e.g. `tcbSearch`/`tcbStatusFilter`) plus clickable,
@@ -523,3 +546,11 @@ tool:
 - Not for turning a defect into a filable bug ticket — once a `defect` finding is logged here, apply
   the `generate-bug-report` skill (separately, typically once this run's report is done) to produce
   that per-defect Markdown report; this skill's own job stops at logging and visualizing the finding.
+
+## Time Breakdown page changes 2026-10-10
+
+`scripts/render-tb.js` now: (1) builds Test Case Execution from API-call intervals and charges each test case only its share (see the Revision note above); (2) shows millisecond-precision durations for short values (Reporting Breakdown, Phase table, AI operations table, Test Case Time table); (3) adds a Claude column value per test case (run-level AI time split evenly, disclosed in the reconcile line); (4) replaces the long Execution Phases paragraph with a two-sentence note and makes every row of sections 2 (phases), 3 (Claude / AI operations) and 4 (reporting operations, including the per-test-case write row) open the shared `#tbModal` popup via `data-detail` JSON; a "Details ›" column marks the clickable rows. `references/time-breakdown-template.html` gained a small hover/cursor rule for clickable table rows. `render-md.js` / `render-html.js` are data-driven from `run_start` and `test_case.plain` (see log-schema.md "Additions 2026-10-10").
+
+## Time Breakdown page changes 2026-10-12
+
+The former "4. Reporting Breakdown" section is merged into "2. Execution Phases": reporting operations are `↳` sub-rows under the phase that contains them, "Result Collection" is now a listed phase (it holds the per-test-case writes), and the "Total Reporting Time" line is the phase table's footer. Sections after it renumber to 4 Test Case Time, 5 Timeline, 6 Other / Overhead. Implemented in `scripts/render-tb.js` and `references/time-breakdown-template.html` (new `.tb-sub`, `.tb-sub-arrow`, `.tb-foot-note` CSS).

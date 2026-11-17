@@ -1,0 +1,3 @@
+process.env.SLUG = 'probe';
+const G = require('./gl'); const { av, baseBody, leg, ODS, segInfo } = G;
+(async () => { for (const [o, d] of [['DXB', 'LHR'], ['JED', 'LHR'], ['CAI', 'LHR']]) { const h = await av({ id: 'PROBE-AIR', hops: [] }, o + '-' + d, baseBody({ searchCriteria: [leg(o, d, 35)] })); const od = ODS(h.json)[0]; const set = {}; (od.journeys || []).forEach(jn => { const s = jn.segments.map(x => segInfo(h.json, x.segmentRefId)); const k = s[0].origin + '>' + s[s.length - 1].destination; set[k] = (set[k] || 0) + 1; }); console.log('one-way', o + '-' + d, h.status, JSON.stringify(set)); } })();

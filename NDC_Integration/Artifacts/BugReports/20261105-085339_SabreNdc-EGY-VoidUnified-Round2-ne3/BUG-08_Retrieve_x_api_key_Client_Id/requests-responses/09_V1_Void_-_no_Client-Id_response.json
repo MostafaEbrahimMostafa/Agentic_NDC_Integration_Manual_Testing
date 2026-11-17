@@ -1,0 +1,19 @@
+{
+  "label": "V1 Void - no Client-Id",
+  "status": 401,
+  "durationMs": 90,
+  "requestedAtUtc": "2026-11-05T10:55:42.176Z",
+  "respondedAtUtc": "2026-11-05T10:55:42.266Z",
+  "body": {
+    "Status": 401,
+    "TransactionId": "67b40385-d612-4bb2-9a12-b0cb2bf6b91a",
+    "ErrorCode": "AuthenticationError",
+    "ErrorMessage": "Authentication error. Please check your credentials.",
+    "Context": [
+      {
+        "Name": "Authentication error. Please check your credentials.",
+        "Value": "Invalid authorization header"
+      }
+    ]
+  }
+}

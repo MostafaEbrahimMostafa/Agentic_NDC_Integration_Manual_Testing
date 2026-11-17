@@ -1,0 +1,20 @@
+{
+  "label": "book V2 RUH-CAI #10 FareConfirm",
+  "status": 409,
+  "durationMs": 1911,
+  "requestedAtUtc": "2026-11-05T10:42:34.044Z",
+  "respondedAtUtc": "2026-11-05T10:42:35.955Z",
+  "body": {
+    "Status": 409,
+    "TransactionId": "67abf2a4-f061-4f49-b70f-17e8593fae32",
+    "ErrorCode": "NDC-INT-UNC-Z9999",
+    "ErrorMessage": "NDC-INT-UNC-Z9999",
+    "Context": [
+      {
+        "Value": "No offers match."
+      }
+    ],
+    "OriginalSupplierRequest": "[REDACTED - raw supplier payload, per SPEC.md 7.14]",
+    "OriginalSupplierResponse": "[REDACTED - raw supplier payload, per SPEC.md 7.14]"
+  }
+}

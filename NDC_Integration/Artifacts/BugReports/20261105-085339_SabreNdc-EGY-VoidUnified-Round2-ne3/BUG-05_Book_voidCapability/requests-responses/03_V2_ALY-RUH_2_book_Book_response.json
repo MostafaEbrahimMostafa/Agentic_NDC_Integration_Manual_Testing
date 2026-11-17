@@ -1,0 +1,444 @@
+{
+  "label": "V2 ALY-RUH #2 (book) Book",
+  "status": 200,
+  "durationMs": 75851,
+  "requestedAtUtc": "2026-11-05T10:48:31.810Z",
+  "respondedAtUtc": "2026-11-05T10:49:47.661Z",
+  "body": {
+    "supplier": "SabreNdc",
+    "pnr": "PNZKVA",
+    "gdsPNR": "PNZKVA",
+    "bookingToken": "1SXXXCAAR83OX",
+    "voidCapability": "VoidNotAllowed",
+    "creationDate": "2026-11-05T00:00:00",
+    "ticketingDate": "2026-11-05T00:00:00",
+    "tickets": {
+      "Passenger1": {
+        "ticketStatus": "Booked",
+        "ticketNumber": "1572141657907",
+        "carrierCode": "QR"
+      }
+    },
+    "passengersSelectedAncillaries": {},
+    "passengersSelectedSeats": {},
+    "journeys": {
+      "843719CC-155E-4ACA-86B5-2F752AB1AB41": {
+        "origin": "ALY",
+        "destination": "DOH",
+        "numberOfStops": 0,
+        "segmentRefIds": [
+          "SEG2"
+        ]
+      },
+      "CF9EC0B3-31A3-4A1E-AC82-27C2B075CBE5": {
+        "origin": "DOH",
+        "destination": "RUH",
+        "numberOfStops": 0,
+        "segmentRefIds": [
+          "SEG8"
+        ]
+      }
+    },
+    "flightSegments": {
+      "SEG2": {
+        "origin": "ALY",
+        "destination": "DOH",
+        "departureDateTime": "2026-12-05T13:15:00",
+        "arrivalDateTime": "2026-12-05T17:30:00",
+        "departureTerminal": "1",
+        "arrivalTerminal": null,
+        "flightTime": 255,
+        "operatingCarrierCode": "QR",
+        "operatingFlightNumber": "1316",
+        "marketingCarrierCode": "QR",
+        "marketingFlightNumber": "1316",
+        "equipment": "320"
+      },
+      "SEG8": {
+        "origin": "DOH",
+        "destination": "RUH",
+        "departureDateTime": "2026-12-06T13:25:00",
+        "arrivalDateTime": "2026-12-06T14:55:00",
+        "departureTerminal": null,
+        "arrivalTerminal": "3",
+        "flightTime": 90,
+        "operatingCarrierCode": "QR",
+        "operatingFlightNumber": "1164",
+        "marketingCarrierCode": "QR",
+        "marketingFlightNumber": "1164",
+        "equipment": "77W"
+      }
+    },
+    "priceClasses": {
+      "94821A4D-E0A9-4FB4-AEDE-204AFE749449": {
+        "priceClassName": "ECONOMY CLASSIC",
+        "fareDescription": "PublicFare",
+        "rulesAndPenalties": []
+      }
+    },
+    "baggageDetails": {
+      "0": {
+        "carryOnBaggage": "",
+        "checkInBaggage": "Pieces: 2; Applicable party: Traveler"
+      }
+    },
+    "passengersList": {
+      "Passenger1": {
+        "title": "MR",
+        "name": {
+          "first": "Bassem",
+          "middle": "",
+          "last": "Yehia"
+        },
+        "birthDate": "1990-02-15T00:00:00",
+        "gender": "Male",
+        "passengerTypeCode": "ADT",
+        "contactRefId": "2F55D0D6-93B8-4474-A5F4-320BEE58D70F",
+        "travelDocument": {
+          "name": {
+            "first": "Bassem",
+            "middle": "",
+            "last": "Yehia"
+          },
+          "nationality": "EG",
+          "expirationDate": "2030-10-01T00:00:00",
+          "issuanceDate": "2024-10-01T00:00:00",
+          "documentNumber": "A1587625",
+          "documentType": "Passport",
+          "gender": "Male",
+          "birthCountry": "EG",
+          "birthDate": "1990-02-15T00:00:00",
+          "issuanceCountryCode": "EG"
+        },
+        "parentPaxRefId": null,
+        "nationality": "EG",
+        "residentCountry": "EG",
+        "age": null
+      }
+    },
+    "contacts": {
+      "2F55D0D6-93B8-4474-A5F4-320BEE58D70F": {
+        "email": "ndc.qa.void@gmail.com",
+        "phone": {
+          "type": "Home",
+          "countryDialingCode": "20",
+          "phoneNumber": "01005747258"
+        },
+        "address": null
+      }
+    },
+    "selectedOffer": {
+      "offerId": "1SXXXCAAR83OX",
+      "offerJourneys": [
+        "843719CC-155E-4ACA-86B5-2F752AB1AB41",
+        "CF9EC0B3-31A3-4A1E-AC82-27C2B075CBE5"
+      ],
+      "passengerFareBreakdown": [
+        {
+          "passengerRefId": "Passenger1",
+          "paxTotalAmount": {
+            "amount": 17987.8,
+            "currency": "EGP"
+          },
+          "passengerTypeCode": "ADT",
+          "paxTotalTaxAmount": {
+            "amount": 11174.8,
+            "currency": "EGP"
+          },
+          "paxBaseAmount": {
+            "amount": 6813,
+            "currency": "EGP"
+          },
+          "taxesAndFees": [
+            {
+              "code": "YQ",
+              "amount": {
+                "amount": 5539,
+                "currency": "EGP"
+              }
+            },
+            {
+              "code": "YR",
+              "amount": {
+                "amount": 1220,
+                "currency": "EGP"
+              }
+            },
+            {
+              "code": "EG",
+              "amount": {
+                "amount": 150,
+                "currency": "EGP"
+              }
+            },
+            {
+              "code": "EQ",
+              "amount": {
+                "amount": 111,
+                "currency": "EGP"
+              }
+            },
+            {
+              "code": "JK",
+              "amount": {
+                "amount": 100,
+                "currency": "EGP"
+              }
+            },
+            {
+              "code": "O2",
+              "amount": {
+                "amount": 15,
+                "currency": "EGP"
+              }
+            },
+            {
+              "code": "O9",
+              "amount": {
+                "amount": 56,
+                "currency": "EGP"
+              }
+            },
+            {
+              "code": "Q7",
+              "amount": {
+                "amount": 2,
+                "currency": "EGP"
+              }
+            },
+            {
+              "code": "QH",
+              "amount": {
+                "amount": 1385,
+                "currency": "EGP"
+              }
+            },
+            {
+              "code": "S4",
+              "amount": {
+                "amount": 111,
+                "currency": "EGP"
+              }
+            },
+            {
+              "code": "XK",
+              "amount": {
+                "amount": 150,
+                "currency": "EGP"
+              }
+            },
+            {
+              "code": "XL",
+              "amount": {
+                "amount": 10.8,
+                "currency": "EGP"
+              }
+            },
+            {
+              "code": "G4",
+              "amount": {
+                "amount": 913,
+                "currency": "EGP"
+              }
+            },
+            {
+              "code": "PZ",
+              "amount": {
+                "amount": 228,
+                "currency": "EGP"
+              }
+            },
+            {
+              "code": "QA",
+              "amount": {
+                "amount": 913,
+                "currency": "EGP"
+              }
+            },
+            {
+              "code": "R9",
+              "amount": {
+                "amount": 153,
+                "currency": "EGP"
+              }
+            },
+            {
+              "code": "E3",
+              "amount": {
+                "amount": 118,
+                "currency": "EGP"
+              }
+            }
+          ],
+          "segmentDetails": [
+            {
+              "segmentRefId": "SEG2",
+              "priceClassRefId": "94821A4D-E0A9-4FB4-AEDE-204AFE749449",
+              "baggageDetailsRefId": "0",
+              "cabinCode": "ECONOMY",
+              "rbd": "N"
+            },
+            {
+              "segmentRefId": "SEG8",
+              "priceClassRefId": "94821A4D-E0A9-4FB4-AEDE-204AFE749449",
+              "baggageDetailsRefId": "0",
+              "cabinCode": "ECONOMY",
+              "rbd": "N"
+            }
+          ],
+          "discount": null
+        }
+      ],
+      "priceDetails": {
+        "totalAncillariesAmount": {
+          "amount": 0,
+          "currency": null
+        },
+        "totalPassengersAncillaries": [],
+        "totalSelectedSeatsAmount": null,
+        "totalAmount": {
+          "amount": 17987.8,
+          "currency": "EGP"
+        },
+        "totalTaxAmount": {
+          "amount": 11174.8,
+          "currency": "EGP"
+        },
+        "totalBaseAmount": {
+          "amount": 6813,
+          "currency": "EGP"
+        },
+        "taxesAndFees": [
+          {
+            "code": "YQ",
+            "amount": {
+              "amount": 5539,
+              "currency": "EGP"
+            }
+          },
+          {
+            "code": "YR",
+            "amount": {
+              "amount": 1220,
+              "currency": "EGP"
+            }
+          },
+          {
+            "code": "EG",
+            "amount": {
+              "amount": 150,
+              "currency": "EGP"
+            }
+          },
+          {
+            "code": "EQ",
+            "amount": {
+              "amount": 111,
+              "currency": "EGP"
+            }
+          },
+          {
+            "code": "JK",
+            "amount": {
+              "amount": 100,
+              "currency": "EGP"
+            }
+          },
+          {
+            "code": "O2",
+            "amount": {
+              "amount": 15,
+              "currency": "EGP"
+            }
+          },
+          {
+            "code": "O9",
+            "amount": {
+              "amount": 56,
+              "currency": "EGP"
+            }
+          },
+          {
+            "code": "Q7",
+            "amount": {
+              "amount": 2,
+              "currency": "EGP"
+            }
+          },
+          {
+            "code": "QH",
+            "amount": {
+              "amount": 1385,
+              "currency": "EGP"
+            }
+          },
+          {
+            "code": "S4",
+            "amount": {
+              "amount": 111,
+              "currency": "EGP"
+            }
+          },
+          {
+            "code": "XK",
+            "amount": {
+              "amount": 150,
+              "currency": "EGP"
+            }
+          },
+          {
+            "code": "XL",
+            "amount": {
+              "amount": 10.8,
+              "currency": "EGP"
+            }
+          },
+          {
+            "code": "G4",
+            "amount": {
+              "amount": 913,
+              "currency": "EGP"
+            }
+          },
+          {
+            "code": "PZ",
+            "amount": {
+              "amount": 228,
+              "currency": "EGP"
+            }
+          },
+          {
+            "code": "QA",
+            "amount": {
+              "amount": 913,
+              "currency": "EGP"
+            }
+          },
+          {
+            "code": "R9",
+            "amount": {
+              "amount": 153,
+              "currency": "EGP"
+            }
+          },
+          {
+            "code": "E3",
+            "amount": {
+              "amount": 118,
+              "currency": "EGP"
+            }
+          }
+        ],
+        "discount": null
+      },
+      "refundability": "UnKnown",
+      "isDealCodeApplied": null,
+      "appliedDealCode": null,
+      "isPromoted": false,
+      "appliedPromotionCode": ""
+    },
+    "isBspCommissionApplied": false,
+    "diRemarks": [],
+    "emdTickets": {}
+  }
+}

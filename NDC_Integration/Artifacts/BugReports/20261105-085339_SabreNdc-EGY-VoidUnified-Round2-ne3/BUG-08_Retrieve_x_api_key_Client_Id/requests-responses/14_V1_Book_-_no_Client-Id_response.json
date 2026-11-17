@@ -1,0 +1,19 @@
+{
+  "label": "V1 Book - no Client-Id",
+  "status": 401,
+  "durationMs": 95,
+  "requestedAtUtc": "2026-11-05T10:55:42.659Z",
+  "respondedAtUtc": "2026-11-05T10:55:42.754Z",
+  "body": {
+    "Status": 401,
+    "TransactionId": "ecee0b1c-c034-411a-92ec-603e650b022f",
+    "ErrorCode": "AuthenticationError",
+    "ErrorMessage": "Authentication error. Please check your credentials.",
+    "Context": [
+      {
+        "Name": "Authentication error. Please check your credentials.",
+        "Value": "Invalid authorization header"
+      }
+    ]
+  }
+}

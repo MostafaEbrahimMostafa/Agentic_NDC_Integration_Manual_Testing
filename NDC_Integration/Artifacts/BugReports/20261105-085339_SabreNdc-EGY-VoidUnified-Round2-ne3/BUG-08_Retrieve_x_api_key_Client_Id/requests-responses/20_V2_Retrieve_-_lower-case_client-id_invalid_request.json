@@ -1,0 +1,17 @@
+{
+  "label": "V2 Retrieve - lower-case client-id invalid",
+  "method": "POST",
+  "url": "https://ndc-integration-stg-ne-3.azurewebsites.net/api/v2/FlightBooking/Retrieve",
+  "headers": {
+    "x-api-key": "[REDACTED]",
+    "Content-Type": "application/json",
+    "client-id": "NOT-A-CLIENT"
+  },
+  "body": {
+    "supplier": "SabreNdc",
+    "credentialsSelector": "EGY",
+    "pnr": "PWABQS",
+    "gdsPnr": "PWABQS",
+    "bookingToken": "1SXXXC1WRMPTT"
+  }
+}

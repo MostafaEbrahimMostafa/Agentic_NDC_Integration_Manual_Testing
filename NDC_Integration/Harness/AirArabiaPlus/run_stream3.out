@@ -1,0 +1,29 @@
+to run 98 of 152
+PASS    TC-VERSIONDIFF-BIZ-01  manual strict reconciliation holds at Search, FareConfirm, Book, Hold, Retrieve, FareConfirmAfterHold
+PASS    TC-ANCILLARY-POS-01  HTTP 200; all documented keys present; 10 services (Meal/Baggage), each with category, price, availableCount
+BLOCKED TC-ANCILLARY-NEG-01  Every AirArabiaPlus offer seen in this run has offerHasAncillary=true, so GetAncillary cannot be called for an offer without ancillary capability.
+PASS    TC-ANCILLARY-VAL-01  field "passengersAncillariesAvailabilty" (sic) present; correctly spelled variant absent; ancillaryCategory values: Meal, Baggage (all in the known ta
+PASS    TC-ANCILLARY-BND-01  4 service(s) with availableCount=null (Baggage), 0 with 0; null-count baggage was selected and accepted by FareCheck
+PASS    TC-SEATMAP-POS-01  HTTP 200; seatMapDetails for 1 segment(s) with rows/cells; 29 rows
+PASS    TC-SEATMAP-NEG-01  FareConfirm reports isSeatMapRequired=false (and offerHasSeat=true); GetSeatMap nevertheless returns a full seat map (HTTP 200) — so isSeatMapRequired
+PASS    TC-SEATMAP-VAL-01  cellCategory values: Seat, Aisle; cellAvailability values: Occupied, AvailablePaid (all known); Seat cells without cellDetails: 0
+PASS    TC-FARECHECK-POS-01  total moved from 8139.86 to 10426.1 (delta 2286.24); ancillaries 1339.84 + seats 946.4 = 2286.24; sum of paxTotalAncillaryAmount 1339.84
+PASS    TC-FARECHECK-NEG-01  400 NDC-INT-TEC-A0001 Invalid request. Please check the request parameters and try again. | One or more assigned ancillaries contain invalid codes for
+PASS    TC-FARECHECK-INT-01  Book after FareCheck accepted: ANC responseId + FareCheck offerId; ANC responseId + FareCheck offerId → 200
+PASS    TC-FARECHECK-BND-01  quantity above availableCount refused: 409 NDC-INT-UNC-Z9999 NDC-INT-UNC-Z9999 | All Selected Additional Services (Baggage,Seat,Meal) must have a quan
+PASS    TC-HOLD-NEG-01  400 1001
+PASS    TC-CANCELHOLD-NEG-01  400 1001
+BLOCKED TC-VOID-NEG-01  Void with gdsPNR="" on an LCC booking (real gdsPNR is also empty) → 409 OperationNotSupported This action is not currently supported by the selected s
+PASS    TC-BUNDLE-VAL-01  JourneyKey1 (resp.offerJourneys.key) is undefined against the real map-shaped offerJourneys (TC-BUNDLE-REG-01) and no later request in the AirArabiaPl
+PASS    FLOW-V2-25-NEG  UAE selector: 400 NDC-INT-TEC-A0001 Invalid request. Please check the request parameters and try again. | The credentials for the selected supplier do
+FAIL    FLOW-V2-26-NEG  mixed pair: HELD pnr 61GXB0; unknown responseId: HELD pnr 6DAI2T
+PASS    FLOW-V2-27-NEG  Book returned voidCapability=VoidNotAllowed; Void → 409 OperationNotSupported This action is not currently supported by the selected supplier. | AirAr
+FAIL    FLOW-V2-34-NEG  Retrieve: ACCEPTED (200); FareConfirmAfterHold: ACCEPTED (200); BookAfterHold: ACCEPTED (200)
+PASS    FLOW-V2-40-NEG  first: ticketed 69FFPJ; second: 409 NDC-INT-UNC-Z9999 NDC-INT-UNC-Z9999 | Reservation is already paid Trace Id:17942178545222423161323302c3a69a
+PASS    FLOW-V2-62-NEG  400 NDC-INT-TEC-A0001 Invalid request. Please check the request parameters and try again. | The credentials for the selected supplier do not exist or 
+PASS    FLOW-V2-75-NEG  400 1001
+BLOCKED FLOW-V2-31-NEG  Every AirArabiaPlus offer seen in this run has haveBundles=true, so GetOfferBundles cannot be called for a bundle-incapable offer (same precondition a
+BLOCKED FLOW-V2-35-NEG  Void is not supported for AirArabiaPlus (409 OperationNotSupported on every booking), so a first successful Void to repeat does not exist.
+BLOCKED FLOW-V2-42-NEG  CancelAfterHold is not supported for AirArabiaPlus (409 OperationNotSupported), so a first successful cancel to repeat does not exist.
+BLOCKED FLOW-V2-53-NEG  Void is not supported for AirArabiaPlus, so there is no void window to test (voidCapability is VoidNotAllowed from Book onward).
+BLOCKED FLOW-V2-69-NEG  The commercial gate on Void cannot be exercised: Void is unsupported for AirArabiaPlus and the carrier is not blocked at Book either (see TC-BOOK-SEC-
