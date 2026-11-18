@@ -1,0 +1,33 @@
+{
+  "contract": "test-case-csv",
+  "version": "1.0 (2026-11-18)",
+  "description": "Output contract for test-case CSVs written by Generate_Test_Cases. Template and field meanings: .claude/Skills/Generate_Test_Cases/references/test-case-template.md. Validator: .claude/Skills/_shared/scripts/validate-csv.js. Applies to new files; older CSVs are not migrated.",
+  "columns": ["ID", "RowType", "Version", "Scope", "Category", "Title", "Priority", "Risk", "Capabilities / Test Data", "Preconditions", "Steps / Endpoint Chain", "Expected Result", "SpecReference", "Notes", "Status"],
+  "required": ["ID", "RowType", "Version", "Scope", "Category", "Title", "Priority", "Risk", "Steps / Endpoint Chain", "Expected Result", "SpecReference", "Status"],
+  "allowed": {
+    "RowType": ["Flow", "EndpointTestCase"],
+    "Version": ["V1", "V2", "Both"],
+    "Category": ["Positive", "Negative", "Boundary", "Validation", "Business Rule", "Security", "Integration", "Regression"],
+    "Priority": ["Critical", "High", "Medium", "Low", "P0", "P1", "P2", "P3"],
+    "Risk": ["High", "Medium", "Low", "Low-Med", "Med-High"],
+    "Status": ["Not Run", "Passed", "Failed", "Blocked"]
+  },
+  "flowOnlyCategories": ["Flow"],
+  "flowCategoryPrefix": "End-to-End Flow - ",
+  "prioritySchemes": [["Critical", "High", "Medium", "Low"], ["P0", "P1", "P2", "P3"]],
+  "newFileStatus": "Not Run",
+  "idPattern": {
+    "EndpointTestCase": "^TC-[A-Z0-9]+(?:-[A-Z0-9]+)*-\\d{2,3}$",
+    "Flow": "^FLOW-(?:V1|V2|BOTH|Both)-[A-Z0-9]+(?:-[A-Z0-9]+)*$"
+  },
+  "titlePattern": "^(?:\\[[^\\]]+\\]\\s?(?:&\\s?)?)+\\S.*$",
+  "titleAntiPatterns": ["Duplicated", "Need to be removed", "  "],
+  "placeholderValues": ["", "TBD", "TODO", "N/A", "NA", "-", "?", "...", "tbd", "todo"],
+  "specRef": {
+    "sectionPattern": "§\\s?(\\d+(?:\\.\\d+)*[a-z]?)",
+    "specHeadingPattern": "^#{1,4}\\s+(\\d+(?:\\.\\d+)*[a-z]?)\\.?\\s",
+    "nonSpecMarkers": ["out-of-SPEC", "AC-", "AC ", "AN#"],
+    "rule": "Every § reference must name a section heading that exists in NDC_Integration/SPEC.md. A row with no § reference must carry an explicit user-story reference (AC-nn acceptance criterion or AN#n Analyze_User_Story note) or the out-of-SPEC marker."
+  },
+  "sizeBudget": { "maxTitleChars": 250, "maxCellChars": 4000, "excelCellLimit": 32767 }
+}

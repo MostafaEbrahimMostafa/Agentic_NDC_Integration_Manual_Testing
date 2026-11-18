@@ -1,0 +1,200 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "ndc-qa-run-log-line",
+  "title": "NDC QA run log line",
+  "description": "Output contract (Enhancement Plan Step 5) for one line of NDC_Integration/Artifacts/Logs/<slug>.jsonl. Field meanings: .claude/Skills/Generate_QA_Report/references/log-schema.md. Validator: .claude/Skills/_shared/scripts/validate-jsonl.js picks $defs[<line.type>]. Extra fields are allowed (log-schema.md). Cross-line rules (one run_start first, unique tc_id, related_tc_id resolves, redaction, size budget) are checked in code.",
+  "$defs": {
+    "iso": { "type": "string", "format": "date-time" },
+    "text": { "type": "string", "minLength": 1 },
+    "verdict": { "enum": ["PASS", "FAIL", "BLOCKED"] },
+    "expectationSource": { "enum": ["SPEC", "LIVE-CONFIRMED", "INFERRED"] },
+    "evidenceRef": {
+      "type": "object",
+      "required": ["path", "op"],
+      "properties": {
+        "source": { "type": "string" },
+        "line": { "type": "integer", "minimum": 1 },
+        "hop": { "type": "integer", "minimum": 1 },
+        "attempt": { "type": "integer", "minimum": 1 },
+        "path": { "$ref": "#/$defs/text" },
+        "op": { "$ref": "#/$defs/text" },
+        "also_checked": { "type": "array", "items": { "type": "string" } },
+        "scoped": { "type": "boolean" }
+      }
+    },
+    "evidenceRefs": { "type": "array", "items": { "$ref": "#/$defs/evidenceRef" } },
+    "requestFull": {
+      "type": "object",
+      "required": ["method", "url"],
+      "properties": { "method": { "$ref": "#/$defs/text" }, "url": { "$ref": "#/$defs/text" }, "headers": { "type": "object" } }
+    },
+    "responseFull": {
+      "type": "object",
+      "required": ["status"],
+      "properties": { "status": { "type": ["integer", "string"] }, "headers_captured": { "type": "boolean" } }
+    },
+    "hop": {
+      "type": "object",
+      "required": ["hop", "endpoint", "verdict"],
+      "properties": {
+        "hop": { "type": "integer", "minimum": 1 },
+        "endpoint": { "$ref": "#/$defs/text" },
+        "verdict": { "$ref": "#/$defs/verdict" },
+        "started_at": { "$ref": "#/$defs/iso" },
+        "ended_at": { "$ref": "#/$defs/iso" },
+        "request_full": { "$ref": "#/$defs/requestFull" },
+        "response_full": { "$ref": "#/$defs/responseFull" }
+      }
+    },
+    "attempt": {
+      "type": "object",
+      "required": ["label", "started_at", "ended_at"],
+      "properties": {
+        "label": { "$ref": "#/$defs/text" },
+        "started_at": { "$ref": "#/$defs/iso" },
+        "ended_at": { "$ref": "#/$defs/iso" },
+        "request_full": { "$ref": "#/$defs/requestFull" },
+        "response_full": { "$ref": "#/$defs/responseFull" }
+      }
+    },
+
+    "run_start": {
+      "type": "object",
+      "required": ["scope", "environment", "baseUrl", "supplier", "credentials_selector", "started_at", "total_test_cases_planned", "build"],
+      "properties": {
+        "scope": { "$ref": "#/$defs/text" },
+        "environment": { "$ref": "#/$defs/text" },
+        "baseUrl": { "type": "string", "pattern": "^https?://" },
+        "supplier": { "$ref": "#/$defs/text" },
+        "credentials_selector": { "$ref": "#/$defs/text" },
+        "started_at": { "$ref": "#/$defs/iso" },
+        "total_test_cases_planned": { "type": "integer", "minimum": 0 },
+        "build": {
+          "type": "object",
+          "required": ["label", "source"],
+          "properties": { "label": { "$ref": "#/$defs/text" }, "source": { "$ref": "#/$defs/text" } }
+        }
+      }
+    },
+    "test_case": {
+      "type": "object",
+      "required": ["tc_id", "title", "endpoint_or_flow", "category", "verdict", "spec_ref", "expected", "actual", "timestamp"],
+      "properties": {
+        "tc_id": { "$ref": "#/$defs/text" },
+        "title": { "$ref": "#/$defs/text" },
+        "endpoint_or_flow": { "$ref": "#/$defs/text" },
+        "category": { "$ref": "#/$defs/text" },
+        "verdict": { "$ref": "#/$defs/verdict" },
+        "spec_ref": { "$ref": "#/$defs/text" },
+        "expected": { "$ref": "#/$defs/text" },
+        "actual": { "$ref": "#/$defs/text" },
+        "timestamp": { "$ref": "#/$defs/iso" },
+        "started_at": { "$ref": "#/$defs/iso" },
+        "reporting_started_at": { "$ref": "#/$defs/iso" },
+        "reporting_ended_at": { "$ref": "#/$defs/iso" },
+        "waiting_ms": { "type": "number", "minimum": 0 },
+        "timing": { "enum": ["complete", "partial"] },
+        "request_full": { "$ref": "#/$defs/requestFull" },
+        "response_full": { "$ref": "#/$defs/responseFull" },
+        "hops": { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/hop" } },
+        "attempts": { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/attempt" } },
+        "evidence_refs": { "$ref": "#/$defs/evidenceRefs" },
+        "expectation_source": { "$ref": "#/$defs/expectationSource" }
+      }
+    },
+    "finding": {
+      "type": "object",
+      "required": ["kind", "related_tc_id", "summary"],
+      "properties": {
+        "kind": { "enum": ["unknown_resolution", "defect", "reconfirmed"] },
+        "related_tc_id": { "$ref": "#/$defs/text" },
+        "summary": { "$ref": "#/$defs/text" },
+        "evidence_refs": { "$ref": "#/$defs/evidenceRefs" },
+        "expectation_source": { "$ref": "#/$defs/expectationSource" },
+        "occurrence": { "type": "integer", "minimum": 1 },
+        "repro": {
+          "type": "object",
+          "properties": { "records": { "type": "array", "items": { "type": "object", "required": ["reproduced"], "properties": { "reproduced": { "type": "boolean" } } } } }
+        },
+        "second_opinion": {
+          "type": "object",
+          "required": ["by", "rule_met"],
+          "properties": { "rule_met": { "enum": ["yes", "no", "cannot_tell"] } }
+        }
+      },
+      "if": { "properties": { "kind": { "const": "defect" } } },
+      "then": {
+        "required": ["field_name", "spec_ref", "expected_value", "impact", "expectation_source"],
+        "properties": {
+          "field_name": { "$ref": "#/$defs/text" },
+          "spec_ref": { "$ref": "#/$defs/text" },
+          "impact": { "$ref": "#/$defs/text" }
+        }
+      }
+    },
+    "not_reproduced": {
+      "type": "object",
+      "required": ["bug_id", "related_tc_ids", "note"],
+      "properties": { "bug_id": { "$ref": "#/$defs/text" }, "related_tc_ids": { "type": "array", "minItems": 1, "items": { "type": "string" } }, "note": { "$ref": "#/$defs/text" } }
+    },
+    "erratum": { "type": "object", "required": ["at", "text"], "properties": { "at": { "$ref": "#/$defs/iso" }, "text": { "$ref": "#/$defs/text" } } },
+    "spec_update_proposed": {
+      "type": "object",
+      "required": ["section", "old_text", "new_text", "status"],
+      "properties": { "section": { "$ref": "#/$defs/text" }, "old_text": { "type": "string" }, "new_text": { "$ref": "#/$defs/text" }, "status": { "enum": ["pending", "applied", "declined"] } }
+    },
+    "cleanup": {
+      "type": "object",
+      "required": ["kind", "pnr", "related_tc_id"],
+      "properties": { "kind": { "enum": ["family_b_hold", "needs_void_cancel"] }, "pnr": { "$ref": "#/$defs/text" }, "related_tc_id": { "$ref": "#/$defs/text" } }
+    },
+    "phase": {
+      "type": "object",
+      "required": ["name", "event", "at"],
+      "properties": { "name": { "$ref": "#/$defs/text" }, "event": { "enum": ["start", "end"] }, "at": { "$ref": "#/$defs/iso" } }
+    },
+    "ai_operation": {
+      "type": "object",
+      "required": ["operation", "started_at", "ended_at"],
+      "properties": { "operation": { "$ref": "#/$defs/text" }, "started_at": { "$ref": "#/$defs/iso" }, "ended_at": { "$ref": "#/$defs/iso" } }
+    },
+    "ai_operation_detail": {
+      "type": "object",
+      "required": ["operation", "steps"],
+      "properties": { "operation": { "$ref": "#/$defs/text" }, "steps": { "type": "array", "items": { "type": "string" } } }
+    },
+    "wait": {
+      "type": "object",
+      "required": ["reason", "started_at", "ended_at"],
+      "properties": { "reason": { "$ref": "#/$defs/text" }, "started_at": { "$ref": "#/$defs/iso" }, "ended_at": { "$ref": "#/$defs/iso" } }
+    },
+    "reporting_op": {
+      "type": "object",
+      "required": ["operation", "started_at", "ended_at"],
+      "properties": { "operation": { "$ref": "#/$defs/text" }, "started_at": { "$ref": "#/$defs/iso" }, "ended_at": { "$ref": "#/$defs/iso" }, "related_tc_ids": { "type": "array", "items": { "type": "string" } } }
+    },
+    "overhead_detail": {
+      "type": "object",
+      "required": ["from", "label", "steps"],
+      "properties": { "from": { "$ref": "#/$defs/iso" }, "label": { "$ref": "#/$defs/text" }, "steps": { "type": "array", "items": { "type": "string" } } }
+    },
+    "build_change": {
+      "type": "object",
+      "required": ["at", "from", "to", "evidence"],
+      "properties": { "at": { "$ref": "#/$defs/iso" }, "from": { "$ref": "#/$defs/text" }, "to": { "$ref": "#/$defs/text" }, "evidence": { "$ref": "#/$defs/text" } }
+    },
+    "scope_note": { "type": "object", "required": ["text"], "properties": { "text": { "$ref": "#/$defs/text" } } },
+    "observation": {
+      "type": "object",
+      "required": ["text"],
+      "properties": { "text": { "$ref": "#/$defs/text" }, "related_tc_id": { "type": "string" } }
+    },
+    "run_end": {
+      "type": "object",
+      "required": ["status", "ended_at"],
+      "properties": { "status": { "enum": ["complete", "interrupted"] }, "ended_at": { "$ref": "#/$defs/iso" } },
+      "if": { "properties": { "status": { "const": "interrupted" } } },
+      "then": { "required": ["interrupted_after_tc", "reason"] }
+    }
+  }
+}

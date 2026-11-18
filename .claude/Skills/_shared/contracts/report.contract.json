@@ -1,0 +1,20 @@
+{
+  "contract": "run-report",
+  "version": "1.0 (2026-11-18)",
+  "description": "Output contract for the run report NDC_Integration/Artifacts/Logs/<slug>.md (and the .html / .xlsx renders). The report is rendered from the JSONL by script, never typed: the .md on disk must equal a fresh render-md.js render of the .jsonl. Validator: .claude/Skills/_shared/scripts/validate-report.js.",
+  "summaryWithinLines": 15,
+  "summaryMarkers": ["**Verdict:**", "| Logged | Planned | Pass | Fail | Blocked | Defects | Cleanup |", "**Top risks:**", "**Blockers:**"],
+  "resultsColumns": [
+    { "header": "TC ID", "field": "tc_id" },
+    { "header": "Title", "field": "title" },
+    { "header": "Category", "field": "category" },
+    { "header": "Endpoint / Flow", "field": "endpoint_or_flow" },
+    { "header": "Verdict", "field": "verdict" },
+    { "header": "SPEC Ref", "field": "spec_ref" },
+    { "header": "Expected", "field": "expected" },
+    { "header": "Actual", "field": "actual" },
+    { "header": "Evidence", "field": "evidence" },
+    { "header": "Supplier", "field": "supplier" },
+    { "header": "Timestamp", "field": "timestamp" }
+  ]
+}

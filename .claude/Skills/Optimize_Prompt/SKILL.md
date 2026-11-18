@@ -160,6 +160,10 @@ Bold slots are the ones `CLAUDE.md` rule 5 says must never be defaulted. A reque
   "confirm bug X" / "prove it is broken" as "re-test X and report what the response shows". The
   Self-check slot links the guardrails file (evidence refs, source labels, defect gate) instead of
   restating it. For execute/retest tasks, add the build/RC label to the slots as recommended (G-4c).
+- **Output contract slot** ([`../_shared/Output_Contracts.md`](../_shared/Output_Contracts.md)):
+  name the exact file, folder and format, and the validator that must pass
+  (`validate-output.js <file>`). Link the contract instead of restating its rules. Stakeholder
+  formats (XLSX/DOCX) are renders of the CSV/JSONL/MD, so the slot names the source too.
 
 ## Output
 

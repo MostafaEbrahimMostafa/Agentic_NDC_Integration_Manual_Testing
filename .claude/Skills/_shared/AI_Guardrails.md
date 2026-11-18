@@ -75,7 +75,8 @@ supplier A behaves like supplier B, or treating INFERRED expectations as facts.
 are written for the same story, live supplier responses change, or a build is redeployed mid-run
 (KB L-04).
 
-- **(a)** Use the fixed templates and output contracts (CSV template, log-schema, bug template).
+- **(a)** Use the fixed templates and output contracts (CSV template, log-schema, bug template),
+  checked by script: [Output_Contracts.md](Output_Contracts.md) (Step 5).
 - **(b)** **Reproduce every defect twice** (fresh Search each time) before filing. List each run in
   `repro.records[]` with its saved evidence. The script counts them: `reproduced < runs` is flagged
   **FLAKY**, `runs < 2` is **HOLD**, and `0 reproduced` is **CONTRADICTED**.

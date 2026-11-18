@@ -48,6 +48,11 @@ decides knowingly. Never turn an `INFERRED` statement into a fact without a live
 evidence-backed result. Every KB fact you propose keeps `Last verified: <date> / <env> / <run slug>`,
 plus the build when known.
 
+**Output contract** ([`../_shared/Output_Contracts.md`](../_shared/Output_Contracts.md)): record
+each decision by appending a `spec_update_proposed` line (`status` `applied` / `declined`) and
+re-rendering the run's `.md` with `render-md.js`; never edit the `.md` by hand (O-5). Afterwards
+`validate-output.js NDC_Integration/Artifacts/Logs/<slug>.jsonl` must still pass.
+
 ## Process
 
 1. **Collect every `spec_update_proposed` line** from the named run's `.jsonl`, top to bottom. Per

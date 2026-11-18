@@ -137,6 +137,12 @@ metrics steps read it).
     `LIVE-CONFIRMED <KB file>`, or `INFERRED`). Do not approve an `INFERRED` recipe without saying so
     to the user.
   - A still-reproducing bug sent on to `Generate_Bug_Report` must pass the guardrail gate there.
+- **Output contract** ([`../_shared/Output_Contracts.md`](../_shared/Output_Contracts.md)): the RC
+  Re-Test report is rendered by the runner with its summary table first (O-1); quote its counts as
+  printed, never re-counted (O-2). Change the registry only through `registry.js` (O-4). A
+  stakeholder sheet of the registry or a Word copy of the report, if asked, is a render:
+  `render-xlsx.js NDC_Integration/Artifacts/Bug_Registry.csv` or `render-docx.js <report>.md`, each
+  followed by `validate-output.js <file> --source <src>`.
     The two runner evidence files from two RC runs count as its two reproductions.
 
 ## Non-goals

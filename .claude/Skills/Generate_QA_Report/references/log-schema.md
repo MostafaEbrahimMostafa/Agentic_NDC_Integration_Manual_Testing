@@ -432,3 +432,31 @@ which writes `<slug>_evidence.md` / `.json` next to the log and never edits the 
   "prompt":".claude/Skills/_shared/second-opinion-prompt.md","rule_met":"no|yes|cannot_tell","summary":"...","evidence_refs":[...]}`.
 
 Correct a guardrail field by appending a new `finding` line with the same `related_tc_id` + `bug_id` (the latest line wins).
+
+## Output contract (Enhancement Plan Step 5, 2026-11-18)
+
+This file explains the fields; the machine-readable contract is
+`.claude/Skills/_shared/contracts/run-log.schema.json` (one JSON schema per line type), checked by
+`node .claude/Skills/_shared/scripts/validate-jsonl.js <slug>.jsonl` (or `validate-output.js`, which
+also checks that `<slug>.md` equals a fresh render). Rules: `.claude/Skills/_shared/Output_Contracts.md`.
+Applies to logs started from 2026-11-18; older logs are not migrated.
+
+What the contract makes **required** for a new log (all were already described above):
+
+- `run_start`: `scope`, `environment`, `baseUrl`, `supplier`, `credentials_selector`, `started_at`,
+  `total_test_cases_planned`, `build` (Guardrail fields).
+- `test_case`: `tc_id`, `title`, `endpoint_or_flow`, `category`, `verdict` (`PASS`/`FAIL`/`BLOCKED`),
+  `spec_ref`, `expected`, `actual`, `timestamp`. One `test_case` line per TC-ID (the countable unit).
+  Never both `hops` and `attempts`; each `attempts[]` entry has `started_at`/`ended_at`.
+- `finding` with `kind:"defect"`: `field_name`, `spec_ref`, `expected_value`, `impact`,
+  `expectation_source`, and `evidence_refs` on the finding or on its `test_case`. `related_tc_id`
+  must name a logged `test_case`.
+- `run_end` with `status:"interrupted"`: `interrupted_after_tc` and `reason`.
+- All timestamps ISO-8601. `x-api-key` (any casing) is `"[REDACTED]"`; raw supplier payload keys are
+  `null` or a `"[REDACTED …]"` string.
+- Size budget (warning, not error): bodies follow the truncation rule in *Additions 2026-10-10*.
+
+New line type, `observation` (optional): `{"type":"observation","text":"...","related_tc_id":"<optional>"}`.
+Free text that is not a verdict, defect or number (Output contract O-6). `render-md.js` lists it under
+`## Observations`; it never changes a count. Any other new line type must be added here and to the
+schema first, or the validator warns about it.

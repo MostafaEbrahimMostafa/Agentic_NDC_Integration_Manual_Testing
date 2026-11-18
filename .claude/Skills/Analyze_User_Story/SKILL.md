@@ -42,6 +42,12 @@ straight to test-case writing from a vague AC is how a suite ends up testing the
   mapped onto a SPEC line marked `INFERRED`/`UNKNOWN` is ambiguous, not "covered". Never fill a gap
   from another supplier's behaviour. The Testable Scope keeps these labels so test generation does
   not treat assumptions as facts (KB L-05).
+- **Output contract** ([`../_shared/Output_Contracts.md`](../_shared/Output_Contracts.md)): the
+  analysis opens with a short summary that names the covered, ambiguous and out-of-scope ACs and the
+  blocking questions, before the per-AC detail (O-1). Name them; do not type totals (O-2). Generated test cases cite a Requirement mapping row as
+  `AN#<row #>` in `SpecReference`, so keep the `#` column stable across revisions; append new rows
+  instead of renumbering (O-4). If a Word copy
+  is wanted, render it with `render-docx.js <analysis>.md` and validate it with `--source`.
 
 ## Inputs
 

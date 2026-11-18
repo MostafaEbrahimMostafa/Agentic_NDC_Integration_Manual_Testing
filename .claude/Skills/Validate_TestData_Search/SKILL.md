@@ -31,6 +31,11 @@ result is re-checked before FAIL (CLAUDE.md rule 10, KB L-06). An empty sweep is
 data finding (Blocked), never a product defect, unless the pattern in KB L-06 holds and the user
 agrees.
 
+**Output contract** ([`../_shared/Output_Contracts.md`](../_shared/Output_Contracts.md)): the sweep
+report states the PASS / FAIL / repaired counts first (O-1), copied from the script's output, never
+re-counted (O-2). Rewritten fixtures keep their key order so git diffs show only the changed
+criteria (O-4).
+
 ## Inputs
 
 Ask for whatever isn't given, then hold it constant for the entire sweep:

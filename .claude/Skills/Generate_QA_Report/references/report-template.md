@@ -15,24 +15,29 @@
 
 # QA Execution Report — <!-- scope -->Flow #43 — V2, Family B, Hold
 
-<!-- DATA: header line — from run_start (+ run_end if present) -->
-**Environment:** staging &middot; https://ndc-integration-stg-ne-3.azurewebsites.net/
-**Supplier:** SUP_A
-**Started:** 2026-08-04 14:32:10 UTC
-**Status:** RUNNING
-<!-- once run_end exists, replace the Status line with one of:
-  **Status:** COMPLETE
-  **Status:** INTERRUPTED — after TC-0430 (9/12)
--->
+<!-- PYRAMID (Output contract O-1, _shared/Output_Contracts.md): Verdict, counts table, Top risks,
+     Blockers and Cleanup MUST sit in the first 15 lines of the rendered file. scripts/render-md.js
+     produces exactly this block; validate-report.js checks it. Every number is recomputed from ALL
+     test_case lines on every render (never accumulated, never counting hops). Defects = distinct
+     bugs (one per bug_id, else one per test case). Light: 🔴 any FAIL/defect, 🟡 blocked or
+     interrupted, 🟢 all passed, ⏳ nothing logged yet. -->
+**Verdict:** 🔴 FAILURES FOUND · **Status:** RUNNING · SUP_A / SUP_A_DEFAULT · build RC-2026.11.3
 
-## Summary
+| Logged | Planned | Pass | Fail | Blocked | Defects | Cleanup |
+|---|---|---|---|---|---|---|
+| 8 | 12 | 6 | 1 | 1 | 1 | 1 |
 
-<!-- DATA: recompute from ALL test_case lines every render, never accumulate incrementally, and
-     never count hops as if they were test cases -->
-- Test cases logged: 8
-- Passed: 6
-- Failed: 1
-- Blocked: 1
+**Top risks:** BUG-01 (1 TC): holdExpirationDate returned null in Hold response
+**Blockers:** TC-0431: No inventory on the route after two searches
+**Cleanup:** 1 live hold/PNR(s) left — see Cleanup
+
+## Run details
+
+<!-- DATA: from run_start (+ run_end, build_change if present) -->
+- **Environment:** staging &middot; https://ndc-integration-stg-ne-3.azurewebsites.net/
+- **Supplier:** SUP_A · **Credentials Selector:** SUP_A_DEFAULT
+- **Started:** 2026-08-04T14:32:10Z
+- **Build:** RC-2026.11.3 (source: user)
 
 ## Test case results
 
@@ -77,6 +82,13 @@ Hops (3):
 - **Unknown-resolution** — FareConfirm error shape for expired offerId confirmed as
   `{errorCode:'OFFER_EXPIRED'}` (§2.3, TC-0412)
 
+## Observations
+
+<!-- DATA: one entry per `observation` line (Output contract O-6: free text that is not a verdict,
+     defect or number); the whole section is omitted when there are none -->
+
+- **[TC-0430]** The hold expiry is present in Retrieve; ask the team which response should carry it.
+
 ## Proposed SPEC.md updates
 
 <!-- DATA: one entry per spec_update_proposed; use the latest line per (section, old_text) for
@@ -90,3 +102,10 @@ Hops (3):
 <!-- DATA: one entry per `cleanup` line; if none, write "Nothing left needing cleanup." instead -->
 
 - Family-B hold — PNR `ABC123` (TC-0430) — expires per holdExpirationDate
+
+## Evidence
+
+<!-- DATA: raw evidence links, always last (pyramid O-1) -->
+- Source log: [<slug>.jsonl](<slug>.jsonl)
+- Guardrail check: [<slug>_evidence.md](<slug>_evidence.md) (written by verify-evidence.js)
+- HTML report: [<slug>.html](<slug>.html) (after run_end)

@@ -1,0 +1,18 @@
+{
+  "contract": "bug-report",
+  "version": "1.0 (2026-11-18)",
+  "description": "Output contract for NDC_Integration/Artifacts/BugReports/<slug>/BUG-NN_<API>_<FIELD>/BUG-NN_<API>_<FIELD>.md and its requests-responses/ folder. Template: .claude/Skills/Generate_Bug_Report/references/bug-report-template.md. Validator: .claude/Skills/_shared/scripts/validate-bug-report.js. Applies to new reports; older reports are not migrated.",
+  "folderPattern": "^BUG-\\d{2,}_[A-Za-z0-9_.-]+$",
+  "titlePattern": "^# \\[(?:V1|V2|V1/V2|Both)\\]\\[[^\\]]+\\]\\[[^\\]]+\\] [–-] \\S.+$",
+  "sections": ["Description", "Steps to Reproduce", "Actual Result", "Expected Result", "System Information", "Severity", "Evidence", "Request / response files", "Impact"],
+  "optionalSections": ["Observations"],
+  "severity": ["Critical", "High", "Medium", "Low"],
+  "systemInfoFields": ["API Version", "Supplier/Airline", "Base URL", "API Name", "Environment", "Credentials Selector", "Correlation ID", "Registry ID"],
+  "registryIdPattern": "NDC-BUG-\\d{4}",
+  "registryFile": "NDC_Integration/Artifacts/Bug_Registry.csv",
+  "placeholderPattern": "<(?:API_VERSION|SUPPLIER|API_NAME|FIELD_NAME|FLOW_STEPS|EXPECTED_VALUE|BASE_URL|ENVIRONMENT|CREDENTIAL_SELECTOR|CORRELATION_ID|GLOBAL_ID|label|endpoint path|status)>",
+  "requestFileKeys": ["label", "method", "url", "headers", "body"],
+  "responseFileKeys": ["label", "status", "body"],
+  "redactedPayloadKeys": ["supplierRequest", "supplierResponse", "OriginalSupplierRequest", "OriginalSupplierResponse"],
+  "sizeBudget": { "maxLines": 120, "maxJsonBlockLines": 40 }
+}

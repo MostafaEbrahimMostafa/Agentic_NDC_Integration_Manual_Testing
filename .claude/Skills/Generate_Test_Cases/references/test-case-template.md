@@ -24,6 +24,13 @@ Preconditions, Steps / Endpoint Chain, Expected Result, SpecReference, Notes, St
 - `Risk` = `High` / `Medium` / `Low` / a hyphenated blend already seen in practice (`Low-Med`) — pick
   the closest single word when unsure; don't invent new risk vocabulary.
 - All other columns map 1:1 to the Field list below.
+- **Output contract** (Enhancement Plan Step 5): the machine-readable version of these rules is
+  `.claude/Skills/_shared/contracts/testcase-csv.contract.json`. Check every new file with
+  `node .claude/Skills/_shared/scripts/validate-csv.js <file.csv> --new`. It enforces the column
+  order, unique IDs matching the ID scheme below, the eight §8.1 categories, allowed
+  Priority/Risk/Status values, a concrete Expected Result, and a `SpecReference` written with `§`
+  (`§2.1`, `§5.4 #43`) that names a real SPEC.md section, or `AC-nn` / `AN#n` / `out-of-SPEC` for
+  user-story scope. Title style is a warning only.
 
 ## ID scheme
 

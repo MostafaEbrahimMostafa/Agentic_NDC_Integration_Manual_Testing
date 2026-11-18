@@ -105,6 +105,20 @@ both files for the rest of the run — never re-timestamp mid-run.
 - If it reports a secret leak, fix the log by appending redacted lines and re-rendering. Never share
   the leaking HTML.
 
+## Output contract — [`../_shared/Output_Contracts.md`](../_shared/Output_Contracts.md)
+
+- The `.jsonl` is the contract (`run-log.schema.json`); the `.md`, `.html`, `.xlsx` and `.docx` are
+  renders of it (O-5). `scripts/render-md.js` lays the `.md` out as a pyramid: Verdict, counts table,
+  Top risks, Blockers and Cleanup in the first 15 lines, then run details, results, findings,
+  Observations, SPEC proposals, Cleanup, and evidence links last (O-1). Every number is computed by
+  the script (O-2).
+- Close-out check, after the final render:
+  `node .claude/Skills/_shared/scripts/validate-output.js NDC_Integration/Artifacts/Logs/<slug>.jsonl`.
+  It fails if a line breaks the schema or if the `.md` differs from a fresh render (hand edit or
+  stale render). Fix by appending lines and re-rendering.
+- Stakeholder copies, only when asked: `render-xlsx.js <slug>.jsonl` (results table) and
+  `render-docx.js <slug>.md`, each followed by its validator (`validate-output.js <file> --source <src>`).
+
 ## Process
 
 1. **On run start** (before the first request `execute-test-cases` sends), create the `.jsonl` file

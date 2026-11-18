@@ -37,6 +37,16 @@ unchanged. A rule that SPEC itself marks `INFERRED`/`UNKNOWN` is `INFERRED`. Suc
 question for the user, never a defect, so make the row's title or Notes say it confirms the rule.
 Never borrow another supplier's behaviour as the expectation.
 
+**Output contract** ([`../_shared/Output_Contracts.md`](../_shared/Output_Contracts.md),
+`contracts/testcase-csv.contract.json`): the 15 columns in template order; IDs per the template's ID
+scheme and never renumbered (O-4); `Category` one of the eight §8.1 categories (Flow rows may also
+use `Flow` / `End-to-End Flow - …`); one Priority scheme per file; a concrete Expected Result (no
+`TBD`); `SpecReference` written as `§n.n` naming a section that exists in SPEC.md, or `AC-nn` /
+`AN#n` for user-story scope, or `out-of-SPEC`. After writing the file, run
+`node .claude/Skills/_shared/scripts/validate-output.js <file.csv> --new` and fix the rows until it
+passes. Report the row count from its output, not from your own count (O-2). If a stakeholder
+spreadsheet is wanted, render it with `render-xlsx.js <file.csv>`; never retype rows.
+
 ## Scope
 
 One generation request = one clearly bounded scope: a single endpoint (§2.1–§2.15), a single flow

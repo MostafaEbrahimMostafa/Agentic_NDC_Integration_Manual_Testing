@@ -58,6 +58,16 @@ guessed one.
   report its gate table. Only **FILE** defects go to `generate-bug-report`. Raise QUESTION and
   NEEDS-HUMAN items with the user.
 
+## Output contract — [`../_shared/Output_Contracts.md`](../_shared/Output_Contracts.md) (always apply)
+
+- Every line you hand to `generate-qa-report` must match `run-log.schema.json` (fields in
+  `Generate_QA_Report/references/log-schema.md`). Truncate bodies to the size budget before logging (O-3).
+- Running totals you state in chat come from the rendered report or a script, never from your own
+  count (O-2). Free-text notes that are not verdicts go in `observation` lines (O-6).
+- At run end, `node .claude/Skills/_shared/scripts/validate-output.js NDC_Integration/Artifacts/Logs/<slug>.jsonl`
+  must pass before the run is reported done. A contract error is fixed by appending corrected lines,
+  never by editing earlier lines.
+
 ## Inputs
 
 - A test case (or set) from `NDC_Integration/TestCases/` (produced by `generate-test-cases`), **or**

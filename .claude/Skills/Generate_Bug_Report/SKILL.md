@@ -53,6 +53,20 @@ Before writing any report, run
   the path, the verbatim SPEC rule, two reproductions and a second opinion. If any is missing, say so
   and ask.
 
+## Output contract — [`../_shared/Output_Contracts.md`](../_shared/Output_Contracts.md)
+
+- Each report follows `bug-report.contract.json`: the title format, the nine template sections in
+  order, a `Registry ID` that exists in the registry, every listed request/response file present and
+  redacted, and an index line in `README.md`.
+- **Size budget (O-3): 120 lines per report, 40 lines per code block.** Quote only the JSON path that
+  proves the defect; the full bodies live in `requests-responses/`.
+- Context that does not fit the fixed sections goes in an optional `## 📝 Observations` section after
+  Impact (O-6). Do not add other sections.
+- Counts in a report ("332 of 332 held bookings") are copied from script output, never re-counted (O-2).
+- Before reporting the batch done:
+  `node .claude/Skills/_shared/scripts/validate-output.js NDC_Integration/Artifacts/BugReports/<slug>/` must pass.
+  A stakeholder `.docx` copy, if asked: `render-docx.js <report>.md`, then validate it with `--source`.
+
 ## Process
 
 1. **Collect defects.** For a run-based request, walk the `.jsonl` top to bottom and pull every

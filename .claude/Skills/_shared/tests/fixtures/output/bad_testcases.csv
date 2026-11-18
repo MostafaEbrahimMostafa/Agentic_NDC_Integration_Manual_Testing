@@ -1,0 +1,8 @@
+"ID","RowType","Version","Scope","Category","Title","Priority","Risk","Capabilities / Test Data","Preconditions","Steps / Endpoint Chain","Expected Result","SpecReference","Notes","Status"
+"TC-BOOK-NEG-01","EndpointTestCase","V2","Book","Negative","[Book][Request] Validate Book rejects an expired id.","High","High","","","1. POST Book","4xx","§2.9","SYNTHETIC: valid row","Not Run"
+"TC-BOOK-NEG-01","EndpointTestCase","V2","Book","Negative","[Book][Request] Validate Book rejects a stale id.","High","High","","","1. POST Book","4xx","§2.9","SYNTHETIC: duplicate ID","Not Run"
+"TC-BOOK-PERF-01","EndpointTestCase","V2","Book","Performance","[Book][Response] Verify Book answers fast.","High","High","","","1. POST Book","under 5 s","§2.9","SYNTHETIC: ninth category","Not Run"
+"TC-BOOK-POS-01","EndpointTestCase","V2","Book","Positive","[Book][Response] Verify Book succeeds.","High","High","","","1. POST Book","TBD","§9.9","SYNTHETIC: placeholder expected + section not in SPEC","Not Run"
+"TC-BOOK-POS-02","EndpointTestCase","V3","Book","Positive","Book works","Urgent","High","","","1. POST Book","200","2.9","SYNTHETIC: bad Version, Priority, bare ref, title style","Passed"
+"FLOW-V2-44","EndpointTestCase","V2","Flow","Positive","[Flow 44][Response] Verify flow 44.","High","High","","","Search -> Book","200","§5.4","SYNTHETIC: Flow ID on an EndpointTestCase row","Not Run"
+"TC-BOOK-POS-03","EndpointTestCase","V2","Book","Positive","[Book][Response] Verify Book, unquoted comma breaks the row","High","High","","","1. POST Book","200","§2.9","SYNTHETIC: 16 fields",Not Run,extra

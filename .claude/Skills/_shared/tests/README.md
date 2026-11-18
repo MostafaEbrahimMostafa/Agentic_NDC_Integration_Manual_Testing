@@ -1,4 +1,26 @@
-# Guardrail tests
+# Tests for the shared rules
+
+## Output contracts (Step 5)
+
+```
+node .claude/Skills/_shared/tests/output-contracts.test.js
+```
+
+Run this after any change to `../Output_Contracts.md`, `../contracts/*`, a validator or renderer in
+`../scripts/`, or `Generate_QA_Report/scripts/render-md.js`. No API calls; it writes only to the OS
+temp folder. Inputs are **synthetic** fixtures in `fixtures/output/` (not real findings); the
+bug-report folder and a one-row registry with `NDC-BUG-9999` are built in the temp folder, so the
+real `Bug_Registry.csv` is never touched.
+
+| Area | Expected |
+|---|---|
+| CSV | `good_testcases.csv` passes with `--new`; `bad_testcases.csv` fails on duplicate ID, ninth category, `TBD` expected, `§9.9`, bare `2.9`, bad Version/Priority/Status, Flow ID on an endpoint row, extra field; title style only warns |
+| JSONL | `good_run.jsonl` passes with no warnings; `bad_run.jsonl` fails on each rule (first line, `build`, verdict enum, ISO time, duplicate TC, key leak without printing it, raw payload, hops+attempts, defect fields, dangling `related_tc_id`, invalid JSON, interrupted `run_end`) |
+| Report | the fresh render passes and has Verdict / counts / Top risks / Blockers in 15 lines; one hand-edited number fails |
+| Bug report | a conforming report passes; each violation fails on its own (section missing or out of order, placeholder, unknown Registry ID, missing file, severity, 120-line budget, title, unredacted key) |
+| XLSX / DOCX | renders pass their validators; the XLSX render is byte-stable; a render that differs from its source fails |
+
+## Guardrail tests (Step 4)
 
 ```
 node .claude/Skills/_shared/tests/replay-aap-r1.test.js

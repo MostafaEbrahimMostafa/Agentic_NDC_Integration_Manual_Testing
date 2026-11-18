@@ -1,0 +1,7 @@
+{"type":"test_case","tc_id":"TC-X-01","title":"t","endpoint_or_flow":"Book","category":"Positive","verdict":"PASS","spec_ref":"§2.9","expected":"e","actual":"a","timestamp":"2026-11-18T08:00:05Z"}
+{"type":"run_start","scope":"SYNTHETIC bad log","environment":"staging","baseUrl":"https://example.invalid/","supplier":"SUP_A","credentials_selector":"X","started_at":"2026-11-18T08:00:00Z","total_test_cases_planned":2}
+{"type":"test_case","tc_id":"TC-X-01","title":"t","endpoint_or_flow":"Book","category":"Positive","verdict":"OK","spec_ref":"§2.9","expected":"e","actual":"a","timestamp":"yesterday"}
+{"type":"test_case","tc_id":"TC-X-02","title":"t","endpoint_or_flow":"Book","category":"Positive","verdict":"PASS","spec_ref":"§2.9","expected":"e","actual":"a","timestamp":"2026-11-18T08:00:05Z","request_full":{"method":"POST","url":"u","headers":{"X-Api-Key":"SYNTHETIC-NOT-A-REAL-KEY"}},"response_full":{"status":200,"body":{"OriginalSupplierResponse":"<xml>raw</xml>"}},"hops":[{"hop":1,"endpoint":"Book","verdict":"PASS"}],"attempts":[{"label":"a","started_at":"2026-11-18T08:00:01Z","ended_at":"2026-11-18T08:00:02Z"}]}
+{"type":"finding","kind":"defect","related_tc_id":"TC-NOPE","summary":"s"}
+not json
+{"type":"run_end","status":"interrupted","ended_at":"2026-11-18T08:01:00Z"}

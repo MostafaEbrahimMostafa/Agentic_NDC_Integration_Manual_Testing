@@ -100,3 +100,13 @@ Full request and response bodies (x-api-key redacted; raw supplier payloads reda
 <One paragraph tying the missing/incorrect field to what actually breaks for a consumer of this API
 — a downstream system, another test case, the traveler-facing flow, manual cleanup/expiry tracking,
 etc. Be concrete, not generic.>
+
+<!-- OPTIONAL. Keep this section only when there is useful context that fits no section above
+     (Output contract O-6). Delete it otherwise. No other extra sections are allowed. -->
+## 📝 Observations
+
+<Free text: related behaviour seen nearby, open questions for the dev team.>
+
+<!-- Output contract (.claude/Skills/_shared/Output_Contracts.md, contracts/bug-report.contract.json):
+     at most 120 lines and 40 lines per code block; no <PLACEHOLDER> or HTML comment may remain in the
+     filed report. Check: node .claude/Skills/_shared/scripts/validate-output.js <run folder> -->
