@@ -2,3 +2,6 @@
 .env
 .env.*
 !.env.example
+
+# Postman environment with a real API key (Re-Issue). Keep it local.
+Postman_Collection/Re-Issue/*.postman_environment.json

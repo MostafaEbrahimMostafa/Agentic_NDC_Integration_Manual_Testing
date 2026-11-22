@@ -35,6 +35,10 @@ The NDC Integration Layer is a **supplier-abstraction API** sitting in front of 
 | 15 | Void | `POST api/FlightBooking/Void` | `POST api/V2/FlightBooking/Void` | V1 |
 | 16 | SeatAfterHold | *not available* | `POST api/v2/SeatMap/SeatAfterHold` | **V2 only — added 2026-08-10, see §2.7a. No saved example/test script exists yet; treat as immature/under-specified.** |
 | 17 | FareRules | *not available* | `POST api/v2/FlightSearch/FareRules` | **V2 only — added 2026-08-10 in the same collection update as #16. Out of scope for this document's SeatMap focus; noted here only for completeness (takes `fareConfirmResponseId`+`selectedOfferId`, no saved example).** |
+| 18 | Reissue Eligibility | *not available* | `POST api/v2/Reissue/Eligibility` | **V2 only — added 2026-11-22, see §2.16.** |
+| 19 | Reissue Reshop | *not available* | `POST api/v2/Reissue/Reshop` | **V2 only — added 2026-11-22, see §2.16.** |
+| 20 | Reissue Reprice | *not available* | `POST api/v2/Reissue/Reprice` | **V2 only — added 2026-11-22, see §2.16.** |
+| 21 | Reissue Exchange | *not available* | `POST api/v2/Reissue/Exchange` | **V2 only — added 2026-11-22, see §2.16.** |
 
 `INFERRED`: Path casing differs inconsistently between V1/V2 and even within V2 itself (`api/V2/...` vs `api/v2/...` appear on different endpoints in the same V2 collection — e.g. Search/Bundles/SeatMap/BookAfterHold/CancelAfterHold/Void use `V2` while FareConfirm/Upselling/AddPassenger/Ancillary/Book/Hold/PnrReprice/Retrieve use `v2`). If the underlying route matching is case-sensitive this is a latent defect; if case-insensitive it is cosmetic only. **Testing Note**: verify case-sensitivity of the routing layer once, then this is not a per-endpoint concern — see §7 Testing Strategy.
 
@@ -70,7 +74,7 @@ Two parallel, independently versioned API contracts exist side by side, selected
 | Aspect | V1 | V2 |
 |---|---|---|
 | Path segment | `api/FlightSearch/...`, `api/FlightBooking/...` (no version segment) | `api/v2/...` / `api/V2/...` |
-| Endpoint count | 11 | 17 (as of 2026-08-10; was 15 — see §1.2 #16/#17) |
+| Endpoint count | 11 | 21 (as of 2026-11-22: +4 Reissue endpoints, §1.2 #18–#21; 17 as of 2026-08-10; was 15 — see §1.2 #16/#17) |
 | Passenger data collection | Passed directly in `Book`/`Hold` payload (`passengersList`) — **no separate AddPassenger step** | Separate `AddPassenger` step (`api/v2/Passenger/AddPassengerDetails`) between FareConfirm/Bundle and the enrichment/booking steps |
 | Ancillary services | Not available (no `GetAncillary`/`FareCheck` endpoints) | `GetAncillary` + `FareCheck` endpoints; ancillary selections passed via `PassengersSelectedAncillaries` on Book/Hold |
 | Seat selection | Not available | `GetSeatMap` endpoint to browse; seats attach to a booking via **two asymmetric mechanisms** (added 2026-08-10, §2.7/§2.7a/§2.9): direct-Book carries an inline `passengersSelectedSeats` field, while the Hold branch has no such field on `Hold`/`BookAfterHold` and must instead call the new standalone `SeatAfterHold` endpoint against an already-held PNR |
@@ -128,7 +132,8 @@ Full detail in §4; summarized here for orientation:
 
 - **Universal across all suppliers** (every flow in flow.md assumes these work): Search, FareConfirm (or Upselling as an alternative fare-selection path), Book, Retrieve.
 - **Supplier-conditional** (must be checked per supplier before scheduling a flow, §4.2): Bundle/GetOfferBundles, Hold→FareConfirmAfterHold→BookAfterHold, CancelAfterHold, Void, and (V2-only) AddPassenger-adjacent enrichments GetAncillary/GetSeatMap/FareCheck.
-- **Not implemented anywhere in either API version** (no corresponding endpoint exists in either collection): Refund, Exchange, PNR modification/re-issue outside the Void/CancelHold terminal actions. Any flow or test case referencing Refund/Exchange is out of scope for this API surface — mark such requests as `Not Supported (No Endpoint)`, not as a supplier gap.
+- **Reissue (exchange of a ticketed booking), V2 only, supplier-conditional** (added 2026-11-22, §2.16): Eligibility → Reshop → Reprice → Exchange. Implemented for the LCC suppliers `OmanAirV17`, `AegeanV21` and `Ajet` only. Other suppliers: `UNKNOWN` (no capability flag yet).
+- **Not implemented anywhere in either API version** (no corresponding endpoint exists in either collection): Refund, and any PNR modification outside Reissue (§2.16) and the Void/CancelHold terminal actions. Any flow or test case referencing Refund is out of scope for this API surface — mark such requests as `Not Supported (No Endpoint)`, not as a supplier gap.
 
 ### 1.10 Version Differences (Business Logic)
 
@@ -863,6 +868,35 @@ Observed `cellAvailability`/`paxCellAvailability` values (updated 2026-08-10): `
 
 **Testing Notes**: Because `gdsPNR` is hardcoded empty in the one V2 example, **verify live whether Void requires `gdsPNR` for GDS-routed suppliers** (Amadeus, Sabre, Galileo, TravelportNDC per §4.1) even though the LCC-supplier example (AirArabia) didn't need it — this is plausibly a supplier-type-dependent required field, not universally optional.
 
+### 2.16 Reissue *(V2 only, added 2026-11-22)*
+
+**Purpose**: Exchange (reissue) the tickets of a ticketed booking for a new date, route or fare: Eligibility → Reshop → Reprice → Exchange, then V2 Retrieve.
+
+**Sources**: `Postman_Collection/Re-Issue/NDC Integrations Re-Issue.postman_collection.json`, folder `5. Reissue` (request bodies, test scripts, descriptions), and decisions from the feature owner given to QA on 2026-11-22 (marked *Owner 2026-11-22*). Facts taken only from collection scripts or descriptions are marked `INFERRED`. No saved response examples or schema exist.
+
+**Suppliers**: `OmanAirV17`, `AegeanV21`, `Ajet` (LCC). *Owner 2026-11-22.* The exact `Ajet` enum value is `UNKNOWN` (the §4.5 roster lists the TestData folder `EGY Ajet`).
+
+| Step | V2 URL (POST) | Request fields | Response fields relied on |
+|---|---|---|---|
+| Eligibility | `{{baseUrl}}api/v2/Reissue/Eligibility` | `supplier`, `credentialsSelector`, `pnr`, `gdsPNR`, `bookingToken` | `isChangeable` (boolean) |
+| Reshop | `{{baseUrl}}api/v2/Reissue/Reshop` | the Eligibility fields + `searchCriteria[{origin, destination, date "YYYY-MM-DDT00:00:00"}]` + `passengers[{passengerTypeCode, count}]` | `responseId`, `offers[].offerId`, `offers[].isRepriceRequired` |
+| Reprice | `{{baseUrl}}api/v2/Reissue/Reprice` | `supplier`, `credentialsSelector`, `responseId`, `selectedOfferId` (from Reshop) | new `responseId`, `selectedOffer.offerId`, `selectedOffer.priceDetails` |
+| Exchange | `{{baseUrl}}api/v2/Reissue/Exchange` | `supplier`, `credentialsSelector`, `responseId`, `selectedOfferId` (from Reprice) | `pnr`, `selectedOffer`, `tickets` (object; each value has `ticketNumber`, `ticketStatus`) |
+
+Headers: `x-api-key`, `Client-Id` (§1.5).
+
+**Business Logic**:
+- **Eligibility** currently **always returns `isChangeable = true`** for the Reissue suppliers. It does not evaluate the booking yet. *Owner 2026-11-22.*
+- **Reshop `passengers`** must list every passenger of the booking with the same types and counts. *Owner 2026-11-22.*
+- **No passenger split.** The current suppliers do not support splitting passengers, so a reissue always covers the whole booking. A flag describing split availability will be added later; when split is implemented, a split creates a new PNR. *Owner 2026-11-22.*
+- **Same PNR.** Without a split, Exchange keeps the original PNR: the returned `pnr` equals the booked `pnr`, and Retrieve on that PNR shows the reissued itinerary and tickets. *Owner 2026-11-22.*
+- `INFERRED` (collection): every Reshop offer has `isRepriceRequired = true`; Exchange accepts only the ids returned by Reprice; an Exchange offer is single-use; for `OmanAirV17`, Reprice makes no supplier call.
+- **Out of QA scope** (*Owner 2026-11-22*): payment / form of payment for the reissue amount, and a dedicated Reissue Lookup endpoint (none exists; V2 Retrieve §2.11 is used after Exchange).
+
+**Expected Success Response**: HTTP 200 for each step with the fields in the table. Exact `ticketStatus` values, the location of the exchange penalty (`rulesAndPenalties`), and the change-fee breakdown are `UNKNOWN`.
+
+**Common Errors / Negative Cases**: `UNKNOWN` error codes. Expected to follow the existing envelope (400 validation, 409 business/supplier conflict, 401 auth). Test cases: `NDC_Integration/TestCases/Reissue/`.
+
 ## 3. Integration Analysis
 
 This section explains how every endpoint connects to every other endpoint — the ID/data dependencies, business dependencies, and timing constraints that make the 89 flows in §5 work (or correctly fail).
@@ -1119,7 +1153,7 @@ These are direct disagreements between §4.2 (Integration doc) and PRD §4.5 (`s
 
 ### 4.6 Capability Summary Matrix (Supported / Not Supported / Conditional / Unknown)
 
-Universal endpoints (same for all 38 suppliers, not repeated per row): **Search = Supported**, **FareConfirm = Supported**, **Book = Supported**, **Retrieve = Supported**, **AddPassenger (V2) = Supported** (universal V2 step, no capability gate found), **Refund = Not Supported (No Endpoint, any version)**, **Exchange = Not Supported (No Endpoint, any version)**.
+Universal endpoints (same for all 38 suppliers, not repeated per row): **Search = Supported**, **FareConfirm = Supported**, **Book = Supported**, **Retrieve = Supported**, **AddPassenger (V2) = Supported** (universal V2 step, no capability gate found), **Refund = Not Supported (No Endpoint, any version)**. **Reissue/Exchange (V2 only, §2.16) = Supported for `OmanAirV17`, `AegeanV21`, `Ajet`; `UNKNOWN` for every other supplier** (updated 2026-11-22; previously "Not Supported (No Endpoint)").
 
 | Supplier | Upsell | Bundle | Hold | CancelHold | Void | Ancillary (any type) | SeatMap (V2) |
 |---|---|---|---|---|---|---|---|
@@ -1543,6 +1577,7 @@ This SPEC.md is a **living document** by necessity — it encodes a large number
 
 ### Change Log
 
+- **2026-11-22**: Added the V2 Reissue surface from `Postman_Collection/Re-Issue/` (folder `5. Reissue`) and feature-owner decisions approved by the user: §1.2 #18–#21, §1.4 endpoint count, §1.9, new §2.16 Reissue, §4.6 (Exchange no longer "No Endpoint"). Payment and a Reissue Lookup are out of QA scope.
 - **2026-08-10**: Folded in a Postman collection (`NDC_Integrations_Staging_Scripts_V2.postman_collection.json`) and Sample-Req/Res doc (`Sample_API_Req&Res_V2.md`) update covering SeatMap and the Book/Hold-with-SeatMap surface. Additions: two new V2 endpoints, `SeatAfterHold` (§1.2 #16, §2.7a — immature, no saved example/script) and `FareRules` (§1.2 #17, out of scope here); Book gained an active `passengersSelectedSeats` request field (§2.9) and corresponding response fields (`passengersSelectedSeats`, `passengerSeats`, `totalSelectedSeats`/`totalSelectedSeatsAmount`), also now confirmed present on Retrieve (§2.11); GetSeatMap gained variable-chaining (`getSeatMapOfferId`/`getSeatMapResponceID`, §2.7) that now supersedes AddPassenger's IDs as Book's input whenever GetSeatMap runs; confirmed Hold/BookAfterHold were **not** given the same seat field (§2.10/§2.13), which is the evidenced reason `SeatAfterHold` exists as a separate endpoint. New test cases generated in `NDC_Integration/TestCases/SeatMap_TestCases.csv`. Corresponding gap logged in `NDC_PRD.md` §8 (framework has zero source-code references to any of this new surface). flow.md was **not** modified — §5.5 item 8 flags that it has no flow variant for the new Hold→SeatAfterHold path yet.
 - **2026-08-10 (same day, second pass)**: Cross-checked two additional QC-authored resources — `NDC_Integration/Resources/Seat map - Seatmap.md` (an informal TC-SM-*/TC-INT-*-style test table) and `NDC_Integration/Resources/SeatMap QC Execution Checklist.md` (a 35-point structured QC checklist, Parts 1–7) — against this SPEC and the directly-inspected Postman collection. Surfaced and flagged two new conflicts rather than silently merging: (1) both resources name Book's mandatory fields as V1-style `fareConfirmResponseId`/`SelectedOfferId`, contradicting the live V2 collection's actual `ResponseId`/`selectedOfferId` (§2.9); (2) the QC checklist's `cellAvailability` enum includes unconfirmed `AvailableFree`/`AvailableAfterReservation` values not observed in any saved example (§2.7, §8.3). Generated ~24 additional test cases in `SeatMap_TestCases.csv` covering exit-row restriction, duplicate-seat rejection, infant-on-lap, supplier-allocation rollback, currency/amount cross-field consistency, empty-object edge cases, and post-ticketing seat persistence — drawn from concrete scenarios and candidate error codes (`RESTRICTED_EXIT_ROW_SEAT_FOR_CHILD`, `DUPLICATE_SEAT_SELECTION_IN_REQUEST`, `INVALID_SEAT_METADATA`, etc.) named in those two resources but not yet confirmed live. Both resource files were themselves updated in place with cross-references to this SPEC and the flagged conflicts, per the request that these test cases are intended for future automation.
 

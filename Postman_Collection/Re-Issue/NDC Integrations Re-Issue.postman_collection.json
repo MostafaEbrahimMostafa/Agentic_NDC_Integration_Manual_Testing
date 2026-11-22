@@ -1,0 +1,3295 @@
+{
+  "info": {
+    "_postman_id": "1a30fd48-9212-43a3-9971-b5b22a4abd53",
+    "name": "NDC Integrations - Automated Copy 2",
+    "description": "Automated V2 booking flow. Select the \"NDC Integrations - flydubai Automated\" environment and run the whole collection in the Collection Runner (or Newman).\n\nFlow: Search -> (UpSelling | FareConfirm) -> GetOfferBundles? -> AddPassengerDetails -> GetAncillary? -> SeatMap? -> FareCheck?\n-> (Hold -> (PnrReprice? -> BookAfterHold | CancelAfterHold)) | Book -> Retrieve? / Void?\n\nEvery request reads its switch in a pre-request script and skips itself when it is off (pm.execution.skipRequest: Postman 10.13+ / Newman 6.1+).\nA failed request stops the run. All ids are passed through environment variables; nothing has to be copied by hand.\n\nSwitches (environment): useUpsell, useBundle, useAncillary, useSeatMap, useFareCheck (true / false); bookingMode (Book | Hold);\nafterHold (Ticket | Cancel | None); repriceBeforeTicket (true / false); finalAction (Retrieve | Void | Both | None).\nChoices: offerIndex (auto or a number), upsellOfferIndex, bundleIndex, ancillaryCategory (Baggage | Meal | Any), seatPreference (Exit | Free | Any).",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "49295444",
+    "_collection_link": "https://go.postman.co/collection/49295444-1a30fd48-9212-43a3-9971-b5b22a4abd53?source=collection_link"
+  },
+  "item": [
+    {
+      "name": "1. Shop",
+      "item": [
+        {
+          "name": "Search",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "// ---- Shared helpers: the same block starts every script of this collection. ----",
+                  "const env = (key, fallback) => {",
+                  "    const value = pm.environment.get(key);",
+                  "    return value === undefined || value === null || value === \"\" ? fallback : value;",
+                  "};",
+                  "const flag = (key, fallback = false) => String(env(key, fallback)).toLowerCase() === \"true\";",
+                  "const getJson = (key, fallback) => {",
+                  "    try {",
+                  "        const value = pm.environment.get(key);",
+                  "        return value ? JSON.parse(value) : fallback;",
+                  "    } catch (e) {",
+                  "        return fallback;",
+                  "    }",
+                  "};",
+                  "const setJson = (key, value) => pm.environment.set(key, JSON.stringify(value === undefined ? null : value));",
+                  "const skip = (reason) => {",
+                  "    console.log(`${pm.info.requestName} skipped: ${reason}`);",
+                  "    pm.execution.skipRequest();",
+                  "};",
+                  "const stopRun = (reason) => {",
+                  "    pm.test(`${pm.info.requestName}: ${reason}`, () => { throw new Error(reason); });",
+                  "    postman.setNextRequest(null);",
+                  "};",
+                  "const okJson = () => {",
+                  "    pm.test(`${pm.info.requestName} returns 200`, () => pm.response.to.have.status(200));",
+                  "    let body = null;",
+                  "    try {",
+                  "        body = pm.response.json();",
+                  "    } catch (e) {",
+                  "        body = null;",
+                  "    }",
+                  "    if (pm.response.code !== 200 || !body) {",
+                  "        stopRun(`HTTP ${pm.response.code}: ${pm.response.text().substring(0, 500)}`);",
+                  "        return null;",
+                  "    }",
+                  "    return body;",
+                  "};",
+                  "// ---- End of shared helpers. ----",
+                  "",
+                  "// Starts a new flow: clears the ids of an earlier run.",
+                  "// searchCriteria and passengers are written directly in the Body tab; this script only reads the passenger counts",
+                  "// back from the body (adtCount / chdCount / infCount) so AddPassengerDetails generates the same passengers.",
+                  "[\"searchResponseId\", \"offerId\", \"priceResponseId\", \"priceOfferId\", \"currentResponseId\", \"currentOfferId\",",
+                  " \"pnr\", \"gdsPnr\", \"bookingToken\", \"surName\", \"isFareCheckRequired\"].forEach(key => pm.environment.set(key, \"\"));",
+                  "[\"selectedBundlesJson\", \"selectedAncillariesJson\", \"selectedSeatsJson\", \"voidTicketsJson\"].forEach(key => pm.environment.set(key, \"null\"));",
+                  "pm.environment.set(\"applyUpselling\", String(flag(\"useUpsell\")));",
+                  "",
+                  "let body;",
+                  "try {",
+                  "    body = JSON.parse(pm.variables.replaceIn(pm.request.body.raw));",
+                  "} catch (e) {",
+                  "    console.error(\"Search body is not valid JSON; passenger counts were not read.\", e.message);",
+                  "    return;",
+                  "}",
+                  "",
+                  "const passengers = body.passengers || [];",
+                  "const count = (code) => passengers",
+                  "    .filter(p => String(p.passengerTypeCode || \"\").toUpperCase() === code)",
+                  "    .reduce((sum, p) => sum + (parseInt(p.count, 10) || 0), 0);",
+                  "pm.environment.set(\"adtCount\", String(count(\"ADT\")));",
+                  "pm.environment.set(\"chdCount\", String(count(\"CHD\")));",
+                  "pm.environment.set(\"infCount\", String(count(\"INF\")));",
+                  "",
+                  "const criteria = body.searchCriteria || [];",
+                  "console.log(`Search ${env(\"supplier\", \"\")}: ${criteria.map(c => `${c.origin}-${c.destination} ${c.date}`).join(\", \")} | ${passengers.map(p => `${p.count} ${p.passengerTypeCode}`).join(\", \")}`);"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// ---- Shared helpers: the same block starts every script of this collection. ----",
+                  "const env = (key, fallback) => {",
+                  "    const value = pm.environment.get(key);",
+                  "    return value === undefined || value === null || value === \"\" ? fallback : value;",
+                  "};",
+                  "const flag = (key, fallback = false) => String(env(key, fallback)).toLowerCase() === \"true\";",
+                  "const getJson = (key, fallback) => {",
+                  "    try {",
+                  "        const value = pm.environment.get(key);",
+                  "        return value ? JSON.parse(value) : fallback;",
+                  "    } catch (e) {",
+                  "        return fallback;",
+                  "    }",
+                  "};",
+                  "const setJson = (key, value) => pm.environment.set(key, JSON.stringify(value === undefined ? null : value));",
+                  "const skip = (reason) => {",
+                  "    console.log(`${pm.info.requestName} skipped: ${reason}`);",
+                  "    pm.execution.skipRequest();",
+                  "};",
+                  "const stopRun = (reason) => {",
+                  "    pm.test(`${pm.info.requestName}: ${reason}`, () => { throw new Error(reason); });",
+                  "    postman.setNextRequest(null);",
+                  "};",
+                  "const okJson = () => {",
+                  "    pm.test(`${pm.info.requestName} returns 200`, () => pm.response.to.have.status(200));",
+                  "    let body = null;",
+                  "    try {",
+                  "        body = pm.response.json();",
+                  "    } catch (e) {",
+                  "        body = null;",
+                  "    }",
+                  "    if (pm.response.code !== 200 || !body) {",
+                  "        stopRun(`HTTP ${pm.response.code}: ${pm.response.text().substring(0, 500)}`);",
+                  "        return null;",
+                  "    }",
+                  "    return body;",
+                  "};",
+                  "// ---- End of shared helpers. ----",
+                  "",
+                  "// Saves responseId and picks the offer: {{offerIndex}} when it is a number, otherwise (auto) the first offer that supports the steps switched on.",
+                  "const resp = okJson();",
+                  "if (!resp) return;",
+                  "",
+                  "const offers = resp.offers || [];",
+                  "pm.test(\"Search returns offers\", () => pm.expect(offers.length).to.be.above(0));",
+                  "if (offers.length === 0) return stopRun(\"no offers returned\");",
+                  "",
+                  "const wanted = String(env(\"offerIndex\", \"auto\")).toLowerCase();",
+                  "let index;",
+                  "if (wanted !== \"auto\") {",
+                  "    index = Math.min(Math.max(parseInt(wanted, 10) || 0, 0), offers.length - 1);",
+                  "} else {",
+                  "    const fits = (o) => (env(\"bookingMode\", \"Book\") !== \"Hold\" || o.canBeHeld !== false)",
+                  "        && (!flag(\"useBundle\") || o.haveBundles !== false)",
+                  "        && (!flag(\"useSeatMap\") || o.offerHasSeat !== false)",
+                  "        && (!flag(\"useAncillary\") || o.offerHasAncillary !== false);",
+                  "    index = offers.findIndex(fits);",
+                  "    if (index < 0) {",
+                  "        console.warn(\"No offer supports every step switched on; using the first offer.\");",
+                  "        index = 0;",
+                  "    }",
+                  "}",
+                  "",
+                  "pm.environment.set(\"searchResponseId\", resp.responseId);",
+                  "pm.environment.set(\"offerId\", offers[index].offerId);",
+                  "console.log(`Offer ${index + 1}/${offers.length}: ${offers[index].offerId}`, offers[index].priceDetails || \"\");"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "x-api-key",
+                "value": "{{apiKey}}",
+                "type": "text"
+              },
+              {
+                "key": "Client-Id",
+                "value": "{{clientId}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"supplier\": \"{{supplier}}\",\n    \"credentialsSelector\": \"{{credentialsSelector}}\",\n    \"searchCriteria\": [\n        {\n            \"origin\": \"DXB\",\n            \"destination\": \"MCT\",\n            \"date\": \"2026-12-18T00:00:00\"\n        }\n    ],\n    \"passengers\": [\n        {\n            \"passengerTypeCode\": \"ADT\",\n            \"count\": 1\n        }\n        ,\n        {\n            \"passengerTypeCode\": \"CHD\",\n            \"count\": 1\n        },\n        {\n            \"passengerTypeCode\": \"INF\",\n            \"count\": 1\n        }\n    ],\n    \"applyUpselling\": {{applyUpselling}},\n    \"isDebug\": true\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}api/v2/FlightSearch/Search",
+              "host": [
+                "{{baseUrl}}api"
+              ],
+              "path": [
+                "v2",
+                "FlightSearch",
+                "Search"
+              ]
+            },
+            "description": "Always runs. Edit searchCriteria and passengers directly in the body (add a second searchCriteria entry for a round trip, CHD / INF entries for children and infants). The pre-request script resets the run state and saves the passenger counts for AddPassengerDetails. Saves searchResponseId + offerId (offerIndex or auto)."
+          },
+          "response": []
+        },
+        {
+          "name": "UpSelling",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "// ---- Shared helpers: the same block starts every script of this collection. ----",
+                  "const env = (key, fallback) => {",
+                  "    const value = pm.environment.get(key);",
+                  "    return value === undefined || value === null || value === \"\" ? fallback : value;",
+                  "};",
+                  "const flag = (key, fallback = false) => String(env(key, fallback)).toLowerCase() === \"true\";",
+                  "const getJson = (key, fallback) => {",
+                  "    try {",
+                  "        const value = pm.environment.get(key);",
+                  "        return value ? JSON.parse(value) : fallback;",
+                  "    } catch (e) {",
+                  "        return fallback;",
+                  "    }",
+                  "};",
+                  "const setJson = (key, value) => pm.environment.set(key, JSON.stringify(value === undefined ? null : value));",
+                  "const skip = (reason) => {",
+                  "    console.log(`${pm.info.requestName} skipped: ${reason}`);",
+                  "    pm.execution.skipRequest();",
+                  "};",
+                  "const stopRun = (reason) => {",
+                  "    pm.test(`${pm.info.requestName}: ${reason}`, () => { throw new Error(reason); });",
+                  "    postman.setNextRequest(null);",
+                  "};",
+                  "const okJson = () => {",
+                  "    pm.test(`${pm.info.requestName} returns 200`, () => pm.response.to.have.status(200));",
+                  "    let body = null;",
+                  "    try {",
+                  "        body = pm.response.json();",
+                  "    } catch (e) {",
+                  "        body = null;",
+                  "    }",
+                  "    if (pm.response.code !== 200 || !body) {",
+                  "        stopRun(`HTTP ${pm.response.code}: ${pm.response.text().substring(0, 500)}`);",
+                  "        return null;",
+                  "    }",
+                  "    return body;",
+                  "};",
+                  "// ---- End of shared helpers. ----",
+                  "",
+                  "if (!flag(\"useUpsell\")) return skip(\"useUpsell is false\");"
+                ],
+                "packages": {}
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "// ---- Shared helpers: the same block starts every script of this collection. ----",
+                  "const env = (key, fallback) => {",
+                  "    const value = pm.environment.get(key);",
+                  "    return value === undefined || value === null || value === \"\" ? fallback : value;",
+                  "};",
+                  "const flag = (key, fallback = false) => String(env(key, fallback)).toLowerCase() === \"true\";",
+                  "const getJson = (key, fallback) => {",
+                  "    try {",
+                  "        const value = pm.environment.get(key);",
+                  "        return value ? JSON.parse(value) : fallback;",
+                  "    } catch (e) {",
+                  "        return fallback;",
+                  "    }",
+                  "};",
+                  "const setJson = (key, value) => pm.environment.set(key, JSON.stringify(value === undefined ? null : value));",
+                  "const skip = (reason) => {",
+                  "    console.log(`${pm.info.requestName} skipped: ${reason}`);",
+                  "    pm.execution.skipRequest();",
+                  "};",
+                  "const stopRun = (reason) => {",
+                  "    pm.test(`${pm.info.requestName}: ${reason}`, () => { throw new Error(reason); });",
+                  "    postman.setNextRequest(null);",
+                  "};",
+                  "const okJson = () => {",
+                  "    pm.test(`${pm.info.requestName} returns 200`, () => pm.response.to.have.status(200));",
+                  "    let body = null;",
+                  "    try {",
+                  "        body = pm.response.json();",
+                  "    } catch (e) {",
+                  "        body = null;",
+                  "    }",
+                  "    if (pm.response.code !== 200 || !body) {",
+                  "        stopRun(`HTTP ${pm.response.code}: ${pm.response.text().substring(0, 500)}`);",
+                  "        return null;",
+                  "    }",
+                  "    return body;",
+                  "};",
+                  "// ---- End of shared helpers. ----",
+                  "",
+                  "// Picks upsellOffers[{{upsellOfferIndex}}]; its ids go to AddPax (FareConfirm is then skipped).",
+                  "// No upsell offer: nothing is saved, so CI_FareConfirmRequest runs instead.",
+                  "const resp = okJson();",
+                  "if (!resp) return;",
+                  "",
+                  "const offers = resp.upsellOffers || [];",
+                  "if (offers.length === 0) {",
+                  "    console.warn(\"No upsell offers returned; FareConfirm will price the search offer.\");",
+                  "    return;",
+                  "}",
+                  "const index = Math.min(Math.max(parseInt(env(\"upsellOfferIndex\", \"0\"), 10) || 0, 0), offers.length - 1);",
+                  "pm.environment.set(\"priceResponseId\", resp.responseId);",
+                  "pm.environment.set(\"priceOfferId\", offers[index].offerId);",
+                  "pm.environment.set(\"currentResponseId\", resp.responseId);",
+                  "pm.environment.set(\"currentOfferId\", offers[index].offerId);",
+                  "console.log(`Upsell offer ${index + 1}/${offers.length}: ${offers[index].offerId}`, offers[index].priceDetails || \"\");"
+                ],
+                "packages": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "x-api-key",
+                "value": "{{apiKey}}",
+                "type": "text"
+              },
+              {
+                "key": "Client-Id",
+                "value": "{{clientId}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"supplier\": \"{{supplier}}\",\n    \"credentialsSelector\": \"{{credentialsSelector}}\",\n    \"responseId\": \"{{searchResponseId}}\",\n    \"selectedOfferId\": \"{{offerId}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}api/v2/FlightSearch/UpSelling",
+              "host": [
+                "{{baseUrl}}api"
+              ],
+              "path": [
+                "v2",
+                "FlightSearch",
+                "UpSelling"
+              ]
+            },
+            "description": "Runs when useUpsell = true. Picks upsellOffers[upsellOfferIndex]; FareConfirm is then skipped."
+          },
+          "response": []
+        },
+        {
+          "name": "New Request",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": ""
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "FareConfirm",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "// ---- Shared helpers: the same block starts every script of this collection. ----",
+                  "const env = (key, fallback) => {",
+                  "    const value = pm.environment.get(key);",
+                  "    return value === undefined || value === null || value === \"\" ? fallback : value;",
+                  "};",
+                  "const flag = (key, fallback = false) => String(env(key, fallback)).toLowerCase() === \"true\";",
+                  "const getJson = (key, fallback) => {",
+                  "    try {",
+                  "        const value = pm.environment.get(key);",
+                  "        return value ? JSON.parse(value) : fallback;",
+                  "    } catch (e) {",
+                  "        return fallback;",
+                  "    }",
+                  "};",
+                  "const setJson = (key, value) => pm.environment.set(key, JSON.stringify(value === undefined ? null : value));",
+                  "const skip = (reason) => {",
+                  "    console.log(`${pm.info.requestName} skipped: ${reason}`);",
+                  "    pm.execution.skipRequest();",
+                  "};",
+                  "const stopRun = (reason) => {",
+                  "    pm.test(`${pm.info.requestName}: ${reason}`, () => { throw new Error(reason); });",
+                  "    postman.setNextRequest(null);",
+                  "};",
+                  "const okJson = () => {",
+                  "    pm.test(`${pm.info.requestName} returns 200`, () => pm.response.to.have.status(200));",
+                  "    let body = null;",
+                  "    try {",
+                  "        body = pm.response.json();",
+                  "    } catch (e) {",
+                  "        body = null;",
+                  "    }",
+                  "    if (pm.response.code !== 200 || !body) {",
+                  "        stopRun(`HTTP ${pm.response.code}: ${pm.response.text().substring(0, 500)}`);",
+                  "        return null;",
+                  "    }",
+                  "    return body;",
+                  "};",
+                  "// ---- End of shared helpers. ----",
+                  "",
+                  "// if (env(\"priceOfferId\", \"\")) return skip(\"an upsell offer was already selected\");"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// ---- Shared helpers: the same block starts every script of this collection. ----",
+                  "const env = (key, fallback) => {",
+                  "    const value = pm.environment.get(key);",
+                  "    return value === undefined || value === null || value === \"\" ? fallback : value;",
+                  "};",
+                  "const flag = (key, fallback = false) => String(env(key, fallback)).toLowerCase() === \"true\";",
+                  "const getJson = (key, fallback) => {",
+                  "    try {",
+                  "        const value = pm.environment.get(key);",
+                  "        return value ? JSON.parse(value) : fallback;",
+                  "    } catch (e) {",
+                  "        return fallback;",
+                  "    }",
+                  "};",
+                  "const setJson = (key, value) => pm.environment.set(key, JSON.stringify(value === undefined ? null : value));",
+                  "const skip = (reason) => {",
+                  "    console.log(`${pm.info.requestName} skipped: ${reason}`);",
+                  "    pm.execution.skipRequest();",
+                  "};",
+                  "const stopRun = (reason) => {",
+                  "    pm.test(`${pm.info.requestName}: ${reason}`, () => { throw new Error(reason); });",
+                  "    postman.setNextRequest(null);",
+                  "};",
+                  "const okJson = () => {",
+                  "    pm.test(`${pm.info.requestName} returns 200`, () => pm.response.to.have.status(200));",
+                  "    let body = null;",
+                  "    try {",
+                  "        body = pm.response.json();",
+                  "    } catch (e) {",
+                  "        body = null;",
+                  "    }",
+                  "    if (pm.response.code !== 200 || !body) {",
+                  "        stopRun(`HTTP ${pm.response.code}: ${pm.response.text().substring(0, 500)}`);",
+                  "        return null;",
+                  "    }",
+                  "    return body;",
+                  "};",
+                  "// ---- End of shared helpers. ----",
+                  "",
+                  "const resp = okJson();",
+                  "if (!resp) return;",
+                  "",
+                  "const offerId = resp.selectedOffer && resp.selectedOffer.offerId;",
+                  "pm.test(\"FareConfirm returns selectedOffer.offerId\", () => pm.expect(offerId).to.be.a(\"string\").and.not.empty);",
+                  "if (!offerId) return stopRun(\"no selectedOffer.offerId\");",
+                  "",
+                  "pm.environment.set(\"priceResponseId\", resp.responseId);",
+                  "pm.environment.set(\"priceOfferId\", offerId);",
+                  "pm.environment.set(\"currentResponseId\", resp.responseId);",
+                  "pm.environment.set(\"currentOfferId\", offerId);",
+                  "console.log(\"Confirmed offer:\", offerId, resp.selectedOffer.priceDetails || \"\");"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "x-api-key",
+                "value": "{{apiKey}}",
+                "type": "text"
+              },
+              {
+                "key": "Client-Id",
+                "value": "{{clientId}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"supplier\": \"{{supplier}}\",\n    \"credentialsSelector\": \"{{credentialsSelector}}\",\n    \"responseId\": \"{{searchResponseId}}\",\n    \"selectedOfferId\": \"{{offerId}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}api/v2/FlightSearch/FareConfirm",
+              "host": [
+                "{{baseUrl}}api"
+              ],
+              "path": [
+                "v2",
+                "FlightSearch",
+                "FareConfirm"
+              ]
+            },
+            "description": "Runs unless an upsell offer was selected. Saves priceResponseId + priceOfferId."
+          },
+          "response": []
+        },
+        {
+          "name": "GetOfferBundles",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "// ---- Shared helpers: the same block starts every script of this collection. ----",
+                  "const env = (key, fallback) => {",
+                  "    const value = pm.environment.get(key);",
+                  "    return value === undefined || value === null || value === \"\" ? fallback : value;",
+                  "};",
+                  "const flag = (key, fallback = false) => String(env(key, fallback)).toLowerCase() === \"true\";",
+                  "const getJson = (key, fallback) => {",
+                  "    try {",
+                  "        const value = pm.environment.get(key);",
+                  "        return value ? JSON.parse(value) : fallback;",
+                  "    } catch (e) {",
+                  "        return fallback;",
+                  "    }",
+                  "};",
+                  "const setJson = (key, value) => pm.environment.set(key, JSON.stringify(value === undefined ? null : value));",
+                  "const skip = (reason) => {",
+                  "    console.log(`${pm.info.requestName} skipped: ${reason}`);",
+                  "    pm.execution.skipRequest();",
+                  "};",
+                  "const stopRun = (reason) => {",
+                  "    pm.test(`${pm.info.requestName}: ${reason}`, () => { throw new Error(reason); });",
+                  "    postman.setNextRequest(null);",
+                  "};",
+                  "const okJson = () => {",
+                  "    pm.test(`${pm.info.requestName} returns 200`, () => pm.response.to.have.status(200));",
+                  "    let body = null;",
+                  "    try {",
+                  "        body = pm.response.json();",
+                  "    } catch (e) {",
+                  "        body = null;",
+                  "    }",
+                  "    if (pm.response.code !== 200 || !body) {",
+                  "        stopRun(`HTTP ${pm.response.code}: ${pm.response.text().substring(0, 500)}`);",
+                  "        return null;",
+                  "    }",
+                  "    return body;",
+                  "};",
+                  "// ---- End of shared helpers. ----",
+                  "",
+                  "if (!flag(\"useBundle\")) return skip(\"useBundle is false\");"
+                ],
+                "packages": {}
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "// ---- Shared helpers: the same block starts every script of this collection. ----",
+                  "const env = (key, fallback) => {",
+                  "    const value = pm.environment.get(key);",
+                  "    return value === undefined || value === null || value === \"\" ? fallback : value;",
+                  "};",
+                  "const flag = (key, fallback = false) => String(env(key, fallback)).toLowerCase() === \"true\";",
+                  "const getJson = (key, fallback) => {",
+                  "    try {",
+                  "        const value = pm.environment.get(key);",
+                  "        return value ? JSON.parse(value) : fallback;",
+                  "    } catch (e) {",
+                  "        return fallback;",
+                  "    }",
+                  "};",
+                  "const setJson = (key, value) => pm.environment.set(key, JSON.stringify(value === undefined ? null : value));",
+                  "const skip = (reason) => {",
+                  "    console.log(`${pm.info.requestName} skipped: ${reason}`);",
+                  "    pm.execution.skipRequest();",
+                  "};",
+                  "const stopRun = (reason) => {",
+                  "    pm.test(`${pm.info.requestName}: ${reason}`, () => { throw new Error(reason); });",
+                  "    postman.setNextRequest(null);",
+                  "};",
+                  "const okJson = () => {",
+                  "    pm.test(`${pm.info.requestName} returns 200`, () => pm.response.to.have.status(200));",
+                  "    let body = null;",
+                  "    try {",
+                  "        body = pm.response.json();",
+                  "    } catch (e) {",
+                  "        body = null;",
+                  "    }",
+                  "    if (pm.response.code !== 200 || !body) {",
+                  "        stopRun(`HTTP ${pm.response.code}: ${pm.response.text().substring(0, 500)}`);",
+                  "        return null;",
+                  "    }",
+                  "    return body;",
+                  "};",
+                  "// ---- End of shared helpers. ----",
+                  "",
+                  "// Picks bundleReferences[{{bundleIndex}}] (or the first) on every journey; sent as selectedBundles to GetAncillary, SeatMap, Hold and Book.",
+                  "const resp = okJson();",
+                  "if (!resp) return;",
+                  "",
+                  "const choices = resp.bundleChoices || {};",
+                  "const wanted = parseInt(env(\"bundleIndex\", \"0\"), 10) || 0;",
+                  "const selected = Object.entries(resp.offerJourneys || {})",
+                  "    .map(([journeyKey, journey]) => {",
+                  "        const refs = journey.bundleReferences || [];",
+                  "        const ref = refs[wanted] !== undefined ? refs[wanted] : refs[0];",
+                  "        if (ref === undefined) return null;",
+                  "        const choice = choices[ref];",
+                  "        return { journeyKey, selectedBundleCode: (choice && choice.bundleCode) || ref };",
+                  "    })",
+                  "    .filter(Boolean);",
+                  "",
+                  "if (selected.length === 0) {",
+                  "    console.warn(\"No bundles returned; continuing without selectedBundles.\");",
+                  "    pm.environment.set(\"selectedBundlesJson\", \"null\");",
+                  "    return;",
+                  "}",
+                  "setJson(\"selectedBundlesJson\", selected);",
+                  "console.log(\"Selected bundles:\", JSON.stringify(selected));"
+                ],
+                "packages": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "x-api-key",
+                "value": "{{apiKey}}",
+                "type": "text"
+              },
+              {
+                "key": "Client-Id",
+                "value": "{{clientId}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"supplier\": \"{{supplier}}\",\n    \"credentialsSelector\": \"{{credentialsSelector}}\",\n    \"responseId\": \"{{priceResponseId}}\",\n    \"selectedOfferId\": \"{{priceOfferId}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}api/v2/bundles/GetOfferBundles",
+              "host": [
+                "{{baseUrl}}api"
+              ],
+              "path": [
+                "v2",
+                "bundles",
+                "GetOfferBundles"
+              ]
+            },
+            "description": "Runs when useBundle = true. Picks bundleReferences[bundleIndex] per journey into selectedBundlesJson."
+          },
+          "response": []
+        }
+      ],
+      "description": "Search, then Upsell or FareConfirm, then the optional bundles."
+    },
+    {
+      "name": "2. Passengers and extras",
+      "item": [
+        {
+          "name": "AddPassengerDetails",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "// ---- Shared helpers: the same block starts every script of this collection. ----",
+                  "const env = (key, fallback) => {",
+                  "    const value = pm.environment.get(key);",
+                  "    return value === undefined || value === null || value === \"\" ? fallback : value;",
+                  "};",
+                  "const flag = (key, fallback = false) => String(env(key, fallback)).toLowerCase() === \"true\";",
+                  "const getJson = (key, fallback) => {",
+                  "    try {",
+                  "        const value = pm.environment.get(key);",
+                  "        return value ? JSON.parse(value) : fallback;",
+                  "    } catch (e) {",
+                  "        return fallback;",
+                  "    }",
+                  "};",
+                  "const setJson = (key, value) => pm.environment.set(key, JSON.stringify(value === undefined ? null : value));",
+                  "const skip = (reason) => {",
+                  "    console.log(`${pm.info.requestName} skipped: ${reason}`);",
+                  "    pm.execution.skipRequest();",
+                  "};",
+                  "const stopRun = (reason) => {",
+                  "    pm.test(`${pm.info.requestName}: ${reason}`, () => { throw new Error(reason); });",
+                  "    postman.setNextRequest(null);",
+                  "};",
+                  "const okJson = () => {",
+                  "    pm.test(`${pm.info.requestName} returns 200`, () => pm.response.to.have.status(200));",
+                  "    let body = null;",
+                  "    try {",
+                  "        body = pm.response.json();",
+                  "    } catch (e) {",
+                  "        body = null;",
+                  "    }",
+                  "    if (pm.response.code !== 200 || !body) {",
+                  "        stopRun(`HTTP ${pm.response.code}: ${pm.response.text().substring(0, 500)}`);",
+                  "        return null;",
+                  "    }",
+                  "    return body;",
+                  "};",
+                  "// ---- End of shared helpers. ----",
+                  "",
+                  "// Builds passengersList / contactsList from {{adtCount}} / {{chdCount}} / {{infCount}} (saved by Search from its body).",
+                  "// Ages follow the FlyDubai rules (year difference: ADT 30, CHD 8, INF 1); each infant is linked to a different adult.",
+                  "const nationality = env(\"paxNationality\", \"EG\").toUpperCase();",
+                  "const lastName = env(\"paxLastName\", \"Automation\");",
+                  "const now = new Date();",
+                  "const year = now.getUTCFullYear();",
+                  "const iso = (d) => d.toISOString().substring(0, 10) + \"T00:00:00\";",
+                  "const ymd = (y, m, d) => new Date(Date.UTC(y, m - 1, d));",
+                  "const addDays = (d, days) => new Date(d.getTime() + days * 86400000);",
+                  "const runTag = String(Date.now()).slice(-6);",
+                  "const letters = (n) => String.fromCharCode(65 + (n % 26)) + String.fromCharCode(65 + (Math.floor(n / 26) % 26));",
+                  "",
+                  "const firstNames = {",
+                  "    ADT: [\"Ahmed\", \"Omar\", \"Khaled\", \"Youssef\", \"Hassan\", \"Tarek\", \"Karim\", \"Samir\", \"Nabil\"],",
+                  "    CHD: [\"Adam\", \"Ali\", \"Hamza\", \"Ziad\", \"Malek\", \"Yassin\", \"Fares\", \"Selim\", \"Rami\"],",
+                  "    INF: [\"Taha\", \"Eyad\", \"Nour\", \"Badr\", \"Jad\", \"Amr\", \"Fadi\", \"Sami\", \"Wael\"]",
+                  "};",
+                  "const profile = {",
+                  "    ADT: { title: \"MR\", birth: ymd(year - 30, 5, 20) },",
+                  "    CHD: { title: \"MSTR\", birth: ymd(year - 8, 3, 10) },",
+                  "    INF: { title: \"MSTR\", birth: ymd(year - 1, 1, 15) }",
+                  "};",
+                  "",
+                  "const counts = { ADT: parseInt(env(\"adtCount\", 1), 10) || 0, CHD: parseInt(env(\"chdCount\", 0), 10) || 0, INF: parseInt(env(\"infCount\", 0), 10) || 0 };",
+                  "if (counts.INF > counts.ADT) console.warn(\"infCount is greater than adtCount; AddPax will reject it.\");",
+                  "",
+                  "const passengersList = {};",
+                  "const adultKeys = [];",
+                  "let n = 0;",
+                  "[\"ADT\", \"CHD\", \"INF\"].forEach(type => {",
+                  "    for (let i = 0; i < counts[type]; i++) {",
+                  "        n++;",
+                  "        const key = `Pax${n}`;",
+                  "        const p = profile[type];",
+                  "        const first = firstNames[type][i % firstNames[type].length] + (i >= firstNames[type].length ? \" \" + letters(i) : \"\");",
+                  "        const name = { first, middle: \"\", last: lastName };",
+                  "        const issuance = type === \"INF\" ? addDays(p.birth, 30) : addDays(now, -730);",
+                  "        passengersList[key] = {",
+                  "            title: p.title,",
+                  "            name,",
+                  "            birthDate: iso(p.birth),",
+                  "            gender: \"Male\",",
+                  "            passengerTypeCode: type,",
+                  "            contactRefId: \"1\",",
+                  "            nationality,",
+                  "            residentCountry: nationality,",
+                  "            parentPaxRefId: type === \"INF\" ? adultKeys[i] : null,",
+                  "            travelDocument: {",
+                  "                name,",
+                  "                nationality,",
+                  "                expirationDate: iso(addDays(now, 5 * 365)),",
+                  "                issuanceDate: iso(issuance),",
+                  "                documentNumber: `A${runTag}${String(n).padStart(2, \"0\")}`,",
+                  "                documentType: \"Passport\",",
+                  "                gender: \"Male\",",
+                  "                birthCountry: nationality,",
+                  "                birthDate: iso(p.birth),",
+                  "                issuanceCountryCode: nationality",
+                  "            }",
+                  "        };",
+                  "        if (type === \"ADT\") adultKeys.push(key);",
+                  "    }",
+                  "});",
+                  "",
+                  "const contactsList = {",
+                  "    \"1\": {",
+                  "        email: env(\"contactEmail\", \"automation@example.com\"),",
+                  "        phone: { type: \"Personal\", countryDialingCode: env(\"contactDialingCode\", \"+20\"), phoneNumber: env(\"contactPhone\", \"1001234567\") },",
+                  "        address: { line1: \"Line 1\", line2: \"Line 2\", city: env(\"contactCity\", \"Cairo\"), countryCode: nationality }",
+                  "    }",
+                  "};",
+                  "",
+                  "setJson(\"passengersListJson\", passengersList);",
+                  "setJson(\"contactsListJson\", contactsList);",
+                  "pm.environment.set(\"surName\", lastName);",
+                  "console.log(`Passengers: ${Object.keys(passengersList).map(k => `${k}=${passengersList[k].passengerTypeCode}`).join(\", \")}`);"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// ---- Shared helpers: the same block starts every script of this collection. ----",
+                  "const env = (key, fallback) => {",
+                  "    const value = pm.environment.get(key);",
+                  "    return value === undefined || value === null || value === \"\" ? fallback : value;",
+                  "};",
+                  "const flag = (key, fallback = false) => String(env(key, fallback)).toLowerCase() === \"true\";",
+                  "const getJson = (key, fallback) => {",
+                  "    try {",
+                  "        const value = pm.environment.get(key);",
+                  "        return value ? JSON.parse(value) : fallback;",
+                  "    } catch (e) {",
+                  "        return fallback;",
+                  "    }",
+                  "};",
+                  "const setJson = (key, value) => pm.environment.set(key, JSON.stringify(value === undefined ? null : value));",
+                  "const skip = (reason) => {",
+                  "    console.log(`${pm.info.requestName} skipped: ${reason}`);",
+                  "    pm.execution.skipRequest();",
+                  "};",
+                  "const stopRun = (reason) => {",
+                  "    pm.test(`${pm.info.requestName}: ${reason}`, () => { throw new Error(reason); });",
+                  "    postman.setNextRequest(null);",
+                  "};",
+                  "const okJson = () => {",
+                  "    pm.test(`${pm.info.requestName} returns 200`, () => pm.response.to.have.status(200));",
+                  "    let body = null;",
+                  "    try {",
+                  "        body = pm.response.json();",
+                  "    } catch (e) {",
+                  "        body = null;",
+                  "    }",
+                  "    if (pm.response.code !== 200 || !body) {",
+                  "        stopRun(`HTTP ${pm.response.code}: ${pm.response.text().substring(0, 500)}`);",
+                  "        return null;",
+                  "    }",
+                  "    return body;",
+                  "};",
+                  "// ---- End of shared helpers. ----",
+                  "",
+                  "const resp = okJson();",
+                  "if (!resp) return;",
+                  "",
+                  "pm.test(\"AddPax returns offerId\", () => pm.expect(resp.offerId).to.be.a(\"string\").and.not.empty);",
+                  "if (!resp.offerId) return stopRun(\"no offerId\");",
+                  "",
+                  "pm.environment.set(\"currentResponseId\", resp.responseId);",
+                  "pm.environment.set(\"currentOfferId\", resp.offerId);"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "x-api-key",
+                "value": "{{apiKey}}",
+                "type": "text"
+              },
+              {
+                "key": "Client-Id",
+                "value": "{{clientId}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"supplier\": \"{{supplier}}\",\n    \"credentialsSelector\": \"{{credentialsSelector}}\",\n    \"responseId\": \"{{priceResponseId}}\",\n    \"selectedOfferId\": \"{{priceOfferId}}\",\n    \"passengersList\": {{passengersListJson}},\n    \"contactsList\": {{contactsListJson}}\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}api/v2/Passenger/AddPassengerDetails",
+              "host": [
+                "{{baseUrl}}api"
+              ],
+              "path": [
+                "v2",
+                "Passenger",
+                "AddPassengerDetails"
+              ]
+            },
+            "description": "Always runs. Passengers are generated from the counts (paxLastName, paxNationality, contact* variables)."
+          },
+          "response": []
+        },
+        {
+          "name": "GetAncillary",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "// ---- Shared helpers: the same block starts every script of this collection. ----",
+                  "const env = (key, fallback) => {",
+                  "    const value = pm.environment.get(key);",
+                  "    return value === undefined || value === null || value === \"\" ? fallback : value;",
+                  "};",
+                  "const flag = (key, fallback = false) => String(env(key, fallback)).toLowerCase() === \"true\";",
+                  "const getJson = (key, fallback) => {",
+                  "    try {",
+                  "        const value = pm.environment.get(key);",
+                  "        return value ? JSON.parse(value) : fallback;",
+                  "    } catch (e) {",
+                  "        return fallback;",
+                  "    }",
+                  "};",
+                  "const setJson = (key, value) => pm.environment.set(key, JSON.stringify(value === undefined ? null : value));",
+                  "const skip = (reason) => {",
+                  "    console.log(`${pm.info.requestName} skipped: ${reason}`);",
+                  "    pm.execution.skipRequest();",
+                  "};",
+                  "const stopRun = (reason) => {",
+                  "    pm.test(`${pm.info.requestName}: ${reason}`, () => { throw new Error(reason); });",
+                  "    postman.setNextRequest(null);",
+                  "};",
+                  "const okJson = () => {",
+                  "    pm.test(`${pm.info.requestName} returns 200`, () => pm.response.to.have.status(200));",
+                  "    let body = null;",
+                  "    try {",
+                  "        body = pm.response.json();",
+                  "    } catch (e) {",
+                  "        body = null;",
+                  "    }",
+                  "    if (pm.response.code !== 200 || !body) {",
+                  "        stopRun(`HTTP ${pm.response.code}: ${pm.response.text().substring(0, 500)}`);",
+                  "        return null;",
+                  "    }",
+                  "    return body;",
+                  "};",
+                  "// ---- End of shared helpers. ----",
+                  "",
+                  "if (!flag(\"useAncillary\")) return skip(\"useAncillary is false\");"
+                ],
+                "packages": {}
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "// ---- Shared helpers: the same block starts every script of this collection. ----",
+                  "const env = (key, fallback) => {",
+                  "    const value = pm.environment.get(key);",
+                  "    return value === undefined || value === null || value === \"\" ? fallback : value;",
+                  "};",
+                  "const flag = (key, fallback = false) => String(env(key, fallback)).toLowerCase() === \"true\";",
+                  "const getJson = (key, fallback) => {",
+                  "    try {",
+                  "        const value = pm.environment.get(key);",
+                  "        return value ? JSON.parse(value) : fallback;",
+                  "    } catch (e) {",
+                  "        return fallback;",
+                  "    }",
+                  "};",
+                  "const setJson = (key, value) => pm.environment.set(key, JSON.stringify(value === undefined ? null : value));",
+                  "const skip = (reason) => {",
+                  "    console.log(`${pm.info.requestName} skipped: ${reason}`);",
+                  "    pm.execution.skipRequest();",
+                  "};",
+                  "const stopRun = (reason) => {",
+                  "    pm.test(`${pm.info.requestName}: ${reason}`, () => { throw new Error(reason); });",
+                  "    postman.setNextRequest(null);",
+                  "};",
+                  "const okJson = () => {",
+                  "    pm.test(`${pm.info.requestName} returns 200`, () => pm.response.to.have.status(200));",
+                  "    let body = null;",
+                  "    try {",
+                  "        body = pm.response.json();",
+                  "    } catch (e) {",
+                  "        body = null;",
+                  "    }",
+                  "    if (pm.response.code !== 200 || !body) {",
+                  "        stopRun(`HTTP ${pm.response.code}: ${pm.response.text().substring(0, 500)}`);",
+                  "        return null;",
+                  "    }",
+                  "    return body;",
+                  "};",
+                  "// ---- End of shared helpers. ----",
+                  "",
+                  "// Picks, per passenger (infants excluded), the first available {{ancillaryCategory}} ancillary (Baggage | Meal | Any) on every segment;",
+                  "// when a passenger has none on segments, on every journey instead. At most one per segment / journey (FlyDubai rule).",
+                  "// The GetAncillary ids become the current ids: Book / Hold need them when ancillaries are sent.",
+                  "const resp = okJson();",
+                  "if (!resp) return;",
+                  "",
+                  "pm.environment.set(\"currentResponseId\", resp.responseId);",
+                  "pm.environment.set(\"currentOfferId\", resp.offerId);",
+                  "pm.environment.set(\"isFareCheckRequired\", String(!!resp.isFareCheckRequired));",
+                  "if (resp.isFareCheckRequired && !flag(\"useFareCheck\")) {",
+                  "    console.warn(\"GetAncillary says isFareCheckRequired = true but useFareCheck is false.\");",
+                  "}",
+                  "",
+                  "const category = env(\"ancillaryCategory\", \"Baggage\");",
+                  "const fits = (d) => d && d.ancillaryCategory !== \"Seat\"",
+                  "    && (category === \"Any\" || d.ancillaryCategory === category)",
+                  "    && (d.availableCount === null || d.availableCount === undefined || d.availableCount > 0);",
+                  "const pick = (codes, details) => (details || []).find(d => (codes || []).includes(d.code) && fits(d));",
+                  "const item = (d) => ({ additionalServiceCategory: d.ancillaryCategory, ancillaryCode: d.code, quantity: \"1\" });",
+                  "",
+                  "const selected = {};",
+                  "Object.entries(resp.passengersAncillariesAvailabilty || {}).forEach(([paxKey, pax]) => {",
+                  "    if (pax.passengerTypeCode === \"INF\") return;",
+                  "    const segments = {};",
+                  "    Object.entries(pax.segmentAncillariesAvailability || {}).forEach(([segKey, codes]) => {",
+                  "        const d = pick(codes, (resp.segmentsAncillariesDetails || {})[segKey]);",
+                  "        if (d) segments[segKey] = [item(d)];",
+                  "    });",
+                  "    const journeys = {};",
+                  "    if (Object.keys(segments).length === 0) {",
+                  "        Object.entries(pax.journeyAncillariesAvailability || {}).forEach(([journeyKey, codes]) => {",
+                  "            const d = pick(codes, (resp.journeysAncillariesDetails || {})[journeyKey]);",
+                  "            if (d) journeys[journeyKey] = [item(d)];",
+                  "        });",
+                  "    }",
+                  "    if (Object.keys(segments).length || Object.keys(journeys).length) {",
+                  "        selected[paxKey] = {};",
+                  "        if (Object.keys(segments).length) selected[paxKey].setSegmentsAncillaries = segments;",
+                  "        if (Object.keys(journeys).length) selected[paxKey].setJourneysAncillaries = journeys;",
+                  "    }",
+                  "});",
+                  "",
+                  "if (Object.keys(selected).length === 0) {",
+                  "    console.warn(`No available ${category} ancillary; continuing without passengersSelectedAncillaries.`);",
+                  "    pm.environment.set(\"selectedAncillariesJson\", \"null\");",
+                  "    return;",
+                  "}",
+                  "setJson(\"selectedAncillariesJson\", selected);",
+                  "console.log(\"Selected ancillaries:\", JSON.stringify(selected));"
+                ],
+                "packages": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "x-api-key",
+                "value": "{{apiKey}}",
+                "type": "text"
+              },
+              {
+                "key": "Client-Id",
+                "value": "{{clientId}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"supplier\": \"{{supplier}}\",\n    \"credentialsSelector\": \"{{credentialsSelector}}\",\n    \"responseId\": \"{{currentResponseId}}\",\n    \"selectedOfferId\": \"{{currentOfferId}}\",\n    \"selectedBundles\": {{selectedBundlesJson}}\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}api/v2/Ancillary/GetAncillary",
+              "host": [
+                "{{baseUrl}}api"
+              ],
+              "path": [
+                "v2",
+                "Ancillary",
+                "GetAncillary"
+              ]
+            },
+            "description": "Runs when useAncillary = true. Picks the first available ancillaryCategory (Baggage | Meal | Any) per passenger and segment."
+          },
+          "response": []
+        },
+        {
+          "name": "SeatMap",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "// ---- Shared helpers: the same block starts every script of this collection. ----",
+                  "const env = (key, fallback) => {",
+                  "    const value = pm.environment.get(key);",
+                  "    return value === undefined || value === null || value === \"\" ? fallback : value;",
+                  "};",
+                  "const flag = (key, fallback = false) => String(env(key, fallback)).toLowerCase() === \"true\";",
+                  "const getJson = (key, fallback) => {",
+                  "    try {",
+                  "        const value = pm.environment.get(key);",
+                  "        return value ? JSON.parse(value) : fallback;",
+                  "    } catch (e) {",
+                  "        return fallback;",
+                  "    }",
+                  "};",
+                  "const setJson = (key, value) => pm.environment.set(key, JSON.stringify(value === undefined ? null : value));",
+                  "const skip = (reason) => {",
+                  "    console.log(`${pm.info.requestName} skipped: ${reason}`);",
+                  "    pm.execution.skipRequest();",
+                  "};",
+                  "const stopRun = (reason) => {",
+                  "    pm.test(`${pm.info.requestName}: ${reason}`, () => { throw new Error(reason); });",
+                  "    postman.setNextRequest(null);",
+                  "};",
+                  "const okJson = () => {",
+                  "    pm.test(`${pm.info.requestName} returns 200`, () => pm.response.to.have.status(200));",
+                  "    let body = null;",
+                  "    try {",
+                  "        body = pm.response.json();",
+                  "    } catch (e) {",
+                  "        body = null;",
+                  "    }",
+                  "    if (pm.response.code !== 200 || !body) {",
+                  "        stopRun(`HTTP ${pm.response.code}: ${pm.response.text().substring(0, 500)}`);",
+                  "        return null;",
+                  "    }",
+                  "    return body;",
+                  "};",
+                  "// ---- End of shared helpers. ----",
+                  "",
+                  "if (!flag(\"useSeatMap\")) return skip(\"useSeatMap is false\");"
+                ],
+                "packages": {}
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "// ---- Shared helpers: the same block starts every script of this collection. ----",
+                  "const env = (key, fallback) => {",
+                  "    const value = pm.environment.get(key);",
+                  "    return value === undefined || value === null || value === \"\" ? fallback : value;",
+                  "};",
+                  "const flag = (key, fallback = false) => String(env(key, fallback)).toLowerCase() === \"true\";",
+                  "const getJson = (key, fallback) => {",
+                  "    try {",
+                  "        const value = pm.environment.get(key);",
+                  "        return value ? JSON.parse(value) : fallback;",
+                  "    } catch (e) {",
+                  "        return fallback;",
+                  "    }",
+                  "};",
+                  "const setJson = (key, value) => pm.environment.set(key, JSON.stringify(value === undefined ? null : value));",
+                  "const skip = (reason) => {",
+                  "    console.log(`${pm.info.requestName} skipped: ${reason}`);",
+                  "    pm.execution.skipRequest();",
+                  "};",
+                  "const stopRun = (reason) => {",
+                  "    pm.test(`${pm.info.requestName}: ${reason}`, () => { throw new Error(reason); });",
+                  "    postman.setNextRequest(null);",
+                  "};",
+                  "const okJson = () => {",
+                  "    pm.test(`${pm.info.requestName} returns 200`, () => pm.response.to.have.status(200));",
+                  "    let body = null;",
+                  "    try {",
+                  "        body = pm.response.json();",
+                  "    } catch (e) {",
+                  "        body = null;",
+                  "    }",
+                  "    if (pm.response.code !== 200 || !body) {",
+                  "        stopRun(`HTTP ${pm.response.code}: ${pm.response.text().substring(0, 500)}`);",
+                  "        return null;",
+                  "    }",
+                  "    return body;",
+                  "};",
+                  "// ---- End of shared helpers. ----",
+                  "",
+                  "// Picks one available seat per passenger and segment, never the same seat twice on a segment.",
+                  "// {{seatPreference}}: Exit = exit row, then leg space, then any; Free = free seats first; Any = first available.",
+                  "// The ids are NOT taken from this response: FlyDubai returns a new, uncached responseId here.",
+                  "const resp = okJson();",
+                  "if (!resp) return;",
+                  "",
+                  "const preference = env(\"seatPreference\", \"Exit\");",
+                  "const isAvailable = (value) => typeof value === \"string\" && value.startsWith(\"Available\") && value !== \"AvailableAferReservation\";",
+                  "const has = (d, padis, text) => (d.cellCharacteristics || []).some(c => c.padisCode === padis || (c.description || \"\").toLowerCase().includes(text));",
+                  "const rank = (d) => {",
+                  "    if (preference === \"Exit\") return has(d, \"E\", \"exit\") ? 0 : has(d, \"L\", \"leg space\") ? 1 : 2;",
+                  "    if (preference === \"Free\") return d.cellAvailability === \"AvailableFree\" ? 0 : 1;",
+                  "    return 0;",
+                  "};",
+                  "",
+                  "const seatsBySegment = {};",
+                  "Object.entries(resp.seatMapDetails || {}).forEach(([segKey, map]) => {",
+                  "    const seats = [];",
+                  "    (map.rows || []).forEach(row => (row.cells || []).forEach(cell => {",
+                  "        if (cell.cellCategory === \"Seat\" && cell.cellDetails && cell.cellDetails.cellCode && cell.cellDetails.cellID) seats.push(cell.cellDetails);",
+                  "    }));",
+                  "    seatsBySegment[segKey] = seats;",
+                  "});",
+                  "",
+                  "const used = {};",
+                  "const selected = {};",
+                  "Object.entries(resp.passengersDetails || {}).forEach(([paxKey, pax]) => {",
+                  "    if (pax.passengerTypeCode === \"INF\") return;",
+                  "    Object.entries(seatsBySegment).forEach(([segKey, seats]) => {",
+                  "        used[segKey] = used[segKey] || new Set();",
+                  "        const offered = pax.passengersSeatMapAvailability && pax.passengersSeatMapAvailability[segKey];",
+                  "        const allowed = offered ? new Set(Object.values(offered).flat()) : null;",
+                  "        const candidates = seats",
+                  "            .filter(d => !used[segKey].has(d.cellCode) && (!allowed || allowed.has(d.cellCode)))",
+                  "            .filter(d => {",
+                  "                const byPax = d.seatPriceDetailsByPassenger && d.seatPriceDetailsByPassenger[paxKey];",
+                  "                return isAvailable(byPax && byPax.paxCellAvailability ? byPax.paxCellAvailability : d.cellAvailability);",
+                  "            })",
+                  "            .sort((a, b) => rank(a) - rank(b));",
+                  "        if (candidates.length === 0) {",
+                  "            console.warn(`No available seat for ${paxKey} on segment ${segKey}.`);",
+                  "            return;",
+                  "        }",
+                  "        const seat = candidates[0];",
+                  "        used[segKey].add(seat.cellCode);",
+                  "        selected[paxKey] = selected[paxKey] || { setSegmentsSeats: {} };",
+                  "        selected[paxKey].setSegmentsSeats[segKey] = { cellCode: seat.cellCode, cellId: seat.cellID };",
+                  "    });",
+                  "});",
+                  "",
+                  "if (Object.keys(selected).length === 0) {",
+                  "    console.warn(\"No seat selected; continuing without passengersSelectedSeats.\");",
+                  "    pm.environment.set(\"selectedSeatsJson\", \"null\");",
+                  "    return;",
+                  "}",
+                  "setJson(\"selectedSeatsJson\", selected);",
+                  "console.log(\"Selected seats:\", JSON.stringify(selected));"
+                ],
+                "packages": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "x-api-key",
+                "value": "{{apiKey}}",
+                "type": "text"
+              },
+              {
+                "key": "Client-Id",
+                "value": "{{clientId}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"supplier\": \"{{supplier}}\",\n    \"credentialsSelector\": \"{{credentialsSelector}}\",\n    \"responseId\": \"{{currentResponseId}}\",\n    \"selectedOfferId\": \"{{currentOfferId}}\",\n    \"selectedBundles\": {{selectedBundlesJson}}\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}api/v2/SeatMap/Seat",
+              "host": [
+                "{{baseUrl}}api"
+              ],
+              "path": [
+                "v2",
+                "SeatMap",
+                "Seat"
+              ]
+            },
+            "description": "Runs when useSeatMap = true. Picks one seat per passenger and segment by seatPreference (Exit | Free | Any)."
+          },
+          "response": []
+        },
+        {
+          "name": "FareCheck",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "// ---- Shared helpers: the same block starts every script of this collection. ----",
+                  "const env = (key, fallback) => {",
+                  "    const value = pm.environment.get(key);",
+                  "    return value === undefined || value === null || value === \"\" ? fallback : value;",
+                  "};",
+                  "const flag = (key, fallback = false) => String(env(key, fallback)).toLowerCase() === \"true\";",
+                  "const getJson = (key, fallback) => {",
+                  "    try {",
+                  "        const value = pm.environment.get(key);",
+                  "        return value ? JSON.parse(value) : fallback;",
+                  "    } catch (e) {",
+                  "        return fallback;",
+                  "    }",
+                  "};",
+                  "const setJson = (key, value) => pm.environment.set(key, JSON.stringify(value === undefined ? null : value));",
+                  "const skip = (reason) => {",
+                  "    console.log(`${pm.info.requestName} skipped: ${reason}`);",
+                  "    pm.execution.skipRequest();",
+                  "};",
+                  "const stopRun = (reason) => {",
+                  "    pm.test(`${pm.info.requestName}: ${reason}`, () => { throw new Error(reason); });",
+                  "    postman.setNextRequest(null);",
+                  "};",
+                  "const okJson = () => {",
+                  "    pm.test(`${pm.info.requestName} returns 200`, () => pm.response.to.have.status(200));",
+                  "    let body = null;",
+                  "    try {",
+                  "        body = pm.response.json();",
+                  "    } catch (e) {",
+                  "        body = null;",
+                  "    }",
+                  "    if (pm.response.code !== 200 || !body) {",
+                  "        stopRun(`HTTP ${pm.response.code}: ${pm.response.text().substring(0, 500)}`);",
+                  "        return null;",
+                  "    }",
+                  "    return body;",
+                  "};",
+                  "// ---- End of shared helpers. ----",
+                  "",
+                  "if (!flag(\"useFareCheck\")) return skip(\"useFareCheck is false\");"
+                ],
+                "packages": {}
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "// ---- Shared helpers: the same block starts every script of this collection. ----",
+                  "const env = (key, fallback) => {",
+                  "    const value = pm.environment.get(key);",
+                  "    return value === undefined || value === null || value === \"\" ? fallback : value;",
+                  "};",
+                  "const flag = (key, fallback = false) => String(env(key, fallback)).toLowerCase() === \"true\";",
+                  "const getJson = (key, fallback) => {",
+                  "    try {",
+                  "        const value = pm.environment.get(key);",
+                  "        return value ? JSON.parse(value) : fallback;",
+                  "    } catch (e) {",
+                  "        return fallback;",
+                  "    }",
+                  "};",
+                  "const setJson = (key, value) => pm.environment.set(key, JSON.stringify(value === undefined ? null : value));",
+                  "const skip = (reason) => {",
+                  "    console.log(`${pm.info.requestName} skipped: ${reason}`);",
+                  "    pm.execution.skipRequest();",
+                  "};",
+                  "const stopRun = (reason) => {",
+                  "    pm.test(`${pm.info.requestName}: ${reason}`, () => { throw new Error(reason); });",
+                  "    postman.setNextRequest(null);",
+                  "};",
+                  "const okJson = () => {",
+                  "    pm.test(`${pm.info.requestName} returns 200`, () => pm.response.to.have.status(200));",
+                  "    let body = null;",
+                  "    try {",
+                  "        body = pm.response.json();",
+                  "    } catch (e) {",
+                  "        body = null;",
+                  "    }",
+                  "    if (pm.response.code !== 200 || !body) {",
+                  "        stopRun(`HTTP ${pm.response.code}: ${pm.response.text().substring(0, 500)}`);",
+                  "        return null;",
+                  "    }",
+                  "    return body;",
+                  "};",
+                  "// ---- End of shared helpers. ----",
+                  "",
+                  "// Prices the selected ancillaries and seats; its ids become the current ids for Hold / Book.",
+                  "const resp = okJson();",
+                  "if (!resp) return;",
+                  "",
+                  "const offerId = resp.selectedOffer && resp.selectedOffer.offerId;",
+                  "pm.test(\"FareCheck returns selectedOffer.offerId\", () => pm.expect(offerId).to.be.a(\"string\").and.not.empty);",
+                  "if (!offerId) return stopRun(\"no selectedOffer.offerId\");",
+                  "",
+                  "pm.environment.set(\"currentResponseId\", resp.responseId);",
+                  "pm.environment.set(\"currentOfferId\", offerId);",
+                  "console.log(\"FareCheck price:\", resp.selectedOffer.priceDetails || \"\");"
+                ],
+                "packages": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "x-api-key",
+                "value": "{{apiKey}}",
+                "type": "text"
+              },
+              {
+                "key": "Client-Id",
+                "value": "{{clientId}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"supplier\": \"{{supplier}}\",\n    \"credentialsSelector\": \"{{credentialsSelector}}\",\n    \"responseId\": \"{{currentResponseId}}\",\n    \"selectedOfferId\": \"{{currentOfferId}}\",\n    \"passengersSelectedAncillaries\": {{selectedAncillariesJson}},\n    \"passengersSelectedSeats\": {{selectedSeatsJson}}\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}api/v2/Ancillary/FareCheck",
+              "host": [
+                "{{baseUrl}}api"
+              ],
+              "path": [
+                "v2",
+                "Ancillary",
+                "FareCheck"
+              ]
+            },
+            "description": "Runs when useFareCheck = true. Prices the selected ancillaries and seats."
+          },
+          "response": []
+        }
+      ],
+      "description": "AddPax, then the optional ancillaries, seat map and fare check."
+    },
+    {
+      "name": "3. Order",
+      "item": [
+        {
+          "name": "Hold",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "// ---- Shared helpers: the same block starts every script of this collection. ----",
+                  "const env = (key, fallback) => {",
+                  "    const value = pm.environment.get(key);",
+                  "    return value === undefined || value === null || value === \"\" ? fallback : value;",
+                  "};",
+                  "const flag = (key, fallback = false) => String(env(key, fallback)).toLowerCase() === \"true\";",
+                  "const getJson = (key, fallback) => {",
+                  "    try {",
+                  "        const value = pm.environment.get(key);",
+                  "        return value ? JSON.parse(value) : fallback;",
+                  "    } catch (e) {",
+                  "        return fallback;",
+                  "    }",
+                  "};",
+                  "const setJson = (key, value) => pm.environment.set(key, JSON.stringify(value === undefined ? null : value));",
+                  "const skip = (reason) => {",
+                  "    console.log(`${pm.info.requestName} skipped: ${reason}`);",
+                  "    pm.execution.skipRequest();",
+                  "};",
+                  "const stopRun = (reason) => {",
+                  "    pm.test(`${pm.info.requestName}: ${reason}`, () => { throw new Error(reason); });",
+                  "    postman.setNextRequest(null);",
+                  "};",
+                  "const okJson = () => {",
+                  "    pm.test(`${pm.info.requestName} returns 200`, () => pm.response.to.have.status(200));",
+                  "    let body = null;",
+                  "    try {",
+                  "        body = pm.response.json();",
+                  "    } catch (e) {",
+                  "        body = null;",
+                  "    }",
+                  "    if (pm.response.code !== 200 || !body) {",
+                  "        stopRun(`HTTP ${pm.response.code}: ${pm.response.text().substring(0, 500)}`);",
+                  "        return null;",
+                  "    }",
+                  "    return body;",
+                  "};",
+                  "// ---- End of shared helpers. ----",
+                  "",
+                  "if (env(\"bookingMode\", \"Book\") !== \"Hold\") return skip(\"bookingMode is not Hold\");"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// ---- Shared helpers: the same block starts every script of this collection. ----",
+                  "const env = (key, fallback) => {",
+                  "    const value = pm.environment.get(key);",
+                  "    return value === undefined || value === null || value === \"\" ? fallback : value;",
+                  "};",
+                  "const flag = (key, fallback = false) => String(env(key, fallback)).toLowerCase() === \"true\";",
+                  "const getJson = (key, fallback) => {",
+                  "    try {",
+                  "        const value = pm.environment.get(key);",
+                  "        return value ? JSON.parse(value) : fallback;",
+                  "    } catch (e) {",
+                  "        return fallback;",
+                  "    }",
+                  "};",
+                  "const setJson = (key, value) => pm.environment.set(key, JSON.stringify(value === undefined ? null : value));",
+                  "const skip = (reason) => {",
+                  "    console.log(`${pm.info.requestName} skipped: ${reason}`);",
+                  "    pm.execution.skipRequest();",
+                  "};",
+                  "const stopRun = (reason) => {",
+                  "    pm.test(`${pm.info.requestName}: ${reason}`, () => { throw new Error(reason); });",
+                  "    postman.setNextRequest(null);",
+                  "};",
+                  "const okJson = () => {",
+                  "    pm.test(`${pm.info.requestName} returns 200`, () => pm.response.to.have.status(200));",
+                  "    let body = null;",
+                  "    try {",
+                  "        body = pm.response.json();",
+                  "    } catch (e) {",
+                  "        body = null;",
+                  "    }",
+                  "    if (pm.response.code !== 200 || !body) {",
+                  "        stopRun(`HTTP ${pm.response.code}: ${pm.response.text().substring(0, 500)}`);",
+                  "        return null;",
+                  "    }",
+                  "    return body;",
+                  "};",
+                  "// ---- End of shared helpers. ----",
+                  "",
+                  "const resp = okJson();",
+                  "if (!resp) return;",
+                  "",
+                  "pm.test(\"Hold returns a pnr\", () => pm.expect(resp.pnr).to.be.a(\"string\").and.not.empty);",
+                  "if (!resp.pnr) return stopRun(\"no pnr\");",
+                  "",
+                  "pm.environment.set(\"pnr\", resp.pnr);",
+                  "pm.environment.set(\"gdsPnr\", resp.gdsPnr || \"\");",
+                  "pm.environment.set(\"bookingToken\", resp.bookingToken || \"\");",
+                  "console.log(`Held PNR ${resp.pnr}, expires ${resp.holdExpirationDate || \"?\"}`);"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "x-api-key",
+                "value": "{{apiKey}}",
+                "type": "text"
+              },
+              {
+                "key": "Client-Id",
+                "value": "{{clientId}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"supplier\": \"{{supplier}}\",\n    \"credentialsSelector\": \"{{credentialsSelector}}\",\n    \"responseId\": \"{{currentResponseId}}\",\n    \"selectedOfferId\": \"{{currentOfferId}}\",\n    // \"selectedBundles\": {{selectedBundlesJson}},\n    \"passengersSelectedAncillaries\": {{selectedAncillariesJson}},\n    \"passengersSelectedSeats\": {{selectedSeatsJson}}\n   \n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}api/v2/FlightBooking/Hold",
+              "host": [
+                "{{baseUrl}}api"
+              ],
+              "path": [
+                "v2",
+                "FlightBooking",
+                "Hold"
+              ]
+            },
+            "description": "Runs when bookingMode = Hold."
+          },
+          "response": []
+        },
+        {
+          "name": "PnrReprice (FareConfirmAfterHold)",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "// ---- Shared helpers: the same block starts every script of this collection. ----",
+                  "const env = (key, fallback) => {",
+                  "    const value = pm.environment.get(key);",
+                  "    return value === undefined || value === null || value === \"\" ? fallback : value;",
+                  "};",
+                  "const flag = (key, fallback = false) => String(env(key, fallback)).toLowerCase() === \"true\";",
+                  "const getJson = (key, fallback) => {",
+                  "    try {",
+                  "        const value = pm.environment.get(key);",
+                  "        return value ? JSON.parse(value) : fallback;",
+                  "    } catch (e) {",
+                  "        return fallback;",
+                  "    }",
+                  "};",
+                  "const setJson = (key, value) => pm.environment.set(key, JSON.stringify(value === undefined ? null : value));",
+                  "const skip = (reason) => {",
+                  "    console.log(`${pm.info.requestName} skipped: ${reason}`);",
+                  "    pm.execution.skipRequest();",
+                  "};",
+                  "const stopRun = (reason) => {",
+                  "    pm.test(`${pm.info.requestName}: ${reason}`, () => { throw new Error(reason); });",
+                  "    postman.setNextRequest(null);",
+                  "};",
+                  "const okJson = () => {",
+                  "    pm.test(`${pm.info.requestName} returns 200`, () => pm.response.to.have.status(200));",
+                  "    let body = null;",
+                  "    try {",
+                  "        body = pm.response.json();",
+                  "    } catch (e) {",
+                  "        body = null;",
+                  "    }",
+                  "    if (pm.response.code !== 200 || !body) {",
+                  "        stopRun(`HTTP ${pm.response.code}: ${pm.response.text().substring(0, 500)}`);",
+                  "        return null;",
+                  "    }",
+                  "    return body;",
+                  "};",
+                  "// ---- End of shared helpers. ----",
+                  "",
+                  "if (env(\"bookingMode\", \"Book\") !== \"Hold\") return skip(\"bookingMode is not Hold\");",
+                  "if (env(\"afterHold\", \"Ticket\") !== \"Ticket\") return skip(\"afterHold is not Ticket\");",
+                  "if (!flag(\"repriceBeforeTicket\", true)) return skip(\"repriceBeforeTicket is false\");",
+                  "if (!env(\"pnr\", \"\")) return skip(\"no pnr from Hold\");"
+                ],
+                "packages": {}
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "// ---- Shared helpers: the same block starts every script of this collection. ----",
+                  "const env = (key, fallback) => {",
+                  "    const value = pm.environment.get(key);",
+                  "    return value === undefined || value === null || value === \"\" ? fallback : value;",
+                  "};",
+                  "const flag = (key, fallback = false) => String(env(key, fallback)).toLowerCase() === \"true\";",
+                  "const getJson = (key, fallback) => {",
+                  "    try {",
+                  "        const value = pm.environment.get(key);",
+                  "        return value ? JSON.parse(value) : fallback;",
+                  "    } catch (e) {",
+                  "        return fallback;",
+                  "    }",
+                  "};",
+                  "const setJson = (key, value) => pm.environment.set(key, JSON.stringify(value === undefined ? null : value));",
+                  "const skip = (reason) => {",
+                  "    console.log(`${pm.info.requestName} skipped: ${reason}`);",
+                  "    pm.execution.skipRequest();",
+                  "};",
+                  "const stopRun = (reason) => {",
+                  "    pm.test(`${pm.info.requestName}: ${reason}`, () => { throw new Error(reason); });",
+                  "    postman.setNextRequest(null);",
+                  "};",
+                  "const okJson = () => {",
+                  "    pm.test(`${pm.info.requestName} returns 200`, () => pm.response.to.have.status(200));",
+                  "    let body = null;",
+                  "    try {",
+                  "        body = pm.response.json();",
+                  "    } catch (e) {",
+                  "        body = null;",
+                  "    }",
+                  "    if (pm.response.code !== 200 || !body) {",
+                  "        stopRun(`HTTP ${pm.response.code}: ${pm.response.text().substring(0, 500)}`);",
+                  "        return null;",
+                  "    }",
+                  "    return body;",
+                  "};",
+                  "// ---- End of shared helpers. ----",
+                  "",
+                  "// FareConfirmAfterHold returns no ids; BookAfterHold only needs the PNR fields.",
+                  "const resp = okJson();",
+                  "if (!resp) return;",
+                  "",
+                  "console.log(\"Repriced hold:\", (resp.selectedOffer && resp.selectedOffer.priceDetails) || \"\");"
+                ],
+                "packages": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "x-api-key",
+                "value": "{{apiKey}}",
+                "type": "text"
+              },
+              {
+                "key": "Client-Id",
+                "value": "{{clientId}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"supplier\": \"{{supplier}}\",\n    \"credentialsSelector\": \"{{credentialsSelector}}\",\n    \"pnr\": \"{{pnr}}\",\n    \"gdsPNR\": \"{{gdsPnr}}\",\n    \"bookingToken\": \"{{bookingToken}}\",\n    \"surName\": \"{{surName}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}api/v2/FlightBooking/PnrReprice",
+              "host": [
+                "{{baseUrl}}api"
+              ],
+              "path": [
+                "v2",
+                "FlightBooking",
+                "PnrReprice"
+              ]
+            },
+            "description": "Runs when bookingMode = Hold, afterHold = Ticket and repriceBeforeTicket = true."
+          },
+          "response": []
+        },
+        {
+          "name": "BookAfterHold",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "// ---- Shared helpers: the same block starts every script of this collection. ----",
+                  "const env = (key, fallback) => {",
+                  "    const value = pm.environment.get(key);",
+                  "    return value === undefined || value === null || value === \"\" ? fallback : value;",
+                  "};",
+                  "const flag = (key, fallback = false) => String(env(key, fallback)).toLowerCase() === \"true\";",
+                  "const getJson = (key, fallback) => {",
+                  "    try {",
+                  "        const value = pm.environment.get(key);",
+                  "        return value ? JSON.parse(value) : fallback;",
+                  "    } catch (e) {",
+                  "        return fallback;",
+                  "    }",
+                  "};",
+                  "const setJson = (key, value) => pm.environment.set(key, JSON.stringify(value === undefined ? null : value));",
+                  "const skip = (reason) => {",
+                  "    console.log(`${pm.info.requestName} skipped: ${reason}`);",
+                  "    pm.execution.skipRequest();",
+                  "};",
+                  "const stopRun = (reason) => {",
+                  "    pm.test(`${pm.info.requestName}: ${reason}`, () => { throw new Error(reason); });",
+                  "    postman.setNextRequest(null);",
+                  "};",
+                  "const okJson = () => {",
+                  "    pm.test(`${pm.info.requestName} returns 200`, () => pm.response.to.have.status(200));",
+                  "    let body = null;",
+                  "    try {",
+                  "        body = pm.response.json();",
+                  "    } catch (e) {",
+                  "        body = null;",
+                  "    }",
+                  "    if (pm.response.code !== 200 || !body) {",
+                  "        stopRun(`HTTP ${pm.response.code}: ${pm.response.text().substring(0, 500)}`);",
+                  "        return null;",
+                  "    }",
+                  "    return body;",
+                  "};",
+                  "// ---- End of shared helpers. ----",
+                  "",
+                  "if (env(\"bookingMode\", \"Book\") !== \"Hold\") return skip(\"bookingMode is not Hold\");",
+                  "if (env(\"afterHold\", \"Ticket\") !== \"Ticket\") return skip(\"afterHold is not Ticket\");",
+                  "if (!env(\"pnr\", \"\")) return skip(\"no pnr from Hold\");"
+                ],
+                "packages": {}
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "// ---- Shared helpers: the same block starts every script of this collection. ----",
+                  "const env = (key, fallback) => {",
+                  "    const value = pm.environment.get(key);",
+                  "    return value === undefined || value === null || value === \"\" ? fallback : value;",
+                  "};",
+                  "const flag = (key, fallback = false) => String(env(key, fallback)).toLowerCase() === \"true\";",
+                  "const getJson = (key, fallback) => {",
+                  "    try {",
+                  "        const value = pm.environment.get(key);",
+                  "        return value ? JSON.parse(value) : fallback;",
+                  "    } catch (e) {",
+                  "        return fallback;",
+                  "    }",
+                  "};",
+                  "const setJson = (key, value) => pm.environment.set(key, JSON.stringify(value === undefined ? null : value));",
+                  "const skip = (reason) => {",
+                  "    console.log(`${pm.info.requestName} skipped: ${reason}`);",
+                  "    pm.execution.skipRequest();",
+                  "};",
+                  "const stopRun = (reason) => {",
+                  "    pm.test(`${pm.info.requestName}: ${reason}`, () => { throw new Error(reason); });",
+                  "    postman.setNextRequest(null);",
+                  "};",
+                  "const okJson = () => {",
+                  "    pm.test(`${pm.info.requestName} returns 200`, () => pm.response.to.have.status(200));",
+                  "    let body = null;",
+                  "    try {",
+                  "        body = pm.response.json();",
+                  "    } catch (e) {",
+                  "        body = null;",
+                  "    }",
+                  "    if (pm.response.code !== 200 || !body) {",
+                  "        stopRun(`HTTP ${pm.response.code}: ${pm.response.text().substring(0, 500)}`);",
+                  "        return null;",
+                  "    }",
+                  "    return body;",
+                  "};",
+                  "// ---- End of shared helpers. ----",
+                  "",
+                  "const resp = okJson();",
+                  "if (!resp) return;",
+                  "",
+                  "const tickets = Object.values(resp.tickets || {});",
+                  "pm.test(\"BookAfterHold returns tickets\", () => pm.expect(tickets.length).to.be.above(0));",
+                  "if (resp.pnr) pm.environment.set(\"pnr\", resp.pnr);",
+                  "if (resp.gdsPnr) pm.environment.set(\"gdsPnr\", resp.gdsPnr);",
+                  "if (resp.bookingToken) pm.environment.set(\"bookingToken\", resp.bookingToken);",
+                  "setJson(\"voidTicketsJson\", tickets.length ? tickets.map(t => ({ ticketStatus: t.ticketStatus, ticketNumber: t.ticketNumber, carrierCode: t.carrierCode })) : null);",
+                  "console.log(`Ticketed PNR ${env(\"pnr\", \"\")}: ${tickets.map(t => t.ticketNumber).join(\", \")}`);"
+                ],
+                "packages": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "x-api-key",
+                "value": "{{apiKey}}",
+                "type": "text"
+              },
+              {
+                "key": "Client-Id",
+                "value": "{{clientId}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"supplier\": \"{{supplier}}\",\n    \"credentialsSelector\": \"{{credentialsSelector}}\",\n    \"pnr\": \"{{pnr}}\",\n    \"gdsPNR\": \"{{gdsPnr}}\",\n    \"bookingToken\": \"{{bookingToken}}\",\n    \"surName\": \"{{surName}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}api/v2/FlightBooking/BookAfterHold",
+              "host": [
+                "{{baseUrl}}api"
+              ],
+              "path": [
+                "v2",
+                "FlightBooking",
+                "BookAfterHold"
+              ]
+            },
+            "description": "Runs when bookingMode = Hold and afterHold = Ticket."
+          },
+          "response": []
+        },
+        {
+          "name": "CancelAfterHold",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "// ---- Shared helpers: the same block starts every script of this collection. ----",
+                  "const env = (key, fallback) => {",
+                  "    const value = pm.environment.get(key);",
+                  "    return value === undefined || value === null || value === \"\" ? fallback : value;",
+                  "};",
+                  "const flag = (key, fallback = false) => String(env(key, fallback)).toLowerCase() === \"true\";",
+                  "const getJson = (key, fallback) => {",
+                  "    try {",
+                  "        const value = pm.environment.get(key);",
+                  "        return value ? JSON.parse(value) : fallback;",
+                  "    } catch (e) {",
+                  "        return fallback;",
+                  "    }",
+                  "};",
+                  "const setJson = (key, value) => pm.environment.set(key, JSON.stringify(value === undefined ? null : value));",
+                  "const skip = (reason) => {",
+                  "    console.log(`${pm.info.requestName} skipped: ${reason}`);",
+                  "    pm.execution.skipRequest();",
+                  "};",
+                  "const stopRun = (reason) => {",
+                  "    pm.test(`${pm.info.requestName}: ${reason}`, () => { throw new Error(reason); });",
+                  "    postman.setNextRequest(null);",
+                  "};",
+                  "const okJson = () => {",
+                  "    pm.test(`${pm.info.requestName} returns 200`, () => pm.response.to.have.status(200));",
+                  "    let body = null;",
+                  "    try {",
+                  "        body = pm.response.json();",
+                  "    } catch (e) {",
+                  "        body = null;",
+                  "    }",
+                  "    if (pm.response.code !== 200 || !body) {",
+                  "        stopRun(`HTTP ${pm.response.code}: ${pm.response.text().substring(0, 500)}`);",
+                  "        return null;",
+                  "    }",
+                  "    return body;",
+                  "};",
+                  "// ---- End of shared helpers. ----",
+                  "",
+                  "if (env(\"bookingMode\", \"Book\") !== \"Hold\") return skip(\"bookingMode is not Hold\");",
+                  "if (env(\"afterHold\", \"Ticket\") !== \"Cancel\") return skip(\"afterHold is not Cancel\");",
+                  "if (!env(\"pnr\", \"\")) return skip(\"no pnr from Hold\");"
+                ],
+                "packages": {}
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "// ---- Shared helpers: the same block starts every script of this collection. ----",
+                  "const env = (key, fallback) => {",
+                  "    const value = pm.environment.get(key);",
+                  "    return value === undefined || value === null || value === \"\" ? fallback : value;",
+                  "};",
+                  "const flag = (key, fallback = false) => String(env(key, fallback)).toLowerCase() === \"true\";",
+                  "const getJson = (key, fallback) => {",
+                  "    try {",
+                  "        const value = pm.environment.get(key);",
+                  "        return value ? JSON.parse(value) : fallback;",
+                  "    } catch (e) {",
+                  "        return fallback;",
+                  "    }",
+                  "};",
+                  "const setJson = (key, value) => pm.environment.set(key, JSON.stringify(value === undefined ? null : value));",
+                  "const skip = (reason) => {",
+                  "    console.log(`${pm.info.requestName} skipped: ${reason}`);",
+                  "    pm.execution.skipRequest();",
+                  "};",
+                  "const stopRun = (reason) => {",
+                  "    pm.test(`${pm.info.requestName}: ${reason}`, () => { throw new Error(reason); });",
+                  "    postman.setNextRequest(null);",
+                  "};",
+                  "const okJson = () => {",
+                  "    pm.test(`${pm.info.requestName} returns 200`, () => pm.response.to.have.status(200));",
+                  "    let body = null;",
+                  "    try {",
+                  "        body = pm.response.json();",
+                  "    } catch (e) {",
+                  "        body = null;",
+                  "    }",
+                  "    if (pm.response.code !== 200 || !body) {",
+                  "        stopRun(`HTTP ${pm.response.code}: ${pm.response.text().substring(0, 500)}`);",
+                  "        return null;",
+                  "    }",
+                  "    return body;",
+                  "};",
+                  "// ---- End of shared helpers. ----",
+                  "",
+                  "const resp = okJson();",
+                  "if (!resp) return;",
+                  "",
+                  "pm.test(\"CancelAfterHold cancels the hold\", () => pm.expect(resp.cancelled).to.eql(true));",
+                  "console.log(`Cancelled PNR ${env(\"pnr\", \"\")}: ${resp.message || \"\"}`);"
+                ],
+                "packages": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "x-api-key",
+                "value": "{{apiKey}}",
+                "type": "text"
+              },
+              {
+                "key": "Client-Id",
+                "value": "{{clientId}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"supplier\": \"{{supplier}}\",\n    \"credentialsSelector\": \"{{credentialsSelector}}\",\n    \"pnr\": \"{{pnr}}\",\n    \"gdsPNR\": \"{{gdsPnr}}\",\n    \"bookingToken\": \"{{bookingToken}}\",\n    \"surName\": \"{{surName}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}api/v2/FlightBooking/CancelAfterHold",
+              "host": [
+                "{{baseUrl}}api"
+              ],
+              "path": [
+                "v2",
+                "FlightBooking",
+                "CancelAfterHold"
+              ]
+            },
+            "description": "Runs when bookingMode = Hold and afterHold = Cancel."
+          },
+          "response": []
+        },
+        {
+          "name": "Book",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "// ---- Shared helpers: the same block starts every script of this collection. ----",
+                  "const env = (key, fallback) => {",
+                  "    const value = pm.environment.get(key);",
+                  "    return value === undefined || value === null || value === \"\" ? fallback : value;",
+                  "};",
+                  "const flag = (key, fallback = false) => String(env(key, fallback)).toLowerCase() === \"true\";",
+                  "const getJson = (key, fallback) => {",
+                  "    try {",
+                  "        const value = pm.environment.get(key);",
+                  "        return value ? JSON.parse(value) : fallback;",
+                  "    } catch (e) {",
+                  "        return fallback;",
+                  "    }",
+                  "};",
+                  "const setJson = (key, value) => pm.environment.set(key, JSON.stringify(value === undefined ? null : value));",
+                  "const skip = (reason) => {",
+                  "    console.log(`${pm.info.requestName} skipped: ${reason}`);",
+                  "    pm.execution.skipRequest();",
+                  "};",
+                  "const stopRun = (reason) => {",
+                  "    pm.test(`${pm.info.requestName}: ${reason}`, () => { throw new Error(reason); });",
+                  "    postman.setNextRequest(null);",
+                  "};",
+                  "const okJson = () => {",
+                  "    pm.test(`${pm.info.requestName} returns 200`, () => pm.response.to.have.status(200));",
+                  "    let body = null;",
+                  "    try {",
+                  "        body = pm.response.json();",
+                  "    } catch (e) {",
+                  "        body = null;",
+                  "    }",
+                  "    if (pm.response.code !== 200 || !body) {",
+                  "        stopRun(`HTTP ${pm.response.code}: ${pm.response.text().substring(0, 500)}`);",
+                  "        return null;",
+                  "    }",
+                  "    return body;",
+                  "};",
+                  "// ---- End of shared helpers. ----",
+                  "",
+                  "// if (env(\"bookingMode\", \"Book\") !== \"Book\") return skip(\"bookingMode is not Book\");"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// ---- Shared helpers: the same block starts every script of this collection. ----",
+                  "const env = (key, fallback) => {",
+                  "    const value = pm.environment.get(key);",
+                  "    return value === undefined || value === null || value === \"\" ? fallback : value;",
+                  "};",
+                  "const flag = (key, fallback = false) => String(env(key, fallback)).toLowerCase() === \"true\";",
+                  "const getJson = (key, fallback) => {",
+                  "    try {",
+                  "        const value = pm.environment.get(key);",
+                  "        return value ? JSON.parse(value) : fallback;",
+                  "    } catch (e) {",
+                  "        return fallback;",
+                  "    }",
+                  "};",
+                  "const setJson = (key, value) => pm.environment.set(key, JSON.stringify(value === undefined ? null : value));",
+                  "const skip = (reason) => {",
+                  "    console.log(`${pm.info.requestName} skipped: ${reason}`);",
+                  "    pm.execution.skipRequest();",
+                  "};",
+                  "const stopRun = (reason) => {",
+                  "    pm.test(`${pm.info.requestName}: ${reason}`, () => { throw new Error(reason); });",
+                  "    postman.setNextRequest(null);",
+                  "};",
+                  "const okJson = () => {",
+                  "    pm.test(`${pm.info.requestName} returns 200`, () => pm.response.to.have.status(200));",
+                  "    let body = null;",
+                  "    try {",
+                  "        body = pm.response.json();",
+                  "    } catch (e) {",
+                  "        body = null;",
+                  "    }",
+                  "    if (pm.response.code !== 200 || !body) {",
+                  "        stopRun(`HTTP ${pm.response.code}: ${pm.response.text().substring(0, 500)}`);",
+                  "        return null;",
+                  "    }",
+                  "    return body;",
+                  "};",
+                  "// ---- End of shared helpers. ----",
+                  "",
+                  "const resp = okJson();",
+                  "if (!resp) return;",
+                  "",
+                  "pm.test(\"Book returns a pnr\", () => pm.expect(resp.pnr).to.be.a(\"string\").and.not.empty);",
+                  "if (!resp.pnr) return stopRun(\"no pnr\");",
+                  "",
+                  "const tickets = Object.values(resp.tickets || {});",
+                  "pm.environment.set(\"pnr\", resp.pnr);",
+                  "pm.environment.set(\"gdsPnr\", resp.gdsPnr || \"\");",
+                  "pm.environment.set(\"bookingToken\", resp.bookingToken || \"\");",
+                  "setJson(\"voidTicketsJson\", tickets.length ? tickets.map(t => ({ ticketStatus: t.ticketStatus, ticketNumber: t.ticketNumber, carrierCode: t.carrierCode })) : null);",
+                  "console.log(`Booked PNR ${resp.pnr}: ${tickets.map(t => t.ticketNumber).join(\", \") || \"no tickets\"}`);"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "x-api-key",
+                "value": "{{apiKey}}",
+                "type": "text"
+              },
+              {
+                "key": "Client-Id",
+                "value": "{{clientId}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"supplier\": \"{{supplier}}\",\n    \"credentialsSelector\": \"{{credentialsSelector}}\",\n    \"responseId\": \"{{currentResponseId}}\",\n    \"selectedOfferId\": \"{{currentOfferId}}\",\n    \"selectedBundles\": {{selectedBundlesJson}}\n    // ,\n    // \"passengersSelectedAncillaries\": {{selectedAncillariesJson}}\n    // ,\n    // \"passengersSelectedSeats\": {{selectedSeatsJson}}\n  \n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}api/v2/FlightBooking/Book",
+              "host": [
+                "{{baseUrl}}api"
+              ],
+              "path": [
+                "v2",
+                "FlightBooking",
+                "Book"
+              ]
+            },
+            "description": "Runs when bookingMode = Book."
+          },
+          "response": []
+        }
+      ],
+      "description": "Hold (then PnrReprice + BookAfterHold, or CancelAfterHold) or Book, chosen by bookingMode and afterHold."
+    },
+    {
+      "name": "4. After the order",
+      "item": [
+        {
+          "name": "Retrieve",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "// ---- Shared helpers: the same block starts every script of this collection. ----",
+                  "const env = (key, fallback) => {",
+                  "    const value = pm.environment.get(key);",
+                  "    return value === undefined || value === null || value === \"\" ? fallback : value;",
+                  "};",
+                  "const flag = (key, fallback = false) => String(env(key, fallback)).toLowerCase() === \"true\";",
+                  "const getJson = (key, fallback) => {",
+                  "    try {",
+                  "        const value = pm.environment.get(key);",
+                  "        return value ? JSON.parse(value) : fallback;",
+                  "    } catch (e) {",
+                  "        return fallback;",
+                  "    }",
+                  "};",
+                  "const setJson = (key, value) => pm.environment.set(key, JSON.stringify(value === undefined ? null : value));",
+                  "const skip = (reason) => {",
+                  "    console.log(`${pm.info.requestName} skipped: ${reason}`);",
+                  "    pm.execution.skipRequest();",
+                  "};",
+                  "const stopRun = (reason) => {",
+                  "    pm.test(`${pm.info.requestName}: ${reason}`, () => { throw new Error(reason); });",
+                  "    postman.setNextRequest(null);",
+                  "};",
+                  "const okJson = () => {",
+                  "    pm.test(`${pm.info.requestName} returns 200`, () => pm.response.to.have.status(200));",
+                  "    let body = null;",
+                  "    try {",
+                  "        body = pm.response.json();",
+                  "    } catch (e) {",
+                  "        body = null;",
+                  "    }",
+                  "    if (pm.response.code !== 200 || !body) {",
+                  "        stopRun(`HTTP ${pm.response.code}: ${pm.response.text().substring(0, 500)}`);",
+                  "        return null;",
+                  "    }",
+                  "    return body;",
+                  "};",
+                  "// ---- End of shared helpers. ----",
+                  "",
+                  "const action = env(\"finalAction\", \"Retrieve\");",
+                  "if (action !== \"Retrieve\" && action !== \"Both\") return skip(`finalAction is ${action}`);",
+                  "if (!env(\"pnr\", \"\")) return skip(\"no pnr to retrieve\");"
+                ],
+                "packages": {}
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "// ---- Shared helpers: the same block starts every script of this collection. ----",
+                  "const env = (key, fallback) => {",
+                  "    const value = pm.environment.get(key);",
+                  "    return value === undefined || value === null || value === \"\" ? fallback : value;",
+                  "};",
+                  "const flag = (key, fallback = false) => String(env(key, fallback)).toLowerCase() === \"true\";",
+                  "const getJson = (key, fallback) => {",
+                  "    try {",
+                  "        const value = pm.environment.get(key);",
+                  "        return value ? JSON.parse(value) : fallback;",
+                  "    } catch (e) {",
+                  "        return fallback;",
+                  "    }",
+                  "};",
+                  "const setJson = (key, value) => pm.environment.set(key, JSON.stringify(value === undefined ? null : value));",
+                  "const skip = (reason) => {",
+                  "    console.log(`${pm.info.requestName} skipped: ${reason}`);",
+                  "    pm.execution.skipRequest();",
+                  "};",
+                  "const stopRun = (reason) => {",
+                  "    pm.test(`${pm.info.requestName}: ${reason}`, () => { throw new Error(reason); });",
+                  "    postman.setNextRequest(null);",
+                  "};",
+                  "const okJson = () => {",
+                  "    pm.test(`${pm.info.requestName} returns 200`, () => pm.response.to.have.status(200));",
+                  "    let body = null;",
+                  "    try {",
+                  "        body = pm.response.json();",
+                  "    } catch (e) {",
+                  "        body = null;",
+                  "    }",
+                  "    if (pm.response.code !== 200 || !body) {",
+                  "        stopRun(`HTTP ${pm.response.code}: ${pm.response.text().substring(0, 500)}`);",
+                  "        return null;",
+                  "    }",
+                  "    return body;",
+                  "};",
+                  "// ---- End of shared helpers. ----",
+                  "",
+                  "// Refreshes the tickets that Void sends.",
+                  "const resp = okJson();",
+                  "if (!resp) return;",
+                  "",
+                  "pm.test(\"Retrieve returns the pnr\", () => pm.expect(resp.pnr).to.eql(env(\"pnr\", \"\")));",
+                  "const tickets = Object.values(resp.tickets || {});",
+                  "if (tickets.length) {",
+                  "    setJson(\"voidTicketsJson\", tickets.map(t => ({ ticketStatus: t.ticketStatus, ticketNumber: t.ticketNumber, carrierCode: t.carrierCode })));",
+                  "}",
+                  "console.log(`PNR ${resp.pnr}: status ${resp.bookingStatus}, tickets ${tickets.map(t => `${t.ticketNumber} (${t.ticketStatus})`).join(\", \") || \"none\"}`);"
+                ],
+                "packages": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "x-api-key",
+                "value": "{{apiKey}}",
+                "type": "text"
+              },
+              {
+                "key": "Client-Id",
+                "value": "{{clientId}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"supplier\": \"{{supplier}}\",\n    \"credentialsSelector\": \"{{credentialsSelector}}\",\n    \"pnr\": \"{{pnr}}\",\n    \"gdsPNR\": \"{{gdsPnr}}\",\n    \"bookingToken\": \"{{bookingToken}}\",\n    \"surName\": \"{{surName}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}api/v2/FlightBooking/Retrieve",
+              "host": [
+                "{{baseUrl}}api"
+              ],
+              "path": [
+                "v2",
+                "FlightBooking",
+                "Retrieve"
+              ]
+            },
+            "description": "Runs when finalAction = Retrieve or Both."
+          },
+          "response": []
+        },
+        {
+          "name": "Void",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "// ---- Shared helpers: the same block starts every script of this collection. ----",
+                  "const env = (key, fallback) => {",
+                  "    const value = pm.environment.get(key);",
+                  "    return value === undefined || value === null || value === \"\" ? fallback : value;",
+                  "};",
+                  "const flag = (key, fallback = false) => String(env(key, fallback)).toLowerCase() === \"true\";",
+                  "const getJson = (key, fallback) => {",
+                  "    try {",
+                  "        const value = pm.environment.get(key);",
+                  "        return value ? JSON.parse(value) : fallback;",
+                  "    } catch (e) {",
+                  "        return fallback;",
+                  "    }",
+                  "};",
+                  "const setJson = (key, value) => pm.environment.set(key, JSON.stringify(value === undefined ? null : value));",
+                  "const skip = (reason) => {",
+                  "    console.log(`${pm.info.requestName} skipped: ${reason}`);",
+                  "    pm.execution.skipRequest();",
+                  "};",
+                  "const stopRun = (reason) => {",
+                  "    pm.test(`${pm.info.requestName}: ${reason}`, () => { throw new Error(reason); });",
+                  "    postman.setNextRequest(null);",
+                  "};",
+                  "const okJson = () => {",
+                  "    pm.test(`${pm.info.requestName} returns 200`, () => pm.response.to.have.status(200));",
+                  "    let body = null;",
+                  "    try {",
+                  "        body = pm.response.json();",
+                  "    } catch (e) {",
+                  "        body = null;",
+                  "    }",
+                  "    if (pm.response.code !== 200 || !body) {",
+                  "        stopRun(`HTTP ${pm.response.code}: ${pm.response.text().substring(0, 500)}`);",
+                  "        return null;",
+                  "    }",
+                  "    return body;",
+                  "};",
+                  "// ---- End of shared helpers. ----",
+                  "",
+                  "const action = env(\"finalAction\", \"Retrieve\");",
+                  "if (action !== \"Void\" && action !== \"Both\") return skip(`finalAction is ${action}`);",
+                  "if (!env(\"pnr\", \"\")) return skip(\"no pnr to void\");",
+                  "const tickets = (getJson(\"voidTicketsJson\", null) || []).filter(t => t.ticketStatus !== \"Voided\");",
+                  "if (tickets.length === 0) return skip(\"no tickets to void (the booking was held, cancelled or not ticketed)\");",
+                  "setJson(\"voidTicketsJson\", tickets);"
+                ],
+                "packages": {}
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "// ---- Shared helpers: the same block starts every script of this collection. ----",
+                  "const env = (key, fallback) => {",
+                  "    const value = pm.environment.get(key);",
+                  "    return value === undefined || value === null || value === \"\" ? fallback : value;",
+                  "};",
+                  "const flag = (key, fallback = false) => String(env(key, fallback)).toLowerCase() === \"true\";",
+                  "const getJson = (key, fallback) => {",
+                  "    try {",
+                  "        const value = pm.environment.get(key);",
+                  "        return value ? JSON.parse(value) : fallback;",
+                  "    } catch (e) {",
+                  "        return fallback;",
+                  "    }",
+                  "};",
+                  "const setJson = (key, value) => pm.environment.set(key, JSON.stringify(value === undefined ? null : value));",
+                  "const skip = (reason) => {",
+                  "    console.log(`${pm.info.requestName} skipped: ${reason}`);",
+                  "    pm.execution.skipRequest();",
+                  "};",
+                  "const stopRun = (reason) => {",
+                  "    pm.test(`${pm.info.requestName}: ${reason}`, () => { throw new Error(reason); });",
+                  "    postman.setNextRequest(null);",
+                  "};",
+                  "const okJson = () => {",
+                  "    pm.test(`${pm.info.requestName} returns 200`, () => pm.response.to.have.status(200));",
+                  "    let body = null;",
+                  "    try {",
+                  "        body = pm.response.json();",
+                  "    } catch (e) {",
+                  "        body = null;",
+                  "    }",
+                  "    if (pm.response.code !== 200 || !body) {",
+                  "        stopRun(`HTTP ${pm.response.code}: ${pm.response.text().substring(0, 500)}`);",
+                  "        return null;",
+                  "    }",
+                  "    return body;",
+                  "};",
+                  "// ---- End of shared helpers. ----",
+                  "",
+                  "const resp = okJson();",
+                  "if (!resp) return;",
+                  "",
+                  "pm.test(\"Void voids the tickets\", () => pm.expect(resp.voided).to.eql(true));",
+                  "console.log(`Voided PNR ${env(\"pnr\", \"\")}:`, JSON.stringify(resp.voidedTickets || []));"
+                ],
+                "packages": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "x-api-key",
+                "value": "{{apiKey}}",
+                "type": "text"
+              },
+              {
+                "key": "Client-Id",
+                "value": "{{clientId}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"supplier\": \"{{supplier}}\",\n    \"credentialsSelector\": \"{{credentialsSelector}}\",\n    \"pnr\": \"{{pnr}}\",\n    \"gdsPNR\": \"{{gdsPnr}}\",\n    \"bookingToken\": \"{{bookingToken}}\",\n    \"surName\": \"{{surName}}\",\n    \"voidTickets\": {{voidTicketsJson}}\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}api/v2/FlightBooking/Void",
+              "host": [
+                "{{baseUrl}}api"
+              ],
+              "path": [
+                "v2",
+                "FlightBooking",
+                "Void"
+              ]
+            },
+            "description": "Runs when finalAction = Void or Both and the booking has tickets."
+          },
+          "response": []
+        }
+      ],
+      "description": "Retrieve and / or Void, chosen by finalAction."
+    },
+    {
+      "name": "5. Reissue",
+      "item": [
+        {
+          "name": "Eligibility",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "// ---- Shared helpers: the same block starts every script of this collection. ----",
+                  "const env = (key, fallback) => {",
+                  "    const value = pm.environment.get(key);",
+                  "    return value === undefined || value === null || value === \"\" ? fallback : value;",
+                  "};",
+                  "const flag = (key, fallback = false) => String(env(key, fallback)).toLowerCase() === \"true\";",
+                  "const getJson = (key, fallback) => {",
+                  "    try {",
+                  "        const value = pm.environment.get(key);",
+                  "        return value ? JSON.parse(value) : fallback;",
+                  "    } catch (e) {",
+                  "        return fallback;",
+                  "    }",
+                  "};",
+                  "const setJson = (key, value) => pm.environment.set(key, JSON.stringify(value === undefined ? null : value));",
+                  "const skip = (reason) => {",
+                  "    console.log(`${pm.info.requestName} skipped: ${reason}`);",
+                  "    pm.execution.skipRequest();",
+                  "};",
+                  "const stopRun = (reason) => {",
+                  "    pm.test(`${pm.info.requestName}: ${reason}`, () => { throw new Error(reason); });",
+                  "    postman.setNextRequest(null);",
+                  "};",
+                  "const okJson = () => {",
+                  "    pm.test(`${pm.info.requestName} returns 200`, () => pm.response.to.have.status(200));",
+                  "    let body = null;",
+                  "    try {",
+                  "        body = pm.response.json();",
+                  "    } catch (e) {",
+                  "        body = null;",
+                  "    }",
+                  "    if (pm.response.code !== 200 || !body) {",
+                  "        stopRun(`HTTP ${pm.response.code}: ${pm.response.text().substring(0, 500)}`);",
+                  "        return null;",
+                  "    }",
+                  "    return body;",
+                  "};",
+                  "// ---- End of shared helpers. ----",
+                  "",
+                  "",
+                  "pm.environment.set(\"reissueResponseId\", \"\");",
+                  "pm.environment.set(\"reissueOfferId\", \"\");"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// ---- Shared helpers: the same block starts every script of this collection. ----",
+                  "const env = (key, fallback) => {",
+                  "    const value = pm.environment.get(key);",
+                  "    return value === undefined || value === null || value === \"\" ? fallback : value;",
+                  "};",
+                  "const flag = (key, fallback = false) => String(env(key, fallback)).toLowerCase() === \"true\";",
+                  "const getJson = (key, fallback) => {",
+                  "    try {",
+                  "        const value = pm.environment.get(key);",
+                  "        return value ? JSON.parse(value) : fallback;",
+                  "    } catch (e) {",
+                  "        return fallback;",
+                  "    }",
+                  "};",
+                  "const setJson = (key, value) => pm.environment.set(key, JSON.stringify(value === undefined ? null : value));",
+                  "const skip = (reason) => {",
+                  "    console.log(`${pm.info.requestName} skipped: ${reason}`);",
+                  "    pm.execution.skipRequest();",
+                  "};",
+                  "const stopRun = (reason) => {",
+                  "    pm.test(`${pm.info.requestName}: ${reason}`, () => { throw new Error(reason); });",
+                  "    postman.setNextRequest(null);",
+                  "};",
+                  "const okJson = () => {",
+                  "    pm.test(`${pm.info.requestName} returns 200`, () => pm.response.to.have.status(200));",
+                  "    let body = null;",
+                  "    try {",
+                  "        body = pm.response.json();",
+                  "    } catch (e) {",
+                  "        body = null;",
+                  "    }",
+                  "    if (pm.response.code !== 200 || !body) {",
+                  "        stopRun(`HTTP ${pm.response.code}: ${pm.response.text().substring(0, 500)}`);",
+                  "        return null;",
+                  "    }",
+                  "    return body;",
+                  "};",
+                  "// ---- End of shared helpers. ----",
+                  "",
+                  "const resp = okJson();",
+                  "if (!resp) return;",
+                  "",
+                  "pm.test(\"Eligibility returns isChangeable\", () =>",
+                  "    pm.expect(resp.isChangeable).to.be.a(\"boolean\")",
+                  ");",
+                  "",
+                  "console.log(`PNR ${env(\"reissuePnr\", \"\")} eligibility response received.`);"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "x-api-key",
+                "value": "{{apiKey}}",
+                "type": "text"
+              },
+              {
+                "key": "Client-Id",
+                "value": "{{clientId}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"supplier\": \"{{supplier}}\",\n    \"credentialsSelector\": \"{{credentialsSelector}}\",\n    \"pnr\": \"{{pnr}}\",\n    \"gdsPNR\": \"{{gdsPnr}}\",\n    \"bookingToken\": \"{{bookingToken}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}api/v2/Reissue/Eligibility",
+              "host": [
+                "{{baseUrl}}api"
+              ],
+              "path": [
+                "v2",
+                "Reissue",
+                "Eligibility"
+              ]
+            },
+            "description": "Runs when reissuePnr is set. Stops the run when the booking is not changeable."
+          },
+          "response": []
+        },
+        {
+          "name": "Reshop",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "// ---- Shared helpers: the same block starts every script of this collection. ----",
+                  "const env = (key, fallback) => {",
+                  "    const value = pm.environment.get(key);",
+                  "    return value === undefined || value === null || value === \"\" ? fallback : value;",
+                  "};",
+                  "const flag = (key, fallback = false) => String(env(key, fallback)).toLowerCase() === \"true\";",
+                  "const getJson = (key, fallback) => {",
+                  "    try {",
+                  "        const value = pm.environment.get(key);",
+                  "        return value ? JSON.parse(value) : fallback;",
+                  "    } catch (e) {",
+                  "        return fallback;",
+                  "    }",
+                  "};",
+                  "const setJson = (key, value) => pm.environment.set(key, JSON.stringify(value === undefined ? null : value));",
+                  "const skip = (reason) => {",
+                  "    console.log(`${pm.info.requestName} skipped: ${reason}`);",
+                  "    pm.execution.skipRequest();",
+                  "};",
+                  "const stopRun = (reason) => {",
+                  "    pm.test(`${pm.info.requestName}: ${reason}`, () => { throw new Error(reason); });",
+                  "    postman.setNextRequest(null);",
+                  "};",
+                  "const okJson = () => {",
+                  "    pm.test(`${pm.info.requestName} returns 200`, () => pm.response.to.have.status(200));",
+                  "    let body = null;",
+                  "    try {",
+                  "        body = pm.response.json();",
+                  "    } catch (e) {",
+                  "        body = null;",
+                  "    }",
+                  "    if (pm.response.code !== 200 || !body) {",
+                  "        stopRun(`HTTP ${pm.response.code}: ${pm.response.text().substring(0, 500)}`);",
+                  "        return null;",
+                  "    }",
+                  "    return body;",
+                  "};",
+                  "// ---- End of shared helpers. ----",
+                  "",
+                  "//if (!env(\"reissuePnr\", \"\")) return skip(\"reissuePnr is empty\");",
+                  "",
+                  "// searchCriteria is written in the Body tab. passengers must list every passenger of the booking with the same",
+                  "// types and counts, so it is built from adtCount / chdCount / infCount (written by Search, or set by hand for an older PNR).",
+                  "const reshopPassengers = [[\"ADT\", \"adtCount\"], [\"CHD\", \"chdCount\"], [\"INF\", \"infCount\"]]",
+                  "    .map(([code, key]) => ({ passengerTypeCode: code, count: parseInt(env(key, \"0\"), 10) || 0 }))",
+                  "    .filter(p => p.count > 0);",
+                  "if (!reshopPassengers.some(p => p.passengerTypeCode === \"ADT\")) {",
+                  "    stopRun(\"adtCount is 0 or empty: set adtCount / chdCount / infCount to the booking's passengers\");",
+                  "    return skip(\"no adult passenger count\");",
+                  "}",
+                  "setJson(\"reshopPassengersJson\", reshopPassengers);",
+                  "console.log(`Reshop passengers: ${reshopPassengers.map(p => `${p.count} ${p.passengerTypeCode}`).join(\", \")}`);",
+                  "// Reshop replaces the ids of an earlier step.",
+                  "pm.environment.set(\"reissueResponseId\", \"\");",
+                  "pm.environment.set(\"reissueOfferId\", \"\");"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// ---- Shared helpers: the same block starts every script of this collection. ----",
+                  "const env = (key, fallback) => {",
+                  "    const value = pm.environment.get(key);",
+                  "    return value === undefined || value === null || value === \"\" ? fallback : value;",
+                  "};",
+                  "const flag = (key, fallback = false) => String(env(key, fallback)).toLowerCase() === \"true\";",
+                  "const getJson = (key, fallback) => {",
+                  "    try {",
+                  "        const value = pm.environment.get(key);",
+                  "        return value ? JSON.parse(value) : fallback;",
+                  "    } catch (e) {",
+                  "        return fallback;",
+                  "    }",
+                  "};",
+                  "const setJson = (key, value) => pm.environment.set(key, JSON.stringify(value === undefined ? null : value));",
+                  "const skip = (reason) => {",
+                  "    console.log(`${pm.info.requestName} skipped: ${reason}`);",
+                  "    pm.execution.skipRequest();",
+                  "};",
+                  "const stopRun = (reason) => {",
+                  "    pm.test(`${pm.info.requestName}: ${reason}`, () => { throw new Error(reason); });",
+                  "    postman.setNextRequest(null);",
+                  "};",
+                  "const okJson = () => {",
+                  "    pm.test(`${pm.info.requestName} returns 200`, () => pm.response.to.have.status(200));",
+                  "    let body = null;",
+                  "    try {",
+                  "        body = pm.response.json();",
+                  "    } catch (e) {",
+                  "        body = null;",
+                  "    }",
+                  "    if (pm.response.code !== 200 || !body) {",
+                  "        stopRun(`HTTP ${pm.response.code}: ${pm.response.text().substring(0, 500)}`);",
+                  "        return null;",
+                  "    }",
+                  "    return body;",
+                  "};",
+                  "// ---- End of shared helpers. ----",
+                  "",
+                  "const resp = okJson();",
+                  "if (!resp) return;",
+                  "",
+                  "pm.test(\"Reshop returns a responseId\", () => pm.expect(resp.responseId).to.be.a(\"string\").and.not.empty);",
+                  "const offers = resp.offers || [];",
+                  "pm.test(\"Reshop returns at least one offer\", () => pm.expect(offers).to.be.an(\"array\").and.not.empty);",
+                  "if (!resp.responseId || offers.length === 0) return stopRun(\"no reissue offers\");",
+                  "",
+                  "// The first offer is used. Reprice must follow: every reshop offer has isRepriceRequired = true.",
+                  "const offer = offers[0];",
+                  "pm.test(\"Selected offer has an offerId\", () => pm.expect(offer.offerId).to.be.a(\"string\").and.not.empty);",
+                  "pm.environment.set(\"reissueResponseId\", resp.responseId);",
+                  "pm.environment.set(\"reissueOfferId\", offer.offerId);",
+                  "console.log(`Reshop: ${offers.length} offer(s), using the first (isRepriceRequired ${offer.isRepriceRequired}).`);"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "x-api-key",
+                "value": "{{apiKey}}",
+                "type": "text"
+              },
+              {
+                "key": "Client-Id",
+                "value": "{{clientId}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"supplier\": \"{{supplier}}\",\n    \"credentialsSelector\": \"{{credentialsSelector}}\",\n    \"pnr\": \"{{pnr}}\",\n    \"gdsPNR\": \"{{gdsPnr}}\",\n    \"bookingToken\": \"{{bookingToken}}\",\n    \"searchCriteria\": [\n        {\n            \"origin\": \"DXB\",\n            \"destination\": \"MCT\",\n            \"date\": \"2026-12-18T00:00:00\"\n        }\n    ],\n    \"passengers\": {{reshopPassengersJson}}\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}api/v2/Reissue/Reshop",
+              "host": [
+                "{{baseUrl}}api"
+              ],
+              "path": [
+                "v2",
+                "Reissue",
+                "Reshop"
+              ]
+            },
+            "description": "Edit origin, destination and date in the Body tab (one entry per journey). passengers is built by the pre-request script from adtCount / chdCount / infCount, which Search writes from its own body: Reshop must list every passenger of the booking with the same types and counts. For a PNR booked outside this run, set adtCount / chdCount / infCount in the environment to the booking's passengers first. Stores the first offer in reissueResponseId / reissueOfferId."
+          },
+          "response": []
+        },
+        {
+          "name": "Reprice",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "// ---- Shared helpers: the same block starts every script of this collection. ----",
+                  "const env = (key, fallback) => {",
+                  "    const value = pm.environment.get(key);",
+                  "    return value === undefined || value === null || value === \"\" ? fallback : value;",
+                  "};",
+                  "const flag = (key, fallback = false) => String(env(key, fallback)).toLowerCase() === \"true\";",
+                  "const getJson = (key, fallback) => {",
+                  "    try {",
+                  "        const value = pm.environment.get(key);",
+                  "        return value ? JSON.parse(value) : fallback;",
+                  "    } catch (e) {",
+                  "        return fallback;",
+                  "    }",
+                  "};",
+                  "const setJson = (key, value) => pm.environment.set(key, JSON.stringify(value === undefined ? null : value));",
+                  "const skip = (reason) => {",
+                  "    console.log(`${pm.info.requestName} skipped: ${reason}`);",
+                  "    pm.execution.skipRequest();",
+                  "};",
+                  "const stopRun = (reason) => {",
+                  "    pm.test(`${pm.info.requestName}: ${reason}`, () => { throw new Error(reason); });",
+                  "    postman.setNextRequest(null);",
+                  "};",
+                  "const okJson = () => {",
+                  "    pm.test(`${pm.info.requestName} returns 200`, () => pm.response.to.have.status(200));",
+                  "    let body = null;",
+                  "    try {",
+                  "        body = pm.response.json();",
+                  "    } catch (e) {",
+                  "        body = null;",
+                  "    }",
+                  "    if (pm.response.code !== 200 || !body) {",
+                  "        stopRun(`HTTP ${pm.response.code}: ${pm.response.text().substring(0, 500)}`);",
+                  "        return null;",
+                  "    }",
+                  "    return body;",
+                  "};",
+                  "// ---- End of shared helpers. ----",
+                  "",
+                  "if (!env(\"reissueResponseId\", \"\") || !env(\"reissueOfferId\", \"\")) return skip(\"no reshop offer to reprice\");"
+                ],
+                "packages": {}
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "// ---- Shared helpers: the same block starts every script of this collection. ----",
+                  "const env = (key, fallback) => {",
+                  "    const value = pm.environment.get(key);",
+                  "    return value === undefined || value === null || value === \"\" ? fallback : value;",
+                  "};",
+                  "const flag = (key, fallback = false) => String(env(key, fallback)).toLowerCase() === \"true\";",
+                  "const getJson = (key, fallback) => {",
+                  "    try {",
+                  "        const value = pm.environment.get(key);",
+                  "        return value ? JSON.parse(value) : fallback;",
+                  "    } catch (e) {",
+                  "        return fallback;",
+                  "    }",
+                  "};",
+                  "const setJson = (key, value) => pm.environment.set(key, JSON.stringify(value === undefined ? null : value));",
+                  "const skip = (reason) => {",
+                  "    console.log(`${pm.info.requestName} skipped: ${reason}`);",
+                  "    pm.execution.skipRequest();",
+                  "};",
+                  "const stopRun = (reason) => {",
+                  "    pm.test(`${pm.info.requestName}: ${reason}`, () => { throw new Error(reason); });",
+                  "    postman.setNextRequest(null);",
+                  "};",
+                  "const okJson = () => {",
+                  "    pm.test(`${pm.info.requestName} returns 200`, () => pm.response.to.have.status(200));",
+                  "    let body = null;",
+                  "    try {",
+                  "        body = pm.response.json();",
+                  "    } catch (e) {",
+                  "        body = null;",
+                  "    }",
+                  "    if (pm.response.code !== 200 || !body) {",
+                  "        stopRun(`HTTP ${pm.response.code}: ${pm.response.text().substring(0, 500)}`);",
+                  "        return null;",
+                  "    }",
+                  "    return body;",
+                  "};",
+                  "// ---- End of shared helpers. ----",
+                  "",
+                  "const resp = okJson();",
+                  "if (!resp) return;",
+                  "",
+                  "const offer = resp.selectedOffer || {};",
+                  "pm.test(\"Reprice returns a new responseId\", () => pm.expect(resp.responseId).to.be.a(\"string\").and.not.empty);",
+                  "pm.test(\"Reprice returns the selected offer\", () => pm.expect(offer.offerId).to.be.a(\"string\").and.not.empty);",
+                  "if (!resp.responseId || !offer.offerId) return stopRun(\"no repriced offer\");",
+                  "",
+                  "// Exchange accepts only the repriced offer, so the ids are replaced.",
+                  "pm.environment.set(\"reissueResponseId\", resp.responseId);",
+                  "pm.environment.set(\"reissueOfferId\", offer.offerId);",
+                  "console.log(`Repriced offer ${offer.offerId}: total ${JSON.stringify(offer.priceDetails && offer.priceDetails.total !== undefined ? offer.priceDetails.total : offer.priceDetails)}`);"
+                ],
+                "packages": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "x-api-key",
+                "value": "{{apiKey}}",
+                "type": "text"
+              },
+              {
+                "key": "Client-Id",
+                "value": "{{clientId}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"supplier\": \"{{supplier}}\",\n    \"credentialsSelector\": \"{{credentialsSelector}}\",\n    \"responseId\": \"{{reissueResponseId}}\",\n    \"selectedOfferId\": \"{{reissueOfferId}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}api/v2/Reissue/Reprice",
+              "host": [
+                "{{baseUrl}}api"
+              ],
+              "path": [
+                "v2",
+                "Reissue",
+                "Reprice"
+              ]
+            },
+            "description": "Reprices the stored reshop offer (no supplier call for OmanAirV17) and stores the new ids."
+          },
+          "response": []
+        },
+        {
+          "name": "Exchange",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "// ---- Shared helpers: the same block starts every script of this collection. ----",
+                  "const env = (key, fallback) => {",
+                  "    const value = pm.environment.get(key);",
+                  "    return value === undefined || value === null || value === \"\" ? fallback : value;",
+                  "};",
+                  "const flag = (key, fallback = false) => String(env(key, fallback)).toLowerCase() === \"true\";",
+                  "const getJson = (key, fallback) => {",
+                  "    try {",
+                  "        const value = pm.environment.get(key);",
+                  "        return value ? JSON.parse(value) : fallback;",
+                  "    } catch (e) {",
+                  "        return fallback;",
+                  "    }",
+                  "};",
+                  "const setJson = (key, value) => pm.environment.set(key, JSON.stringify(value === undefined ? null : value));",
+                  "const skip = (reason) => {",
+                  "    console.log(`${pm.info.requestName} skipped: ${reason}`);",
+                  "    pm.execution.skipRequest();",
+                  "};",
+                  "const stopRun = (reason) => {",
+                  "    pm.test(`${pm.info.requestName}: ${reason}`, () => { throw new Error(reason); });",
+                  "    postman.setNextRequest(null);",
+                  "};",
+                  "const okJson = () => {",
+                  "    pm.test(`${pm.info.requestName} returns 200`, () => pm.response.to.have.status(200));",
+                  "    let body = null;",
+                  "    try {",
+                  "        body = pm.response.json();",
+                  "    } catch (e) {",
+                  "        body = null;",
+                  "    }",
+                  "    if (pm.response.code !== 200 || !body) {",
+                  "        stopRun(`HTTP ${pm.response.code}: ${pm.response.text().substring(0, 500)}`);",
+                  "        return null;",
+                  "    }",
+                  "    return body;",
+                  "};",
+                  "// ---- End of shared helpers. ----",
+                  "",
+                  "if (!env(\"reissueResponseId\", \"\") || !env(\"reissueOfferId\", \"\")) return skip(\"no repriced offer to exchange\");"
+                ],
+                "packages": {}
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "// ---- Shared helpers: the same block starts every script of this collection. ----",
+                  "const env = (key, fallback) => {",
+                  "    const value = pm.environment.get(key);",
+                  "    return value === undefined || value === null || value === \"\" ? fallback : value;",
+                  "};",
+                  "const flag = (key, fallback = false) => String(env(key, fallback)).toLowerCase() === \"true\";",
+                  "const getJson = (key, fallback) => {",
+                  "    try {",
+                  "        const value = pm.environment.get(key);",
+                  "        return value ? JSON.parse(value) : fallback;",
+                  "    } catch (e) {",
+                  "        return fallback;",
+                  "    }",
+                  "};",
+                  "const setJson = (key, value) => pm.environment.set(key, JSON.stringify(value === undefined ? null : value));",
+                  "const skip = (reason) => {",
+                  "    console.log(`${pm.info.requestName} skipped: ${reason}`);",
+                  "    pm.execution.skipRequest();",
+                  "};",
+                  "const stopRun = (reason) => {",
+                  "    pm.test(`${pm.info.requestName}: ${reason}`, () => { throw new Error(reason); });",
+                  "    postman.setNextRequest(null);",
+                  "};",
+                  "const okJson = () => {",
+                  "    pm.test(`${pm.info.requestName} returns 200`, () => pm.response.to.have.status(200));",
+                  "    let body = null;",
+                  "    try {",
+                  "        body = pm.response.json();",
+                  "    } catch (e) {",
+                  "        body = null;",
+                  "    }",
+                  "    if (pm.response.code !== 200 || !body) {",
+                  "        stopRun(`HTTP ${pm.response.code}: ${pm.response.text().substring(0, 500)}`);",
+                  "        return null;",
+                  "    }",
+                  "    return body;",
+                  "};",
+                  "// ---- End of shared helpers. ----",
+                  "",
+                  "const resp = okJson();",
+                  "if (!resp) return;",
+                  "",
+                  "// An offer can be accepted once, so the ids are cleared whatever the result.",
+                  "pm.environment.set(\"reissueResponseId\", \"\");",
+                  "pm.environment.set(\"reissueOfferId\", \"\");",
+                  "",
+                  "pm.test(\"Exchange returns a pnr\", () => pm.expect(resp.pnr).to.be.a(\"string\").and.not.empty);",
+                  "pm.test(\"Exchange returns the selected offer\", () => pm.expect(resp.selectedOffer).to.be.an(\"object\"));",
+                  "const tickets = Object.values(resp.tickets || {});",
+                  "console.log(`Exchanged PNR ${resp.pnr}: ${tickets.map(t => `${t.ticketNumber} (${t.ticketStatus})`).join(\", \") || \"no tickets\"}`);"
+                ],
+                "packages": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "x-api-key",
+                "value": "{{apiKey}}",
+                "type": "text"
+              },
+              {
+                "key": "Client-Id",
+                "value": "{{clientId}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"supplier\": \"{{supplier}}\",\n    \"credentialsSelector\": \"{{credentialsSelector}}\",\n    \"responseId\": \"{{reissueResponseId}}\",\n    \"selectedOfferId\": \"{{reissueOfferId}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}api/v2/Reissue/Exchange",
+              "host": [
+                "{{baseUrl}}api"
+              ],
+              "path": [
+                "v2",
+                "Reissue",
+                "Exchange"
+              ]
+            },
+            "description": "Commits the repriced offer and reissues the tickets. The offer is single-use."
+          },
+          "response": []
+        },
+        {
+          "name": "Retrieve",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "// ---- Shared helpers: the same block starts every script of this collection. ----",
+                  "const env = (key, fallback) => {",
+                  "    const value = pm.environment.get(key);",
+                  "    return value === undefined || value === null || value === \"\" ? fallback : value;",
+                  "};",
+                  "const flag = (key, fallback = false) => String(env(key, fallback)).toLowerCase() === \"true\";",
+                  "const getJson = (key, fallback) => {",
+                  "    try {",
+                  "        const value = pm.environment.get(key);",
+                  "        return value ? JSON.parse(value) : fallback;",
+                  "    } catch (e) {",
+                  "        return fallback;",
+                  "    }",
+                  "};",
+                  "const setJson = (key, value) => pm.environment.set(key, JSON.stringify(value === undefined ? null : value));",
+                  "const skip = (reason) => {",
+                  "    console.log(`${pm.info.requestName} skipped: ${reason}`);",
+                  "    pm.execution.skipRequest();",
+                  "};",
+                  "const stopRun = (reason) => {",
+                  "    pm.test(`${pm.info.requestName}: ${reason}`, () => { throw new Error(reason); });",
+                  "    postman.setNextRequest(null);",
+                  "};",
+                  "const okJson = () => {",
+                  "    pm.test(`${pm.info.requestName} returns 200`, () => pm.response.to.have.status(200));",
+                  "    let body = null;",
+                  "    try {",
+                  "        body = pm.response.json();",
+                  "    } catch (e) {",
+                  "        body = null;",
+                  "    }",
+                  "    if (pm.response.code !== 200 || !body) {",
+                  "        stopRun(`HTTP ${pm.response.code}: ${pm.response.text().substring(0, 500)}`);",
+                  "        return null;",
+                  "    }",
+                  "    return body;",
+                  "};",
+                  "// ---- End of shared helpers. ----",
+                  "",
+                  "const action = env(\"finalAction\", \"Retrieve\");",
+                  "if (action !== \"Retrieve\" && action !== \"Both\") return skip(`finalAction is ${action}`);",
+                  "if (!env(\"pnr\", \"\")) return skip(\"no pnr to retrieve\");"
+                ],
+                "packages": {}
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "// ---- Shared helpers: the same block starts every script of this collection. ----",
+                  "const env = (key, fallback) => {",
+                  "    const value = pm.environment.get(key);",
+                  "    return value === undefined || value === null || value === \"\" ? fallback : value;",
+                  "};",
+                  "const flag = (key, fallback = false) => String(env(key, fallback)).toLowerCase() === \"true\";",
+                  "const getJson = (key, fallback) => {",
+                  "    try {",
+                  "        const value = pm.environment.get(key);",
+                  "        return value ? JSON.parse(value) : fallback;",
+                  "    } catch (e) {",
+                  "        return fallback;",
+                  "    }",
+                  "};",
+                  "const setJson = (key, value) => pm.environment.set(key, JSON.stringify(value === undefined ? null : value));",
+                  "const skip = (reason) => {",
+                  "    console.log(`${pm.info.requestName} skipped: ${reason}`);",
+                  "    pm.execution.skipRequest();",
+                  "};",
+                  "const stopRun = (reason) => {",
+                  "    pm.test(`${pm.info.requestName}: ${reason}`, () => { throw new Error(reason); });",
+                  "    postman.setNextRequest(null);",
+                  "};",
+                  "const okJson = () => {",
+                  "    pm.test(`${pm.info.requestName} returns 200`, () => pm.response.to.have.status(200));",
+                  "    let body = null;",
+                  "    try {",
+                  "        body = pm.response.json();",
+                  "    } catch (e) {",
+                  "        body = null;",
+                  "    }",
+                  "    if (pm.response.code !== 200 || !body) {",
+                  "        stopRun(`HTTP ${pm.response.code}: ${pm.response.text().substring(0, 500)}`);",
+                  "        return null;",
+                  "    }",
+                  "    return body;",
+                  "};",
+                  "// ---- End of shared helpers. ----",
+                  "",
+                  "// Refreshes the tickets that Void sends.",
+                  "const resp = okJson();",
+                  "if (!resp) return;",
+                  "",
+                  "pm.test(\"Retrieve returns the pnr\", () => pm.expect(resp.pnr).to.eql(env(\"pnr\", \"\")));",
+                  "const tickets = Object.values(resp.tickets || {});",
+                  "if (tickets.length) {",
+                  "    setJson(\"voidTicketsJson\", tickets.map(t => ({ ticketStatus: t.ticketStatus, ticketNumber: t.ticketNumber, carrierCode: t.carrierCode })));",
+                  "}",
+                  "console.log(`PNR ${resp.pnr}: status ${resp.bookingStatus}, tickets ${tickets.map(t => `${t.ticketNumber} (${t.ticketStatus})`).join(\", \") || \"none\"}`);"
+                ],
+                "packages": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "x-api-key",
+                "value": "{{apiKey}}",
+                "type": "text"
+              },
+              {
+                "key": "Client-Id",
+                "value": "{{clientId}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"supplier\": \"{{supplier}}\",\n    \"credentialsSelector\": \"{{credentialsSelector}}\",\n    \"pnr\": \"{{pnr}}\",\n    \"gdsPNR\": \"{{gdsPnr}}\",\n    \"bookingToken\": \"{{bookingToken}}\",\n    \"surName\": \"{{surName}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}api/v2/FlightBooking/Retrieve",
+              "host": [
+                "{{baseUrl}}api"
+              ],
+              "path": [
+                "v2",
+                "FlightBooking",
+                "Retrieve"
+              ]
+            },
+            "description": "Runs when finalAction = Retrieve or Both."
+          },
+          "response": []
+        }
+      ],
+      "description": "Reissue (exchange) of a ticketed booking: Eligibility -> Reshop -> Reprice -> Exchange. Runs only when reissuePnr is set (environment); every request skips itself otherwise. Ids are passed through reissueResponseId / reissueOfferId."
+    }
+  ]
+}

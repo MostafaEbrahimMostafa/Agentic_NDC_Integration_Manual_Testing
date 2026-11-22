@@ -33,7 +33,7 @@ contract, the SPEC section is linked; this file does not restate field rules.
 | **CancelAfterHold / CancelHold** | Release a hold without ticketing. | §2.14 |
 | **Void** | Cancel a *ticketed* booking inside the void window (usually same day) with no penalty. | §2.15 |
 | **voidCapability** | Field saying whether Void is allowed: `FullVoidOnlyAllowed` or `VoidNotAllowed` (only these two are valid; `"None"` is a known defect). | §2.9, §2.15 |
-| **Re-Issue** | Change a ticketed booking (date/route) and issue a new ticket. Not in the current API; test cases are in `TestCases/Reissue/`. | §1.9 |
+| **Re-Issue** | Change a ticketed booking (date/route/fare) and issue new tickets on the same PNR. V2 only: Eligibility → Reshop → Reprice → Exchange, for OmanAirV17, AegeanV21 and Ajet (added 2026-11-22). Test cases are in `TestCases/Reissue/`. | §1.9, §2.16 |
 | **Refund / Exchange** | Not implemented in either API version. | §1.9 |
 | **FOP** | Form of payment. Ticketing fails if the supplier account's FOP is not authorized for the carrier. | — |
 | **TA limit** | Travel-agency session cap at a supplier (Sabre `ReachedTALimit`). | — |

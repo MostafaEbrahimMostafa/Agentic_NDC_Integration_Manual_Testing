@@ -28,6 +28,9 @@ Load only the file for the supplier you are testing.
 | AirIndia | EGY | supplier-integration, ne-3 | Inventory only on supplier-integration; Family A only | 2026-11-02 | [AirIndia.md](AirIndia.md) |
 | GulfAir | KSA | staging | SeatMap suite supplier; Book works | 2026-10-10 | [GulfAir.md](GulfAir.md) |
 | FlyAdeal | EGY | supplier-integration | SeatMap + Book with bundles; no Hold | 2026-10-11 | [FlyAdeal.md](FlyAdeal.md) |
+| OmanAirV17 | EGY (collection env, unverified) | stg-ne-2 (collection env) | Reissue supplier (SPEC §2.16); owner rules only, not yet called | 2026-11-22 (owner, not live) | [OmanAirV17.md](OmanAirV17.md) |
+| AegeanV21 | unknown | unknown | Reissue supplier (SPEC §2.16); owner rules only, not yet called | 2026-11-22 (owner, not live) | [AegeanV21.md](AegeanV21.md) |
+| Ajet | unknown (enum value unconfirmed) | unknown | Reissue supplier (SPEC §2.16); owner rules only, not yet called | 2026-11-22 (owner, not live) | [Ajet.md](Ajet.md) |
 
 If "Newest fact" is more than 14 days old, re-check live before relying on that file.
 
@@ -42,7 +45,6 @@ Only an old capability sweep exists (2026-08-05, selector UAE, `Harness/README.m
 | FlyNas | 2026-10-25 / EGY | 7 offers on EGY (seen during SabreNdc R2, not tested) |
 | AirArabia (legacy) | 2026-08-05 / UAE | 409 |
 | Indigo | 2026-08-05 / UAE | 500 |
-| OmanAir (OmanAirV17) | — | Assumed supplier for Re-Issue cases (`TestCases/Reissue/`), not yet called |
 | Emirates | 2026-08-05 | **Not a valid supplier enum value** (SPEC §1.7) |
 
 ## Adding a supplier
