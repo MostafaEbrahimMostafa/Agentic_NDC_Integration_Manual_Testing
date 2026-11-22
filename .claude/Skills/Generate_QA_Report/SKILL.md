@@ -63,6 +63,19 @@ Do not wait to write anything until "the end of the run" — there usually isn't
 run ends when it ends, sometimes unexpectedly. The Markdown must stay current throughout; only the
 HTML transform is deferred, and only until run end/stop, never longer.
 
+**Where the HTML sits in the pipeline** (`KB/03_Technical/Execution_Pipeline.md`, steps P6-P8): for
+a run that completes, `execute-test-cases` ends test execution (P6, defect gate), then
+`generate-bug-report` writes the FILE defects (P7), and only then is `run_end` appended and the
+HTML rendered (P8), so the QA report shows the filed defects. For an interrupted run, append
+`run_end` (`interrupted`) and render straight away as described above.
+
+**Both run modes write the same log.** In `postman-mcp` mode (one `runCollection` call through the
+Postman MCP server) there is still one `test_case` line per CSV TC-ID; its hops are the collection
+requests mapped to it (status + Postman test results), and its `evidence_refs` cite the redacted
+run capture `NDC_Integration/Artifacts/Logs/<slug>_mcp-run.json`. Put the run mode, collection UID
+and Postman environment name in `run_start`'s scope text so the HTML header shows them. Collection
+folders with no CSV row are `observation` lines, never test cases.
+
 ## Where artifacts live
 
 All output goes under `NDC_Integration/Artifacts/Logs/`, up to three files per run:
@@ -286,7 +299,7 @@ category for the exact worked markup, now also documented in
 
 The HTML carries the same design tokens (paper/surface/ink/accent/good/warning/serious/critical,
 light+dark via `prefers-color-scheme` and a `data-theme` override) as
-`NDC_Integration/TestCases/TestCases_Report.html`, so every QA artifact in this project reads as one
+`NDC_Integration/TestCases/_Generic/TestCases_Report.html`, so every QA artifact in this project reads as one
 visual system. Populate the template, don't redesign it:
 
 - **Header**: `<h1>QA Execution Report</h1>` plus a `meta-card` field block (Scope, Coverage,

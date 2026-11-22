@@ -1,6 +1,6 @@
 // Builds (1) the consolidated regression test-case CSV used by the report's "View Test Case" panels and (2) the coverage map of every source row (executed / mapped / not applicable, with the reason).
 const fs = require('fs'), path = require('path');
-const X = require('./fx'); const R = require('./recorder');
+const X = require('./fx'); const R = require('../_shared/recorder');
 const GROUPS = ['g_flows', 'g_generic', 'g_v2tc', 'g_neg', 'g_void', 'g_seat', 'g_name', 'g_extra'];
 const cases = []; for (const g of GROUPS) for (const c of require('./' + g).cases) cases.push(c);
 const TCDIR = path.resolve(__dirname, '../../TestCases'); const ART = path.resolve(__dirname, '../../Artifacts');
@@ -14,7 +14,7 @@ function rowFor(c) {
 }
 function writeCsv(statusOf) {
   const out = [HDR.map(csvq).join(',')]; for (const c of cases) { const row = rowFor(c); if (statusOf) row.Status = statusOf(c.id) || row.Status; out.push(HDR.map(h => csvq(row[h])).join(',')); }
-  fs.writeFileSync(path.join(TCDIR, 'AirArabiaPlus_OneAPI_Regression_TestCases.csv'), out.join('\n') + '\n', 'utf8'); return cases.length;
+  fs.writeFileSync(path.join(TCDIR, 'Regression/AirArabiaPlus_OneAPI_Regression_TestCases.csv'), out.join('\n') + '\n', 'utf8'); return cases.length;
 }
 // ---------- coverage map ----------
 const NA = {
@@ -39,7 +39,7 @@ function coverage(verdicts) {
     const f = NA[src]; const why = f ? f(id) : 'Not applicable'; add(src, id, 'N/A', why || 'executed elsewhere');
   }
   for (const r of X.SRC.generic) {} // (kept for symmetry)
-  const bk = require('./csvparse')(path.join(TCDIR, 'AirArabiaPlus_V2_BookingCreation_TestCases.csv')); for (const r of bk) add('booking', r['TC ID'], verdicts[r['TC ID']] || 'PLANNED', 'executed as ' + r['TC ID']);
+  const bk = require('../_shared/csvparse')(path.join(TCDIR, 'Regression/AirArabiaPlus_V2_BookingCreation_TestCases.csv')); for (const r of bk) add('booking', r['TC ID'], verdicts[r['TC ID']] || 'PLANNED', 'executed as ' + r['TC ID']);
   const extra = cases.filter(c => ['route', 'carrier', 'upsell'].includes(c.group) || c.added); for (const c of extra) add('added', c.id, verdicts[c.id] || 'PLANNED', 'added for the One-API change (reference routes / carriers / Upselling capability)');
   return { lines, tally };
 }
@@ -48,7 +48,7 @@ function writeCoverage(verdicts) {
   for (const [s, t] of Object.entries(tally)) o.push(`- **${s}**: ` + Object.entries(t).map(([k, v]) => `${k} ${v}`).join(', '));
   o.push('');
   for (const s of Object.keys(tally)) { o.push(`## ${s}`, '', '| Row | Status | Note |', '|---|---|---|'); lines.filter(l => l.src === s).forEach(l => o.push(`| ${l.id} | ${l.status} | ${String(l.why).replace(/\|/g, '/')} |`)); o.push(''); }
-  fs.mkdirSync(ART, { recursive: true }); fs.writeFileSync(path.join(ART, 'AirArabiaPlus_Regression_CoverageMap.md'), o.join('\n'), 'utf8'); return tally;
+  fs.mkdirSync(path.join(ART, 'Analysis'), { recursive: true }); fs.writeFileSync(path.join(ART, 'Analysis', 'AirArabiaPlus_Regression_CoverageMap.md'), o.join('\n'), 'utf8'); return tally;
 }
 module.exports = { cases, writeCsv, writeCoverage, coverage };
 if (require.main === module) { console.log('cases', writeCsv()); const v = {}; try { const L = fs.readFileSync(R.LOGS + '/' + R.slug() + '.jsonl', 'utf8').split('\n').filter(Boolean).map(l => JSON.parse(l)); L.filter(x => x.type === 'test_case').forEach(t => v[t.tc_id] = t.verdict); } catch (e) { } console.log(JSON.stringify(writeCoverage(v))); }

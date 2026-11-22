@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// Bug Registry CLI (plan Step 3a). The registry is NDC_Integration/Artifacts/Bug_Registry.csv; every
+// Bug Registry CLI (plan Step 3a). The registry is NDC_Integration/Artifacts/Registry/Bug_Registry.csv; every
 // change is also appended to Bug_Registry_History.jsonl.
 //
 //   node NDC_Integration/Harness/Retest/registry.js list [--supplier S] [--status S] [--grep text]

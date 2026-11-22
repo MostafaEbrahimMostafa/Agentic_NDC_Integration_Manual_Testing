@@ -3,7 +3,7 @@
 > Observed live behaviour. Expected behaviour: SPEC.md §4 (GulfAir row), §2.7 SeatMap.
 > Facts end with `Last verified: <date> / <env> / <run key>` (keys in §7). Re-check if older than 14 days.
 
-**What it is:** Gulf Air (GF). Main supplier for the **SeatMap suite** (`TestCases/SeatMap_TestCases.csv`, 63 cases).
+**What it is:** Gulf Air (GF). Main supplier for the **SeatMap suite** (`TestCases/SeatMap/SeatMap_TestCases.csv`, 63 cases).
 **Selectors:** `KSA` used. — Last verified: 2026-10-10 / staging / SEAT-R20
 **Hosts used:** staging (STAG_ENV).
 **Overall status:** V2 Search → FareConfirm → AddPassenger → GetSeatMap → Book works. Long-lived SeatMap bugs tracked round after round.
@@ -46,4 +46,4 @@ Details per bug: `Artifacts/BugReports/<SEAT-R20 slug>/`.
 | SEAT-R18 | 2026-10 | staging | SeatMap full 63 | 35/15/13 | see `Artifacts/Logs/` |
 | SEAT-R20 | 2026-10-10 | staging | SeatMap full 63 (Real Clock Experiment) | 35/15/13 | `20261010-212551_…Round20-RealClockExperiment` |
 
-Shared chain helpers: `NDC_Integration/Harness/V2/{lib,api}.js`.
+Shared chain helpers: `NDC_Integration/Harness/_shared/{lib,api}.js`.

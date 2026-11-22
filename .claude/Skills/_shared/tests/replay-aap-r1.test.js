@@ -81,7 +81,7 @@ check('no second opinion -> HOLD', gateOf(r, 'SYN-no-2nd') === 'HOLD');
 r = variant('2nd-unclear', null, f => { f.second_opinion.rule_met = 'cannot_tell'; });
 check('second opinion cannot_tell -> NEEDS-HUMAN', gateOf(r, 'SYN-2nd-unclear') === 'NEEDS-HUMAN');
 // 7. Missing evidence file / wrong SPEC section -> UNVERIFIED
-r = variant('missing-file', tc => { tc.evidence_refs[0].source = 'NDC_Integration/Harness/AirArabiaPlus/raw_xlsx/does_not_exist.json'; });
+r = variant('missing-file', tc => { tc.evidence_refs[0].source = 'NDC_Integration/Harness/AirArabiaPlus/out/raw_xlsx/does_not_exist.json'; });
 check('evidence file missing -> UNVERIFIED', gateOf(r, 'SYN-missing-file') === 'UNVERIFIED');
 r = variant('wrong-section', null, f => { f.spec_ref = '§2.1'; });
 check('quote not in the cited section -> UNVERIFIED', gateOf(r, 'SYN-wrong-section') === 'UNVERIFIED');

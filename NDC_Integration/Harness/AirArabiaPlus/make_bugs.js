@@ -1,12 +1,12 @@
 // Generates NDC_Integration/Artifacts/BugReports/<slug>/BUG-NN_<API>_<FIELD>/{BUG-NN_*.md, requests-responses/*.json} + README.md from bugs.js and the raw call store.
 const fs = require('fs'), path = require('path');
-const R = require('./recorder'); const BUGS = require('./bugs'); const { H } = require('../V2/lib');
-const slug = R.slug(); const REPRO_CORR = (() => { try { return JSON.parse(fs.readFileSync(path.join(__dirname, 'repro_corr.json'), 'utf8')).out; } catch (e) { return {}; } })(); const OUT = path.resolve(R.ROOT, 'NDC_Integration/Artifacts/BugReports', slug);
+const R = require('../_shared/recorder'); const BUGS = require('./bugs'); const { H } = require('../_shared/lib');
+const slug = R.slug(); const REPRO_CORR = (() => { try { return JSON.parse(fs.readFileSync(path.join(__dirname, 'out', 'repro_corr.json'), 'utf8')).out; } catch (e) { return {}; } })(); const OUT = path.resolve(R.ROOT, 'NDC_Integration/Artifacts/BugReports', slug);
 const L = fs.readFileSync(path.join(R.LOGS, slug + '.jsonl'), 'utf8').split('\n').filter(Boolean).map(l => JSON.parse(l));
 const rs = L.find(x => x.type === 'run_start');
-const rawDir = path.join(__dirname, 'raw'); const raw = []; for (const f of fs.readdirSync(rawDir)) { try { raw.push(JSON.parse(fs.readFileSync(path.join(rawDir, f), 'utf8'))); } catch (e) { } }
+const rawDir = path.join(__dirname, 'out', 'raw'); const raw = []; for (const f of fs.readdirSync(rawDir)) { try { raw.push(JSON.parse(fs.readFileSync(path.join(rawDir, f), 'utf8'))); } catch (e) { } }
 const safe = s => String(s).replace(/[^A-Za-z0-9_.-]/g, '_');
-const stats = (() => { const st = {}; const add = dir => { for (const f of fs.readdirSync(dir)) { try { const r = JSON.parse(fs.readFileSync(path.join(dir, f), 'utf8')); if (r.endpoint !== 'Search' || r.status !== 200) continue; const sc = ((r.request.body || {}).searchCriteria || [])[0]; if (!sc) continue; const k = sc.origin + '-' + sc.destination; const n = ((r.response || {}).offers || []).length; st[k] = st[k] || { calls: 0, offers: 0, slow: 0 }; st[k].calls++; if (n) st[k].offers++; if (!n && r.ms > 14000) st[k].slow++; } catch (e) { } } }; add(rawDir); add(path.join(__dirname, 'raw_probe')); return st; })();
+const stats = (() => { const st = {}; const add = dir => { for (const f of fs.readdirSync(dir)) { try { const r = JSON.parse(fs.readFileSync(path.join(dir, f), 'utf8')); if (r.endpoint !== 'Search' || r.status !== 200) continue; const sc = ((r.request.body || {}).searchCriteria || [])[0]; if (!sc) continue; const k = sc.origin + '-' + sc.destination; const n = ((r.response || {}).offers || []).length; st[k] = st[k] || { calls: 0, offers: 0, slow: 0 }; st[k].calls++; if (n) st[k].offers++; if (!n && r.ms > 14000) st[k].slow++; } catch (e) { } } }; add(rawDir); add(path.join(__dirname, 'out', 'raw_probe')); return st; })();
 const tok = s => s.replace('{{SAWCMN}}', `${stats['SAW-CMN'].calls} calls, ${stats['SAW-CMN'].slow} of them answered empty after about 15 s`).replace('{{CMNSAW}}', `${stats['CMN-SAW'].offers} of ${stats['CMN-SAW'].calls} calls`).replace('{{E5}}', `${stats['CAI-MCT'].calls} CAI-MCT and ${stats['HBE-BGY'].calls} HBE-BGY`);
 const redactSupplier = o => JSON.parse(JSON.stringify(o, (k, v) => /supplierRequest|supplierResponse|OriginalSupplier(Request|Response)/i.test(k) && v != null ? '[REDACTED - raw supplier payload, per SPEC.md 7.14]' : v));
 const jsonish = s => /^\s*[\{\["]/.test(s);
@@ -136,4 +136,4 @@ fs.writeFileSync(path.join(OUT, 'README.md'), `# Bug reports — AirArabiaPlus /
 // safety: the real API key must appear nowhere in the generated folders
 const key = H['x-api-key']; let leaked = 0; (function walk(d) { for (const f of fs.readdirSync(d, { withFileTypes: true })) { const p = path.join(d, f.name); if (f.isDirectory()) walk(p); else if (fs.readFileSync(p, 'utf8').includes(key)) { leaked++; console.log('KEY FOUND IN', p); } } })(OUT);
 console.log('bug folders', BUGS.length, 'api-key occurrences:', leaked);
-fs.writeFileSync(path.join(__dirname, 'bug_findings.json'), JSON.stringify(findings));
+fs.writeFileSync(path.join(__dirname, 'out', 'bug_findings.json'), JSON.stringify(findings));

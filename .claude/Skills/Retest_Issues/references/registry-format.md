@@ -1,9 +1,9 @@
 # Bug Registry format
 
-`NDC_Integration/Artifacts/Bug_Registry.csv` — the single list of all real defects, one row per
+`NDC_Integration/Artifacts/Registry/Bug_Registry.csv` — the single list of all real defects, one row per
 defect. Change it only through `node NDC_Integration/Harness/Retest/registry.js` (or the retest
 runner): each command changes one row, keeps row order, and appends an event to
-`NDC_Integration/Artifacts/Bug_Registry_History.jsonl`. Small diffs, no merge fights.
+`NDC_Integration/Artifacts/Registry/Bug_Registry_History.jsonl`. Small diffs, no merge fights.
 
 | Column | Example | Rules |
 |---|---|---|

@@ -1,7 +1,7 @@
 // Generic flow executor: Search -> [Upselling|FareConfirm] -> [GetOfferBundles] -> AddPassenger -> [GetAncillary] -> [SeatMap] -> [FareCheck] -> Book|Hold -> family tail.
 // Returns { ctx, ok, failedAt, checks[], booking{pnr,gdsPNR,bookingToken}, totals{} } and never throws on API errors (a failed hop is a result).
-const C = require('./chain');
-const { amt } = require('./core');
+const C = require('../_shared/chain');
+const { amt } = require('../_shared/core');
 const ok2 = h => h && h.status === 200 && h.json;
 const money = x => x == null ? 'n/a' : (typeof x === 'object' ? `${x.amount} ${x.currency}` : String(x));
 
@@ -17,7 +17,7 @@ async function runFlow(spec) {
   for (const d of shifts) {
     const rts = shift(spec.routes, d); S = await C.search(ctx, rts, types, { conn: spec.conn, need: needFlag, anyFit: false, tries: d === 0 ? 2 : 1 });
     if (S.offer) { spec.routesUsed = rts; if (d !== 0) ctx.notes.push('no usable offer on the planned dates; used dates shifted by ' + d + ' day(s): ' + rts.map(r => r.join(' ')).join(' / ')); break; }
-    ctx.notes.push('Search for ' + spec.routes.map((r, i) => rts[i].join(' ')).join(' / ') + ' returned no usable offer (' + (S.h.status === 200 ? 'offers=[] in ' + S.h.ms + ' ms' : C.errText(S.h)) + ')'); await require('./core').sleep(3000); ctx.waiting_ms += 3000;
+    ctx.notes.push('Search for ' + spec.routes.map((r, i) => rts[i].join(' ')).join(' / ') + ' returned no usable offer (' + (S.h.status === 200 ? 'offers=[] in ' + S.h.ms + ' ms' : C.errText(S.h)) + ')'); await require('../_shared/core').sleep(3000); ctx.waiting_ms += 3000;
   }
   out.search = S;
   if (!S.offer) return fail('Search', S.h.status === 200 ? `no usable offer (offers=${((S.resp || {}).offers || []).length})` : C.errText(S.h));
@@ -56,7 +56,7 @@ async function runFlow(spec) {
   if (en.anc || en.bdl) {
     let g = await C.getAnc(ctx, cur.id, cur.off, bundles && bundles.selectedBundles);
     // GetAncillary intermittently returns no Meal list; re-ask (same ids) a few times before judging the flow
-    for (let k = 1; k <= 3 && ok2(g) && (en.anc || en.bdl) && C.pickAnc(g.json, { mealPaid: spec.mealPaid, mealPrice: spec.mealPrice }).miss.some(m => /Meal$/.test(m)); k++) { ctx.notes.push(`GetAncillary returned no Meal for some passenger/segment; asked again (#${k + 1})`); await require('./core').sleep(5000); ctx.waiting_ms += 5000; g = await C.getAnc(ctx, cur.id, cur.off, bundles && bundles.selectedBundles); }
+    for (let k = 1; k <= 3 && ok2(g) && (en.anc || en.bdl) && C.pickAnc(g.json, { mealPaid: spec.mealPaid, mealPrice: spec.mealPrice }).miss.some(m => /Meal$/.test(m)); k++) { ctx.notes.push(`GetAncillary returned no Meal for some passenger/segment; asked again (#${k + 1})`); await require('../_shared/core').sleep(5000); ctx.waiting_ms += 5000; g = await C.getAnc(ctx, cur.id, cur.off, bundles && bundles.selectedBundles); }
     out.ancHop = g;
     if (!ok2(g)) return fail('GetAncillary', C.errText(g));
     ancIds = { id: g.json.responseId, off: g.json.offerId };

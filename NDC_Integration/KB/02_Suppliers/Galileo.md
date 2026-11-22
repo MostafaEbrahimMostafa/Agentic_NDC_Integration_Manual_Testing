@@ -88,4 +88,4 @@ GAL-R4 `cleanup_r4.js` cancels only locators in its own state file.
 | GAL-R4 | 2026-11-15 | ne-4 | 219 incl. cancel cases | 146/71/2 | `20261115-075426_Galileo-EGY-Availability-ne4-Round4` |
 | GAL-RTMC | 2026-11-15 | ne-4 | 10 round-trip + multi-city | 4/6/0 | `20261115-104524_Galileo-EGY-RoundTrip-MultiCity-ne4` |
 
-Harness: `NDC_Integration/Harness/Galileo/` — see [../03_Technical/Harness_Guide.md](../03_Technical/Harness_Guide.md).
+Harness: `NDC_Integration/Harness/Availability/` (engine) + `Availability/Galileo/` (groups, notes, bug lists) — see [../03_Technical/Harness_Guide.md](../03_Technical/Harness_Guide.md).

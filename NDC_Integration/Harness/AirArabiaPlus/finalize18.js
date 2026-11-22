@@ -1,6 +1,6 @@
 // Close the BUG-18 verification run: merge stamps, consolidate findings, scope note, phases, run_end, render md/html/time-breakdown.
 const fs = require('fs'), path = require('path'), cp = require('child_process');
-const R = require('./recorder'); const f = path.join(R.LOGS, R.slug() + '.jsonl'); const slug = R.slug();
+const R = require('../_shared/recorder'); const f = path.join(R.LOGS, R.slug() + '.jsonl'); const slug = R.slug();
 const SK = path.join(R.ROOT, '.claude/Skills/Generate_QA_Report/scripts'); const run = (s, a = []) => cp.execFileSync('node', [path.join(SK, s), ...a], { stdio: 'pipe', maxBuffer: 1 << 28 });
 const save = L => fs.writeFileSync(f, L.map(x => JSON.stringify(x)).join('\n') + '\n');
 let L = fs.readFileSync(f, 'utf8').split('\n').filter(Boolean).map(JSON.parse);

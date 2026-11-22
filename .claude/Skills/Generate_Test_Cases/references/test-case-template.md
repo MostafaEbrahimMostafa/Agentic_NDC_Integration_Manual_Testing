@@ -4,7 +4,7 @@ Reference material for the `generate-test-cases` skill. Match this shape and lev
 copy the specifics.
 
 **Two things must match exactly what the project actually produces and consumes** — verified against
-`NDC_Integration/TestCases/TestCases_V1.csv` / `TestCases_V2.csv` (the real, currently-in-use
+`NDC_Integration/TestCases/_Generic/TestCases_V1.csv` / `TestCases_V2.csv` (the real, currently-in-use
 deliverables, rendered onward by `ConvertTo-Html.ps1` into the stakeholder-facing HTML report) and
 `references/Sample_Test_Cases.md` (a real export of this team's Azure DevOps Test Case work items,
 showing the house title convention). Generating a differently-shaped file or a differently-styled

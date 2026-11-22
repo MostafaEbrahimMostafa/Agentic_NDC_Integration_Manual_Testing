@@ -126,7 +126,7 @@ Before writing any report, run
    separate Claude/AI operation, so it must not also be logged as an `ai_operation` line (that would
    double-count it).
 
-8. **Write or update the Bug Registry row** (`NDC_Integration/Artifacts/Bug_Registry.csv`, the
+8. **Write or update the Bug Registry row** (`NDC_Integration/Artifacts/Registry/Bug_Registry.csv`, the
    single list of all defects; format in
    `.claude/Skills/Retest_Issues/references/registry-format.md`). For each defect, before writing its
    file, look for an existing row for the **same defect** (same supplier, same endpoint and field,

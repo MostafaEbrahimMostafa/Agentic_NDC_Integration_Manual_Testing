@@ -22,7 +22,7 @@ security finding (§7.14/§8.4), the supplier-capability conflicts (§4.4), and 
 touching this scope (§5.5) — flag anomalies explicitly rather than silently resolving them.
 
 Title every case per the house Azure DevOps naming convention. Append rows to
-`NDC_Integration/TestCases/TestCases_<Version>.csv` and re-run `ConvertTo-Html.ps1` for the
+`NDC_Integration/TestCases/_Generic/TestCases_<Version>.csv` and re-run `ConvertTo-Html.ps1` for the
 affected version(s) afterward so the HTML report stays in sync.
 
 **Stop and ask me, don't guess:**

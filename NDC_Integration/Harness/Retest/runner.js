@@ -43,7 +43,7 @@ if (!A.supplier) die('--supplier is required (CLAUDE.md rule 5: ask, do not defa
 if (!A.host || !/^https?:\/\//.test(A.host)) die('--host must be a full base URL (see NDC_Integration/KB/03_Technical/Environments.md)');
 if (!A.ids && !A.sheet) die('give --ids or --sheet');
 const HOST = A.host.endsWith('/') ? A.host : A.host + '/';
-process.env.NDC_BASE = HOST;                                   // before steps.js loads ../V2/lib.js
+process.env.NDC_BASE = HOST;                                   // before steps.js loads ../_shared/lib.js
 
 function envShort(h) {
   let m;
@@ -154,7 +154,7 @@ if (!plan.some(p => p.runnable)) die('nothing runnable', 3);
 const { runChain, typesOf, localDate } = require('./lib/steps');
 const { verdict, flowVerdict } = require('./lib/assert');
 const { render } = require('./lib/report');
-const lib = require('../V2/lib.js');
+const lib = require('../_shared/lib.js');
 
 const pad = n => String(n).padStart(2, '0');
 const d0 = new Date();

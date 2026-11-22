@@ -1,5 +1,7 @@
 # Validate TestData Search — Reusable Prompt Template
 
+> **UNAVAILABLE since 2026-11-22: NDC_Integration/TestData/ was removed, so there are no fixtures to check.** This template is kept for when fixtures are added again.
+
 Copy the block below, fill in the bracketed values, and send it to check (and optionally
 repair) every test-data fixture's ability to find live flights via V2 Search.
 

@@ -1,5 +1,5 @@
-// Bug Registry: NDC_Integration/Artifacts/Bug_Registry.csv (one row per real defect, GlobalId never
-// reused) + NDC_Integration/Artifacts/Bug_Registry_History.jsonl (append-only event log).
+// Bug Registry: NDC_Integration/Artifacts/Registry/Bug_Registry.csv (one row per real defect, GlobalId never
+// reused) + NDC_Integration/Artifacts/Registry/Bug_Registry_History.jsonl (append-only event log).
 // Writes keep row order and only change the touched row, so git diffs stay one line per bug.
 const fs = require('fs');
 const path = require('path');
@@ -7,8 +7,8 @@ const csv = require('./csv');
 
 const NDC = path.resolve(__dirname, '..', '..', '..');            // NDC_Integration/
 const REPO = path.resolve(NDC, '..');
-const REG = path.join(NDC, 'Artifacts', 'Bug_Registry.csv');
-const HIST = path.join(NDC, 'Artifacts', 'Bug_Registry_History.jsonl');
+const REG = path.join(NDC, 'Artifacts', 'Registry', 'Bug_Registry.csv');
+const HIST = path.join(NDC, 'Artifacts', 'Registry', 'Bug_Registry_History.jsonl');
 
 const COLUMNS = ['GlobalId', 'AdoId', 'Title', 'AltTitles', 'Supplier', 'Env', 'Selector', 'Version', 'Severity',
   'RunBugIds', 'ReproRecipe', 'Status', 'LastVerdict', 'LastVerified'];

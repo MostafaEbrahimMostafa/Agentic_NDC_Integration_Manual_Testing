@@ -102,7 +102,7 @@ const goodBug = [
   '## ✅ Expected Result', '', '```json', '"paxTotalAncillaryAmount": { "amount": 12.5 }', '```', '',
   '## 🖥️ System Information', '', '- **API Version:** `V2`', '- **Supplier/Airline:** `SUP_A`', '- **Base URL:** `https://example.invalid/`',
   '- **API Name:** `Book`', '- **Environment:** `staging`', '- **Credentials Selector:** `SUP_A_DEFAULT`', '- **Correlation ID:** `Not returned by this response`',
-  '- **Registry ID:** `NDC-BUG-9999` (`NDC_Integration/Artifacts/Bug_Registry.csv`)', '',
+  '- **Registry ID:** `NDC-BUG-9999` (`NDC_Integration/Artifacts/Registry/Bug_Registry.csv`)', '',
   '## 📊 Severity', '', '**Medium** — SYNTHETIC.', '',
   '## 📎 Evidence', '', 'Gate: FILE (verify-evidence.js).', '',
   '## 📁 Request / response files', '', '- `01_V2_Book_request.json` / `01_V2_Book_response.json` — V2 Book, `api/v2/FlightBooking/Book`, HTTP 200', '',

@@ -1,6 +1,6 @@
 // Executes test-case definitions sequentially and logs each to the run's JSONL/MD.  usage: node runner.js <group[,group]> [idRegex]
-const R = require('./recorder'); const B = require('./tcbuild'); const F = require('./flow'); const C = require('./chain');
-const { now } = require('./core');
+const R = require('../_shared/recorder'); const B = require('./tcbuild'); const F = require('./flow'); const C = require('../_shared/chain');
+const { now } = require('../_shared/core');
 const groups = (process.argv[2] || '').split(','); const idRe = process.argv[3] ? new RegExp(process.argv[3]) : null;
 const done = new Set(require('fs').readFileSync(R.LOGS + '/' + R.slug() + '.jsonl', 'utf8').split('\n').filter(Boolean).map(l => JSON.parse(l)).filter(x => x.type === 'test_case').map(x => x.tc_id));
 function logCleanup(tcid, r) {

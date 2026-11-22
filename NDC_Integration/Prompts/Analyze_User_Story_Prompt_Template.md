@@ -20,7 +20,7 @@ current `NDC_Integration/SPEC.md`.
    table, resolved answers, remaining open questions, flagged SPEC.md gaps, and a **Testable
    Scope** section.
 
-Save the analysis to `NDC_Integration/Artifacts/UserStoryAnalysis/[StoryName]_Analysis.md` and
+Save the analysis to `NDC_Integration/Artifacts/Analysis/UserStoryAnalysis/[StoryName]_Analysis.md` and
 show it in-conversation too. Close by stating the Testable Scope and asking whether to proceed
 straight into Generate_Test_Cases with it, or stop here.
 

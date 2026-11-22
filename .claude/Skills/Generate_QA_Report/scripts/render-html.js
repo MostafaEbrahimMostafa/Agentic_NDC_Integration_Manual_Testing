@@ -18,8 +18,29 @@ const script = tpl.slice(scriptStart);
 
 // ---- CSV rows for "View Test Case" ----
 function parseCsv(t) { const rows = []; let r = [], f = '', q = false; for (let i = 0; i < t.length; i++) { const c = t[i]; if (q) { if (c === '"') { if (t[i + 1] === '"') { f += '"'; i++; } else q = false; } else f += c; } else if (c === '"') q = true; else if (c === ',') { r.push(f); f = ''; } else if (c === '\n') { r.push(f); rows.push(r); r = []; f = ''; } else if (c !== '\r') f += c; } if (f || r.length) { r.push(f); rows.push(r); } return rows; }
-const csv = parseCsv(fs.readFileSync(repo + '/NDC_Integration/TestCases/' + ((L.find(x => x.type === 'run_start') || {}).csv_file || 'SeatMap_TestCases.csv'), 'utf8'));
-const hdr = csv[0]; const csvRow = id => { const r = csv.find(x => x[0] === id); const o = {}; hdr.forEach((h, i) => o[h] = r[i]); return o; };
+// CSV: --csv <path under NDC_Integration/TestCases/> overrides run_start.csv_file (default SeatMap/SeatMap_TestCases.csv).
+// TestCases/ is split into feature folders; older logs name a bare file (or a since-merged file), so resolve by name.
+const csvArgAt = process.argv.indexOf('--csv');
+const csvFile = csvArgAt > -1 ? process.argv[csvArgAt + 1] : ((L.find(x => x.type === 'run_start') || {}).csv_file || 'SeatMap/SeatMap_TestCases.csv');
+const TC_DIR = repo + '/NDC_Integration/TestCases';
+const MERGED = { // deleted file -> merged master that contains all its rows
+  'Galileo_V2_Availability_Round3_Additional_TestCases.csv': 'Galileo_V2_Availability_TestCases.csv',
+  'Galileo_V2_Availability_Round4_Additional_TestCases.csv': 'Galileo_V2_Availability_TestCases.csv',
+  'Galileo_V2_Availability_Round3_Combined_TestCases.csv': 'Galileo_V2_Availability_TestCases.csv',
+  'Galileo_V2_Availability_Round4_Combined_TestCases.csv': 'Galileo_V2_Availability_TestCases.csv',
+  'SabreNdc_V2_Availability_Combined_TestCases.csv': 'SabreNdc_V2_Availability_TestCases.csv',
+  'SabreNdc_V2_Availability_Round2_Additional_TestCases.csv': 'SabreNdc_V2_Availability_TestCases.csv',
+  'SabreNdc_V2_Availability_Round3_Additional_TestCases.csv': 'SabreNdc_V2_Availability_TestCases.csv',
+  'Amadeus_PassengerNameLimits_Round2_TestCases.csv': 'Amadeus_PassengerNameLimits_TestCases.csv',
+};
+function resolveCsv(name) {
+  if (fs.existsSync(TC_DIR + '/' + name)) return TC_DIR + '/' + name;
+  const base = MERGED[path.basename(name)] || path.basename(name);
+  for (const d of fs.readdirSync(TC_DIR, { withFileTypes: true })) if (d.isDirectory() && fs.existsSync(TC_DIR + '/' + d.name + '/' + base)) return TC_DIR + '/' + d.name + '/' + base;
+  throw new Error('Test-case CSV not found under NDC_Integration/TestCases/: ' + name);
+}
+const csv = parseCsv(fs.readFileSync(resolveCsv(csvFile), 'utf8'));
+const hdr = csv[0]; const csvRow = id => { const r = csv.find(x => x[0] === id); const o = {}; if (!r) return o; hdr.forEach((h, i) => o[h] = r[i]); return o; };
 
 // ---- plain-language rows ----
 const PL = {
@@ -57,7 +78,8 @@ const cats = []; tcs.forEach(t => { if (!cats.includes(t.category)) cats.push(t.
 const cnt = (arr, v) => arr.filter(t => t.verdict === v).length;
 
 function card(t) {
-  const p = t.plain || PL[t.tc_id], csvr = csvRow(t.tc_id);
+  // Fallback when the log has no plain-language block: use the log's own summaries (escaped).
+  const p = t.plain || PL[t.tc_id] || { e: esc(t.endpoint_or_flow), q: esc(t.request_summary), s: esc(t.response_summary), x: esc(t.expected), a: esc(t.actual) }, csvr = csvRow(t.tc_id);
   const title = esc(t.title.replace(/^\[[^\]]*\]\[[^\]]*\]\s*/, ''));
   let h = `<details class="tc ${t.verdict}">\n<summary class="tc-head"><span><span class="chev"></span><span class="mono">${t.tc_id}</span> - ${title}</span><span class="badge ${t.verdict}">${t.verdict}</span></summary>\n`;
   h += `<div class="row"><b>Endpoint Name:</b> ${p.e}</div>\n<div class="row"><b>Request:</b> ${p.q}</div>\n<div class="row"><b>Response:</b> ${p.s}</div>\n<div class="row"><b>Expected:</b> ${p.x}</div>\n<div class="row"><b>Actual:</b> ${p.a}</div>\n`;
@@ -95,7 +117,7 @@ const pp = P / N * 100, fp = F / N * 100;
 const stops = [`var(--good) 0% ${pp.toFixed(2)}%`]; if (F) stops.push(`var(--critical) ${pp.toFixed(2)}% ${(pp + fp).toFixed(2)}%`); if (B) stops.push(`var(--serious) ${(pp + fp).toFixed(2)}% 100%`);
 let b = '';
 b += `<div class="header"><div class="header-main">\n<h1>QA Execution Report</h1>\n</div></div>\n\n`;
-b += `<div class="meta-card dashboard-card">\n<div class="fields">\n<div class="field"><span class="k">Scope</span><span class="v">${rs.scope_text || (`${tcs.length} test cases from SeatMap_TestCases.csv: ${tcs.map(t => t.tc_id).join(', ')}`)}</span></div>\n<div class="field-row">\n<div class="field"><span class="k">Coverage</span><span class="v">${rs.coverage_text || (`${tcs.length} of ${rs.total_test_cases_planned} planned test cases`)}</span></div>\n<div class="field"><span class="k">Description</span><span class="v">${rs.description_text || ''}</span></div>\n</div>\n</div>\n<div class="fields run-meta">\n<div class="field-row">\n<div class="field"><span class="k">Supplier</span><span class="v">${rs.supplier || 'GulfAir'}</span></div>\n<div class="field"><span class="k">Credentials Selector</span><span class="v">${rs.credentials_selector || 'KSA'}</span></div>\n<div class="field"><span class="k">Environment</span><span class="v">${rs.environment_text || 'staging (ndc-integration-stg-ne-3)'} &middot; ${rs.baseUrl}</span></div>\n</div>\n<div class="field"><span class="k">Started</span><span class="v">${utc(startMs)}</span></div>\n<div class="field"><span class="k">Ended</span><span class="v">${utc(maxTs)}</span></div>\n<div class="field"><span class="k">Status</span><span class="v">COMPLETE</span></div>\n</div>\n</div>\n\n`;
+b += `<div class="meta-card dashboard-card">\n<div class="fields">\n<div class="field"><span class="k">Scope</span><span class="v">${rs.scope_text || esc(rs.scope) || (`${tcs.length} test cases from SeatMap_TestCases.csv: ${tcs.map(t => t.tc_id).join(', ')}`)}</span></div>\n<div class="field-row">\n<div class="field"><span class="k">Coverage</span><span class="v">${rs.coverage_text || (`${tcs.length} of ${rs.total_test_cases_planned} planned test cases`)}</span></div>\n<div class="field"><span class="k">Description</span><span class="v">${rs.description_text || ''}</span></div>\n</div>\n</div>\n<div class="fields run-meta">\n<div class="field-row">\n<div class="field"><span class="k">Supplier</span><span class="v">${rs.supplier || 'GulfAir'}</span></div>\n<div class="field"><span class="k">Credentials Selector</span><span class="v">${rs.credentials_selector || 'KSA'}</span></div>\n<div class="field"><span class="k">Environment</span><span class="v">${rs.environment_text || esc(rs.environment) || 'staging (ndc-integration-stg-ne-3)'} &middot; ${rs.baseUrl}</span></div>\n</div>\n<div class="field"><span class="k">Started</span><span class="v">${utc(startMs)}</span></div>\n<div class="field"><span class="k">Ended</span><span class="v">${utc(maxTs)}</span></div>\n<div class="field"><span class="k">Status</span><span class="v">COMPLETE</span></div>\n</div>\n</div>\n\n`;
 b += `<h2 class="section-num">1. Executive Summary</h2>\n<div class="summary-layout">\n<div class="donut-block">\n<div class="donut" style="background:conic-gradient(${stops.join(', ')})">\n<div class="donut-hole"><div class="donut-pct">${Math.round(pp)}%</div><div class="donut-sub">pass rate</div></div>\n</div>\n<div class="donut-legend">\n<div class="litem"><span class="swatch pass"></span>Passed <span class="lcount">${P} / ${N}</span></div>\n<div class="litem"><span class="swatch fail"></span>Failed <span class="lcount">${F} / ${N}</span></div>\n<div class="litem"><span class="swatch blocked"></span>Blocked <span class="lcount">${B} / ${N}</span></div>\n</div>\n</div>\n<div class="stats-block">\n<div class="scard scard-total dashboard-card"><div class="val">${N}</div><div class="lbl">Total Executed Test Cases</div></div>\n<div class="summary-cards">\n<div class="scard dashboard-card"><div class="val pass">${P}</div><div class="lbl">Passed</div></div>\n<div class="scard dashboard-card"><div class="val fail">${F}</div><div class="lbl">Failed</div></div>\n<div class="scard dashboard-card"><div class="val blocked">${B}</div><div class="lbl">Blocked</div></div>\n</div>\n<div class="scard scard-total dashboard-card"><div class="val">${fmtDur(maxTs - startMs)}</div><div class="lbl">Execution Duration</div>${hasTiming ? `<a class="time-breakdown-link" href="./${slug}_TimeBreakdown.html">View Time Breakdown</a>` : ''}</div>\n</div>\n</div>\n\n`;
 b += `<div class="tc-actions">\n<button type="button" id="tcExpandAll">Expand all</button>\n<button type="button" id="tcCollapseAll">Collapse all</button>\n</div>\n\n<details class="section-collapse tc-section" open>\n<summary>Test case results</summary>\n\n`;
 b += `<div class="tc-toolbar dashboard-card">\n<input type="search" id="tcSearch" placeholder="Search by ID, title, endpoint, PNR...">\n<select id="tcStatusFilter">\n<option value="">All statuses</option>\n<option value="PASS">PASS</option>\n<option value="FAIL">FAIL</option>\n<option value="BLOCKED">BLOCKED</option>\n</select>\n<select id="tcCategoryFilter">\n<option value="">All categories</option>\n${cats.map(c => `<option value="${slugCat(c)}">${c}</option>`).join('\n')}\n</select>\n<button type="button" id="tcResetFilters">Reset</button>\n<span id="tcCount" class="tc-count"></span>\n</div>\n<div id="tcNoResults" class="tc-no-results js-hidden">No test cases match your search. Try a different keyword, or clear the search/filters above.</div>\n\n`;

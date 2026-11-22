@@ -1,10 +1,10 @@
 # Execution Pipeline: what happens after "run ..."
 
-This page describes the path a request like *"run TestCases_Void.csv for SabreNdc on ne-3"* takes,
+This page describes the path a request like *"run TestCases/Void/SabreNdc_Void_TestCases.csv for SabreNdc on ne-3"* takes,
 from the moment it is typed to the final report. It is a map. The rules themselves live in
 `CLAUDE.md`, the skill files under `.claude/Skills/`, and `.claude/Skills/_shared/`.
 
-Last verified: 2026-11-22 / n/a (process doc) / n/a
+Last verified: 2026-11-22 / n/a (process doc, Postman MCP mode added) / n/a
 
 ---
 
@@ -19,22 +19,26 @@ flowchart TD
     B -- Yes --> D{Which task?}
     D -- "test-case CSV / flow / smoke" --> E[Execute_Test_cases]
     D -- "retest bugs / ADO ids / bug sheet" --> R[Retest_Issues<br/>runner.js + recipes]
-    D -- "do fixtures still find flights" --> V[Validate_TestData_Search<br/>Search only]
+    D -- "do fixtures still find flights" --> V[Validate_TestData_Search<br/>unavailable since 2026-11-22<br/>no TestData fixtures]
 
     E --> F[Read sources<br/>SPEC.md + KB supplier file<br/>+ Environments.md + .env]
     F --> G{Safety checks}
     G -- "Book/Void/... on non-staging<br/>without permission" --> H[/Ask user for permission/]
     H --> G
     G -- OK --> I[Open run log<br/>Generate_QA_Report<br/>slug.jsonl + live slug.md + build]
-    I --> J[[Loop: one TC-ID at a time]]
-    J --> K[Close run<br/>run_end + HTML render<br/>validate-output.js]
+    I --> MODE{Run mode?}
+    MODE -- "harness<br/>CSV / TC-IDs / flows" --> J[[Loop: one TC-ID at a time]]
+    MODE -- "postman-mcp<br/>CSV run through a collection" --> JM[[Map CSV rows to collection<br/>runCollection once<br/>one test_case per TC-ID]]
+    J --> K[End test execution<br/>phase end + final .md]
+    JM --> K
     K --> L{Any FAIL rows?}
     L -- Yes --> M{verify-evidence.js<br/>gate = FILE?}
     M -- Yes --> N[Generate_Bug_Report<br/>one folder per bug<br/>+ Bug_Registry.csv via registry.js]
     M -- No --> O[Keep as finding / risk<br/>no bug filed]
-    L -- No --> P
-    N --> P[Summary to user<br/>verdict + counts first<br/>defects, blocked, cleanup]
-    O --> P
+    L -- No --> HT
+    N --> HT
+    O --> HT
+    HT[QA Report HTML<br/>run_end + render-html.js<br/>slug.html + slug_TimeBreakdown.html<br/>validate-output.js] --> P[Summary to user<br/>verdict + counts first<br/>defects, blocked, cleanup<br/>+ link to the HTML report]
     P --> Q[Update_Spec_From_Findings<br/>SPEC diffs + KB proposals<br/>only with user approval]
 ```
 
@@ -52,7 +56,8 @@ These slots are required. If any is missing, the user is asked; nothing is guess
 | Environment / host | `ne-3` (see `KB/03_Technical/Environments.md`) |
 | credentialsSelector | `EGY` |
 | Version | `V1`, `V2`, or `V1 and V2` (both must pass, rule 6) |
-| Scope | a CSV, flow numbers, TC-IDs, or a category |
+| Scope | a CSV, flow numbers, TC-IDs, or a category; or a Postman collection + environment |
+| Run mode | `harness` (CSV, TC-IDs, flows) or `postman-mcp` (a named Postman collection); asked if unclear |
 
 `Optimize_Prompt` shows the before/after prompt and waits for confirmation. It never calls the API.
 
@@ -62,7 +67,7 @@ These slots are required. If any is missing, the user is asked; nothing is guess
 |---|---|
 | "run TestCases_X.csv / flow N / smoke" | `Execute_Test_cases` |
 | "retest ADO 65507 / bug sheet / RC regression" | `Retest_Issues` |
-| "check the test data still finds flights" | `Validate_TestData_Search` |
+| "check the test data still finds flights" | `Validate_TestData_Search` (unavailable since 2026-11-22: no `TestData/` fixtures) |
 
 ### Step 2. Read the sources
 
@@ -112,13 +117,37 @@ Rules inside the loop:
 - A "Both" row passes only if V1 and V2 both pass (rule 6).
 - A result that confirms a SPEC `UNKNOWN` becomes a `spec_update_proposed` line (`pending`).
 
-### Step 6. Close the run
+### Step 5 (Postman MCP mode). Run the test cases through a collection
 
-- Append `run_end` (`complete` or `interrupted`).
-- Render the final HTML (and XLSX/DOCX if requested) from the JSONL. Counts come from scripts.
-- `node .claude/Skills/_shared/scripts/validate-output.js <file>` must pass on each output.
+Used when a test-case CSV is run through a named Postman collection: the test cases are part of the
+collection run. Setup and IDs: `KB/03_Technical/Postman_MCP_Guide.md`. Steps M1-M6 in
+`.claude/Skills/Execute_Test_cases/SKILL.md`.
 
-### Step 7. Defect gate
+```mermaid
+flowchart LR
+    M1[M1 getAuthenticatedUser<br/>401 = stop, reconnect /mcp] --> M2[M2 resolve collection UID<br/>+ environment id]
+    M2 --> M3{M3 pre-flight<br/>env host staging?<br/>supplier = P0?<br/>no Production env}
+    M3 -- No --> ASK[/Ask user/]
+    M3 -- Yes --> M4[M4 map CSV rows TC-IDs<br/>to collection folders / requests<br/>user confirms mapping<br/>unmapped rows = BLOCKED]
+    M4 --> M5[M5 runCollection once<br/>sequential, stopOnError<br/>save redacted result<br/>slug_mcp-run.json]
+    M5 --> M6[M6 one test_case line per TC-ID<br/>judged on CSV Expected Result<br/>+ SpecReference<br/>cleanup holds / PNRs]
+    M6 --> R{FAIL needs a defect?}
+    R -- Yes --> H[Reproduce with harness<br/>or Retest recipe<br/>full evidence, 2 repros]
+    R -- No --> K[End execution - Step 6]
+    H --> K
+```
+
+- The counted unit stays the CSV's TC-ID. Collection folders with no CSV row run but are only
+  logged as observations.
+- The CSV row's Expected Result + SpecReference is the oracle. A FAIL that only a Postman test
+  script reports is `INFERRED` (a question, not a defect).
+- `runCollection` always runs the **whole** collection (no folder filter).
+
+### Step 6. End test execution and defect gate
+
+- `"Test Execution"` phase end; the `.md` is re-rendered from the JSONL.
+- `run_end` is **not** written yet, so the HTML report (Step 8) includes the filed defects.
+- Defect gate: `node .claude/Skills/_shared/scripts/verify-evidence.js NDC_Integration/Artifacts/Logs/<slug>.jsonl`
 
 ```mermaid
 flowchart TD
@@ -130,14 +159,68 @@ flowchart TD
     G3 -- No --> X
     G3 -- Yes --> G4{Fresh sub-agent<br/>second opinion agrees?}
     G4 -- No --> X
-    G4 -- Yes --> FILE[verify-evidence.js = FILE]
-    FILE --> BR[Generate_Bug_Report<br/>bug .md + requests-responses/ JSON]
-    BR --> REG[Bug_Registry.csv row<br/>via Harness/Retest/registry.js<br/>NDC-BUG-nnnn]
+    G4 -- Yes --> FILE[verify-evidence.js = FILE<br/>go to Step 7]
 ```
 
-Details: `.claude/Skills/_shared/AI_Guardrails.md` (rule 11).
+Details: `.claude/Skills/_shared/AI_Guardrails.md` (rule 11). QUESTION and NEEDS-HUMAN items go to
+the user; only FILE defects continue.
 
-### Step 8. Report to the user
+### Step 7. Bug reports (`Generate_Bug_Report`)
+
+Skill: `.claude/Skills/Generate_Bug_Report/SKILL.md`. Runs once per run, for FILE defects only,
+with the same `<slug>`, inside its own `"Bug Reporting"` phase. No FILE defect: skip to Step 8.
+
+```mermaid
+flowchart LR
+    A[FILE defects<br/>from the JSONL] --> B{Already in<br/>Bug_Registry.csv?}
+    B -- Yes --> C[registry.js link<br/>GlobalId + slug:BUG-NN]
+    B -- No --> D[registry.js add<br/>new NDC-BUG-nnnn]
+    C --> E[Write one folder per bug<br/>BUG-NN_API_FIELD.md<br/>house template]
+    D --> E
+    E --> F[requests-responses/<br/>full redacted request + response<br/>per evidence call]
+    F --> G[README.md index<br/>one line per bug]
+    G --> H{validate-output.js<br/>+ no key / supplier payload<br/>in the folder?}
+    H -- No --> I[Fix and re-render]
+    I --> H
+    H -- Yes --> J[Bug reports ready<br/>go to Step 8]
+```
+
+| Output | Where |
+|---|---|
+| One bug report per defect | `NDC_Integration/Artifacts/BugReports/<slug>/BUG-NN_<API>_<FIELD>/BUG-NN_<API>_<FIELD>.md` |
+| Evidence files | `.../BUG-NN_<API>_<FIELD>/requests-responses/*_request.json`, `*_response.json` |
+| Index | `NDC_Integration/Artifacts/BugReports/<slug>/README.md` |
+| Registry row (permanent ID) | `NDC_Integration/Artifacts/Registry/Bug_Registry.csv`, only through `Harness/Retest/registry.js` |
+| DOCX copy | only on request (`render-docx.js`) |
+
+Each report has: title `[V2][<Supplier>][<API>] – …`, Description, Steps to Reproduce, Actual /
+Expected Result (JSON snippets), System Information (host, selector, Correlation ID), Severity,
+Evidence, Registry ID. The API key and `supplierRequest`/`supplierResponse` bodies are redacted.
+
+### Step 8. QA Report (HTML) (`Generate_QA_Report`)
+
+```mermaid
+flowchart LR
+    A[Append run_end<br/>complete / interrupted] --> B[render-md.js<br/>final slug.md]
+    B --> C[render-html.js<br/>slug.html<br/>the QA report to share]
+    C --> D[render-tb.js<br/>slug_TimeBreakdown.html<br/>if timing data]
+    D --> E{validate-output.js<br/>passes on each file?}
+    E -- No --> F[Append corrected JSONL lines<br/>re-render, never hand-edit]
+    F --> B
+    E -- Yes --> G[Report ready]
+```
+
+| Output | Where |
+|---|---|
+| QA report (HTML) | `NDC_Integration/Artifacts/Logs/<slug>.html` |
+| Time Breakdown (HTML) | `NDC_Integration/Artifacts/Logs/<slug>_TimeBreakdown.html` |
+| Final Markdown / data | `NDC_Integration/Artifacts/Logs/<slug>.md`, `<slug>.jsonl` |
+| XLSX / DOCX | only on request |
+
+The HTML is rendered once per run, from the JSONL only. An interrupted run still gets its HTML.
+Scripts: `.claude/Skills/Generate_QA_Report/scripts/render-{md,html,tb}.js <slug>`.
+
+### Step 9. Report to the user
 
 Order of the summary:
 
@@ -145,8 +228,9 @@ Order of the summary:
 2. Defects: per-run `BUG-NN` with the run slug, plus `NDC-BUG-nnnn`
 3. Blocked rows and why
 4. **Cleanup**: every live hold / PNR left behind (rule 8)
+5. Links: `<slug>.html`, `<slug>_TimeBreakdown.html`, `BugReports/<slug>/`
 
-### Step 9. SPEC and KB follow-up (`Update_Spec_From_Findings`)
+### Step 10. SPEC and KB follow-up (`Update_Spec_From_Findings`)
 
 - Each `pending` SPEC proposal is shown as an old → new diff; the user confirms or declines each.
 - Applied / declined status is appended to the JSONL; the `.md` is re-rendered.
@@ -175,12 +259,19 @@ flowchart LR
 A command that fills every slot skips the questions in Step 0:
 
 ```
-run TestCases_Void.csv for SabreNdc, selector EGY, host ne-3, V1 and V2, booking allowed
+run TestCases/Void/SabreNdc_Void_TestCases.csv for SabreNdc, selector EGY, host ne-3, V1 and V2, run mode harness, booking allowed
+```
+
+Postman MCP mode:
+
+```
+run TestCases_V2.csv through Postman collection NDC_Integrations_Staging_V2
+with environment STAG_ENV via MCP, for SabreNdc, selector EGY, host ne-3, V2
 ```
 
 | Part | Fills slot |
 |---|---|
-| `TestCases_Void.csv` | Scope |
+| `TestCases/Void/SabreNdc_Void_TestCases.csv` | Scope |
 | `SabreNdc` | Supplier |
 | `EGY` | credentialsSelector |
 | `ne-3` | Host |

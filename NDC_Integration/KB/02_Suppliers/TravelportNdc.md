@@ -72,4 +72,4 @@ cancelled via the API (CancelAfterHold with gdsPNR only → 500); they are liste
 | TPN-VOID2 | 2026-10-27 | ne-5 | Same, new build | 35/15/3 | `20261027-061359_TravelportNdc-Void-UAE-V1V2-Round2` |
 | TPN-FULL | 2026-11-01 | ne-3 | Void + V1 + V2, QR/EK/RJ/SV, all pax combos, 281 | 144/64/73 | `20261101-084001_TravelportNdc-UAE-Full-Regression-ne3` |
 
-Toolkits for these runs lived in session scratchpads (not kept). Rebuild on `Harness/V2/lib.js`.
+Toolkits for these runs lived in session scratchpads (not kept). Rebuild on `Harness/_shared/lib.js`.

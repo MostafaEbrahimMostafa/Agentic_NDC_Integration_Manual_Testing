@@ -1,5 +1,5 @@
 // V2 endpoint paths per step name, and which steps create or destroy live bookings.
-// Paths match Harness/AirArabiaPlus/chain.js (proven live) and SPEC.md §2.
+// Paths match Harness/_shared/chain.js (proven live) and SPEC.md §2.
 const META = {
   Search:          { path: 'api/V2/FlightSearch/Search' },
   FareConfirm:     { path: 'api/v2/FlightSearch/FareConfirm' },

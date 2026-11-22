@@ -1,4 +1,0 @@
-const fs=require('fs');let s=fs.readFileSync('finalize.js','utf8');
-s=s.replace("require('./r3notes')(L, G);","require('./r4notes')(L, G);");
-if(!/cancelledSet/.test(s)) s=s.replace("  L = L.filter(x => !['scope_note'","  { const cancelledSet = new Set(); for (const f of fs.readdirSync(path.join(__dirname, 'raw'))) { try { const r = JSON.parse(fs.readFileSync(path.join(__dirname, 'raw', f), 'utf8')); if (r.endpoint === 'CancelAfterHold' && r.status === 200 && r.response && r.response.cancelled === true) cancelledSet.add((r.request.body || {}).gdsPNR || (r.request.body || {}).pnr); } catch (e) { } } L = L.filter(x => !(x.type === 'cleanup' && cancelledSet.has(x.pnr))); }\n  L = L.filter(x => !['scope_note'");
-fs.writeFileSync('finalize.js',s);console.log(/r4notes/.test(s),/cancelledSet/.test(s));

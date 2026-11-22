@@ -76,7 +76,7 @@ correct flows — never weaker assertions. (AAP-R3.)
 Each run numbers its bugs from BUG-01, and some suppliers have several series (SabreNdc Void vs
 VoidUnified, AirIndia ne-3 vs R2, SeatMap shared by GulfAir/FlyAdeal/Galileo). Always quote
 `<run key> : BUG-nn`. Since 2026-11-17 every real defect also gets a permanent `NDC-BUG-nnnn` in
-`Artifacts/Bug_Registry.csv` (never reused), which lists all its per-run ids; quote the Global ID
+`Artifacts/Registry/Bug_Registry.csv` (never reused), which lists all its per-run ids; quote the Global ID
 when there is one. Bugs from runs before that date get a row when they are next re-tested or filed.
 
 ### D-06 — Leftover bookings are always listed

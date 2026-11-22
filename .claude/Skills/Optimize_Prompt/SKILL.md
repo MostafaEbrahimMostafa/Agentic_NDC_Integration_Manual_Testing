@@ -59,13 +59,13 @@ Stop-and-ask rules.** Extra required slots:
 | Task type | Next skill | Extra required slots | Optional slots |
 |---|---|---|---|
 | **generate** | `Generate_Test_Cases` (or `Analyze_User_Story` first if the source is a user story) | Scope = one bounded thing (endpoint / flow or range / supplier / category / named feature); **Version** (V1 / V2 / Both); source (SPEC sections or user-story file); target CSV path | Supplier (only if supplier-specific); priority split; category list |
-| **execute** | `Execute_Test_cases` (→ `Generate_QA_Report`, `Generate_Bug_Report` automatically) | Scope (CSV file + TC-IDs or "all"); **Supplier**; **Selector**; **Host** (full URL or KB short name); **Version**; **Destructive calls** allowed or not (Book / BookAfterHold / Void / CancelAfterHold) | Test-data file or route/date/pax; carrier preference; run slug tag; round number |
+| **execute** | `Execute_Test_cases` (→ `Generate_QA_Report`, `Generate_Bug_Report` automatically) | Scope (CSV file + TC-IDs or "all"); **Supplier**; **Selector**; **Host** (full URL or KB short name); **Version**; **Run mode**: `harness` (one TC-ID at a time, full evidence) or `postman-mcp` (the CSV run through a named Postman collection; then also **Collection** + **Postman environment**, see `KB/03_Technical/Postman_MCP_Guide.md`); **Destructive calls** allowed or not (Book / BookAfterHold / Void / CancelAfterHold) | Test-data file or route/date/pax; carrier preference; run slug tag; round number |
 | **retest** | `Retest_Issues` (registry + repro recipes + generic runner; V1 bugs: `Execute_Test_cases`) | Bug list (Global IDs `NDC-BUG-nnnn`, ADO IDs, run bug IDs **with run slug**, or a sheet path); **Supplier**; **Host**; **Destructive calls** allowed or not (Hold/Book in the recipes' chains); verdict set (`Fixed` / `Still reproduces` / `Blocked (env/data)` / `Behaviour changed – needs review`) | Selector (defaults to each recipe's); RC/build label; regression ring on/off; cleanup policy for holds |
 | **report** | `Generate_QA_Report` (or `Generate_Bug_Report`) | Run slug (or the log path); action (build / regenerate / bug reports only); output formats (md / html / bug files) | Audience; size limit |
 | **analyze** | `Analyze_User_Story` | User-story file path | Version; suppliers in scope |
 | **bug** | `Generate_Bug_Report` | Source (run `.jsonl` slug, or ad hoc defect + scope tag) | Which defects (all / IDs) |
 | **spec-update** | `Update_Spec_From_Findings` | Run slug | KB update yes/no (step 9) |
-| **testdata-sweep** | `Validate_TestData_Search` | **Host**; **Supplier**; **Selector**; Mode (read-only / repair) | File wildcard |
+| **testdata-sweep** | `Validate_TestData_Search`: **unavailable since 2026-11-22** (no `TestData/` fixtures); tell the user, do not route | **Host**; **Supplier**; **Selector**; Mode (read-only / repair) | File wildcard |
 
 Bold slots are the ones `CLAUDE.md` rule 5 says must never be defaulted. A request can mix types
 ("retest these bugs, then write the bug reports") — split it into a chain (step 5 below).
@@ -90,13 +90,18 @@ Bold slots are the ones `CLAUDE.md` rule 5 says must never be defaulted. A reque
      in this conversation;
    - **scope**: cross-supplier rows in a supplier run → `BLOCKED (out of scope)` unless the user
      confirms (rule 4); "V1 and V2" means both (rule 6).
+   - **run mode** (execute): "via MCP" / "run the collection" → `postman-mcp`, which still needs
+     the test-case CSV, the collection and the Postman environment; a plain CSV / TC-ID / flow
+     request → `harness`. Flag: a `postman-mcp` run cannot run one folder or single TC-IDs
+     (the whole collection runs), and a Postman environment named `Production` is never used.
 
 4. **Build the optimized prompt** with this structure (techniques in brackets):
    - **Role and context** [role framing]: one line, e.g. "Act as Senior QA for the NDC Integration
      API." Then **links** to the exact KB file and SPEC sections — never pasted text.
    - **Goal** — one sentence, measurable.
-   - **Scope / Supplier / Selector / Host / Version** [slot filling] — one bullet each, values or
-     `❓ MISSING`.
+   - **Scope / Supplier / Selector / Host / Version / Run mode** [slot filling] — one bullet each,
+     values or `❓ MISSING` (Run mode for execute tasks only; with `postman-mcp`, also Collection
+     and Postman environment).
    - **Inputs** — files by repo-relative path (CSV, test data, sheet, log).
    - **Constraints** — the relevant `CLAUDE.md` hard rules by number, plus task-specific ones.
    - **Output contract** [explicit output contract] — exact file(s), folder, naming

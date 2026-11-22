@@ -103,7 +103,7 @@ straight to test-case writing from a vague AC is how a suite ends up testing the
 ## Output
 
 - Save the analysis to
-  `NDC_Integration/Artifacts/UserStoryAnalysis/<StoryName>_Analysis.md` (derive `<StoryName>` from the
+  `NDC_Integration/Artifacts/Analysis/UserStoryAnalysis/<StoryName>_Analysis.md` (derive `<StoryName>` from the
   source file's own name, e.g. `SeatMap_UserStory.md` → `SeatMap_Analysis.md`).
 - Present the same content in-conversation as well — don't make the user open the file to see what was
   just produced.

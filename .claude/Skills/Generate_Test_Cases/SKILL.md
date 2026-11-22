@@ -152,7 +152,7 @@ unresolved ambiguity as a guessed expected value.
 
 ## Output
 
-- **Default output is a CSV row appended to `NDC_Integration/TestCases/TestCases_<Version>.csv`**
+- **Default output is a CSV row appended to `NDC_Integration/TestCases/_Generic/TestCases_<Version>.csv`**
   (`TestCases_V1.csv` / `TestCases_V2.csv`, or both for a "Both"-version scope) — this is the format
   already in production use, and it's what `NDC_Integration/TestCases/ConvertTo-Html.ps1` reads to
   regenerate the stakeholder-facing HTML report (`TestCases_V1.html` / `TestCases_V2.html`). Match its

@@ -9,7 +9,7 @@
 //
 // Usage (from the repo root):
 //   node .claude/Skills/_shared/scripts/validate-bug-report.js <run folder | bug folder | bug .md> [...] [--registry <csv>] [--json]
-//   --registry defaults to NDC_Integration/Artifacts/Bug_Registry.csv (tests pass a temp one).
+//   --registry defaults to NDC_Integration/Artifacts/Registry/Bug_Registry.csv (tests pass a temp one).
 //   A run folder is NDC_Integration/Artifacts/BugReports/<slug>/ (every BUG-* folder in it is checked).
 // Exit code: 0 = passes, 1 = contract errors, 2 = usage or read error.
 'use strict';

@@ -62,7 +62,7 @@ consumers.
 - **Environment:** `<ENVIRONMENT>`
 - **Credentials Selector:** `<CREDENTIAL_SELECTOR>`
 - **Correlation ID:** `<CORRELATION_ID>`
-- **Registry ID:** `<GLOBAL_ID>` (`NDC_Integration/Artifacts/Bug_Registry.csv`)
+- **Registry ID:** `<GLOBAL_ID>` (`NDC_Integration/Artifacts/Registry/Bug_Registry.csv`)
 
 ## 📊 Severity
 

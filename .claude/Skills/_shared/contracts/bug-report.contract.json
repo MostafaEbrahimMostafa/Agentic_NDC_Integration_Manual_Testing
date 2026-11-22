@@ -9,7 +9,7 @@
   "severity": ["Critical", "High", "Medium", "Low"],
   "systemInfoFields": ["API Version", "Supplier/Airline", "Base URL", "API Name", "Environment", "Credentials Selector", "Correlation ID", "Registry ID"],
   "registryIdPattern": "NDC-BUG-\\d{4}",
-  "registryFile": "NDC_Integration/Artifacts/Bug_Registry.csv",
+  "registryFile": "NDC_Integration/Artifacts/Registry/Bug_Registry.csv",
   "placeholderPattern": "<(?:API_VERSION|SUPPLIER|API_NAME|FIELD_NAME|FLOW_STEPS|EXPECTED_VALUE|BASE_URL|ENVIRONMENT|CREDENTIAL_SELECTOR|CORRELATION_ID|GLOBAL_ID|label|endpoint path|status)>",
   "requestFileKeys": ["label", "method", "url", "headers", "body"],
   "responseFileKeys": ["label", "status", "body"],

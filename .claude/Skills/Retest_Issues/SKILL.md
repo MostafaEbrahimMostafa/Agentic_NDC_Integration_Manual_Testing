@@ -4,7 +4,7 @@ description: >-
   Re-tests a list of known defects for a release candidate (RC regression) with ONE command instead
   of hand-written per-round scripts. Input is a list of IDs (Global NDC-BUG-nnnn, ADO ids such as
   65507, or <run slug>:BUG-NN) or a bug sheet (.xlsx/.csv such as Resources/AirArabiaPlus_bugs.xlsx).
-  Resolves every ID through the Bug Registry (NDC_Integration/Artifacts/Bug_Registry.csv), loads each
+  Resolves every ID through the Bug Registry (NDC_Integration/Artifacts/Registry/Bug_Registry.csv), loads each
   bug's repro recipe (NDC_Integration/Harness/recipes/<GlobalId>.json - the bug described as data:
   test data, call chain, assertions), drafts a recipe from the bug report when one is missing and asks
   the user to approve it once, pre-flights the test data so "no flights" becomes Blocked instead of
@@ -23,7 +23,7 @@ Every re-test used to mean a new script (`make_bug18_retest.js`, `verify10d.js`,
 bug IDs restarted at BUG-01 in every run, so "is bug X fixed in this RC?" had no direct answer. This
 skill answers it from two pieces of data:
 
-- **Bug Registry** — `NDC_Integration/Artifacts/Bug_Registry.csv`, one row per real defect with a
+- **Bug Registry** — `NDC_Integration/Artifacts/Registry/Bug_Registry.csv`, one row per real defect with a
   permanent `GlobalId` (`NDC-BUG-0042`, never reused), its ADO id, every per-run id it had, status
   and last verification. Every change is also appended to `Bug_Registry_History.jsonl`.
   Format: [references/registry-format.md](references/registry-format.md).
@@ -141,7 +141,7 @@ metrics steps read it).
   Re-Test report is rendered by the runner with its summary table first (O-1); quote its counts as
   printed, never re-counted (O-2). Change the registry only through `registry.js` (O-4). A
   stakeholder sheet of the registry or a Word copy of the report, if asked, is a render:
-  `render-xlsx.js NDC_Integration/Artifacts/Bug_Registry.csv` or `render-docx.js <report>.md`, each
+  `render-xlsx.js NDC_Integration/Artifacts/Registry/Bug_Registry.csv` or `render-docx.js <report>.md`, each
   followed by `validate-output.js <file> --source <src>`.
     The two runner evidence files from two RC runs count as its two reproductions.
 

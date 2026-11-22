@@ -1,6 +1,6 @@
 // Turns executed hops/flows into generate-qa-report test_case objects (redacted, summarized, plain-language rows).
-const C = require('./chain');
-const { amt } = require('./core');
+const C = require('../_shared/chain');
+const { amt } = require('../_shared/core');
 const esc = s => String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 const short = (s, n = 24) => { s = String(s == null ? '' : s); return s.length > n ? s.slice(0, n) + '…' : s; };
 const money = x => x == null ? 'n/a' : (typeof x === 'object' ? `${x.amount} ${x.currency}` : String(x));

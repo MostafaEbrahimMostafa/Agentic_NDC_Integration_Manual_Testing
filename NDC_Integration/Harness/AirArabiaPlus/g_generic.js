@@ -105,7 +105,7 @@ add('generic', 'TC-BUNDLE-POS-01', async () => {
 }, { endpoint: 'GetOfferBundles' });
 add('generic', 'TC-BUNDLE-NEG-01', async () => {
   // look for any offer seen so far with haveBundles=false
-  const dir = path.join(__dirname, 'raw'); let found = null;
+  const dir = path.join(__dirname, 'out', 'raw'); let found = null;
   for (const f of fs.readdirSync(dir)) { if (found) break; try { const r = JSON.parse(fs.readFileSync(path.join(dir, f))); const o = (r.response && r.response.offers) || []; if (o.some(x => x.haveBundles === false)) found = f; } catch (e) { } }
   if (!found) return { verdict: 'BLOCKED', hops: [], actual: 'No AirArabiaPlus offer with haveBundles=false exists in any Search of this run (all G9 offers are haveBundles=true), so GetOfferBundles cannot be called for a bundle-incapable offer.', evidence: 'scanned every saved Search response of this run for haveBundles=false: none' };
   return { verdict: 'BLOCKED', hops: [], actual: 'haveBundles=false offer found in ' + found + ' but not wired', evidence: '' };

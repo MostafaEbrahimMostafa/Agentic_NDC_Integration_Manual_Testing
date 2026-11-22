@@ -20,11 +20,12 @@ New member? Read `NDC_Integration/KB/00_Start_Here.md`.
 | Hosts ne, ne-1..ne-8, supplier-integration | `NDC_Integration/KB/03_Technical/Environments.md` |
 | Architecture, error envelopes | `NDC_Integration/KB/03_Technical/Architecture.md` |
 | Harness (PowerShell V1, Node V2, per-supplier folders) | `NDC_Integration/KB/03_Technical/Harness_Guide.md` |
+| Run a Postman collection through the Postman MCP server (setup, IDs, safety) | `NDC_Integration/KB/03_Technical/Postman_MCP_Guide.md` |
 | Retracted bugs, wrong assumptions, "why we do X" | `NDC_Integration/KB/04_Decisions_and_Lessons.md` |
 | Skills (Analyze → Generate → Execute → Report → Bug → Update Spec) | `.claude/Skills/<Skill>/SKILL.md`, prompts in `NDC_Integration/Prompts/` |
 | Vague run / retest / generate request (missing supplier, host, selector, version, scope) | `.claude/Skills/Optimize_Prompt/SKILL.md` — rewrites it and asks; never executes |
 | Test cases / run outputs | `NDC_Integration/TestCases/`, `NDC_Integration/Artifacts/{Logs,BugReports}/` |
-| **All known defects** (Global ID, ADO id, per-run ids, status, last verification) | `NDC_Integration/Artifacts/Bug_Registry.csv` — change only via `NDC_Integration/Harness/Retest/registry.js` |
+| **All known defects** (Global ID, ADO id, per-run ids, status, last verification) | `NDC_Integration/Artifacts/Registry/Bug_Registry.csv` — change only via `NDC_Integration/Harness/Retest/registry.js` |
 | **Output contracts**: CSV / JSONL / bug report / report MD shape, pyramid summary, size budget, XLSX & DOCX renders | `.claude/Skills/_shared/Output_Contracts.md`; check any output with `node .claude/Skills/_shared/scripts/validate-output.js <file>`; test `.claude/Skills/_shared/tests/output-contracts.test.js` |
 | **AI guardrails**: evidence refs, source labels, double repro, second opinion, defect gate | `.claude/Skills/_shared/AI_Guardrails.md`; checker `node .claude/Skills/_shared/scripts/verify-evidence.js <log>.jsonl`; test `.claude/Skills/_shared/tests/replay-aap-r1.test.js` |
 | Re-test bugs / RC regression ("is bug X fixed?", a bug sheet, ADO ids) | `.claude/Skills/Retest_Issues/SKILL.md` — repro recipes in `NDC_Integration/Harness/recipes/`, one runner `Harness/Retest/runner.js`; reports in `Artifacts/Retest/` |

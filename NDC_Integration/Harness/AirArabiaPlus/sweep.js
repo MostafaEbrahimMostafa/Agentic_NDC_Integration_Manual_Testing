@@ -1,4 +1,4 @@
-const { hop, SUP, sleep } = require('./core');
+const { hop, SUP, sleep } = require('../_shared/core');
 const routes = (process.env.ROUTES || 'CAI-MCT,HBE-BGY,SAW-CMN,CMN-SAW,SHJ-COK').split(',').map(r => r.split('-'));
 const dates = (process.env.DATES || '').split(',').filter(Boolean);
 (async () => {

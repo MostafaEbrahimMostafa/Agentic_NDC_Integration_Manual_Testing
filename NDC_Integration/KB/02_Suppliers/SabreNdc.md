@@ -74,7 +74,7 @@ Two numbering series exist: the Void/Generic/V2 series (SAB-VOID → SAB-R2) and
 
 All bookings from SAB-VOID … SAB-VU2 were voided/cancelled (SAB-VU2: 1,274 PNRs). 4 Book/Hold calls
 answered 500 with no PNR (state unknown) — listed in the SAB-VU2 report. SAB-AV2 Round 1 (2026-11-11,
-not finalised) left PNRs listed in `Harness/SabreNdc/r1/`.
+not finalised) left PNRs listed in `Harness/SabreNdc/r1/` (folder no longer in the repo).
 
 ## 7. Run history
 
@@ -87,5 +87,5 @@ not finalised) left PNRs listed in `Harness/SabreNdc/r1/`.
 | SAB-VU2 | 2026-11-05 | ne-3 | VoidUnified 67, SV+QR every offer | 21/24/22 | `20261105-085339_SabreNdc-EGY-VoidUnified-Round2-ne3` |
 | SAB-AV2 | 2026-11-12 | ne-7 | Availability QR, partial 133/237 | 112/20/1 | `20261112-085012_SabreNdc-EGY-Availability-QR-Round2-ne7-Partial` |
 
-Open work: `Harness/SabreNdc/g8.js` (routes + SABRT lifecycle flows) and g4-g7 are written but **never run** — debug with `ONLY=` first.
-Harness: `NDC_Integration/Harness/SabreNdc/` — see [../03_Technical/Harness_Guide.md](../03_Technical/Harness_Guide.md).
+Open work: `Harness/Availability/SabreNdc/g8.js` (routes + SABRT lifecycle flows) and g4-g7 are written but **never run** — debug with `ONLY=` first.
+Harness: `NDC_Integration/Harness/Availability/` (engine) + `Availability/SabreNdc/` (groups, notes, bug lists) — see [../03_Technical/Harness_Guide.md](../03_Technical/Harness_Guide.md).

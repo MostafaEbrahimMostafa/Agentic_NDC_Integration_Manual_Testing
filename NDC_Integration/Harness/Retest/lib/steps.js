@@ -1,12 +1,12 @@
 // Generic V2 chain executor for repro recipes. One live call at a time (CLAUDE.md rule 9).
-// Selection logic (bundle / ancillary / seat picking) is ported from Harness/AirArabiaPlus/chain.js,
+// Selection logic (bundle / ancillary / seat picking) is ported from Harness/_shared/chain.js,
 // made supplier-agnostic: supplier + selector come from the recipe, never hard-coded.
 const fs = require('fs');
 const path = require('path');
 const { META } = require('./steps-meta');
 
-let LIB = null; // ../../V2/lib.js reads NDC_BASE when loaded: require it only after the runner set it
-const lib = () => LIB || (LIB = require(path.join(__dirname, '..', '..', 'V2', 'lib.js')));
+let LIB = null; // ../../_shared/lib.js reads NDC_BASE when loaded: require it only after the runner set it
+const lib = () => LIB || (LIB = require(path.join(__dirname, '..', '..', '_shared', 'lib.js')));
 const sleep = ms => new Promise(r => setTimeout(r, ms));
 
 const RAW_KEYS = /^(supplierRequest|supplierResponse|OriginalSupplierRequest|OriginalSupplierResponse)$/i;

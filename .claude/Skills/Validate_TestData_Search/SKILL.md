@@ -1,6 +1,8 @@
 ---
 name: validate-testdata-search
 description: >-
+  UNAVAILABLE since 2026-11-22: NDC_Integration/TestData/ was removed, so there are no fixtures to
+  check. Do not use this skill until new fixtures are added; tell the user it is unavailable.
   Validates that every test-data fixture in NDC_Integration/TestData/ can still find live flights,
   by running each file's searchCriteria + passengers through the V2 Search endpoint
   ({baseUrl}api/V2/FlightSearch/Search) for a given supplier + credentialsSelector, and reports
@@ -15,6 +17,10 @@ description: >-
 ---
 
 # Validate TestData Search Criteria (V2 Search)
+
+> **UNAVAILABLE since 2026-11-22: `NDC_Integration/TestData/` was removed, so there are no fixtures
+> to check.** If asked to run it, say so and stop. Re-enable it by adding fixtures under
+> `NDC_Integration/TestData/` and removing this note and the one in the description.
 
 Test-data fixtures rot. A route the supplier dropped, a fare family that sold out, a date that drifted
 too close — any of these turns a fixture into a flow that dies at hop 1, and the failure looks like an

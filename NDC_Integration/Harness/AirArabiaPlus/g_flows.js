@@ -1,10 +1,10 @@
 // Group F: route coverage, carrier coverage, booking-creation matrix (24), V2 flow matrix FLOW-V2-25..72, Upselling flows 73..120.
 const fs = require('fs'), path = require('path');
-const csv = require('./csvparse');
-const C = require('./chain'); const F = require('./flow'); const B = require('./tcbuild'); const { SUP, now, amt } = require('./core');
+const csv = require('../_shared/csvparse');
+const C = require('../_shared/chain'); const F = require('./flow'); const B = require('./tcbuild'); const { SUP, now, amt } = require('../_shared/core');
 const TCDIR = path.resolve(__dirname, '../../TestCases');
 const D1 = process.env.D1 || '2026-12-08', D2 = process.env.D2 || '2026-12-15';
-const V2 = csv(path.join(TCDIR, 'TestCases_V2.csv')), BK = csv(path.join(TCDIR, 'AirArabiaPlus_V2_BookingCreation_TestCases.csv'));
+const V2 = csv(path.join(TCDIR, '_Generic/TestCases_V2.csv')), BK = csv(path.join(TCDIR, 'Regression/AirArabiaPlus_V2_BookingCreation_TestCases.csv'));
 const row = (rows, id) => rows.find(r => (r.ID || r['TC ID']) === id);
 const cases = [];
 const FR = process.env.FLOW_ROUTE ? process.env.FLOW_ROUTE.split('-') : null;
@@ -23,7 +23,7 @@ for (const [car, o, d] of ROUTES) {
         const list = car === 'G9' ? DATES.slice(k).concat(DATES.slice(0, k)) : [DATES[k]];
         for (const date of list) {
           const S = await C.search(ctx, [[o, d, date]], types, { tries: 1, anyFit: true }); h = S.h; offers = (h.json && h.json.offers) || []; used = date;
-          if (offers.length) break; empties.push(date + ': ' + h.status + ' 0 offers (' + h.ms + ' ms)'); if (car === 'G9') { await require('./core').sleep(3000); ctx.waiting_ms += 3000; }
+          if (offers.length) break; empties.push(date + ': ' + h.status + ' 0 offers (' + h.ms + ' ms)'); if (car === 'G9') { await require('../_shared/core').sleep(3000); ctx.waiting_ms += 3000; }
         }
         const cars = [...new Set(Object.values((h.json && h.json.flightSegments) || {}).flatMap(s => [s.marketingCarrierCode, s.operatingCarrierCode]))];
         tries.push({ types, date: used, status: h.status, offers: offers.length, ms: h.ms, carriers: cars, hop: h, empties });

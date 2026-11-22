@@ -1,6 +1,6 @@
 // Pilot: node pilot.js '<json spec>'  -> runs one flow, prints a compact hop-by-hop result (no secrets, no raw payloads)
 const { runFlow } = require('./flow');
-const C = require('./chain');
+const C = require('../_shared/chain');
 const spec = JSON.parse(process.argv[2] || '{}');
 spec.id = spec.id || 'PILOT';
 (async () => {

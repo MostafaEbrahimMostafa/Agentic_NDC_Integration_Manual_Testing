@@ -1,7 +1,7 @@
 // Group: single-endpoint V2 rows of TestCases_V2.csv (AddPassenger, GetAncillary, SeatMap, FareCheck, collection-defect rows) executed on AirArabiaPlus/USA.
 const fs = require('fs'), path = require('path');
 const X = require('./fx'); const { C, B, SUP, now, sleep, amt, ok, controlled, ctxNew, errLine, view, def, chainTo, pre, D1, D2 } = X;
-const R = require('./recorder'); const F = require('./flow');
+const R = require('../_shared/recorder'); const F = require('./flow');
 const cases = []; const add = (id, run, extra = {}) => cases.push({ ...def('v2', id, extra), group: 'v2tc', run });
 const neg = (h, expected) => view(h, { expected, actual: errLine(h), verdict: controlled(h) ? 'PASS' : 'FAIL', evidence: h.status >= 500 ? 'server error instead of a controlled rejection' : ok(h) ? 'request was accepted' : 'controlled rejection' });
 const apBody = (v, types, mut) => { const b = { ...SUP, ResponseId: v.ids.id, selectedOfferId: v.ids.off, passengersList: C.mkPassengers(types), contactsList: C.CONTACTS }; if (mut) mut(b); return b; };

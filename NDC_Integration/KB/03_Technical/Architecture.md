@@ -69,7 +69,7 @@ Details and run keys: each supplier file in [../02_Suppliers/](../02_Suppliers/R
 
 - `isDebug=true` returns `supplierRequest`/`supplierResponse`, which may contain credentials. Never
   commit them (Execute skill safety rule 2, SPEC §7.14).
-- The API key lives only in the git-ignored repo-root `.env` (`NDC_API_KEY`); `Harness/V2/lib.js`,
-  `Harness/NdcV1.Extracted.ps1` and the TestData sweep script read it from there, Postman uses
+- The API key lives only in the git-ignored repo-root `.env` (`NDC_API_KEY`); `Harness/_shared/lib.js`,
+  `Harness/V1/NdcV1.Extracted.ps1` and the TestData sweep script read it from there, Postman uses
   `{{x_api_key}}`. Removed from tracked files 2026-11-17; it is still in **git history**, so it
   should be rotated by the key owner.

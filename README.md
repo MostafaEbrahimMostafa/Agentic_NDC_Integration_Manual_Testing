@@ -94,22 +94,11 @@ output much easier to sanity-check.
 
 ## Running a test cycle
 
-There are two ways to drive the workflow: through ready-made prompt templates typed straight into
-Claude Code, or through the guided PowerShell launcher. Both end up invoking the same skills.
+Drive the workflow with the prompt templates, typed straight into Claude Code. Postman access goes
+through the Postman MCP server configured in `.mcp.json` (key from the `POSTMAN_API_KEY` environment
+variable; check it is connected with `/mcp`).
 
-### Option A — guided launcher (easiest for a first run)
-
-```powershell
-powershell -File .\.claude\chell\Run-ExecuteTestCases.ps1
-```
-
-This prompts you for `BaseUrl`, `Supplier_Name`, `Credentials_Selector` (defaulting to
-`STAG_ENV`'s values — just press Enter to accept them) and a test scope (`V1`, `V2`, `Both`, or
-`Generic`), then launches `claude` in the repo root with the `Execute_Test_cases` skill invoked and
-those answers pre-filled. It will not run destructive calls (`Book`/`Void`/etc.) against a
-non-staging URL without stopping to ask you first.
-
-### Option B — prompt templates (full control over each stage)
+### Prompt templates (full control over each stage)
 
 Each skill has a fill-in-the-blanks template under `NDC_Integration/Prompts/`. A full cycle, in
 order:
@@ -139,7 +128,7 @@ This appends CSV rows to the matching file under `NDC_Integration/TestCases/` (e
 
 ```
 Use Execute_Test_cases to run:
-- Scope: NDC_Integration/TestCases/TestCases_V2.csv
+- Scope: NDC_Integration/TestCases/_Generic/TestCases_V2.csv
 - Environment: staging (default)
 - Supplier: TravelportNdc
 - Credentials Selector: UAE
@@ -160,12 +149,8 @@ Use Update_Spec_From_Findings to reconcile SPEC.md with the last run.
 
 It always shows the exact diff and waits for your confirmation before touching `SPEC.md`.
 
-**5. (Housekeeping, run periodically, not part of every cycle)** — refresh test-data fixtures so
-future search-dependent test cases don't fail on stale routes/dates:
-
-```
-Use Validate_TestData_Search for supplier TravelportNdc, credentialsSelector UAE.
-```
+**5. (Housekeeping)** — `Validate_TestData_Search` is unavailable since 2026-11-22: the
+`NDC_Integration/TestData/` fixtures were removed.
 
 ### What you'll get out of a run
 
@@ -184,13 +169,12 @@ completed run looks like before running your own.
 NDC Manual Testing/
 ├── NDC_Integration/          # Everything QA: spec, test cases, results, resources
 │   ├── SPEC.md                   # Source of truth: endpoints, flows, suppliers, validation rules
-│   ├── NDC_PRD.md                 # PRD for the companion Java/TestNG automation framework
-│   ├── TestCases/                 # Generated manual test cases (CSV + HTML), V1/V2/SeatMap/Generic
-│   ├── TestData/                  # JSON fixtures (search criteria, passengers) used when executing tests
-│   ├── Resources/                 # Supporting docs: supplier routes, sample requests/responses, user stories
+│   ├── Docs/                      # NDC_PRD.md (companion Java/TestNG framework PRD), framework enhancement plan
+│   ├── KB/                        # Knowledge base: business, per-supplier facts, technical, decisions
+│   ├── TestCases/                 # Test-case CSVs by feature: _Generic, Availability, Regression, Void, SeatMap, ...
 │   ├── Prompts/                   # Prompt templates, one per skill, for driving the QA cycle
-│   ├── Harness/                   # PowerShell harness (HTTP calls, ID chaining, logging, HTML reports)
-│   └── Artifacts/                 # Output of test runs: logs (.md/.html/.jsonl), bug reports, search sweeps
+│   ├── Harness/                   # _shared (Node V2 client), V1 (PowerShell), Availability engine, AirArabiaPlus, Retest
+│   └── Artifacts/                 # Logs, BugReports, Retest outputs; Registry/ (Bug Registry); Analysis/ (user-story analyses, trackers)
 ├── Postman_Collection/        # The actual Postman collections/environment used to call the API
 │   ├── Collection_V1/
 │   ├── Collection_V2/
@@ -211,8 +195,8 @@ each can also be used standalone:
 | 4 | **Generate_QA_Report** | Persists execution results in real time as Markdown/JSONL, then renders a shareable HTML report once the run finishes. |
 | 5 | **Generate_Bug_Report** | Turns each confirmed defect from an execution run into a submittable Markdown bug report using the house template. |
 | 6 | **Update_Spec_From_Findings** | Reconciles `SPEC.md` with facts confirmed live during execution — always shows a diff and asks for confirmation before editing. |
-| — | **Validate_TestData_Search** | Housekeeping: checks that every fixture in `TestData/` still returns live flights, and repairs the ones that don't. |
-| — | **Retest_Issues** | RC regression: re-tests a bug list (Global/ADO/run IDs or a bug sheet) from the Bug Registry (`Artifacts/Bug_Registry.csv`) using approved repro recipes and one generic runner; verdict per bug (Fixed / Still reproduces / Blocked / Behaviour changed) plus neighbour flows. |
+| — | **Validate_TestData_Search** | **Unavailable since 2026-11-22** (no `TestData/` fixtures). Was: checks that every fixture still returns live flights and repairs the ones that don't. |
+| — | **Retest_Issues** | RC regression: re-tests a bug list (Global/ADO/run IDs or a bug sheet) from the Bug Registry (`Artifacts/Registry/Bug_Registry.csv`) using approved repro recipes and one generic runner; verdict per bug (Fixed / Still reproduces / Blocked / Behaviour changed) plus neighbour flows. |
 
 **Golden rule across all skills:** nothing gets guessed. If a fact isn't confirmed by the spec or
 a live call, it's labeled `UNKNOWN` (or `INFERRED` when reasonably deduced) rather than assumed.
@@ -237,7 +221,7 @@ a live call, it's labeled `UNKNOWN` (or `INFERRED` when reasonably deduced) rath
   bottom, then read `NDC_Integration/KB/00_Start_Here.md` (the project Knowledge Base: domain,
   supplier facts, environments, lessons learned) and run your first smoke test from there.
 - To understand the API itself: read `NDC_Integration/SPEC.md`.
-- To understand the QA automation this project builds on top of: read `NDC_Integration/NDC_PRD.md`.
+- To understand the QA automation this project builds on top of: read `NDC_Integration/Docs/NDC_PRD.md`.
 - To run a test cycle: see [Running a test cycle](#running-a-test-cycle), or jump straight to the
   `Generate_Test_Cases` or `Execute_Test_cases` skill (see `NDC_Integration/Prompts/` for
   ready-to-use prompt templates).

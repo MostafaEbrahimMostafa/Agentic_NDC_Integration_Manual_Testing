@@ -36,7 +36,7 @@ request, even with a wrong key = host down, not an auth result. `stg-ne` answere
 | Tool | How |
 |---|---|
 | Postman | Select/clone `STAG_ENV`, change `baseUrl` |
-| Node harness (`Harness/V2/lib.js` and per-supplier folders) | `NDC_BASE=<url>` env var. **Default is ne-3** for `lib.js`, **ne-6** for `AirArabiaPlus/core.js`. Always set it explicitly. |
+| Node harness (`Harness/_shared/lib.js` and per-supplier folders) | `NDC_BASE=<url>` env var. **Default is ne-3** for `lib.js`, **ne-6** for `_shared/core.js` (AirArabiaPlus default). Always set it explicitly. |
 | PowerShell V1 harness | `Start-NdcRun -EnvKey STAG` (or `SUPPLIER_STG`); hosts in `NdcV1.Extracted.ps1` |
 | Skills | Give the host in the prompt ("Environment: <url>") |
 

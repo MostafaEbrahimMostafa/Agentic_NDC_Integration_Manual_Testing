@@ -37,7 +37,7 @@ If "Newest fact" is more than 14 days old, re-check live before relying on that 
 ## Suppliers with no KB file yet
 
 Only an old capability sweep exists (2026-08-05, selector UAE, `Harness/README.md` and
-`Artifacts/UnknownResolutionTracker.md`). Treat as unverified:
+`Artifacts/Analysis/UnknownResolutionTracker.md`). Treat as unverified:
 
 | Supplier | Last seen | Note |
 |---|---|---|

@@ -28,17 +28,16 @@ sub-steps; that's exactly the "extra timestamp calls beyond what's needed" this 
 ## Headers (every request, both versions)
 
 ```
-x-api-key: <static staging key from Postman_Collection/Collection_V1 or V2 — do not hardcode
-            production values here; pull from the environment/collection file at run time>
+x-api-key: <NDC_API_KEY from the git-ignored repo-root .env; never hard-code, print, or commit it.
+            Postman uses {{x_api_key}}. If .env is missing, ask the user>
 Client-Id: NDC-Core
 Content-Type: application/json
 ```
 
 ## Base URL and path casing
 
-- Resolve `baseUrl` from `Postman_Collection/Environment/STAG_ENV.postman_environment.json`
-  (staging: `https://ndc-integration-stg-ne-3.azurewebsites.net/`) unless the user names a different
-  environment explicitly.
+- Resolve `baseUrl` for the host the user named from `NDC_Integration/KB/03_Technical/Environments.md`.
+  There is no default host; if none was given, ask (SKILL.md P0).
 - V1 paths have no version segment (`api/FlightSearch/Search`). V2 paths mix `v2`/`V2` casing
   inconsistently across endpoints (SPEC.md §1.2) — use the exact casing SPEC.md §2.*n* gives for
   that specific endpoint; don't normalize it yourself.

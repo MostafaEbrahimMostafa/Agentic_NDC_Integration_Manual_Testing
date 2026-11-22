@@ -5,7 +5,7 @@ const G = require('./g_generic');
 const cases = []; const add = (id, run, extra = {}) => cases.push({ ...def('v2', id, extra), group: 'neg', run });
 const blocked = (id, why, extra = {}) => cases.push({ ...def('v2', id, extra), group: 'neg', blocked: why, run: null });
 const neg = (h, expected) => view(h, { expected, actual: errLine(h), verdict: controlled(h) ? 'PASS' : 'FAIL', evidence: h.status >= 500 ? 'server error instead of a controlled rejection' : ok(h) ? 'request was accepted' : 'controlled rejection' });
-const EXP = () => JSON.parse(fs.readFileSync(path.join(__dirname, 'fixtures_expiry.json'), 'utf8'));
+const EXP = () => JSON.parse(fs.readFileSync(path.join(__dirname, 'out', 'fixtures_expiry.json'), 'utf8'));
 async function waitUntilExpired(minAfterSec = 60) {
   const e = EXP(); const t = Math.max(...e.map(x => Date.parse(x.holdExp))) + minAfterSec * 1000; let w = 0; while (Date.now() < t) { const s = Math.min(60000, t - Date.now()); await sleep(s); w += s; } return w;
 }

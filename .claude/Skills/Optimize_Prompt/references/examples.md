@@ -22,7 +22,7 @@ Context: CLAUDE.md hard rules; KB/02_Suppliers/AirArabiaPlus.md; SPEC.md §2.1 (
 
 Use Execute_Test_cases to run:
 - Goal: one smoke verdict per TC-ID for AirArabiaPlus V2 Search.
-- Scope: NDC_Integration/TestCases/TestCases_Generic.csv  ❓ which TC-IDs? (the CSV has no rows labelled "smoke")
+- Scope: NDC_Integration/TestCases/_Generic/TestCases_Generic.csv  ❓ which TC-IDs? (the CSV has no rows labelled "smoke")
 - Supplier: AirArabiaPlus
 - Credentials Selector: ❓ MISSING
 - Host: ❓ MISSING
@@ -97,7 +97,7 @@ repro conditions added so a missing offer cannot be read as "Fixed"; four-verdic
 3. Note: the last check was 2026-11-16 on stg-ne (Still reproduces). Re-run anyway, or report that
    result if there is no new build?
 
-**Next skill:** `Retest_Issues` (recipe `Harness/recipes/NDC-BUG-0002.json`; approve it first if it is still a draft).
+**Next skill:** `Retest_Issues` (it resolves the bug through the registry and loads `Harness/recipes/<GlobalId>.json`; if no recipe exists yet it drafts one from the bug report for your approval).
 
 ---
 

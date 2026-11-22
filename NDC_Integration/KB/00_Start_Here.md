@@ -21,14 +21,19 @@ The repo-level `README.md` covers installing tools; this page covers *what to kn
 
 - Read the supplier file for the supplier you are assigned to: [02_Suppliers/README.md](02_Suppliers/README.md).
 - Read SPEC §4 (supplier capabilities), §5 (flow matrix), §6 (flow validation).
-- Open one finished HTML report in `NDC_Integration/Artifacts/Logs/` and its bug folder in
-  `Artifacts/BugReports/<slug>/` to see what a full run produces. Good example:
-  `20261101-084001_TravelportNdc-UAE-Full-Regression-ne3` (281 TCs, 25 bug reports). Runs after
-  2026-11-08 are not in the repo yet (see the evidence table in `02_Suppliers/README.md`).
-- Read [03_Technical/Harness_Guide.md](03_Technical/Harness_Guide.md) and
+- Read [03_Technical/Execution_Pipeline.md](03_Technical/Execution_Pipeline.md): what happens from
+  "run ..." to the QA HTML report, bug reports and SPEC/KB follow-up (steps P0-P10).
+- Past run reports and bug folders were removed from the repo on 2026-11-22. To see what a full run
+  produces, run your first smoke test (below) and open its `Artifacts/Logs/<slug>.html`; old runs
+  are still in git history (e.g. `20261101-084001_TravelportNdc-UAE-Full-Regression-ne3`).
+- Read [03_Technical/Harness_Guide.md](03_Technical/Harness_Guide.md),
+  [03_Technical/Postman_MCP_Guide.md](03_Technical/Postman_MCP_Guide.md) and
   [03_Technical/Architecture.md](03_Technical/Architecture.md).
 - Run one small full cycle with the skills: Generate → Execute → Report → Bug → Update Spec (see
   `README.md` "Running a test cycle" and the templates in `NDC_Integration/Prompts/`).
+- Two run modes for Execute: **harness** (one test case at a time, full evidence: the default
+  choice for CSV runs and anything you may file bugs from) and **postman-mcp** (the CSV run through
+  a Postman collection via the Postman MCP server; set up the Postman key first, see the guide).
 
 ---
 
@@ -47,11 +52,12 @@ Search creates no booking, so it is safe. Pick a supplier/route that the KB says
 
    ```
    Use Execute_Test_cases to run:
-   - Scope: TC-SEARCH-POS-01 from NDC_Integration/TestCases/TestCases_Generic.csv
+   - Scope: TC-SEARCH-POS-01 from NDC_Integration/TestCases/_Generic/TestCases_Generic.csv
    - Environment: https://ndc-integration-stg-ne.azurewebsites.net/
    - Supplier: AirArabiaPlus
    - Credentials Selector: USA
    - Version: V2 only
+   - Run mode: harness
    - Test data: route COK-SHJ, a date within the next 30 days (G9 schedule ends 2026-12-31), passengers 1 ADT
    Search only. No Book/Hold/Void.
    ```
@@ -82,7 +88,9 @@ KB/
   03_Technical/
     Architecture.md             <- layers, error envelopes, IDs
     Environments.md             <- ne, ne-1..ne-8, supplier-integration
+    Execution_Pipeline.md       <- "run ..." to final report: steps P0-P10, both run modes
     Harness_Guide.md            <- how to run scripts, reuse per-supplier folders
+    Postman_MCP_Guide.md        <- run a collection through the Postman MCP server
   04_Decisions_and_Lessons.md   <- retracted bugs, wrong assumptions, "why we do X"
 ```
 

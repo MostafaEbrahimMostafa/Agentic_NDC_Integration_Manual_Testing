@@ -6,7 +6,7 @@
 **What it is:** flyadeal. Navitaire back end (seen in its 409 NoBookingInState errors).
 **Selectors:** `EGY` used. — Last verified: 2026-10-11 / supplier-integration / SEAT-R21
 **Hosts used:** `supplier-integration` (non-staging; user explicitly authorized Book/Hold for SEAT-R21).
-**Overall status:** SeatMap + Book work with bundles; no Hold. Bundle analysis: `Artifacts/UserStoryAnalysis/FlyAdeal_Bundle_Analysis.md`.
+**Overall status:** SeatMap + Book work with bundles; no Hold. Bundle analysis: `Artifacts/Analysis/UserStoryAnalysis/FlyAdeal_Bundle_Analysis.md`.
 
 ## 1. Live capabilities (V2, selector EGY)
 

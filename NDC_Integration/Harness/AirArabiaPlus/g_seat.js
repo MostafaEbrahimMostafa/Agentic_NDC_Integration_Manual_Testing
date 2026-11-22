@@ -1,7 +1,7 @@
 // Group: rows of SeatMap_TestCases.csv applied to AirArabiaPlus V2 (SeatMap, seat selection at FareCheck/Book/Hold, SeatAfterHold).
 const fs = require('fs'), path = require('path');
 const X = require('./fx'); const { C, B, SUP, now, sleep, amt, ok, controlled, ctxNew, errLine, view, def, chainTo, pre, D1, D2 } = X;
-const R = require('./recorder'); const G = require('./g_generic');
+const R = require('../_shared/recorder'); const G = require('./g_generic');
 const cases = []; const SUF = { 'TC-BOOK-BIZ-04': '@SEAT', 'TC-BOOK-NEG-05': '@SEAT', 'TC-RETRIEVE-REG-01': '@SEAT', 'TC-SEATMAP-POS-01': '@SEAT', 'TC-SEATMAP-NEG-01': '@SEAT' };
 const add = (id, run, extra = {}) => { const d = def('seat', id, extra); d.id = id + (SUF[id] || ''); cases.push({ ...d, group: 'seat', run }); };
 const blocked = (id, why, extra = {}) => { const d = def('seat', id, extra); d.id = id + (SUF[id] || ''); cases.push({ ...d, group: 'seat', blocked: why, run: null }); };
