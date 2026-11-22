@@ -1,6 +1,0 @@
-A1_COK-SHJ_ADT+CHD+INF_firstBundle ok=false bundle 66589 pnr null failedAt Book 409 NDC-INT-UNC-Z9999 NDC-INT-UNC-Z9999
-bundle codes offered: 66580,66589,66624
-A2_COK-SHJ_ADT+CHD+INF_bundle66624 ok=true bundle 66624 pnr 69ZTFC sameAnc=true totalsEqual=true recon={"farecheck":[],"book":[],"retrieve":[]}
-A3_SHJ-COK_ADT+CHD+INF ok=false bundle 66589 pnr null failedAt Book 409 NDC-INT-UNC-Z9999 NDC-INT-UNC-Z9999
-C1_COK-SHJ_ADT+ADT ok=false bundle 66580 pnr null failedAt GetAncillary ancillary not selectable after retries: A1/G9$COK/SHJ$3281725$20261212034000$20261212062000/Meal; A2
-verify done

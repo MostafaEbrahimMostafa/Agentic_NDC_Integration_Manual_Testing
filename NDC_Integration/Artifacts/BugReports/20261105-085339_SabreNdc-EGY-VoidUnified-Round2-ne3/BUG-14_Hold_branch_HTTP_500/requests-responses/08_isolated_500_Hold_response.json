@@ -1,8 +1,0 @@
-{
-  "label": "isolated 500 Hold",
-  "status": 500,
-  "durationMs": 4228,
-  "requestedAtUtc": "2026-11-05T10:06:24.580Z",
-  "respondedAtUtc": "2026-11-05T10:06:28.808Z",
-  "body": "(empty body)"
-}

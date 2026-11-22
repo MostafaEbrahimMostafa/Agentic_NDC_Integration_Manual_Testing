@@ -1,8 +1,0 @@
-{
-  "label": "outage window 500 Hold",
-  "status": 500,
-  "durationMs": 2682,
-  "requestedAtUtc": "2026-11-05T09:51:06.206Z",
-  "respondedAtUtc": "2026-11-05T09:51:08.888Z",
-  "body": "(empty body)"
-}

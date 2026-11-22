@@ -1,8 +1,0 @@
-{
-  "label": "outage window 500 RetrieveBooking",
-  "status": 500,
-  "durationMs": 1338,
-  "requestedAtUtc": "2026-11-05T09:51:07.375Z",
-  "respondedAtUtc": "2026-11-05T09:51:08.713Z",
-  "body": "(empty body)"
-}
